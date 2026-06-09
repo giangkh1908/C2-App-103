@@ -1,0 +1,82 @@
+"use client";
+
+import ScrollReveal from "@/components/shared/ScrollReveal";
+
+const milestones = [
+  {
+    grade: "Lớp 1",
+    title: "Đếm kẹo ngọt & so sánh dâu",
+    color: "border-emerald-100 bg-emerald-50/25",
+    desc: "Sắp xếp dãy số, thêm bớt từ 1 đến 10 dựa trên quả đào chín căng quả, sờ chạm so sánh nhiều ít.",
+  },
+  {
+    grade: "Lớp 2",
+    title: "Nối bảng nhân & chia đều táo",
+    color: "border-amber-100 bg-amber-50/25",
+    desc: "Ghép thành các đĩa bánh đều dặn, hiểu sâu bản chất phép nhân chính là cộng lặp, phép chia là chia đều.",
+  },
+  {
+    grade: "Lớp 3",
+    title: "Cắt lát bánh Pizza dâu",
+    color: "border-orange-100 bg-orange-50/25",
+    desc: "Bẻ vụn phân số cơ bản, nhân chia chữ số nghìn chục nghìn thông qua xếp khối hộp đồ chơi.",
+  },
+  {
+    grade: "Lớp 4",
+    title: "Lợp gạch sân thảm chu vi",
+    color: "border-sky-100 bg-sky-50/25",
+    desc: "Tính mét vuông lợp gạch, bo đường viền mép bờ tường. Đếm diện tích cực kỳ trực diện.",
+  },
+  {
+    grade: "Lớp 5",
+    title: "Đổ nước bình đo thể tích",
+    color: "border-purple-100 bg-purple-50/25",
+    desc: "Rót nước ngọt dâu đầy các bình đong chia độ để mường tượng tỉ số phần trăm và thể tích hộp.",
+  },
+];
+
+export default function Roadmap() {
+  return (
+    <section id="lo-trinh" className="py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-natural-border">
+      <div className="max-w-7xl mx-auto">
+        <ScrollReveal>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-natural-orange text-[10px] sm:text-xs font-black uppercase tracking-widest block mb-2 font-mono">
+              Bản đồ học thuật toàn diện
+            </span>
+            <h2 className="text-3xl font-serif italic text-natural-dark leading-tight">
+              Lộ trình đong đầy hình ảnh từ Lớp 1 - Lớp 5
+            </h2>
+            <p className="mt-3 text-sm text-natural-charcoal/80 leading-relaxed">
+              Mỗi bài giảng đều có sự trợ lực của đồ hình trực quan xúc giác, giúp bé tiếp thu nhẹ tênh
+              từ đếm chuối cho tới tính chu vi diện tích đa giác phức tạp.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          {milestones.map((m, i) => (
+            <ScrollReveal key={m.grade} delay={i * 100}>
+              <div
+                className={`p-5 rounded-2xl border border-natural-border text-left flex flex-col justify-between h-56 transition-all duration-150 ease-out hover:-translate-y-1 hover:border-natural-green/40 ${m.color}`}
+              >
+                <div>
+                  <span className="text-xs font-black tracking-widest text-natural-green uppercase bg-white px-2.5 py-0.5 rounded-md border border-natural-border inline-block mb-3.5">
+                    {m.grade}
+                  </span>
+                  <h4 className="text-sm font-bold text-natural-dark mb-2 leading-snug">
+                    {m.title}
+                  </h4>
+                  <p className="text-[11px] text-natural-charcoal/75 leading-relaxed">{m.desc}</p>
+                </div>
+                <div className="h-1 bg-natural-border rounded-full w-2/3 mt-3 overflow-hidden">
+                  <div className="h-full bg-natural-green w-3/4 rounded-full" />
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

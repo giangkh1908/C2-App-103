@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bé Học Toán AI — Task Board</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 20px;
+        }
+        h1 { font-size: 1.6rem; margin-bottom: 4px; color: #0f172a; }
+        .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 20px; }
+
+        /* Team info */
+        .team-bar {
+            display: flex; gap: 20px; margin-bottom: 16px;
+            background: white; padding: 12px 16px; border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            flex-wrap: wrap; align-items: center;
+        }
+        .team-member {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.85rem; font-weight: 600;
+        }
+        .team-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+        }
+        .dot-fe { background: #0ea5e9; }
+        .dot-be { background: #f97316; }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex; gap: 10px; margin-bottom: 16px;
+            flex-wrap: wrap; align-items: center;
+        }
+        .toolbar select, .toolbar input {
+            padding: 7px 12px; border: 1px solid #cbd5e1;
+            border-radius: 6px; font-size: 0.85rem; background: white; color: #334155;
+        }
+        .toolbar select:focus, .toolbar input:focus {
+            outline: none; border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+        }
+        .stats {
+            margin-left: auto; display: flex; gap: 16px;
+            font-size: 0.82rem; color: #64748b;
+        }
+        .stats span { font-weight: 700; color: #0f172a; }
+
+        /* Table */
+        .table-wrap {
+            background: white; border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+        thead th {
+            background: #f1f5f9; padding: 10px 12px; text-align: left;
+            font-size: 0.78rem; font-weight: 700; color: #475569;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; z-index: 10;
+            cursor: pointer; user-select: none; white-space: nowrap;
+        }
+        thead th:hover { background: #e2e8f0; }
+
+        /* Sprint group header */
+        .sprint-row td {
+            background: #ede9fe; padding: 8px 12px;
+            font-weight: 700; font-size: 0.85rem; color: #5b21b6;
+            border-bottom: 2px solid #c4b5fd;
+        }
+
+        tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
+        tbody tr:hover { background: #f8fafc; }
+        tbody td { padding: 8px 12px; font-size: 0.85rem; vertical-align: middle; }
+
+        /* Checkbox */
+        td:first-child { width: 36px; text-align: center; }
+        input[type="checkbox"] { width: 16px; height: 16px; accent-color: #6366f1; cursor: pointer; }
+
+        /* Task ID */
+        .task-id {
+            font-family: 'Consolas', monospace; font-weight: 700;
+            color: #6366f1; font-size: 0.8rem; white-space: nowrap;
+        }
+
+        .task-name { font-weight: 500; color: #1e293b; max-width: 300px; }
+
+        /* Role badge */
+        .role-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 4px;
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;
+        }
+        .role-fe { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+        .role-be { background: #fff7ed; color: #c2410c; border: 1px solid #fdba74; }
+        .role-both { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+
+        /* Selects in table */
+        td select {
+            padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 5px;
+            font-size: 0.82rem; background: white; cursor: pointer; min-width: 100px;
+        }
+        td select:focus { outline: none; border-color: #6366f1; }
+
+        /* Priority */
+        .priority { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; }
+        .p0 { background: #fee2e2; color: #dc2626; }
+        .p1 { background: #fef9c3; color: #a16207; }
+
+        .estimate { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; background: #f1f5f9; color: #475569; }
+
+        /* Notes */
+        td input[type="text"] {
+            width: 100%; padding: 4px 8px; border: 1px solid transparent;
+            border-radius: 4px; font-size: 0.82rem; background: transparent;
+        }
+        td input[type="text"]:hover { border-color: #e2e8f0; }
+        td input[type="text"]:focus { outline: none; border-color: #6366f1; background: white; }
+
+        /* Row done */
+        tr.row-done { opacity: 0.5; }
+        tr.row-done .task-name { text-decoration: line-through; }
+
+        .btn {
+            padding: 7px 16px; border: 1px solid #cbd5e1; border-radius: 6px;
+            font-size: 0.82rem; background: white; color: #334155; cursor: pointer; font-weight: 600;
+        }
+        .btn:hover { background: #f1f5f9; }
+        .btn-primary { background: #6366f1; color: white; border-color: #6366f1; }
+        .btn-primary:hover { background: #4f46e5; }
+
+        /* Share modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white; border-radius: 12px; padding: 24px; max-width: 480px; width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+        }
+        .modal h3 { margin-bottom: 12px; color: #0f172a; }
+        .modal .qr-wrap {
+            margin: 16px auto; padding: 12px; background: white;
+            border: 2px solid #e2e8f0; border-radius: 8px; display: inline-block;
+        }
+        .modal .link-box {
+            width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+            font-size: 0.8rem; color: #475569; margin: 12px 0; word-break: break-all;
+            background: #f8fafc; text-align: left; max-height: 80px; overflow-y: auto;
+        }
+        .modal .btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+        .modal .close-btn {
+            position: absolute; top: 12px; right: 16px; background: none; border: none;
+            font-size: 1.4rem; cursor: pointer; color: #94a3b8;
+        }
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: #0f172a; color: white; padding: 10px 20px; border-radius: 8px;
+            font-size: 0.85rem; z-index: 200; opacity: 0; transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        footer { text-align: center; margin-top: 24px; color: #94a3b8; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+
+<h1>📐 Bé Học Toán AI — Task Sheet</h1>
+<p class="subtitle">Quản lý công việc dự án • 3 Sprint • 39 Tasks</p>
+
+<!-- Team info -->
+<div class="team-bar">
+    <strong style="color:#475569;font-size:0.82rem;">👥 Nhóm:</strong>
+    <div class="team-member"><div class="team-dot dot-fe"></div> Giang — Frontend</div>
+    <div class="team-member"><div class="team-dot dot-be"></div> Bảo — Backend</div>
+    <div class="team-member"><div class="team-dot dot-be"></div> Miền — Backend</div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+    <select id="filterSprint" onchange="filterRows()">
+        <option value="all">Tất cả Sprint</option>
+        <option value="1">Sprint 1</option>
+        <option value="2">Sprint 2</option>
+        <option value="3">Sprint 3</option>
+    </select>
+    <select id="filterRole" onchange="filterRows()">
+        <option value="all">Tất cả vai trò</option>
+        <option value="FE">🎨 Frontend</option>
+        <option value="BE">⚙️ Backend</option>
+        <option value="Both">🔗 Cả hai</option>
+    </select>
+    <select id="filterAssignee" onchange="filterRows()">
+        <option value="all">Tất cả người</option>
+        <option value="Giang">Giang</option>
+        <option value="Bảo">Bảo</option>
+        <option value="Miền">Miền</option>
+        <option value="">Chưa giao</option>
+    </select>
+    <select id="filterStatus" onchange="filterRows()">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="todo">📋 Todo</option>
+        <option value="progress">🔨 Đang làm</option>
+        <option value="done">✅ Hoàn thành</option>
+        <option value="blocked">🚫 Blocked</option>
+    </select>
+    <select id="filterPriority" onchange="filterRows()">
+        <option value="all">Tất cả ưu tiên</option>
+        <option value="P0">P0 — Bắt buộc</option>
+        <option value="P1">P1 — Nên có</option>
+    </select>
+    <input type="text" id="searchBox" placeholder="🔍 Tìm task..." oninput="filterRows()" style="width:180px;">
+    <div class="stats">
+        <div>Tổng: <span id="statTotal">39</span></div>
+        <div>Done: <span id="statDone">0</span></div>
+        <div>Còn lại: <span id="statLeft">39</span></div>
+    </div>
+    <button class="btn" onclick="exportCSV()">📥 CSV</button>
+    <button class="btn" onclick="importJSON()">📂 Import</button>
+    <button class="btn btn-primary" onclick="shareLink()">🔗 Share Link</button>
+    <button class="btn btn-primary" onclick="saveData()">💾 Lưu</button>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+<table id="taskTable">
+<thead>
+    <tr>
+        <th style="width:36px">✓</th>
+        <th data-col="id">ID</th>
+        <th data-col="task">Task</th>
+        <th data-col="sprint">Sprint</th>
+        <th data-col="role">Vai trò</th>
+        <th data-col="assignee">Người làm</th>
+        <th data-col="status">Trạng thái</th>
+        <th data-col="priority">Ưu tiên</th>
+        <th data-col="estimate">Ước lượng</th>
+        <th data-col="deps">Depends on</th>
+        <th data-col="done">Done Criteria</th>
+        <th data-col="notes">Ghi chú</th>
+    </tr>
+</thead>
+<tbody id="taskBody">
+</tbody>
+</table>
+</div>
+
+<!-- Share Modal -->
+<div class="modal-overlay" id="shareModal">
+    <div class="modal" style="position:relative">
+        <button class="close-btn" onclick="closeModal()">✕</button>
+        <h3>🔗 Chia sẻ cho nhóm</h3>
+        <p style="font-size:0.85rem;color:#64748b;margin-bottom:8px">Gửi link hoặc QR cho Bảo & Miền — ai mở cũng thấy y chang</p>
+        <div class="qr-wrap">
+            <canvas id="qrCanvas"></canvas>
+        </div>
+        <div class="link-box" id="shareLinkBox"></div>
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="copyShareLink()">📋 Copy Link</button>
+            <button class="btn" onclick="downloadQR()">📷 Lưu QR</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Hidden file input for import -->
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<footer>Bé Học Toán AI — AI20K Build Cohort 2 • Dữ liệu tự lưu vào localStorage • Share link để đồng bộ nhóm</footer>
+
+<script>
+const PEOPLE = ['Giang', 'Bảo', 'Miền'];
+
+const TASKS = [
+    // ==================== SPRINT 1 ====================
+    { id: "T1-01", task: "Dựng monorepo skeleton: apps/web, apps/api, packages/shared", sprint: 1, role: "Both", priority: "P0", estimate: "M", deps: "—" },
+    { id: "T1-02", task: "Shared contracts: Topic enum, Visual type enum, Lesson/Progress shape", sprint: 1, role: "Both", priority: "P0", estimate: "L", deps: "T1-01" },
+    { id: "T1-03", task: "Thiết lập environment variables cho FE, BE, MongoDB, AI provider", sprint: 1, role: "BE", priority: "P0", estimate: "M", deps: "T1-01" },
+    { id: "T1-04", task: "FE gọi thử BE bằng base URL cấu hình được", sprint: 1, role: "FE", priority: "P0", estimate: "M", deps: "T1-01, T1-03" },
+    { id: "T1-05", task: "MongoDB connection và cấu trúc collection cơ bản", sprint: 1, role: "BE", priority: "P0", estimate: "M", deps: "T1-03" },
+    { id: "T1-06", task: "Route POST /auth/register theo contract", sprint: 1, role: "BE", priority: "P0", estimate: "M", deps: "T1-02, T1-05" },
+    { id: "T1-07", task: "UI form đăng ký đơn giản cho học sinh", sprint: 1, role: "FE", priority: "P0", estimate: "M", deps: "T1-04, T1-06" },
+    { id: "T1-08", task: "Route POST /auth/login và session/token response", sprint: 1, role: "BE", priority: "P0", estimate: "M", deps: "T1-06" },
+    { id: "T1-09", task: "UI đăng nhập và lưu session/token ở mức MVP", sprint: 1, role: "FE", priority: "P0", estimate: "M", deps: "T1-08" },
+    { id: "T1-10", task: "Flow chọn hoặc xác nhận grade sau khi đăng nhập", sprint: 1, role: "FE", priority: "P0", estimate: "M", deps: "T1-09" },
+    { id: "T1-11", task: "Route GET /topics chỉ trả 4 topic MVP", sprint: 1, role: "BE", priority: "P0", estimate: "S", deps: "T1-02" },
+    { id: "T1-12", task: "Màn hình chọn chủ đề lấy từ GET /topics", sprint: 1, role: "FE", priority: "P0", estimate: "S", deps: "T1-10, T1-11" },
+    { id: "T1-13", task: "Walkthrough tích hợp Sprint 1", sprint: 1, role: "Both", priority: "P0", estimate: "M", deps: "T1-07, T1-09, T1-12" },
+
+    // ==================== SPRINT 2 ====================
+    { id: "T2-01", task: "AI provider adapter — provider-agnostic", sprint: 2, role: "BE", priority: "P0", estimate: "L", deps: "T1-02, T1-03" },
+    { id: "T2-02", task: "Lesson schema validation cho response AI", sprint: 2, role: "BE", priority: "P0", estimate: "L", deps: "T1-02, T2-01" },
+    { id: "T2-03", task: "Route POST /lessons/generate theo contract MVP", sprint: 2, role: "BE", priority: "P0", estimate: "L", deps: "T2-01, T2-02, T1-08" },
+    { id: "T2-04", task: "Logging và fallback cho lỗi lesson generation", sprint: 2, role: "BE", priority: "P1", estimate: "M", deps: "T2-03" },
+    { id: "T2-05", task: "UI nhập prompt hoặc chọn bài học gợi ý → gọi /lessons/generate", sprint: 2, role: "FE", priority: "P0", estimate: "M", deps: "T1-12, T2-03" },
+    { id: "T2-06", task: "Visual Card renderer từ lesson JSON", sprint: 2, role: "FE", priority: "P0", estimate: "L", deps: "T1-02, T2-03" },
+    { id: "T2-07", task: "Visual/Simulation cho equal_groups (nhân) & sharing (chia)", sprint: 2, role: "FE", priority: "P0", estimate: "M", deps: "T2-06" },
+    { id: "T2-08", task: "Visual/Simulation cho fraction_pizza (phân số)", sprint: 2, role: "FE", priority: "P0", estimate: "M", deps: "T2-06" },
+    { id: "T2-09", task: "Visual/Simulation cho perimeter_path & area_grid", sprint: 2, role: "FE", priority: "P0", estimate: "L", deps: "T2-06" },
+    { id: "T2-10", task: "Route POST /practice/submit", sprint: 2, role: "BE", priority: "P0", estimate: "M", deps: "T1-02, T2-03" },
+    { id: "T2-11", task: "Persistence cho progress và learning_sessions", sprint: 2, role: "BE", priority: "P0", estimate: "M", deps: "T1-05, T2-03, T2-10" },
+    { id: "T2-12", task: "UI nộp đáp án và nhận feedback đúng/sai", sprint: 2, role: "FE", priority: "P0", estimate: "M", deps: "T2-06, T2-10" },
+    { id: "T2-13", task: "Kết nối flow retry/học tiếp với update progress", sprint: 2, role: "Both", priority: "P0", estimate: "M", deps: "T2-11, T2-12" },
+    { id: "T2-14", task: "Walkthrough tích hợp Sprint 2 — full learning flow", sprint: 2, role: "Both", priority: "P0", estimate: "M", deps: "T2-03, T2-09, T2-13" },
+
+    // ==================== SPRINT 3 ====================
+    { id: "T3-01", task: "Siết guardrail theo grade và topic ở backend", sprint: 3, role: "BE", priority: "P0", estimate: "M", deps: "T2-03, T2-10" },
+    { id: "T3-02", task: "Error states và retry states cho lesson & practice", sprint: 3, role: "FE", priority: "P0", estimate: "M", deps: "T2-04, T2-12" },
+    { id: "T3-03", task: "Tích hợp TTS trigger từ tts_text", sprint: 3, role: "FE", priority: "P1", estimate: "M", deps: "T2-06" },
+    { id: "T3-04", task: "Hiển thị progress cơ bản ở home/result screen", sprint: 3, role: "FE", priority: "P1", estimate: "S", deps: "T2-11" },
+    { id: "T3-05", task: "Polish UX cho Visual Card & Mini Simulation", sprint: 3, role: "FE", priority: "P1", estimate: "M", deps: "T2-09" },
+    { id: "T3-06", task: "Chuẩn hóa env/config cho deploy FE/BE", sprint: 3, role: "Both", priority: "P0", estimate: "M", deps: "T1-03, T2-14" },
+    { id: "T3-07", task: "Deploy frontend lên Vercel", sprint: 3, role: "Both", priority: "P0", estimate: "M", deps: "T3-06, T3-02" },
+    { id: "T3-08", task: "Deploy backend lên VPS (reverse proxy, SSL, process runtime)", sprint: 3, role: "BE", priority: "P0", estimate: "L", deps: "T3-06, T3-01" },
+    { id: "T3-09", task: "Cấu hình networking và CORS giữa Vercel và VPS", sprint: 3, role: "BE", priority: "P0", estimate: "M", deps: "T3-07, T3-08" },
+    { id: "T3-10", task: "Smoke test full production-like flow", sprint: 3, role: "Both", priority: "P0", estimate: "M", deps: "T3-07, T3-09" },
+    { id: "T3-11", task: "Chuẩn bị account demo, prompt demo, fallback scenario", sprint: 3, role: "Both", priority: "P1", estimate: "M", deps: "T3-10" },
+    { id: "T3-12", task: "Rà cuối phạm vi MVP — loại bỏ feature creep", sprint: 3, role: "Both", priority: "P0", estimate: "S", deps: "T3-05, T3-10" },
+];
+
+const DONE_CRITERIA = {
+    "T1-01": "Cấu trúc thư mục đúng ADR 0006; FE, BE và shared import/khởi động được",
+    "T1-02": "Shared package xuất được enums/shapes khớp spec/api_contracts.md",
+    "T1-03": "Có danh sách env cần thiết; FE và BE đọc được config từ environment",
+    "T1-04": "FE gửi được request thử tới BE và hiển thị trạng thái thành công/thất bại",
+    "T1-05": "Backend kết nối được MongoDB; chuẩn bị users, learning_sessions, progress",
+    "T1-06": "Route nhận đúng payload, tạo user và trả response đúng shape",
+    "T1-07": "UI cho nhập display_name, username, password, grade; submit thành công",
+    "T1-08": "Login thành công; response có user_id, grade, role, token",
+    "T1-09": "Học sinh đăng nhập được và UI giữ trạng thái vào app",
+    "T1-10": "UI cho chọn/xác nhận lớp; grade được lưu vào state hồ sơ",
+    "T1-11": "Route trả đúng 4 topic với label phù hợp",
+    "T1-12": "UI hiển thị đúng 4 chủ đề và điều hướng sang bước học tiếp theo",
+    "T1-13": "Walkthrough pass flow register/login/grade/topic",
+    "T2-01": "Backend có abstraction gọi AI; chạy được với một provider",
+    "T2-02": "Validate các field bắt buộc; chặn sai topic/visual_type",
+    "T2-03": "Route nhận user_id, grade, topic, prompt; trả lesson JSON đúng shape",
+    "T2-04": "Khi AI/provider lỗi, trả trạng thái lỗi có kiểm soát và log đủ debug",
+    "T2-05": "UI gửi được request lesson generation và xử lý loading state",
+    "T2-06": "Render đúng title, explanation, example, visual, practice_question",
+    "T2-07": "multiplication và division có visual/simulation hoạt động",
+    "T2-08": "fraction_basic có visual và simulation hoạt động",
+    "T2-09": "perimeter_area_basic có 2 kiểu visual chính hoạt động được",
+    "T2-10": "Route trả is_correct, short_explanation; khi sai có retry_hint",
+    "T2-11": "Lưu được lesson snapshot và progress tối thiểu theo spec",
+    "T2-12": "Học sinh chọn được đáp án, nộp được và thấy feedback ngay",
+    "T2-13": "Progress được cập nhật và UI chuyển retry/next step",
+    "T2-14": "Flow topic → lesson → visual → submit → progress chạy được 4 domain",
+    "T3-01": "Lesson/practice chặn/điều chỉnh nội dung lệch scope domain hoặc grade",
+    "T3-02": "UI có state rõ cho loading, network error, provider error, retry",
+    "T3-03": "UI có action nghe nội dung; dùng đúng tts_text; không voice input",
+    "T3-04": "UI đọc được topics_learned, correct/incorrect_answers, last_learned_at",
+    "T3-05": "UI giảm ma sát: ít chữ, nút lớn, một màn hình một nhiệm vụ",
+    "T3-06": "Danh sách env cuối cùng cho Vercel, VPS, MongoDB, AI, base URLs",
+    "T3-07": "FE online trên Vercel, trỏ đúng backend URL, route chính hoạt động",
+    "T3-08": "Backend online trên VPS; HTTPS hoạt động; process restart cơ bản",
+    "T3-09": "FE gọi BE thành công từ production; không lỗi CORS/blocking",
+    "T3-10": "Pass flow register → login → grade → topic → lesson → sim → submit",
+    "T3-11": "Script demo ngắn, account demo sẵn, phương án khi AI chậm/lỗi",
+    "T3-12": "Không còn parent/teacher/admin, voice input, AI image, gamification",
+};
+
+function loadState() {
+    try { return JSON.parse(localStorage.getItem('mathbuddy_tasks') || '{}'); } catch { return {}; }
+}
+function saveState(s) { localStorage.setItem('mathbuddy_tasks', JSON.stringify(s)); }
+
+let state = loadState();
+function get(taskId, key, fallback) { return state[taskId]?.[key] ?? fallback ?? ''; }
+
+function renderTable() {
+    const tbody = document.getElementById('taskBody');
+    tbody.innerHTML = '';
+    let curSprint = 0;
+    const goals = { 1: 'Monorepo · Auth · Grade · Topic · MongoDB', 2: 'AI Lesson · Visual Card · Simulation · Practice · Progress', 3: 'Guardrail · UX Polish · TTS · Error States · Deploy' };
+
+    TASKS.forEach(t => {
+        if (t.sprint !== curSprint) {
+            curSprint = t.sprint;
+            const tr = document.createElement('tr');
+            tr.className = 'sprint-row';
+            tr.innerHTML = `<td colspan="12">🏃 Sprint ${t.sprint} — ${goals[t.sprint]}</td>`;
+            tbody.appendChild(tr);
+        }
+
+        const status = get(t.id, 'status', 'todo');
+        const assignee = get(t.id, 'assignee', '');
+        const notes = get(t.id, 'notes', '');
+        const done = status === 'done';
+
+        const roleLabel = t.role === 'FE' ? '🎨 Frontend' : t.role === 'BE' ? '⚙️ Backend' : '🔗 Cả hai';
+        const roleClass = t.role === 'FE' ? 'role-fe' : t.role === 'BE' ? 'role-be' : 'role-both';
+
+        const tr = document.createElement('tr');
+        tr.className = done ? 'row-done' : '';
+        tr.dataset.sprint = t.sprint;
+        tr.dataset.role = t.role;
+        tr.dataset.assignee = assignee;
+        tr.dataset.status = status;
+        tr.dataset.priority = t.priority;
+        tr.dataset.id = t.id;
+        tr.dataset.task = t.task;
+
+        const peopleOpts = PEOPLE.map(p =>
+            `<option value="${p}" ${assignee===p ? 'selected' : ''}>${p}</option>`
+        ).join('');
+
+        tr.innerHTML = `
+            <td><input type="checkbox" ${done ? 'checked' : ''} onchange="toggleDone('${t.id}', this.checked)"></td>
+            <td><span class="task-id">${t.id}</span></td>
+            <td class="task-name">${t.task}</td>
+            <td>Sprint ${t.sprint}</td>
+            <td><span class="role-badge ${roleClass}">${roleLabel}</span></td>
+            <td>
+                <select onchange="setField('${t.id}','assignee',this.value)">
+                    <option value="">— Chọn —</option>
+                    ${peopleOpts}
+                </select>
+            </td>
+            <td>
+                <select onchange="setField('${t.id}','status',this.value)">
+                    <option value="todo" ${status==='todo'?'selected':''}>📋 Todo</option>
+                    <option value="progress" ${status==='progress'?'selected':''}>🔨 Đang làm</option>
+                    <option value="done" ${status==='done'?'selected':''}>✅ Done</option>
+                    <option value="blocked" ${status==='blocked'?'selected':''}>🚫 Blocked</option>
+                </select>
+            </td>
+            <td><span class="priority ${t.priority.toLowerCase()}">${t.priority}</span></td>
+            <td><span class="estimate">${t.estimate}</span></td>
+            <td style="font-size:0.78rem;color:#64748b">${t.deps}</td>
+            <td style="font-size:0.75rem;color:#94a3b8;max-width:260px">${DONE_CRITERIA[t.id]||''}</td>
+            <td><input type="text" value="${notes}" placeholder="..." onchange="setField('${t.id}','notes',this.value)"></td>
+        `;
+        tbody.appendChild(tr);
+    });
+    updateStats();
+}
+
+function toggleDone(id, checked) {
+    if (!state[id]) state[id] = {};
+    state[id].status = checked ? 'done' : 'todo';
+    saveState(state); renderTable();
+}
+function setField(id, key, val) {
+    if (!state[id]) state[id] = {};
+    state[id][key] = val;
+    saveState(state); renderTable();
+}
+function updateStats() {
+    const rows = document.querySelectorAll('#taskBody tr:not(.sprint-row)');
+    let total = 0, done = 0;
+    rows.forEach(r => {
+        if (r.style.display !== 'none') {
+            total++;
+            if (r.querySelector('input[type="checkbox"]')?.checked) done++;
+        }
+    });
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statDone').textContent = done;
+    document.getElementById('statLeft').textContent = total - done;
+}
+function filterRows() {
+    const sprint = document.getElementById('filterSprint').value;
+    const role = document.getElementById('filterRole').value;
+    const assignee = document.getElementById('filterAssignee').value;
+    const status = document.getElementById('filterStatus').value;
+    const priority = document.getElementById('filterPriority').value;
+    const search = document.getElementById('searchBox').value.toLowerCase();
+
+    document.querySelectorAll('#taskBody tr:not(.sprint-row)').forEach(r => {
+        let show = true;
+        if (sprint !== 'all' && r.dataset.sprint !== sprint) show = false;
+        if (role !== 'all' && r.dataset.role !== role) show = false;
+        if (assignee !== 'all' && r.dataset.assignee !== assignee) show = false;
+        if (status !== 'all' && r.dataset.status !== status) show = false;
+        if (priority !== 'all' && r.dataset.priority !== priority) show = false;
+        if (search && !r.dataset.task.toLowerCase().includes(search) && !r.dataset.id.toLowerCase().includes(search)) show = false;
+        r.style.display = show ? '' : 'none';
+    });
+    document.querySelectorAll('.sprint-row').forEach(sr => {
+        let next = sr.nextElementSibling, has = false;
+        while (next && !next.classList.contains('sprint-row')) {
+            if (next.style.display !== 'none') has = true;
+            next = next.nextElementSibling;
+        }
+        sr.style.display = has ? '' : 'none';
+    });
+    updateStats();
+}
+function saveData() { saveState(state); alert('✅ Đã lưu!'); }
+function exportCSV() {
+    let csv = 'ID,Task,Sprint,Vai trò,Người làm,Trạng thái,Ưu tiên,Ước lượng,Depends on,Ghi chú\n';
+    TASKS.forEach(t => {
+        const s = state[t.id] || {};
+        const assignee = s.assignee || '';
+        const st = s.status || 'todo';
+        const n = (s.notes || '').replace(/"/g, '""');
+        csv += `"${t.id}","${t.task}",${t.sprint},"${t.role}","${assignee}","${st}","${t.priority}","${t.estimate}","${t.deps}","${n}"\n`;
+    });
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'mathbuddy_tasks.csv'; a.click();
+}
+
+// ============ SHARE LINK ============
+function encodeState() {
+    // Compact: only encode non-default values
+    const compact = {};
+    Object.entries(state).forEach(([id, fields]) => {
+        const f = {};
+        if (fields.assignee) f.a = fields.assignee;
+        if (fields.status && fields.status !== 'todo') f.s = fields.status;
+        if (fields.notes) f.n = fields.notes;
+        if (Object.keys(f).length) compact[id] = f;
+    });
+    return btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+}
+
+function decodeState(encoded) {
+    try {
+        const compact = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+        const result = {};
+        Object.entries(compact).forEach(([id, f]) => {
+            result[id] = {};
+            if (f.a) result[id].assignee = f.a;
+            if (f.s) result[id].status = f.s;
+            if (f.n) result[id].notes = f.n;
+        });
+        return result;
+    } catch { return null; }
+}
+
+function shareLink() {
+    const encoded = encodeState();
+    const url = window.location.origin + window.location.pathname + '#state=' + encoded;
+    document.getElementById('shareLinkBox').textContent = url;
+
+    // Generate QR
+    generateQR(url);
+
+    document.getElementById('shareModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('shareModal').classList.remove('active');
+}
+
+function copyShareLink() {
+    const url = document.getElementById('shareLinkBox').textContent;
+    navigator.clipboard.writeText(url).then(() => showToast('✅ Đã copy link!'));
+}
+
+function downloadQR() {
+    const canvas = document.getElementById('qrCanvas');
+    const a = document.createElement('a');
+    a.download = 'mathbuddy_tasks_qr.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ============ QR CODE GENERATOR (no dependencies) ============
+function generateQR(text) {
+    const canvas = document.getElementById('qrCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Simple QR using API as fallback
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+    };
+    img.onerror = () => {
+        // Fallback: draw text as placeholder
+        canvas.width = 300; canvas.height = 100;
+        ctx.fillStyle = '#f1f5f9'; ctx.fillRect(0, 0, 300, 100);
+        ctx.fillStyle = '#475569'; ctx.font = '12px sans-serif';
+        ctx.fillText('QR không khả dụng — copy link bên dưới', 20, 50);
+    };
+    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(text);
+}
+
+// ============ IMPORT JSON ============
+function importJSON() {
+    document.getElementById('fileInput').click();
+}
+
+function handleImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const imported = JSON.parse(e.target.result);
+            state = imported;
+            saveState(state);
+            renderTable();
+            showToast('✅ Đã import ' + Object.keys(imported).length + ' task!');
+        } catch {
+            showToast('❌ File JSON không hợp lệ');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+// ============ LOAD FROM URL HASH ============
+function loadFromHash() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#state=')) {
+        const encoded = hash.substring(7);
+        const decoded = decodeState(encoded);
+        if (decoded && Object.keys(decoded).length > 0) {
+            // Merge with existing local state (URL takes priority)
+            state = { ...state, ...decoded };
+            saveState(state);
+            showToast('📥 Đã tải dữ liệu từ link!');
+            // Clean URL
+            history.replaceState(null, '', window.location.pathname);
+        }
+    }
+}
+
+// Click outside modal to close
+document.getElementById('shareModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('shareModal')) closeModal();
+});
+
+// Init: load from hash first, then render
+loadFromHash();
+renderTable();
+</script>
+</body>
+</html>

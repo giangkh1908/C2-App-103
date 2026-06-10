@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -28,9 +29,13 @@ export default function Navbar() {
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => scrollTo("hero")}
         >
-          <div className="h-9 w-9 rounded-xl bg-natural-green flex items-center justify-center text-white font-serif font-black shadow-md shadow-natural-green/10">
-            T
-          </div>
+          <Image
+            src="/logo.png"
+            alt="Toán Trực Quan AI logo"
+            width={36}
+            height={36}
+            className="rounded-full shadow-md shadow-natural-green/10"
+          />
           <div>
             <span className="font-serif italic font-bold text-lg text-natural-dark tracking-tight block leading-none">
               Toán Trực Quan AI

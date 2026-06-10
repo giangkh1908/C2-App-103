@@ -54,12 +54,21 @@ export const metadata: Metadata = {
     title: "Toán Trực Quan AI — Hiểu sâu bản chất Toán bằng mắt nhìn, chạm thử",
     description:
       "AI không làm bài thay học sinh. AI giúp học sinh hiểu bản chất khái niệm Toán qua Visual Card và Mini Simulation.",
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Toán Trực Quan AI logo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Toán Trực Quan AI — Gia sư Toán trực quan",
     description:
       "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh và thao tác trực quan.",
+    images: ["/logo.png"],
   },
   robots: {
     index: true,

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -61,12 +62,20 @@ export default function Navbar() {
           </button>
         </nav>
 
-        <button
-          onClick={() => scrollTo("hoc-thu")}
-          className="rounded-full bg-natural-green hover:bg-natural-green-hover transition-all text-white font-bold text-xs py-2.5 px-5 cursor-pointer shadow-md shadow-natural-green/5 active:scale-97"
-        >
-          Học thử ngay
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="text-[13px] font-bold text-natural-charcoal hover:text-natural-green transition-colors"
+          >
+            Đăng nhập
+          </Link>
+          <button
+            onClick={() => scrollTo("hoc-thu")}
+            className="rounded-full bg-natural-green hover:bg-natural-green-hover transition-all text-white font-bold text-xs py-2.5 px-5 cursor-pointer shadow-md shadow-natural-green/5 active:scale-97"
+          >
+            Học thử ngay
+          </button>
+        </div>
       </div>
     </header>
   );

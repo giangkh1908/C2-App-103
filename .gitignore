@@ -36,3 +36,7 @@ Thumbs.db
 
 # AI logs — tracked structure, ignored content
 .ai-log/*.jsonl
+
+.ai-log/
+
+.ai-log/

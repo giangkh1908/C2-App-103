@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/shared/ScrollReveal";
+import { getAudioContext } from "@/lib/audio";
 
 // ── Types ──
 type Domain = "multiplication" | "division" | "fraction_basic" | "perimeter_area_basic";
@@ -10,8 +11,7 @@ type Domain = "multiplication" | "division" | "fraction_basic" | "perimeter_area
 // ── Sound Effects ──
 function playSound(type: "pop" | "crunch" | "correct" | "synth") {
   try {
-    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    const ctx = new AudioCtx();
+    const ctx = getAudioContext();
 
     if (type === "pop") {
       const osc = ctx.createOscillator();
@@ -80,26 +80,35 @@ export default function Sandbox() {
   const [pizzaEaten, setPizzaEaten] = useState([true, true, true, false]);
   const [gridTiles, setGridTiles] = useState<boolean[]>(Array(12).fill(true));
 
-  // TTS
+  // TTS — dùng ref để tránh stale closure và re-create không cần thiết
   const [speakingText, setSpeakingText] = useState<string | null>(null);
+  const speakingTextRef = useRef<string | null>(null);
 
-  const speakText = useCallback(
-    (text: string) => {
-      if (!window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      if (speakingText === text) {
-        setSpeakingText(null);
-        return;
-      }
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = "vi-VN";
-      utter.rate = 0.95;
-      utter.onend = () => setSpeakingText(null);
-      setSpeakingText(text);
-      window.speechSynthesis.speak(utter);
-    },
-    [speakingText]
-  );
+  useEffect(() => {
+    speakingTextRef.current = speakingText;
+  }, [speakingText]);
+
+  const speakText = useCallback((text: string) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    if (speakingTextRef.current === text) {
+      setSpeakingText(null);
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "vi-VN";
+    utter.rate = 0.95;
+    utter.onend = () => setSpeakingText(null);
+    setSpeakingText(text);
+    window.speechSynthesis.speak(utter);
+  }, []);
+
+  // Cleanup TTS khi unmount
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
 
   // Lesson data from translations
   const LESSONS: Record<Domain, { title: string; grade: number; shortExplanation: string; lifeExample: string; questionText: string; options: string[]; correctAnswerIndex: number; successMessage: string; failMessage: string }> = {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/shared/ScrollReveal";
+import { getAudioContext } from "@/lib/audio";
 
 export default function Hero() {
   const t = useTranslations("hero");
@@ -11,7 +12,7 @@ export default function Hero() {
   const playCrunch = () => {
     setCrunched(true);
     try {
-      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const ctx = getAudioContext();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);

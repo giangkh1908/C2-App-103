@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     template: "%s | Toán Trực Quan AI",
   },
   description:
-    "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh, thao tác trực quan và phản hồi tức thì. Học phép nhân, phép chia, phân số, chu vi & diện tích bằng Visual Card và Mini Simulation.",
+    "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh, thao tác trực quan và phản hồi tức thì.",
   keywords: [
     "học toán tiểu học",
     "AI gia sư toán",
@@ -83,8 +83,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="vi"
       className={`${inter.variable} ${spaceGrotesk.variable} ${lora.variable} ${playfair.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <script

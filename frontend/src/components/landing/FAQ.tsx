@@ -1,29 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
-const faqs = [
-  {
-    q: "Bé học gia sư AI trực quan này có sợ quá ỷ lại và lười làm bài không?",
-    a: "Tuyệt đối KHÔNG ba mẹ nhé! Hệ thống không giải giùm bài hay điền hộ đáp án. Nhiệm vụ chính của AI là vẽ hình ảnh hóa bản chất toán học từ đĩa kẹo, chiếc bánh pizza để kích thích tư duy, sau đó bé vẫn phải tự lập suy luận đặt bút làm trắc nghiệm.",
-  },
-  {
-    q: "Chương trình trực quan này có bám sát đúng chuẩn của Bộ Giáo Dục VN không?",
-    a: "Có, lộ trình được tinh chỉnh bám sát theo chuẩn chương trình Giáo dục Phổ thông mới. Toàn bộ các mốc học thuật lớp 1-5 từ bảng tính cộng dồn, phép nhân gộp nhóm, phân số hay chu vi diện tích đều tương thích 100% với bài học sách giáo khoa hiện hành.",
-  },
-  {
-    q: "Lợi ích lớn nhất của việc nghe giọng kể truyền cảm hứng (Loa phát)?",
-    a: "Đối với các bé lớp 1 và lớp 2, kỹ năng đọc hiểu văn bản chữ nhiều hẵng còn bỡ ngỡ. Có loa đọc bằng tiếng Việt sẽ ân cần dắt lối bé tự lập bấm nghe giảng bài mà không cảm thấy cô đơn hay cần ba mẹ kè kè bên cạnh.",
-  },
-  {
-    q: "Làm thế nào để sử dụng thử tính năng này đạt hiệu quả cao nhất?",
-    a: "Hãy để bé tự nắm quyền kiểm soát! Ba mẹ khích lệ con tự click chuột nếm trải miếng bánh pizza dâu, tự chạm nệm lót đất gieo hạt mầm mọc cây 🌱 lên màn hình. Động chạm cơ học xúc giác luôn khêu gợi vết hằn tư duy tối ưu trong trí tuệ trẻ.",
-  },
-];
-
 export default function FAQ() {
+  const t = useTranslations("faq");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  const faqs = [
+    { q: t("q1"), a: t("a1") },
+    { q: t("q2"), a: t("a2") },
+    { q: t("q3"), a: t("a3") },
+    { q: t("q4"), a: t("a4") },
+  ];
 
   return (
     <section id="cau-hoi" className="py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-natural-border">
@@ -31,11 +21,10 @@ export default function FAQ() {
         <ScrollReveal>
           <div className="text-center mb-11">
             <h2 className="text-3xl font-serif italic text-natural-dark">
-              Gỡ rối khúc mắc của Ba Mẹ
+              {t("title")}
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-500">
-              Giải đáp nhanh chóng những bận tâm phổ biến nhất khi ứng dụng mô hình gia sư tương tác
-              thông minh cho các bé.
+              {t("description")}
             </p>
           </div>
         </ScrollReveal>

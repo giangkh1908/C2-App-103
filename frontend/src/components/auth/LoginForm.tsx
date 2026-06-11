@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import Input from "@/components/ui/Input";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function LoginForm() {
+  const t = useTranslations("auth.login");
+  const tAuth = useTranslations("auth");
+  const tErr = useTranslations("auth.errors");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -16,12 +21,12 @@ export default function LoginForm() {
   const validate = () => {
     const newErrors: typeof errors = {};
     if (!email.trim()) {
-      newErrors.email = "Vui lòng nhập email";
+      newErrors.email = tErr("emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Email không hợp lệ";
+      newErrors.email = tErr("emailInvalid");
     }
     if (!password) {
-      newErrors.password = "Vui lòng nhập mật khẩu";
+      newErrors.password = tErr("passwordRequired");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -39,10 +44,22 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <GoogleSignInButton />
+
+      {/* Divider */}
+      <div className="relative flex items-center justify-center py-1">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-natural-border" />
+        </div>
+        <span className="relative bg-white px-4 text-[12px] text-natural-charcoal">
+          {tAuth("orDivider")}
+        </span>
+      </div>
+
       <Input
-        label="Email"
+        label={t("email")}
         type="email"
-        placeholder="ban@email.com"
+        placeholder={t("emailPlaceholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         error={errors.email}
@@ -50,8 +67,8 @@ export default function LoginForm() {
       />
 
       <PasswordInput
-        label="Mật khẩu"
-        placeholder="Nhập mật khẩu"
+        label={t("password")}
+        placeholder={t("passwordPlaceholder")}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         error={errors.password}
@@ -66,21 +83,21 @@ export default function LoginForm() {
             onChange={(e) => setRemember(e.target.checked)}
             className="w-4 h-4 rounded border-natural-border text-natural-green focus:ring-natural-green/20 cursor-pointer"
           />
-          <span className="text-[12px] text-natural-charcoal">Ghi nhớ đăng nhập</span>
+          <span className="text-[12px] text-natural-charcoal">{t("remember")}</span>
         </label>
         <Link href="#" className="text-[12px] font-medium text-natural-green hover:underline">
-          Quên mật khẩu?
+          {t("forgot")}
         </Link>
       </div>
 
       <Button type="submit" loading={loading} className="w-full">
-        Đăng nhập
+        {t("submit")}
       </Button>
 
       <p className="text-center text-[12px] text-natural-charcoal">
-        Chưa có tài khoản?{" "}
+        {t("noAccount")}{" "}
         <Link href="/register" className="font-bold text-natural-green hover:underline">
-          Đăng ký ngay
+          {t("registerLink")}
         </Link>
       </p>
     </form>

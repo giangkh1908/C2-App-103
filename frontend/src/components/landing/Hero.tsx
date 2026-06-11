@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
 export default function Hero() {
+  const t = useTranslations("hero");
   const [crunched, setCrunched] = useState(false);
 
   const playCrunch = () => {
@@ -47,31 +49,30 @@ export default function Hero() {
             <ScrollReveal>
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-natural-border text-natural-green rounded-full text-[10px] font-black uppercase tracking-wider mb-6 border border-natural-border">
                 <span className="h-2 w-2 rounded-full bg-natural-green animate-pulse" />
-                <span>AI gia sư trực quan sinh động</span>
+                <span>{t("badge")}</span>
               </span>
             </ScrollReveal>
 
             <ScrollReveal delay={100}>
               <h1 className="font-serif italic text-4xl sm:text-5xl lg:text-6xl leading-[1.1] text-natural-dark font-medium">
-                Hiểu sâu <span className="text-natural-orange font-semibold">bản chất Toán</span> <br />
-                bằng mắt nhìn, chạm thử 👋
+                {t("headline1")} <span className="text-natural-orange font-semibold">{t("headline2")}</span> <br />
+                {t("headline3")}
               </h1>
             </ScrollReveal>
 
             <ScrollReveal delay={200}>
               <p className="mt-6 text-base text-natural-charcoal leading-relaxed max-w-2xl opacity-90">
-                <strong className="text-natural-dark">AI không làm bài thay học sinh tiểu học.</strong>{" "}
-                Trẻ em không hề thiếu bài tập khô khan, mà thiếu cách học chân thực sát sao: ít chữ,
-                nhiều minh họa đếm đĩa kẹo dâu, chia lát pizza sinh động và giao diện kéo chạm tay.
+                <strong className="text-natural-dark">{t("descriptionBold")}</strong>{" "}
+                {t("description")}
               </p>
             </ScrollReveal>
 
             <ScrollReveal delay={300}>
               <div className="mt-6 space-y-3">
                 {[
-                  { icon: "🍓", text: "Ví dụ siêu gần gũi (Đĩa kẹo, Táo vườn, Pizza, Ô lót gạch)" },
-                  { icon: "🎮", text: "Mô phỏng trải nghiệm xúc giác giúp bé tự tay kéo số liệu nhảy kết quả" },
-                  { icon: "🔊", text: "Gia sư AI phát giọng nói Việt ngữ ân cần thấu đạt tâm lý của các bé" },
+                  { icon: "🍓", text: t("feature1") },
+                  { icon: "🎮", text: t("feature2") },
+                  { icon: "🔊", text: t("feature3") },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-natural-charcoal">
                     <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center border border-emerald-200 text-xs">
@@ -89,14 +90,14 @@ export default function Hero() {
                   onClick={() => scrollTo("hoc-thu")}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-natural-green hover:bg-natural-green-hover px-7 py-3.5 text-sm font-bold text-white shadow-md hover:shadow-lg transition-all cursor-pointer active:scale-97 shrink-0"
                 >
-                  <span>Chạm tay trải nghiệm thử</span>
+                  <span>{t("cta1")}</span>
                   <span aria-hidden="true">→</span>
                 </button>
                 <button
                   onClick={() => scrollTo("lo-trinh")}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-white border border-natural-border hover:bg-natural-bg px-7 py-3.5 text-sm font-bold text-natural-charcoal transition-all cursor-pointer active:scale-97"
                 >
-                  <span>Lộ trình Lớp 1 - 5</span>
+                  <span>{t("cta2")}</span>
                 </button>
               </div>
             </ScrollReveal>
@@ -114,13 +115,13 @@ export default function Hero() {
                   </div>
                   <span className="rounded bg-natural-bg px-2.5 py-0.5 text-[9px] font-black text-natural-green uppercase tracking-wider border border-natural-border flex items-center gap-1">
                     <span className="animate-bounce text-xs">🧠</span>
-                    <span>Hộp Trực Quan Hóa 🍕</span>
+                    <span>{t("visualBox")} 🍕</span>
                   </span>
                 </div>
 
                 <div className="my-auto py-6 flex flex-col items-center select-none">
                   <span className="text-[10px] font-mono font-black text-natural-orange uppercase tracking-wider mb-2">
-                    Ví dụ mẫu: Phân số 3/4 chiếc bánh
+                    {t("visualExample")}
                   </span>
 
                   <div
@@ -141,14 +142,13 @@ export default function Hero() {
                   </div>
 
                   <p className="mt-4 text-[10px] text-gray-500 font-bold">
-                    Chạm vào bánh để cảm nhận phản hồi!
+                    {t("visualHint")}
                   </p>
                 </div>
 
                 <div className="rounded-[18px] bg-natural-bg p-3 text-left border border-natural-border">
                   <p className="text-[11px] text-natural-charcoal leading-relaxed">
-                    💡 Mẫu số là đếm chiếc bánh cắt làm 4 phần, tử số là lấy đi 3 phần.
-                    Trẻ ghi nhớ vĩnh viễn nhờ trải nghiệm xúc giác chân thật!
+                    💡 {t("visualExplanation")}
                   </p>
                 </div>
               </div>

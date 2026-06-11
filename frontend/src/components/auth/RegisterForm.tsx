@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import Input from "@/components/ui/Input";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function RegisterForm() {
+  const t = useTranslations("auth.register");
+  const tAuth = useTranslations("auth");
+  const tErr = useTranslations("auth.errors");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,19 +21,19 @@ export default function RegisterForm() {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!name.trim()) newErrors.name = "Vui lòng nhập họ tên";
+    if (!name.trim()) newErrors.name = tErr("nameRequired");
     if (!email.trim()) {
-      newErrors.email = "Vui lòng nhập email";
+      newErrors.email = tErr("emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Email không hợp lệ";
+      newErrors.email = tErr("emailInvalid");
     }
     if (!password) {
-      newErrors.password = "Vui lòng nhập mật khẩu";
+      newErrors.password = tErr("passwordRequired");
     } else if (password.length < 6) {
-      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
+      newErrors.password = tErr("passwordMin");
     }
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+      newErrors.confirmPassword = tErr("passwordMismatch");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -46,10 +51,22 @@ export default function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <GoogleSignInButton />
+
+      {/* Divider */}
+      <div className="relative flex items-center justify-center py-1">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-natural-border" />
+        </div>
+        <span className="relative bg-white px-4 text-[12px] text-natural-charcoal">
+          {tAuth("orDivider")}
+        </span>
+      </div>
+
       <Input
-        label="Họ tên"
+        label={t("name")}
         type="text"
-        placeholder="Nguyễn Văn A"
+        placeholder={t("namePlaceholder")}
         value={name}
         onChange={(e) => setName(e.target.value)}
         error={errors.name}
@@ -57,9 +74,9 @@ export default function RegisterForm() {
       />
 
       <Input
-        label="Email"
+        label={t("email")}
         type="email"
-        placeholder="ban@email.com"
+        placeholder={t("emailPlaceholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         error={errors.email}
@@ -67,8 +84,8 @@ export default function RegisterForm() {
       />
 
       <PasswordInput
-        label="Mật khẩu"
-        placeholder="Ít nhất 6 ký tự"
+        label={t("password")}
+        placeholder={t("passwordPlaceholder")}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         error={errors.password}
@@ -76,8 +93,8 @@ export default function RegisterForm() {
       />
 
       <PasswordInput
-        label="Xác nhận mật khẩu"
-        placeholder="Nhập lại mật khẩu"
+        label={t("confirmPassword")}
+        placeholder={t("confirmPasswordPlaceholder")}
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         error={errors.confirmPassword}
@@ -85,13 +102,13 @@ export default function RegisterForm() {
       />
 
       <Button type="submit" loading={loading} className="w-full">
-        Tạo tài khoản
+        {t("submit")}
       </Button>
 
       <p className="text-center text-[12px] text-natural-charcoal">
-        Đã có tài khoản?{" "}
+        {t("hasAccount")}{" "}
         <Link href="/login" className="font-bold text-natural-green hover:underline">
-          Đăng nhập
+          {t("loginLink")}
         </Link>
       </p>
     </form>

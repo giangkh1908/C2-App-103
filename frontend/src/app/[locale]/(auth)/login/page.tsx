@@ -1,16 +1,12 @@
+import { useTranslations } from "next-intl";
 import AuthLayout from "@/components/auth/AuthLayout";
 import LoginForm from "@/components/auth/LoginForm";
 
-export const metadata = {
-  title: "Đăng nhập",
-};
-
 export default function LoginPage() {
+  const t = useTranslations("auth.login");
+
   return (
-    <AuthLayout
-      title="Chào mừng trở lại"
-      subtitle="Đăng nhập để tiếp tục học Toán cùng AI"
-    >
+    <AuthLayout title={t("title")} subtitle={t("subtitle")}>
       <LoginForm />
     </AuthLayout>
   );

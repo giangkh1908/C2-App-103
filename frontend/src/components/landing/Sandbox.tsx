@@ -1,111 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
 // ── Types ──
 type Domain = "multiplication" | "division" | "fraction_basic" | "perimeter_area_basic";
-
-interface PracticeQuestion {
-  questionText: string;
-  options: string[];
-  correctAnswerIndex: number;
-  successMessage: string;
-  failMessage: string;
-}
-
-interface Lesson {
-  domain: Domain;
-  title: string;
-  grade: number;
-  shortExplanation: string;
-  lifeExample: string;
-  practiceQuestion: PracticeQuestion;
-}
-
-// ── Preset Lessons ──
-const LESSONS: Record<string, Lesson> = {
-  multiplication: {
-    domain: "multiplication",
-    title: "Phép nhân: 3 đĩa bánh, mỗi đĩa có 4 chiếc bánh kẹo dâu",
-    grade: 2,
-    shortExplanation:
-      "Bản chất phép nhân thực chất chính là việc cộng lặp các nhóm có số lượng hoàn toàn bằng nhau nhiều lần. Thay vì cộng 4 + 4 + 4, bé có thể viết gọn là 3 × 4.",
-    lifeExample:
-      "Hãy tưởng tượng mẹ chuẩn bị 3 chiếc đĩa sạch sẽ. Trên mỗi đĩa, mẹ xếp đều đặn 4 viên kẹo dâu ngọt ngào. Em đếm xem chúng ta có tổng cộng bao nhiêu viên kẹo nhé!",
-    practiceQuestion: {
-      questionText:
-        "Trong khu vườn gieo hạt, chú Thỏ Nâu trồng 4 luống cà rốt ngọt. Mỗi luống có đúng 5 củ cà rốt tròn mập. Phép tính nhân nào chỉ tổng số củ cà rốt chú Thỏ có?",
-      options: ["A. 4 + 5 = 9 củ", "B. 4 × 5 = 20 củ", "C. 5 × 4 = 15 củ", "D. 4 × 5 = 24 củ"],
-      correctAnswerIndex: 1,
-      successMessage: "Tuyệt vời ông mặt trời! Chú thỏ đã nhổ được 20 củ cà rốt ngon lành đấy!",
-      failMessage: "Chưa chính xác rồi bé yêu! Có 4 nhóm (4 luống), mỗi nhóm có 5 củ, ta lấy 4 × 5 = 20 nhé!",
-    },
-  },
-  division: {
-    domain: "division",
-    title: "Phép chia: Chia đều 12 quả táo đỏ cho 3 bạn búp bê",
-    grade: 2,
-    shortExplanation:
-      "Phép chia chính là việc chúng ta san rộng đều một số lượng đồ vật ban đầu thành các phần bằng nhau, giúp các bạn búp bê ai cũng nhận phần quà như phát đều tay.",
-    lifeExample:
-      "Bé có 12 quả táo đỏ giòn ngọt. Bé muốn đem chia hoàn toàn công bằng cho 3 búp bê thú bông đáng yêu đứng xếp hàng. Hỏi mỗi bạn được ôm bao nhiêu quả táo nhỉ?",
-    practiceQuestion: {
-      questionText:
-        "Thầy giáo có 15 cuốn vở học tập. Thầy muốn chia đều cho 5 học sinh gương mẫu đạt điểm 10. Hỏi mỗi bạn được thầy tặng cho bao nhiêu cuốn vở?",
-      options: ["A. Mỗi bạn được 3 cuốn vở", "B. Mỗi bạn được 5 cuốn vở", "C. Mỗi bạn được 4 cuốn vở", "D. Mỗi bạn được 6 cuốn vở"],
-      correctAnswerIndex: 0,
-      successMessage: "Chính xác! 15 cuốn chia đều cho 5 bạn thì mỗi bạn ôm trọn 3 cuốn đẹp đẽ!",
-      failMessage: "Chưa chính xác đâu bé ơi! Thử lấy 15 chia đều cho 5 nhóm xem, mỗi nhóm sẽ có 3 quyển nhé.",
-    },
-  },
-  fraction_basic: {
-    domain: "fraction_basic",
-    title: "Phân số: Ăn mất 3 phần trong chiếc bánh Pizza cắt 4 phần",
-    grade: 3,
-    shortExplanation:
-      "Phân số thể hiện lát cắt chia đều của một đồ vật nguyên vẹn. Số ở dưới (mẫu số) là tổng số phần bánh mẹ cắt. Số ở trên (tử số) là số phần bé ăn.",
-    lifeExample:
-      "Mẹ nướng bánh Pizza dâu tây tuyệt ngon và dùng dao chia đều thành 4 lát bánh. Bé bụng đói đã ăn ngon lành hết 3 lát bánh. Phân số chỉ phần bánh bé ăn chính là 3/4!",
-    practiceQuestion: {
-      questionText:
-        "Một băng giấy dài được chia thành 6 đoạn thẳng bằng nhau như thước đo. Bé Mai tô màu xanh cho 5 đoạn. Phân số nào biểu thị phần băng giấy Mai đã tô màu?",
-      options: ["A. 1/6 băng giấy", "B. 5/6 băng giấy", "C. 6/5 băng giấy", "D. 5/5 băng giấy"],
-      correctAnswerIndex: 1,
-      successMessage: "Quá xuất sắc! Số mảnh tô màu là 5 nằm ở trên, tổng số mảnh chia 6 nằm ở dưới tạo thành 5/6!",
-      failMessage: "Opps! Nhớ rằng số phần được chọn nằm ở trên tử số nhé, còn tổng số phần ở dưới mẫu số.",
-    },
-  },
-  perimeter_area_basic: {
-    domain: "perimeter_area_basic",
-    title: "Diện tích và Chu vi: Mảnh vườn lưới dài 4m và rộng 3m",
-    grade: 4,
-    shortExplanation:
-      "Chu vi chính là tổng độ dài bức rào chắn viền xung quanh mép nhà. Còn Diện tích là toàn bộ phần đất phẳng xanh rì bên trong được lát kín bằng những ô cỏ mầm tây.",
-    lifeExample:
-      "Bố rào quanh một mảnh vườn nhỏ có chiều dài 4 mét và chiều rộng 3 mét để bé trồng hoa cỏ dại. Diện tích gieo hạt là 12 mét vuông, còn chu vi hàng rào là 14 mét.",
-    practiceQuestion: {
-      questionText:
-        "Mẹ tặng bé một tấm thảm học tập hình chữ nhật có chiều dài 5dm và chiều rộng 4dm. Hãy tính chu vi và diện tích chiếc thảm này giúp mẹ nhé!",
-      options: [
-        "A. Chu vi: 18dm | Diện tích: 20dm²",
-        "B. Chu vi: 9dm | Diện tích: 20dm²",
-        "C. Chu vi: 20dm | Diện tích: 9dm²",
-        "D. Chu vi: 18dm | Diện tích: 18dm²",
-      ],
-      correctAnswerIndex: 0,
-      successMessage: "Đúng rồi bé ơi! Diện tích = 5 × 4 = 20dm². Chu vi = (5 + 4) × 2 = 18dm.",
-      failMessage: "Hơi nhầm một xíu rồi! Diện tích bằng Dài nhân Rộng (5 × 4), còn Chu vi bằng Dài cộng Rộng nhân đôi ((5 + 4) × 2) đó.",
-    },
-  },
-};
-
-const TABS: { key: Domain; label: string; color: string }[] = [
-  { key: "multiplication", label: "🍬 Phép nhân (Lớp 2)", color: "bg-natural-green" },
-  { key: "division", label: "🍎 Phép chia (Lớp 2)", color: "bg-natural-orange" },
-  { key: "fraction_basic", label: "🍕 Phân số (Lớp 3)", color: "bg-natural-orange" },
-  { key: "perimeter_area_basic", label: "🌱 Diện tích (Lớp 4)", color: "bg-natural-green" },
-];
 
 // ── Sound Effects ──
 function playSound(type: "pop" | "crunch" | "correct" | "synth") {
@@ -168,6 +68,7 @@ function playSound(type: "pop" | "crunch" | "correct" | "synth") {
 
 // ── Main Component ──
 export default function Sandbox() {
+  const t = useTranslations("sandbox");
   const [activeTab, setActiveTab] = useState<Domain>("multiplication");
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [answersChecked, setAnswersChecked] = useState(false);
@@ -199,6 +100,61 @@ export default function Sandbox() {
     },
     [speakingText]
   );
+
+  // Lesson data from translations
+  const LESSONS: Record<Domain, { title: string; grade: number; shortExplanation: string; lifeExample: string; questionText: string; options: string[]; correctAnswerIndex: number; successMessage: string; failMessage: string }> = {
+    multiplication: {
+      title: t("multiplication.title"),
+      grade: 2,
+      shortExplanation: t("multiplication.explanation"),
+      lifeExample: t("multiplication.lifeExample"),
+      questionText: t("multiplication.question"),
+      options: [t("multiplication.optionA"), t("multiplication.optionB"), t("multiplication.optionC"), t("multiplication.optionD")],
+      correctAnswerIndex: 1,
+      successMessage: t("multiplication.correctMsg"),
+      failMessage: t("multiplication.incorrectMsg"),
+    },
+    division: {
+      title: t("division.title"),
+      grade: 2,
+      shortExplanation: t("division.explanation"),
+      lifeExample: t("division.lifeExample"),
+      questionText: t("division.question"),
+      options: [t("division.optionA"), t("division.optionB"), t("division.optionC"), t("division.optionD")],
+      correctAnswerIndex: 0,
+      successMessage: t("division.correctMsg"),
+      failMessage: t("division.incorrectMsg"),
+    },
+    fraction_basic: {
+      title: t("fraction.title"),
+      grade: 3,
+      shortExplanation: t("fraction.explanation"),
+      lifeExample: t("fraction.lifeExample"),
+      questionText: t("fraction.question"),
+      options: [t("fraction.optionA"), t("fraction.optionB"), t("fraction.optionC"), t("fraction.optionD")],
+      correctAnswerIndex: 1,
+      successMessage: t("fraction.correctMsg"),
+      failMessage: t("fraction.incorrectMsg"),
+    },
+    perimeter_area_basic: {
+      title: t("area.title"),
+      grade: 4,
+      shortExplanation: t("area.explanation"),
+      lifeExample: t("area.lifeExample"),
+      questionText: t("area.question"),
+      options: [t("area.optionA"), t("area.optionB"), t("area.optionC"), t("area.optionD")],
+      correctAnswerIndex: 0,
+      successMessage: t("area.correctMsg"),
+      failMessage: t("area.incorrectMsg"),
+    },
+  };
+
+  const TABS: { key: Domain; label: string; color: string }[] = [
+    { key: "multiplication", label: `🍬 ${t("tabMultiplication")}`, color: "bg-natural-green" },
+    { key: "division", label: `🍎 ${t("tabDivision")}`, color: "bg-natural-orange" },
+    { key: "fraction_basic", label: `🍕 ${t("tabFraction")}`, color: "bg-natural-orange" },
+    { key: "perimeter_area_basic", label: `🌱 ${t("tabArea")}`, color: "bg-natural-green" },
+  ];
 
   // Reset on tab change
   useEffect(() => {
@@ -277,7 +233,7 @@ export default function Sandbox() {
       return (
         <div className="flex flex-col items-center gap-4 w-full">
           <div className="text-center text-[11px] sm:text-xs text-natural-green font-bold bg-natural-green-tint px-4 py-1.5 rounded-full border border-natural-green/20 shadow-xs animate-pulse">
-            🍬 Chạm vào từng đĩa để thay đổi số kẹo (từ 1 đến 6 viên)
+            🍬 {t("simMultiplication.hint")}
           </div>
           <div className="flex flex-wrap justify-center gap-4 py-3 w-full">
             {candyCounts.map((count, idx) => (
@@ -288,7 +244,7 @@ export default function Sandbox() {
               >
                 <div className="absolute inset-x-0 top-0 h-1 bg-natural-green/20" />
                 <span className="text-[9px] font-bold text-natural-green uppercase tracking-wider mb-2 bg-natural-green-tint px-2 py-0.5 rounded-full">
-                  Đĩa {idx + 1}
+                  {t("simMultiplication.plate", { idx: idx + 1 })}
                 </span>
                 <div className="grid grid-cols-3 gap-1.5 min-h-[42px] items-center">
                   {Array.from({ length: count }).map((_, cIdx) => (
@@ -297,21 +253,21 @@ export default function Sandbox() {
                     </span>
                   ))}
                 </div>
-                <span className="text-[10px] font-bold text-natural-charcoal/60 mt-2">{count} viên</span>
+                <span className="text-[10px] font-bold text-natural-charcoal/60 mt-2">{t("simMultiplication.count", { count })}</span>
               </div>
             ))}
           </div>
           <div className="mt-2 text-center bg-natural-bg p-4 rounded-2xl border border-natural-border w-full max-w-md">
             <span className="text-[10px] font-black text-natural-charcoal/65 uppercase tracking-wider block mb-1">
-              Công thức cộng dồn của em:
+              {t("simMultiplication.additionLabel")}
             </span>
             <p className="text-sm font-semibold text-natural-dark">
-              Phép tính cộng: {candyCounts.join(" + ")} = <span className="text-natural-green font-black text-base">{total}</span> viên
+              {t("simMultiplication.additionFormula", { result: candyCounts.join(" + "), total })}
             </p>
             {allEqual && (
               <p className="text-xs text-natural-green font-bold mt-2 flex items-center justify-center gap-1.5 bg-natural-green-tint px-3.5 py-1.5 rounded-full w-fit mx-auto border border-natural-green/10">
-                <span>Trực quan hóa phép nhân:</span>
-                <span className="font-extrabold">{candyCounts.length} đĩa × {candyCounts[0]} kẹo = {total} viên</span>
+                <span>{t("simMultiplication.visualLabel")}</span>
+                <span className="font-extrabold">{t("simMultiplication.multiplyFormula", { n: candyCounts.length, m: candyCounts[0], total })}</span>
               </p>
             )}
           </div>
@@ -325,14 +281,14 @@ export default function Sandbox() {
       return (
         <div className="flex flex-col items-center gap-4 w-full">
           <div className="text-center text-[11px] sm:text-xs text-natural-orange font-bold bg-natural-orange-tint px-4 py-1.5 rounded-full border border-natural-orange/20 shadow-xs animate-pulse">
-            🍎 Lấy táo trong giỏ phân bổ cho búp bê, chạm búp bê để thu hồi táo về giỏ!
+            🍎 {t("simDivision.hint")}
           </div>
           <div
             onClick={handleBasketClick}
             className="flex flex-col items-center bg-natural-orange-tint p-4 rounded-2xl border border-natural-orange/20 shadow-xs cursor-pointer select-none max-w-xs w-full text-center transition-transform duration-100 hover:scale-105 ease-out active:scale-98"
           >
             <span className="text-[10px] font-bold text-natural-orange uppercase tracking-wider mb-2">
-              🧺 Giỏ táo lớn của em ({appleBasket} quả)
+              🧺 {t("simDivision.basket", { n: appleBasket })}
             </span>
             {appleBasket > 0 ? (
               <div className="flex flex-wrap justify-center gap-1.5 py-1">
@@ -341,7 +297,7 @@ export default function Sandbox() {
                 ))}
               </div>
             ) : (
-              <span className="text-xs text-slate-400 italic py-1">Hết táo trong giỏ rồi!</span>
+              <span className="text-xs text-slate-400 italic py-1">{t("simDivision.empty")}</span>
             )}
           </div>
           <div className="flex flex-wrap justify-center gap-4 w-full py-2">
@@ -351,25 +307,25 @@ export default function Sandbox() {
                 onClick={() => handleDollClick(idx)}
                 className="flex flex-col items-center bg-natural-green-tint/50 p-4 rounded-2xl border-2 border-dashed border-natural-green/35 min-w-[105px] cursor-pointer hover:bg-natural-green-tint transition-all duration-100 hover:border-natural-green hover:-translate-y-1 text-center shadow-xs ease-out active:scale-98"
               >
-                <span className="text-xs font-bold text-natural-green">🎎 Búp bê {idx + 1}</span>
+                <span className="text-xs font-bold text-natural-green">🎎 {t("simDivision.doll", { idx: idx + 1 })}</span>
                 <div className="flex flex-wrap justify-center items-center gap-1 mt-2 min-h-[30px]">
                   {apples > 0 ? (
                     Array.from({ length: apples }).map((_, aIdx) => (
                       <span key={aIdx} className="text-base">🍎</span>
                     ))
                   ) : (
-                    <span className="text-[10px] text-gray-400 italic">Đang chờ...</span>
+                    <span className="text-[10px] text-gray-400 italic">{t("simDivision.waiting")}</span>
                   )}
                 </div>
                 <span className="text-[10px] text-natural-green/80 font-bold mt-2 bg-white px-2 py-0.5 rounded-full border border-natural-green/15">
-                  Phần ăn: {apples} quả
+                  {t("simDivision.portion", { n: apples })}
                 </span>
               </div>
             ))}
           </div>
           <div className="text-center bg-natural-bg p-3 rounded-xl border border-natural-border w-full max-w-sm">
             <p className="text-xs text-natural-charcoal/80 font-semibold">
-              Tổng số táo: <span className="text-natural-orange font-black">{total} quả</span> | Đã chia: {distributed} quả | Còn dư: {appleBasket} quả
+              {t("simDivision.status", { total, distributed, basket: appleBasket })}
             </p>
           </div>
         </div>
@@ -382,7 +338,7 @@ export default function Sandbox() {
       return (
         <div className="flex flex-col items-center gap-4 w-full">
           <div className="text-center text-[11px] sm:text-xs text-natural-orange font-bold bg-natural-orange-tint px-4 py-1.5 rounded-full border border-natural-orange/20 shadow-xs animate-pulse">
-            🍕 Chạm vào từng phần bánh để &quot;ăn&quot; hoặc &quot;trả lại&quot; nhé!
+            🍕 {t("simFraction.hint")}
           </div>
           <div className="relative h-44 w-44 flex items-center justify-center bg-white rounded-full p-2.5 shadow-md">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
@@ -421,10 +377,10 @@ export default function Sandbox() {
           </div>
           <div className="flex gap-4 flex-wrap justify-center">
             <span className="text-xs bg-natural-orange-tint border border-natural-orange/20 text-natural-orange px-3.5 py-1.5 rounded-full font-bold shadow-xs">
-              🍰 Đã ăn: {activeSlices} phần bánh
+              🍰 {t("simFraction.eaten", { n: activeSlices })}
             </span>
             <span className="text-xs bg-natural-bg border border-natural-border text-natural-charcoal px-3.5 py-1.5 rounded-full font-bold shadow-xs">
-              🎂 Cả đĩa: {totalSlices} miếng bằng nhau
+              🎂 {t("simFraction.total", { n: totalSlices })}
             </span>
           </div>
         </div>
@@ -436,7 +392,7 @@ export default function Sandbox() {
       return (
         <div className="flex flex-col items-center gap-4 w-full">
           <div className="text-center text-[11px] sm:text-xs text-natural-green font-bold bg-natural-green-tint px-4 py-1.5 rounded-full border border-natural-green/20 shadow-xs animate-pulse">
-            🌱 Chạm vào từng ô vuông để &quot;gieo cỏ xanh&quot; hoặc &quot;thu hoạch xới đất&quot;
+            🌱 {t("simArea.hint")}
           </div>
           <div className="p-3 bg-natural-bg border border-natural-border rounded-2xl shadow-inner">
             <div className="grid grid-cols-4 gap-1.5">
@@ -457,12 +413,12 @@ export default function Sandbox() {
           </div>
           <div className="flex flex-wrap justify-center gap-3 w-full">
             <div className="bg-natural-green-tint text-natural-green px-3.5 py-1.5 rounded-full border border-natural-green/20 flex items-center gap-1.5 shadow-xs text-xs font-semibold">
-              <span>Diện tích =</span>
+              <span>{t("simArea.areaLabel")}</span>
               <span className="font-extrabold text-sm">{activeArea} m²</span>
             </div>
             <div className="bg-natural-bg text-natural-dark px-3.5 py-1.5 rounded-full border border-natural-border flex items-center gap-1.5 shadow-xs text-xs font-semibold">
-              <span>Chu vi = (4 + 3) × 2 =</span>
-              <span className="font-extrabold text-sm text-natural-green">14 mét</span>
+              <span>{t("simArea.perimeterLabel")}</span>
+              <span className="font-extrabold text-sm text-natural-green">{t("simArea.perimeterValue")}</span>
             </div>
           </div>
         </div>
@@ -478,11 +434,10 @@ export default function Sandbox() {
         <ScrollReveal>
           <div className="text-center max-w-xl mx-auto mb-10">
             <h2 className="text-3xl font-serif italic font-medium text-natural-dark">
-              Phòng mô phỏng trực quan 💡
+              {t("title")}
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-natural-charcoal/80">
-              Chọn một chủ đề Toán tiểu học bên dưới để trực tiếp chạm chuột gieo hạt, bốc kẹo, chia táo
-              xem công thức thay đổi tức thì nhé!
+              {t("description")}
             </p>
           </div>
         </ScrollReveal>
@@ -516,7 +471,7 @@ export default function Sandbox() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-natural-border pb-5">
               <div>
                 <span className="inline-block bg-natural-green-tint text-natural-green text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2 border border-natural-green/10">
-                  Lớp {activeLesson.grade} • Toán Học Bản Chất
+                  {t("gradeLabel", { grade: activeLesson.grade })}
                 </span>
                 <h3 className="text-lg sm:text-xl font-serif italic text-natural-dark font-medium leading-tight">
                   {activeLesson.title}
@@ -531,7 +486,7 @@ export default function Sandbox() {
                 }`}
               >
                 <span className="text-sm">🔊</span>
-                <span>{speakingText === activeLesson.shortExplanation ? "Đang đọc..." : "Nghe cô giảng bài"}</span>
+                <span>{speakingText === activeLesson.shortExplanation ? t("ttsPlaying") : t("ttsButton")}</span>
               </button>
             </div>
 
@@ -539,13 +494,13 @@ export default function Sandbox() {
             <div className="mt-5 grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
               <div className="md:col-span-5 space-y-4">
                 <div className="bg-natural-bg p-4 rounded-2xl border border-natural-border">
-                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1.5">Trích bài giảng:</h4>
+                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1.5">{t("explanationTitle")}</h4>
                   <p className="text-xs sm:text-sm text-natural-charcoal leading-relaxed font-medium">
                     {activeLesson.shortExplanation}
                   </p>
                 </div>
                 <div className="bg-natural-green-tint/50 p-4 rounded-2xl border border-natural-green/10">
-                  <h4 className="text-[10px] font-black uppercase text-natural-green tracking-wider mb-1">Ẩn dụ trực quan:</h4>
+                  <h4 className="text-[10px] font-black uppercase text-natural-green tracking-wider mb-1">{t("visualTitle")}</h4>
                   <p className="text-xs text-natural-charcoal leading-relaxed">{activeLesson.lifeExample}</p>
                 </div>
               </div>
@@ -559,13 +514,13 @@ export default function Sandbox() {
               <div className="bg-natural-bg p-5 rounded-2xl border border-natural-border">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xl">🏆</span>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">Bé thử ôn tập thực hành:</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">{t("practiceTitle")}</p>
                 </div>
                 <p className="text-sm font-semibold text-natural-dark leading-relaxed mb-4">
-                  {activeLesson.practiceQuestion.questionText}
+                  {activeLesson.questionText}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {activeLesson.practiceQuestion.options.map((opt, oIdx) => {
+                  {activeLesson.options.map((opt, oIdx) => {
                     const isChosen = selectedAnswer === oIdx;
                     return (
                       <button
@@ -573,7 +528,7 @@ export default function Sandbox() {
                         onClick={() => {
                           setSelectedAnswer(oIdx);
                           setAnswersChecked(true);
-                          if (oIdx === activeLesson.practiceQuestion.correctAnswerIndex) {
+                          if (oIdx === activeLesson.correctAnswerIndex) {
                             playSound("correct");
                           } else {
                             playSound("synth");
@@ -600,22 +555,22 @@ export default function Sandbox() {
                 {answersChecked && selectedAnswer !== null && (
                   <div
                     className={`mt-4 p-4 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 ${
-                      selectedAnswer === activeLesson.practiceQuestion.correctAnswerIndex
+                      selectedAnswer === activeLesson.correctAnswerIndex
                         ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                         : "bg-amber-50 text-amber-800 border border-amber-200"
                     }`}
                   >
                     <p className="font-extrabold flex items-center gap-1.5 mb-1 text-sm">
                       <span>
-                        {selectedAnswer === activeLesson.practiceQuestion.correctAnswerIndex
-                          ? "🎉 Bé làm xuất sắc!"
-                          : "💡 Động viên bé nghĩ lại:"}
+                        {selectedAnswer === activeLesson.correctAnswerIndex
+                          ? `🎉 ${t("correctFeedback")}`
+                          : `💡 ${t("incorrectFeedback")}`}
                       </span>
                     </p>
                     <p className="leading-relaxed">
-                      {selectedAnswer === activeLesson.practiceQuestion.correctAnswerIndex
-                        ? activeLesson.practiceQuestion.successMessage
-                        : activeLesson.practiceQuestion.failMessage}
+                      {selectedAnswer === activeLesson.correctAnswerIndex
+                        ? activeLesson.successMessage
+                        : activeLesson.failMessage}
                     </p>
                   </div>
                 )}

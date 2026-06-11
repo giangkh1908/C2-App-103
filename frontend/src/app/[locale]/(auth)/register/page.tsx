@@ -1,16 +1,12 @@
+import { useTranslations } from "next-intl";
 import AuthLayout from "@/components/auth/AuthLayout";
 import RegisterForm from "@/components/auth/RegisterForm";
 
-export const metadata = {
-  title: "Đăng ký",
-};
-
 export default function RegisterPage() {
+  const t = useTranslations("auth.register");
+
   return (
-    <AuthLayout
-      title="Tạo tài khoản mới"
-      subtitle="Bắt đầu hành trình học Toán trực quan cho con"
-    >
+    <AuthLayout title={t("title")} subtitle={t("subtitle")}>
       <RegisterForm />
     </AuthLayout>
   );

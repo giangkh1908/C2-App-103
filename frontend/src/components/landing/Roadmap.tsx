@@ -1,55 +1,57 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
-const milestones = [
-  {
-    grade: "Lớp 1",
-    title: "Đếm kẹo ngọt & so sánh dâu",
-    color: "border-emerald-100 bg-emerald-50/25",
-    desc: "Sắp xếp dãy số, thêm bớt từ 1 đến 10 dựa trên quả đào chín căng quả, sờ chạm so sánh nhiều ít.",
-  },
-  {
-    grade: "Lớp 2",
-    title: "Nối bảng nhân & chia đều táo",
-    color: "border-amber-100 bg-amber-50/25",
-    desc: "Ghép thành các đĩa bánh đều dặn, hiểu sâu bản chất phép nhân chính là cộng lặp, phép chia là chia đều.",
-  },
-  {
-    grade: "Lớp 3",
-    title: "Cắt lát bánh Pizza dâu",
-    color: "border-orange-100 bg-orange-50/25",
-    desc: "Bẻ vụn phân số cơ bản, nhân chia chữ số nghìn chục nghìn thông qua xếp khối hộp đồ chơi.",
-  },
-  {
-    grade: "Lớp 4",
-    title: "Lợp gạch sân thảm chu vi",
-    color: "border-sky-100 bg-sky-50/25",
-    desc: "Tính mét vuông lợp gạch, bo đường viền mép bờ tường. Đếm diện tích cực kỳ trực diện.",
-  },
-  {
-    grade: "Lớp 5",
-    title: "Đổ nước bình đo thể tích",
-    color: "border-purple-100 bg-purple-50/25",
-    desc: "Rót nước ngọt dâu đầy các bình đong chia độ để mường tượng tỉ số phần trăm và thể tích hộp.",
-  },
-];
-
 export default function Roadmap() {
+  const t = useTranslations("roadmap");
+
+  const milestones = [
+    {
+      grade: t("grade1Title"),
+      title: t("grade1Subtitle"),
+      color: "border-emerald-100 bg-emerald-50/25",
+      desc: t("grade1Desc"),
+    },
+    {
+      grade: t("grade2Title"),
+      title: t("grade2Subtitle"),
+      color: "border-amber-100 bg-amber-50/25",
+      desc: t("grade2Desc"),
+    },
+    {
+      grade: t("grade3Title"),
+      title: t("grade3Subtitle"),
+      color: "border-orange-100 bg-orange-50/25",
+      desc: t("grade3Desc"),
+    },
+    {
+      grade: t("grade4Title"),
+      title: t("grade4Subtitle"),
+      color: "border-sky-100 bg-sky-50/25",
+      desc: t("grade4Desc"),
+    },
+    {
+      grade: t("grade5Title"),
+      title: t("grade5Subtitle"),
+      color: "border-purple-100 bg-purple-50/25",
+      desc: t("grade5Desc"),
+    },
+  ];
+
   return (
     <section id="lo-trinh" className="py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-natural-border">
       <div className="max-w-7xl mx-auto">
         <ScrollReveal>
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-natural-orange text-[10px] sm:text-xs font-black uppercase tracking-widest block mb-2 font-mono">
-              Bản đồ học thuật toàn diện
+              {t("badge")}
             </span>
             <h2 className="text-3xl font-serif italic text-natural-dark leading-tight">
-              Lộ trình đong đầy hình ảnh từ Lớp 1 - Lớp 5
+              {t("title")}
             </h2>
             <p className="mt-3 text-sm text-natural-charcoal/80 leading-relaxed">
-              Mỗi bài giảng đều có sự trợ lực của đồ hình trực quan xúc giác, giúp bé tiếp thu nhẹ tênh
-              từ đếm chuối cho tới tính chu vi diện tích đa giác phức tạp.
+              {t("description")}
             </p>
           </div>
         </ScrollReveal>

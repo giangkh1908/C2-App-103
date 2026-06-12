@@ -22,8 +22,9 @@ class TestFlowRegisterLoginMeLogout:
         assert register_res.status_code == 201
         register_data = register_res.json()
         assert register_data["user"]["email"] == "integration@example.com"
-        at = register_data["tokens"]["accessToken"]
-        rt = register_data["tokens"]["refreshToken"]
+        at = register_data["accessToken"]
+        assert "refreshToken" not in register_data
+        assert "refresh_token" in register_res.cookies
 
         # Step 2: Get Me with access token
         me_res = await client.get("/api/v1/auth/me", headers={
@@ -47,7 +48,7 @@ class TestFlowRegisterLoginMeLogout:
         })
         assert login_res.status_code == 200
         login_data = login_res.json()
-        new_at = login_data["tokens"]["accessToken"]
+        new_at = login_data["accessToken"]
 
         # Step 5: Get Me with new token
         me_res2 = await client.get("/api/v1/auth/me", headers={
@@ -121,7 +122,7 @@ class TestFlowRegisterVerifyEmail:
             "password": "password123",
         })
         assert register_res.status_code == 201
-        at = register_res.json()["tokens"]["accessToken"]
+        at = register_res.json()["accessToken"]
 
         # Step 2: User should NOT be verified
         me_res = await client.get("/api/v1/auth/me", headers={
@@ -181,7 +182,7 @@ class TestFlowTokenRefresh:
         })
         assert register_res.status_code == 201
         user_id = register_res.json()["user"]["id"]
-        rt = register_res.json()["tokens"]["refreshToken"]
+        rt = register_res.cookies["refresh_token"]
 
         # Step 2: Create an EXPIRED access token
         expired_at = jwt.encode(
@@ -202,12 +203,11 @@ class TestFlowTokenRefresh:
         assert me_res.status_code == 401
 
         # Step 4: Refresh to get new AT
-        refresh_res = await client.post("/api/v1/auth/refresh", json={
-            "refreshToken": rt,
-        })
+        refresh_res = await client.post("/api/v1/auth/refresh", cookies={"refresh_token": rt})
         assert refresh_res.status_code == 200
         new_at = refresh_res.json()["accessToken"]
-        new_rt = refresh_res.json()["refreshToken"]
+        assert "refreshToken" not in refresh_res.json()
+        new_rt = refresh_res.cookies["refresh_token"]
 
         # Step 5: New AT should work
         me_res2 = await client.get("/api/v1/auth/me", headers={
@@ -217,16 +217,12 @@ class TestFlowTokenRefresh:
         assert me_res2.json()["email"] == "refresh@example.com"
 
         # Step 6: Old RT should NOT work (replaced)
-        old_rt_res = await client.post("/api/v1/auth/refresh", json={
-            "refreshToken": rt,
-        })
+        old_rt_res = await client.post("/api/v1/auth/refresh", cookies={"refresh_token": rt})
         # Old RT might still work (no blacklist) or fail depending on implementation
         # This is expected behavior for stateless JWT
 
         # Step 7: New RT should work
-        refresh_res2 = await client.post("/api/v1/auth/refresh", json={
-            "refreshToken": new_rt,
-        })
+        refresh_res2 = await client.post("/api/v1/auth/refresh", cookies={"refresh_token": new_rt})
         assert refresh_res2.status_code == 200
 
 

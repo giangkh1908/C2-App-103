@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings
 
 
@@ -44,11 +44,31 @@ class Settings(BaseSettings):
     openai_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     openai_max_tokens: int = Field(default=2048, ge=1, le=128000)
 
+    @model_validator(mode="after")
+    def validate_production_secrets(self) -> "Settings":
+        weak_jwt_secrets = {
+            "",
+            "change-me-in-production",
+            "your-super-secret-jwt-key-change-this-in-production",
+            "replace-with-32-plus-random-characters",
+        }
+        jwt_secret = self.jwt_secret_key.strip()
+
+        if self.app_env in {"staging", "production"}:
+            if jwt_secret in weak_jwt_secrets or len(jwt_secret) < 32:
+                raise ValueError(
+                    "JWT_SECRET_KEY must be set to a non-default value with at least "
+                    "32 characters in staging and production"
+                )
+
+        return self
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",
         "case_sensitive": False,
         "extra": "ignore",
+        "populate_by_name": True,
     }
 
 

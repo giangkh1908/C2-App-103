@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from bson import ObjectId
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -24,19 +24,44 @@ from models.auth import (
     AuthResponse,
     TokenResponse,
     UserResponse,
-    RefreshRequest,
     ForgotPasswordRequest,
     ResetPasswordRequest,
-    VerifyEmailRequest,
     MessageResponse,
 )
 from models.user import UserInDB, user_to_response, create_user_doc
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+REFRESH_COOKIE_NAME = "refresh_token"
+
+
+def refresh_cookie_path() -> str:
+    return f"{settings.api_prefix}/auth"
+
+
+def set_refresh_cookie(response: Response, refresh_token: str) -> None:
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=refresh_token,
+        max_age=settings.jwt_refresh_token_expire_days * 24 * 60 * 60,
+        path=refresh_cookie_path(),
+        httponly=True,
+        secure=settings.app_env != "development",
+        samesite="lax",
+    )
+
+
+def clear_refresh_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=REFRESH_COOKIE_NAME,
+        path=refresh_cookie_path(),
+        httponly=True,
+        secure=settings.app_env != "development",
+        samesite="lax",
+    )
 
 
 @router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-async def register(req: RegisterRequest):
+async def register(req: RegisterRequest, response: Response):
     db = get_db()
     email = req.email.strip().lower()
 
@@ -59,15 +84,16 @@ async def register(req: RegisterRequest):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
         user=user_to_response(user),
-        tokens=TokenResponse(accessToken=access_token, refreshToken=refresh_token),
+        accessToken=access_token,
     )
 
 
 @router.post("/login", response_model=AuthResponse)
-async def login(req: LoginRequest):
+async def login(req: LoginRequest, response: Response):
     db = get_db()
     email = req.email.strip().lower()
 
@@ -88,15 +114,16 @@ async def login(req: LoginRequest):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
         user=user_to_response(user),
-        tokens=TokenResponse(accessToken=access_token, refreshToken=refresh_token),
+        accessToken=access_token,
     )
 
 
 @router.post("/google", response_model=AuthResponse)
-async def google_login(req: GoogleLoginRequest):
+async def google_login(req: GoogleLoginRequest, response: Response):
     if not settings.google_client_id:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -146,17 +173,22 @@ async def google_login(req: GoogleLoginRequest):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
         user=user_to_response(user),
-        tokens=TokenResponse(accessToken=access_token, refreshToken=refresh_token),
+        accessToken=access_token,
     )
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh(req: RefreshRequest):
-    payload = decode_token(req.refreshToken)
+async def refresh(
+    response: Response,
+    refresh_token: str | None = Cookie(default=None, alias=REFRESH_COOKIE_NAME),
+):
+    payload = decode_token(refresh_token) if refresh_token else None
     if not payload or payload.get("type") != "refresh":
+        clear_refresh_cookie(response)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token",
@@ -169,6 +201,7 @@ async def refresh(req: RefreshRequest):
     except Exception:
         user_doc = None
     if not user_doc:
+        clear_refresh_cookie(response)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
@@ -176,9 +209,10 @@ async def refresh(req: RefreshRequest):
 
     user = UserInDB.from_mongo(user_doc)
     access_token = create_access_token(user.id, user.role)
-    refresh_token = create_refresh_token(user.id)
+    new_refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, new_refresh_token)
 
-    return TokenResponse(accessToken=access_token, refreshToken=refresh_token)
+    return TokenResponse(accessToken=access_token)
 
 
 @router.get("/me", response_model=UserResponse)
@@ -187,7 +221,7 @@ async def get_me(current_user: UserInDB = Depends(get_current_user)):
 
 
 @router.post("/logout", response_model=MessageResponse)
-async def logout(current_user: UserInDB = Depends(get_current_user)):
+async def logout(response: Response, current_user: UserInDB = Depends(get_current_user)):
     db = get_db()
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
@@ -196,6 +230,7 @@ async def logout(current_user: UserInDB = Depends(get_current_user)):
             "refresh_token_expires": None,
         }},
     )
+    clear_refresh_cookie(response)
     return MessageResponse(detail="Logged out successfully")
 
 

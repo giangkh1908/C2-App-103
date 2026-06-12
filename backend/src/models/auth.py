@@ -18,7 +18,6 @@ class GoogleLoginRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     accessToken: str
-    refreshToken: str
 
 
 class UserResponse(BaseModel):
@@ -33,11 +32,7 @@ class UserResponse(BaseModel):
 
 class AuthResponse(BaseModel):
     user: UserResponse
-    tokens: TokenResponse
-
-
-class RefreshRequest(BaseModel):
-    refreshToken: str
+    accessToken: str
 
 
 class ForgotPasswordRequest(BaseModel):

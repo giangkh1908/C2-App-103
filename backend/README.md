@@ -85,6 +85,15 @@ Sau khi chạy, mở trình duyệt tại:
 | `DATABASE_URL` | Connection string database | `sqlite:///./data/app.db` |
 | `VECTOR_STORE_TYPE` | Loại vector store | `chroma` |
 
+## Logging
+
+Backend ghi log dạng JSON line ra stdout/stderr để phù hợp container và nền tảng deploy.
+`LOG_LEVEL` điều khiển mức log (`DEBUG`, `INFO`, `WARNING`, `ERROR`).
+
+Mỗi request có `X-Request-ID`; backend sẽ giữ giá trị client gửi lên hoặc tự sinh mới,
+trả lại header này trong response và gắn vào request log. Không log request body,
+`Authorization`, cookies, password hoặc token.
+
 ## Lệnh thường dùng (Makefile)
 
 Chạy `make` hoặc `make help` để xem danh sách lệnh.

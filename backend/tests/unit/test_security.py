@@ -1,6 +1,8 @@
 import pytest
 from datetime import datetime, timedelta, timezone
+from pydantic import ValidationError
 
+from core.config import Settings
 from core.security import (
     hash_password,
     verify_password,
@@ -82,3 +84,40 @@ class TestTokenDecoding:
         token = jwt.encode(expired_data, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
         payload = decode_token(token)
         assert payload is None
+
+
+class TestSettingsSecurity:
+    def test_development_allows_default_jwt_secret(self):
+        settings = Settings(
+            _env_file=None,
+            app_env="development",
+            jwt_secret_key="change-me-in-production",
+        )
+
+        assert settings.jwt_secret_key == "change-me-in-production"
+
+    @pytest.mark.parametrize(
+        "secret",
+        [
+            "",
+            "change-me-in-production",
+            "your-super-secret-jwt-key-change-this-in-production",
+            "replace-with-32-plus-random-characters",
+            "short-secret",
+        ],
+    )
+    def test_staging_and_production_reject_weak_jwt_secret(self, secret: str):
+        with pytest.raises(ValidationError):
+            Settings(_env_file=None, app_env="production", jwt_secret_key=secret)
+
+        with pytest.raises(ValidationError):
+            Settings(_env_file=None, app_env="staging", jwt_secret_key=secret)
+
+    def test_production_accepts_strong_jwt_secret(self):
+        settings = Settings(
+            _env_file=None,
+            app_env="production",
+            jwt_secret_key="a-strong-production-secret-with-48-chars",
+        )
+
+        assert settings.jwt_secret_key == "a-strong-production-secret-with-48-chars"

@@ -15,8 +15,9 @@ class TestRegister:
         data = response.json()
         assert data["user"]["email"] == "new@example.com"
         assert data["user"]["name"] == "New User"
-        assert "accessToken" in data["tokens"]
-        assert "refreshToken" in data["tokens"]
+        assert "accessToken" in data
+        assert "refreshToken" not in data
+        assert "refresh_token" in response.cookies
 
     async def test_register_duplicate_email(self, client: AsyncClient, test_user):
         response = await client.post("/api/v1/auth/register", json={
@@ -44,8 +45,9 @@ class TestLogin:
         assert response.status_code == 200
         data = response.json()
         assert data["user"]["email"] == "test@example.com"
-        assert "accessToken" in data["tokens"]
-        assert "refreshToken" in data["tokens"]
+        assert "accessToken" in data
+        assert "refreshToken" not in data
+        assert "refresh_token" in response.cookies
 
     async def test_login_wrong_password(self, client: AsyncClient, test_user):
         response = await client.post("/api/v1/auth/login", json={
@@ -69,18 +71,22 @@ class TestRefresh:
         user_id = str(test_user["_id"])
         rt = create_refresh_token(user_id)
 
-        response = await client.post("/api/v1/auth/refresh", json={
-            "refreshToken": rt,
-        })
+        response = await client.post("/api/v1/auth/refresh", cookies={"refresh_token": rt})
         assert response.status_code == 200
         data = response.json()
         assert "accessToken" in data
-        assert "refreshToken" in data
+        assert "refreshToken" not in data
+        assert "refresh_token" in response.cookies
 
     async def test_refresh_invalid_token(self, client: AsyncClient):
-        response = await client.post("/api/v1/auth/refresh", json={
-            "refreshToken": "invalid.token.here",
-        })
+        response = await client.post(
+            "/api/v1/auth/refresh",
+            cookies={"refresh_token": "invalid.token.here"},
+        )
+        assert response.status_code == 401
+
+    async def test_refresh_missing_cookie(self, client: AsyncClient):
+        response = await client.post("/api/v1/auth/refresh")
         assert response.status_code == 401
 
     async def test_refresh_access_token_rejected(self, client: AsyncClient, test_user):
@@ -88,22 +94,25 @@ class TestRefresh:
         user_id = str(test_user["_id"])
         at = create_access_token(user_id, "user")
 
-        response = await client.post("/api/v1/auth/refresh", json={
-            "refreshToken": at,
-        })
+        response = await client.post("/api/v1/auth/refresh", cookies={"refresh_token": at})
         assert response.status_code == 401
 
 
 @pytest.mark.asyncio
 class TestLogout:
     async def test_logout_success(self, client: AsyncClient, auth_headers):
-        response = await client.post("/api/v1/auth/logout", headers=auth_headers)
+        response = await client.post(
+            "/api/v1/auth/logout",
+            headers=auth_headers,
+            cookies={"refresh_token": "token-to-clear"},
+        )
         assert response.status_code == 200
         assert "Logged out" in response.json()["detail"]
+        assert response.cookies.get("refresh_token") is None
 
     async def test_logout_without_auth(self, client: AsyncClient):
         response = await client.post("/api/v1/auth/logout")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 @pytest.mark.asyncio
@@ -117,7 +126,7 @@ class TestGetMe:
 
     async def test_get_me_without_auth(self, client: AsyncClient):
         response = await client.get("/api/v1/auth/me")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
     async def test_get_me_invalid_token(self, client: AsyncClient):
         headers = {"Authorization": "Bearer invalid.token.here"}
@@ -232,7 +241,7 @@ class TestVerifyEmail:
 @pytest.mark.asyncio
 class TestGoogleLogin:
     async def test_google_login_not_configured(self, client: AsyncClient):
-        with patch("core.config.settings") as mock_settings:
+        with patch("api.auth.settings") as mock_settings:
             mock_settings.google_client_id = ""
             response = await client.post("/api/v1/auth/google", json={
                 "credential": "sometoken",

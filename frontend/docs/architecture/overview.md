@@ -73,7 +73,7 @@ Component (LoginForm, RegisterForm, etc.)
     ▼
 AuthProvider (Context)
     │  fetch() to backend API
-    │  Store response in localStorage
+    │  Keep access token in memory; refresh token stays in httpOnly cookie
     ▼
 Backend API (FastAPI)
     │
@@ -85,22 +85,22 @@ MongoDB
 
 ### Register
 ```
-RegisterForm → useAuth().register() → POST /auth/register → Save to localStorage → Redirect /
+RegisterForm → useAuth().register() → POST /auth/register → Store access token in memory → Redirect /
 ```
 
 ### Login
 ```
-LoginForm → useAuth().login() → POST /auth/login → Save to localStorage → Redirect /
+LoginForm → useAuth().login() → POST /auth/login → Store access token in memory → Redirect /
 ```
 
 ### Auto Refresh
 ```
-apiFetch() → 401 response → POST /auth/refresh → Retry original request
+apiFetch() → 401/403 response → POST /auth/refresh with httpOnly cookie → Retry original request
 ```
 
 ### Logout
 ```
-Navbar → useAuth().logout() → POST /auth/logout → Clear localStorage → Redirect /
+Navbar → useAuth().logout() → POST /auth/logout → Clear in-memory auth state and cookie → Redirect /
 ```
 
 ## Route Protection
@@ -116,7 +116,7 @@ Navbar → useAuth().logout() → POST /auth/logout → Clear localStorage → R
 | `/dashboard` | Yes | Redirect to `/login` if not logged in |
 | `/profile` | Yes | Redirect to `/login` if not logged in |
 
-**Note**: Route protection is handled by Next.js middleware (`middleware.ts`) which checks for auth token in cookies/localStorage.
+**Note**: Access tokens are kept only in memory. Refresh tokens are held in `httpOnly` cookies and are not readable by frontend JavaScript.
 
 ## Styling
 

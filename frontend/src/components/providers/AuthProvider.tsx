@@ -1,7 +1,15 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
-import type { User, AuthResponse } from "@/types/auth";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import type { AuthResponse, TokenResponse, User } from "@/types/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000/api/v1";
 
@@ -29,49 +37,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const accessTokenRef = useRef<string | null>(null);
-  const refreshTokenRef = useRef<string | null>(null);
   const refreshing = useRef<Promise<string | null> | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("auth");
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        setUser(data.user);
-        accessTokenRef.current = data.accessToken;
-        refreshTokenRef.current = data.refreshToken;
-      } catch {
-        localStorage.removeItem("auth");
-      }
-    }
-    setIsLoading(false);
-  }, []);
-
-  const saveAuth = useCallback((data: AuthResponse) => {
-    const authData = {
-      user: data.user,
-      accessToken: data.tokens.accessToken,
-      refreshToken: data.tokens.refreshToken,
-    };
-    setUser(authData.user);
-    accessTokenRef.current = authData.accessToken;
-    refreshTokenRef.current = authData.refreshToken;
-    localStorage.setItem("auth", JSON.stringify(authData));
-  }, []);
 
   const clearAuth = useCallback(() => {
     setUser(null);
     accessTokenRef.current = null;
-    refreshTokenRef.current = null;
-    localStorage.removeItem("auth");
   }, []);
 
-  const doRefresh = useCallback(async (rt: string): Promise<string | null> => {
+  const saveAuth = useCallback((data: AuthResponse) => {
+    setUser(data.user);
+    accessTokenRef.current = data.accessToken;
+  }, []);
+
+  const doRefresh = useCallback(async (): Promise<string | null> => {
     try {
       const res = await fetch(`${API_URL}/auth/refresh`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken: rt }),
       });
 
       if (!res.ok) {
@@ -79,17 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return null;
       }
 
-      const data = await res.json();
+      const data: TokenResponse = await res.json();
       accessTokenRef.current = data.accessToken;
-      refreshTokenRef.current = data.refreshToken;
-
-      const stored = localStorage.getItem("auth");
-      if (stored) {
-        const auth = JSON.parse(stored);
-        auth.accessToken = data.accessToken;
-        auth.refreshToken = data.refreshToken;
-        localStorage.setItem("auth", JSON.stringify(auth));
-      }
       return data.accessToken;
     } catch {
       clearAuth();
@@ -97,111 +71,167 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [clearAuth]);
 
-  const apiFetch = useCallback(async (path: string, options: RequestInit = {}): Promise<Response> => {
-    const doFetch = async (token: string | null) => {
-      return fetch(`${API_URL}${path}`, {
-        ...options,
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...options.headers,
-        },
-      });
+  const apiFetch = useCallback(
+    async (path: string, options: RequestInit = {}): Promise<Response> => {
+      const doFetch = async (token: string | null) =>
+        fetch(`${API_URL}${path}`, {
+          ...options,
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...options.headers,
+          },
+        });
+
+      let res = await doFetch(accessTokenRef.current);
+
+      if (res.status === 401 || res.status === 403) {
+        if (!refreshing.current) {
+          refreshing.current = doRefresh();
+        }
+
+        const newToken = await refreshing.current;
+        refreshing.current = null;
+
+        if (newToken) {
+          res = await doFetch(newToken);
+        }
+      }
+
+      return res;
+    },
+    [doRefresh],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const hydrateSession = async () => {
+      const token = await doRefresh();
+      if (!token || cancelled) {
+        if (!cancelled) setIsLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok && !cancelled) {
+          const currentUser: User = await res.json();
+          setUser(currentUser);
+        } else if (!cancelled) {
+          clearAuth();
+        }
+      } catch {
+        if (!cancelled) clearAuth();
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
     };
 
-    let res = await doFetch(accessTokenRef.current);
+    void hydrateSession();
 
-    if (res.status === 401 && refreshTokenRef.current) {
-      if (!refreshing.current) {
-        refreshing.current = doRefresh(refreshTokenRef.current);
-      }
-      const newToken = await refreshing.current;
-      refreshing.current = null;
-
-      if (newToken) {
-        res = await doFetch(newToken);
-      }
-    }
-
-    return res;
-  }, [doRefresh]);
+    return () => {
+      cancelled = true;
+    };
+  }, [clearAuth, doRefresh]);
 
   const logout = useCallback(async () => {
     try {
       await apiFetch("/auth/logout", { method: "POST" });
     } catch {
-      // ignore errors
+      // Ignore logout network errors; local state is still cleared.
     }
     clearAuth();
   }, [apiFetch, clearAuth]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    try {
-      const res = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  const login = useCallback(
+    async (email: string, password: string) => {
+      try {
+        const res = await fetch(`${API_URL}/auth/login`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        return { error: data?.detail ?? "Login failed" };
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          return { error: data?.detail ?? "Login failed" };
+        }
+
+        const data: AuthResponse = await res.json();
+        saveAuth(data);
+        return {};
+      } catch {
+        return { error: "Network error" };
       }
+    },
+    [saveAuth],
+  );
 
-      const data: AuthResponse = await res.json();
-      saveAuth(data);
-      return {};
-    } catch {
-      return { error: "Network error" };
-    }
-  }, [saveAuth]);
+  const register = useCallback(
+    async (name: string, email: string, password: string) => {
+      try {
+        const res = await fetch(`${API_URL}/auth/register`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
 
-  const register = useCallback(async (name: string, email: string, password: string) => {
-    try {
-      const res = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          return { error: data?.detail ?? "Registration failed" };
+        }
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        return { error: data?.detail ?? "Registration failed" };
+        const data: AuthResponse = await res.json();
+        saveAuth(data);
+        return {};
+      } catch {
+        return { error: "Network error" };
       }
+    },
+    [saveAuth],
+  );
 
-      const data: AuthResponse = await res.json();
-      saveAuth(data);
-      return {};
-    } catch {
-      return { error: "Network error" };
-    }
-  }, [saveAuth]);
+  const googleLogin = useCallback(
+    async (credential: string) => {
+      try {
+        const res = await fetch(`${API_URL}/auth/google`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credential }),
+        });
 
-  const googleLogin = useCallback(async (credential: string) => {
-    try {
-      const res = await fetch(`${API_URL}/auth/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential }),
-      });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          return { error: data?.detail ?? "Google login failed" };
+        }
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        return { error: data?.detail ?? "Google login failed" };
+        const data: AuthResponse = await res.json();
+        saveAuth(data);
+        return {};
+      } catch {
+        return { error: "Network error" };
       }
-
-      const data: AuthResponse = await res.json();
-      saveAuth(data);
-      return {};
-    } catch {
-      return { error: "Network error" };
-    }
-  }, [saveAuth]);
+    },
+    [saveAuth],
+  );
 
   const forgotPassword = useCallback(async (email: string) => {
     try {
       const res = await fetch(`${API_URL}/auth/forgot-password`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
@@ -221,6 +251,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fetch(`${API_URL}/auth/reset-password`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword }),
       });

@@ -10,7 +10,7 @@
 │  │  - Landing Page (SEO)                                    │   │
 │  │  - Auth Pages (Login, Register, Forgot Password)         │   │
 │  │  - Dashboard (Protected)                                 │   │
-│  │  - AuthProvider (localStorage + auto-refresh)            │   │
+│  │  - AuthProvider (memory access token + cookie refresh)   │   │
 │  └──────────────────────────┬───────────────────────────────┘   │
 └─────────────────────────────┼───────────────────────────────────┘
                               │ HTTP/REST
@@ -102,7 +102,7 @@ backend/
 
 - **Access Token (AT)**: 15 min expiry, contains user_id + role
 - **Refresh Token (RT)**: 7 day expiry, stored in MongoDB for revocation
-- **Storage**: Frontend localStorage (httpOnly cookies for production)
+- **Storage**: Access token in frontend memory; refresh token in httpOnly cookie
 
 ## Security Considerations
 

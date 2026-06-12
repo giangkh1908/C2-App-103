@@ -36,12 +36,12 @@ Register a new user.
     "avatar": null,
     "createdAt": "2024-01-01T00:00:00+00:00"
   },
-  "tokens": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
+
+The refresh token is set as an `httpOnly` `refresh_token` cookie scoped to `/api/v1/auth`.
+It is not returned in the JSON response and must not be read or stored by frontend JavaScript.
 
 **Errors:**
 - `409` - Email already registered
@@ -89,22 +89,18 @@ Login with Google ID token.
 
 ### POST /auth/refresh
 
-Get new access token using refresh token.
+Get a new access token using the `httpOnly` `refresh_token` cookie.
 
-**Request Body:**
-```json
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
+**Cookies:** `refresh_token=<refresh_token>`
 
 **Response (200):**
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
+
+A rotated refresh token is set in the `refresh_token` cookie.
 
 **Errors:**
 - `401` - Invalid refresh token
@@ -137,7 +133,7 @@ Get current user info.
 
 ### POST /auth/logout 🔒
 
-Logout and revoke refresh token.
+Logout and clear the `refresh_token` cookie.
 
 **Headers:** `Authorization: Bearer <access_token>`
 

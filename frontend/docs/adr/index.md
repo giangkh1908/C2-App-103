@@ -29,7 +29,6 @@ We chose **Custom AuthContext** because:
 - Easy to understand
 
 **Negative:**
-- localStorage vulnerable to XSS (mitigated with short token expiry)
 - Need to handle token refresh manually
 
 ---
@@ -69,7 +68,7 @@ We chose **Zod** because:
 
 ---
 
-## ADR-003: localStorage for Token Storage
+## ADR-003: In-Memory Access Token and httpOnly Refresh Cookie
 
 ### Status
 
@@ -85,26 +84,26 @@ Where to store JWT tokens? Options:
 
 ### Decision
 
-We chose **localStorage** because:
-- Persists across tab closes and browser restarts
-- Easy to access from any component
-- Works with SSR (check on client side)
+We chose **in-memory access tokens plus httpOnly refresh cookies** because:
+- Access tokens are not persisted and are harder to steal via XSS
+- Refresh tokens are not readable by frontend JavaScript
+- Sessions can still survive reloads through `/auth/refresh`
 
 ### Consequences
 
 **Positive:**
-- Simple implementation
-- Persistent sessions
-- Easy to debug
+- Reduces impact of XSS on auth tokens
+- Keeps refresh token handling centralized in the backend
+- Preserves session continuity across reloads
 
 **Negative:**
-- Vulnerable to XSS attacks
-- Not accessible from server
+- Access token must be rehydrated after reload
+- Requires `credentials: "include"` and correct CORS/cookie settings
 
 ### Mitigations:
 - Short access token expiry (15 min)
 - CSP headers to prevent XSS
-- Can upgrade to httpOnly cookies for production
+- Refresh token cookie is `httpOnly`, `SameSite=Lax`, and `Secure` outside development
 
 ---
 

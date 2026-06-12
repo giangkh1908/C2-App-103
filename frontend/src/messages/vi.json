@@ -1,0 +1,243 @@
+{
+  "common": {
+    "brand": "Toán Trực Quan AI",
+    "brandSubtitle": "Visual Tutor Helper",
+    "loading": "Đang xử lý...",
+    "backToHome": "Quay lại trang chủ",
+    "verified": "Thành viên Verified"
+  },
+  "nav": {
+    "benefits": "Lợi ích cốt lõi",
+    "sandbox": "Mô phỏng học thử",
+    "roadmap": "Lộ trình lớp 1-5",
+    "faq": "Câu hỏi thường gặp",
+    "login": "Đăng nhập",
+    "cta": "Học thử ngay"
+  },
+  "auth": {
+    "googleButton": "Tiếp tục với Google",
+    "orDivider": "hoặc",
+    "login": {
+      "title": "Chào mừng trở lại",
+      "subtitle": "Đăng nhập để tiếp tục học Toán cùng AI",
+      "email": "Email",
+      "emailPlaceholder": "ban@email.com",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "remember": "Ghi nhớ đăng nhập",
+      "forgot": "Quên mật khẩu?",
+      "submit": "Đăng nhập",
+      "noAccount": "Chưa có tài khoản?",
+      "registerLink": "Đăng ký ngay",
+      "metaTitle": "Đăng nhập"
+    },
+    "register": {
+      "title": "Tạo tài khoản mới",
+      "subtitle": "Bắt đầu hành trình học Toán trực quan cho con",
+      "name": "Họ tên",
+      "namePlaceholder": "Nguyễn Văn A",
+      "email": "Email",
+      "emailPlaceholder": "ban@email.com",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Ít nhất 6 ký tự",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
+      "submit": "Tạo tài khoản",
+      "hasAccount": "Đã có tài khoản?",
+      "loginLink": "Đăng nhập",
+      "metaTitle": "Đăng ký"
+    },
+    "errors": {
+      "emailRequired": "Vui lòng nhập email",
+      "emailInvalid": "Email không hợp lệ",
+      "passwordRequired": "Vui lòng nhập mật khẩu",
+      "nameRequired": "Vui lòng nhập họ tên",
+      "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp"
+    }
+  },
+  "hero": {
+    "badge": "AI gia sư trực quan sinh động",
+    "headline1": "Hiểu sâu",
+    "headline2": "bản chất Toán",
+    "headline3": "bằng mắt nhìn, chạm thử 👆",
+    "descriptionBold": "AI không làm bài thay học sinh tiểu học.",
+    "description": "Trẻ em không hề thiếu bài tập khó khăn, mà thiếu cách học chân thật sát sao: ít chữ, nhiều minh hoạ — đem kéo kẹo dâu, chia lát pizza sinh động và giao diện kéo chạm tay.",
+    "feature1": "Ví dụ siêu gần gũi (Kẹo kéo, Táo vườn, Pizza, Ô lát gạch)",
+    "feature2": "Mô phỏng trải nghiệm xúc giác — bé tự tay kéo số liệu nhảy kết quả",
+    "feature3": "Gia sư AI phát giọng Việt ngữ ấm căn — thấu đạt tâm lý của các bé",
+    "cta1": "Chạm tay trải nghiệm thử",
+    "cta2": "Lộ trình Lớp 1 - 5",
+    "visualBox": "Hộp Trực Quan Hoá",
+    "visualExample": "Ví dụ mẫu: Phân số 3/4 chiếc bánh",
+    "visualHint": "Chạm vào bánh để cảm nhận phản hồi!",
+    "visualExplanation": "Mẫu số là đếm chiếc bánh cắt làm 4 phần, tử số là lấy đi 3 phần. Trẻ ghi nhớ vĩnh viễn nhờ trải nghiệm xúc giác chân thật!"
+  },
+  "benefits": {
+    "badge": "Phác hoạ điểm khác biệt của",
+    "badgeHighlight": "Gia sư Toán Trực Quan AI",
+    "description": "Không sinh bài tập tự động mệt mỏi. Chúng em thắp sáng hạt mầm đam mê của bé — qua học cụ trực quan.",
+    "card1Title": "Hiểu bản chất trước mỗi làm bài",
+    "card1Desc": "Thay vì bắt thuộc công thức tính diện tích khó cứng, chúng em đưa ra lưới ô — để các bé vừa gieo mầm xanh, vừa ngộ ra diện tích thực ra là tổng số ô vuông.",
+    "card1Tag": "Trình trực diện",
+    "card2Title": "Ấn dụ — đối thường ngọt ngào",
+    "card2Desc": "Sử dụng kẹo ngọt, quả táo chín đỏ và những người bạn búp bê dễ thương — để mang toán học về gần thế giới vui thích thường ngày của trẻ.",
+    "card2Tag": "Gần gũi & vui tươi",
+    "card3Title": "Giọng đọc Việt ngữ ấm căn",
+    "card3Desc": "Được tích hợp bộ loa thông minh thuyết minh từng hoạt động — bé lớp 1 vẫn thoải mái tự lập học toán mà không cần ba mẹ kèm cặp.",
+    "card3Tag": "Tập trung & Thư giãn"
+  },
+  "sandbox": {
+    "title": "Phòng mô phỏng trực quan",
+    "description": "Chọn một chủ đề Toán tiểu học bên dưới — để trực tiếp chạm chuột gieo hạt, bốc kẹo, chia tao — xem công thức thay đổi tức thì nhé!",
+    "tabMultiplication": "Phép nhân (Lớp 2)",
+    "tabDivision": "Phép chia (Lớp 2)",
+    "tabFraction": "Phân số (Lớp 3)",
+    "tabArea": "Diện tích (Lớp 4)",
+    "gradeLabel": "Lớp {grade} - Toán Học Bản Chất",
+    "ttsPlaying": "Đang đọc...",
+    "ttsButton": "Nghe cô giảng bài",
+    "explanationTitle": "Trích bài giảng:",
+    "visualTitle": "Ấn dụ trực quan:",
+    "practiceTitle": "Bé thử ôn tập thực hành:",
+    "correctFeedback": "Bé làm xuất sắc!",
+    "incorrectFeedback": "Động viên bé nghĩ lại:",
+    "multiplication": {
+      "title": "Phép nhân: 3 đĩa bánh, mỗi đĩa có 4 chiếc bánh kẹo dâu",
+      "explanation": "Bản chất phép nhân thực chất chính là việc cộng lặp các nhóm có số lượng hoàn toàn bằng nhau nhiều lần. Thay vì cộng 4 + 4 + 4, bé có thể viết gọn là 3 × 4.",
+      "lifeExample": "Tưởng tượng mẹ chuẩn bị 3 chiếc đĩa sạch sẽ. Trên mỗi đĩa, mẹ xếp đều đặn 4 viên kẹo dâu ngọt ngào. Em đếm xem chúng ta có tổng cộng bao nhiêu viên kẹo nhé!",
+      "question": "Trong khu vườn gieo hạt, chú thỏ Nâu trồng 4 luống cà rốt ngot. Mỗi luống có đúng 5 củ cà rốt tròn mập. Phép tính nhân nào chỉ tổng số củ cà rốt chú thỏ có?",
+      "optionA": "A. 4 + 5 = 9 củ",
+      "optionB": "B. 4 × 5 = 20 củ",
+      "optionC": "C. 5 × 4 = 15 củ",
+      "optionD": "D. 4 × 5 = 24 củ",
+      "correctMsg": "Tuyệt vời ông mặt trời! Chú thỏ đã nhổ được 20 củ cà rốt ngon lành đấy!",
+      "incorrectMsg": "Chưa chính xác rồi bé yêu! Có 4 nhóm (4 luống), mỗi nhóm có 5 củ — ta lấy 4 × 5 = 20 nhé!"
+    },
+    "division": {
+      "title": "Phép chia: Chia đều 12 quả táo đỏ cho 3 bạn búp bê",
+      "explanation": "Phép chia chính là việc chúng ta san rộng đều một số lượng đồ vật ban đầu thành các phần bằng nhau — giúp các bạn búp bê ai cũng nhận phần quà như phát đều tay.",
+      "lifeExample": "Bé có 12 quả táo đỏ giòn ngot. Bé muốn mang chia hoàn toàn công bằng cho 3 búp bê thú bông dễ thương đang xếp hàng. Hỏi mỗi bạn được ôm bao nhiêu quả táo nhỉ?",
+      "question": "Thầy giáo có 15 cuốn vở học tập. Thầy muốn chia đều cho 5 học sinh gương mẫu đạt điểm 10. Hỏi mỗi bạn được thầy tặng cho bao nhiêu cuốn vở?",
+      "optionA": "A. Mỗi bạn được 3 cuốn vở",
+      "optionB": "B. Mỗi bạn được 5 cuốn vở",
+      "optionC": "C. Mỗi bạn được 4 cuốn vở",
+      "optionD": "D. Mỗi bạn được 6 cuốn vở",
+      "correctMsg": "Chính xác! 15 cuốn chia đều cho 5 bạn — thì mỗi bạn ôm tròn 3 cuốn đẹp đẽ!",
+      "incorrectMsg": "Chưa chính xác đâu bé ơi! Thử lấy 15 chia đều cho 5 nhóm xem, mỗi nhóm sẽ có 3 quyển nhé."
+    },
+    "fraction": {
+      "title": "Phân số: Ăn mất 3 phần trong chiếc bánh Pizza cắt 4 phần",
+      "explanation": "Phân số thể hiện lát cắt chia đều của một đồ vật nguyên vẹn. Số dưới (mẫu số) là tổng số phần bánh mẹ cắt. Số trên (tử số) là số phần bé ăn.",
+      "lifeExample": "Mẹ nướng bánh Pizza dâu tây tuyệt ngon và dùng dao chia đều thành 4 lát bánh. Bé bụng đói đã ăn ngon lành hết 3 lát bánh. Phân số chỉ phần bánh bé ăn chính là 3/4!",
+      "question": "Một băng giấy dài được chia thành 6 đoạn thẳng bằng nhau như thước đo. Bé Mai tô màu xanh cho 5 đoạn. Phân nào biểu thị phần băng giấy Mai đã tô màu?",
+      "optionA": "A. 1/6 băng giấy",
+      "optionB": "B. 5/6 băng giấy",
+      "optionC": "C. 6/5 băng giấy",
+      "optionD": "D. 5/5 băng giấy",
+      "correctMsg": "Quá xuất sắc! Số mảnh tô màu là 5 nằm ở trên, tổng số mảnh chia 6 nằm ở dưới — tạo thành 5/6!",
+      "incorrectMsg": "Oops! Nhớ rằng số phần được chọn nằm ở trên tử số nhé, còn tổng số phần ở dưới mẫu số."
+    },
+    "area": {
+      "title": "Diện tích và Chu vi: Mảnh vườn luống dài 4m và rộng 3m",
+      "explanation": "Chu vi chính là tổng độ dài bao quanh chạy viền xung quanh mép nhà. Còn Diện tích là toàn bộ phần đất phẳng xanh rì bên trong được lát kín bằng những ô cỏ mầm tây.",
+      "lifeExample": "Bố rào quanh một mảnh vườn nhỏ có chiều dài 4 mét và chiều rộng 3 mét — để bé trồng hoa cỏ dài. Diện tích gieo hạt là 12 mét vuông, còn chu vi hàng rào là 14 mét.",
+      "question": "Mẹ tặng bé một tấm thảm học tập hình chữ nhật có chiều dài 5dm và chiều rộng 4dm. Hãy tính chu vi và diện tích chiếc thảm này giúp mẹ nhé!",
+      "optionA": "A. Chu vi: 18dm | Diện tích: 20dm²",
+      "optionB": "B. Chu vi: 9dm | Diện tích: 20dm²",
+      "optionC": "C. Chu vi: 20dm | Diện tích: 9dm²",
+      "optionD": "D. Chu vi: 18dm | Diện tích: 18dm²",
+      "correctMsg": "Đúng rồi bé ơi! Diện tích = 5 × 4 = 20dm². Chu vi = (5 + 4) × 2 = 18dm.",
+      "incorrectMsg": "Hơi nhầm một xíu rồi! Diện tích bằng Dài nhân Rộng (5 × 4), còn Chu vi bằng Dài cộng Rộng nhân đôi ((5 + 4) × 2) đó."
+    },
+    "simMultiplication": {
+      "hint": "Chạm vào từng đĩa để thay đổi số kẹo (từ 1 đến 6 viên)",
+      "plate": "Đĩa {idx}",
+      "count": "{count} viên",
+      "additionLabel": "Công thức cộng đơn của em:",
+      "additionFormula": "Phép tính cộng: {result} = {total} viên",
+      "visualLabel": "Trực quan hoá phép nhân:",
+      "multiplyFormula": "{n} đĩa × {m} kẹo = {total} viên"
+    },
+    "simDivision": {
+      "hint": "Lấy táo trong giỏ phân bố cho búp bê — chạm búp bê để thu hồi táo về giỏ!",
+      "basket": "Giỏ táo lớn của em ({n} quả)",
+      "empty": "Hết táo trong giỏ rồi!",
+      "doll": "Búp bê {idx}",
+      "waiting": "Đang chờ...",
+      "portion": "Phần ăn: {n} quả",
+      "status": "Tổng số táo: {total} quả | Đã chia: {distributed} quả | Còn dư: {basket} quả"
+    },
+    "simFraction": {
+      "hint": "Chạm vào từng phần bánh để \"ăn\" hoặc \"trả lại\" nhé!",
+      "eaten": "Đã ăn: {n} phần bánh",
+      "total": "Cả đĩa: {n} miếng bằng nhau"
+    },
+    "simArea": {
+      "hint": "Chạm vào từng ô vuông để \"gieo cỏ xanh\" hoặc \"thu hoạch — xới đất\"",
+      "areaLabel": "Diện tích =",
+      "perimeterLabel": "Chu vi = (4 + 3) × 2 =",
+      "perimeterValue": "14 mét"
+    }
+  },
+  "roadmap": {
+    "badge": "Bản đồ học thuật toàn diện",
+    "title": "Lộ trình đầy đặn hình ảnh — từ Lớp 1 - Lớp 5",
+    "description": "Mỗi bài giảng đều có sự trợ lực của đồ hình trực quan xúc giác — giúp bé tiếp thu nhẹ tênh từ đếm chuỗi cho tới tính chu vi diện tích đa giác phức tạp.",
+    "grade1Title": "Lớp 1",
+    "grade1Subtitle": "Đếm kẹo ngọt & so sánh đầu",
+    "grade1Desc": "Sắp xếp dãy số, thêm bớt từ 1 đến 10 — dựa trên quả đào chin căng quả, số chấm so sánh nhiều ít.",
+    "grade2Title": "Lớp 2",
+    "grade2Subtitle": "Nối bảng nhân & chia đều táo",
+    "grade2Desc": "Ghép thành các đĩa bánh đều đặn — hiểu sâu bản chất phép nhân chính là cộng lặp, phép chia là chia đều.",
+    "grade3Title": "Lớp 3",
+    "grade3Subtitle": "Cắt lát bánh Pizza dâu",
+    "grade3Desc": "Bé vun phân số cơ bản, nhân chia chữ số — nghìn chục nghìn — thông qua xếp khối hộp đồ chơi.",
+    "grade4Title": "Lớp 4",
+    "grade4Subtitle": "Lớp gạch sàn thảm chu vi",
+    "grade4Desc": "Tính mét vuông lớp gạch, bờ đường viền mép bờ tường. Đếm diện tích cực kỳ trực diện.",
+    "grade5Title": "Lớp 5",
+    "grade5Subtitle": "Đo nước bình đổ thể tích",
+    "grade5Desc": "Rót nước ngọt đầy đặn các bình đồng chia độ — để muỗng tương tỉ số phần trăm và thể tích hộp."
+  },
+  "testimonials": {
+    "title": "Phản hồi ấn tượng của Phụ huynh",
+    "description": "Nghe ba mẹ và các cô giáo tiểu học — thử lại hành trình từ chỗ ghét Toán chuyển sang tự lập chạm đứt điểm bài học.",
+    "review1Text": "Cú Bin nhà mình năm nay lớp 2, cứ nhìn thấy trang sách Toán đầy chữ số là nản mặt khóc thét. Từ ngày cho chơi app trực quan chạm đĩa kẹo dâu tây này, cháu mê tít. Bé tự kéo chính số lượng và tự cười phá lên báo hoá ra phép tính thật dễ thương.",
+    "review1Author": "Chị Mai Lan (Phụ huynh bé Hoàng Minh, Lớp 2 - Q.3, TP.HCM)",
+    "review2Text": "Bản thân là giáo viên tiểu học, tôi cực kỳ coi trọng tính trực quan của đồ vật lúc dạy phân số. Việc app vẽ chiếc bánh pizza cho trẻ chạm từng phần ăn để đổi tử số mẫu số rất trực quan — giúp các con in sâu ký ức hiệu quả.",
+    "review2Author": "Cô Thu Hương (Giáo viên trường Tiểu học thực nghiệm - Hà Nội)",
+    "review3Text": "Gia đình bạn bận rộn bán bánh không giờ dạy con học Toán lớp 3. Tìm trợ lý gia sư AI có chức năng đọc lên Việt ngữ kèm ti kéo dâu gõ cách cách như thế này — làm bé tập trung hẳn, không cần mẹ nhắc nhở.",
+    "review3Author": "Anh Quốc Bảo (Ba bé Thùy Dung, Lớp 3 - Ninh Kiều, Cần Thơ)"
+  },
+  "faq": {
+    "title": "Gỡ rối khúc mắc của Ba Mẹ",
+    "description": "Giải đáp nhanh chóng những băn khoan phổ biến nhất khi ứng dụng mô hình gia sư tương tác thông minh cho các bé.",
+    "q1": "Bé học gia sư AI trực quan này có sợ quá ựa rồi ười làm bài không?",
+    "a1": "Tuyệt đối KHÔNG ba mẹ nhé! Hệ thống không giam giữ bài hay điền hộ đáp án. Nhiệm vụ chính của AI là vẽ hình ảnh hoá bản chất Toán học — từ đĩa kẹo kéo, chiếc bánh pizza — để kích thích tư duy, sau đó bé vẫn phải tự lập suy luận đặt bút làm trắc nghiệm.",
+    "q2": "Chương trình trực quan này có bám sát đúng chuẩn của Bộ Giáo dục VN không?",
+    "a2": "Có, lộ trình được tinh chỉnh bám sát theo chuẩn Chương trình Giáo dục Phổ thông mới. Toàn bộ các mốc học thuật lớp 1-5 từ bảng tính cộng dồn, phép nhân gom nhóm, phân số hay chu vi diện tích — đều tương thích 100% với bài học sách giáo khoa hiện hành.",
+    "q3": "Lợi ích lớn nhất của việc nghe giọng kể truyền cảm hứng (Loa phát)?",
+    "a3": "Đối với các bé lớp 1 và lớp 2, kỹ năng đọc hiểu văn bản chữ nhiều hạn con bỏ sót. Có loa đọc bằng tiếng Việt sẽ ấm dẫn đặt bé tự lập bám nghe giảng bài mà không cảm thấy cô đơn hay cần ba mẹ kè kè bên cạnh.",
+    "q4": "Làm thế nào để sử dụng thử tính năng này đạt hiệu quả cao nhất?",
+    "a4": "Hãy để bé tự nắm quyền kiểm soát! Ba mẹ khuyến khích con tự click chuột ném trái miếng bánh pizza dâu, tự chạm ném lát đất gieo hạt mầm mọc cây lên màn hình. Đông chạm có học xúc giác giúp luôn khơi gợi vết hằn tư duy tối ưu trong trí trẻ."
+  },
+  "footer": {
+    "brand": "Toán Trực Quan AI",
+    "tagline": "Hiểu Bản Chất — Khởi Nguồn Niềm Vui Học Tập",
+    "top": "Về đầu trang",
+    "benefits": "Lợi ích",
+    "sandbox": "Học mô phỏng",
+    "roadmap": "Lộ trình phổ thông",
+    "copyright": "Sản phẩm được tối ưu hoàn chỉnh, tích hợp gia sư AI phát thanh trực quan Việt ngữ bám sát chương trình tiểu học hiện hành."
+  },
+  "metadata": {
+    "titleDefault": "Toán Trực Quan AI — Gia sư Toán trực quan cho học sinh tiểu học",
+    "titleTemplate": "%s | Toán Trực Quan AI",
+    "description": "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh, thao tác trực quan và phản hồi tức thì. Học phép nhân, phép chia, phân số, chu vi & diện tích bằng Visual Card và Mini Simulation.",
+    "ogTitle": "Toán Trực Quan AI — Hiểu sâu bản chất Toán bằng mắt nhìn, chạm thử",
+    "ogDescription": "AI không làm bài thay học sinh. AI giúp học sinh hiểu bản chất khái niệm Toán qua Visual Card và Mini Simulation.",
+    "twitterTitle": "Toán Trực Quan AI — Gia sư Toán trực quan",
+    "twitterDescription": "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh và thao tác trực quan."
+  }
+}

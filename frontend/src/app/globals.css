@@ -1,26 +1,92 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-serif: "Lora", "Playfair Display", Georgia, serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-natural-bg: #FAF9F5;
+  --color-natural-dark: #2D2A26;
+  --color-natural-charcoal: #3D3B37;
+  --color-natural-green: #4A6741;
+  --color-natural-green-hover: #3D5435;
+  --color-natural-orange: #FF8C42;
+  --color-natural-border: #E8E6D9;
+  --color-natural-dashed: #D1CEC3;
+  --color-natural-green-tint: #E9F0E6;
+  --color-natural-orange-tint: #FFF4E5;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-natural-bg);
+  color: var(--color-natural-charcoal);
+}
+
+/* ── Scroll reveal animations ── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(6deg); }
+  75% { transform: rotate(-6deg); }
+}
+
+@keyframes bounceY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.reveal {
+  opacity: 0;
+}
+
+.reveal.visible {
+  animation: fadeUp 0.6s ease-out forwards;
+}
+
+.reveal-fade.visible {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.reveal-scale.visible {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+.animate-bounce-y {
+  animation: bounceY 2s ease-in-out infinite;
+}
+
+/* Selection color */
+::selection {
+  background-color: #4A6741;
+  color: white;
 }

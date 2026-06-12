@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/useAuth";
+import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import Input from "@/components/ui/Input";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
@@ -12,48 +15,57 @@ export default function RegisterForm() {
   const t = useTranslations("auth.register");
   const tAuth = useTranslations("auth");
   const tErr = useTranslations("auth.errors");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const router = useRouter();
+  const { register } = useAuth();
+
+  const [form, setForm] = useState<RegisterInput>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof RegisterInput, string>>>({});
+  const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!name.trim()) newErrors.name = tErr("nameRequired");
-    if (!email.trim()) {
-      newErrors.email = tErr("emailRequired");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = tErr("emailInvalid");
-    }
-    if (!password) {
-      newErrors.password = tErr("passwordRequired");
-    } else if (password.length < 6) {
-      newErrors.password = tErr("passwordMin");
-    }
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = tErr("passwordMismatch");
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (field: keyof RegisterInput) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setServerError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    setServerError(null);
+
+    const result = registerSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof RegisterInput, string>> = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof RegisterInput;
+        fieldErrors[field] = tErr(issue.message as Parameters<typeof tErr>[0]);
+      });
+      setErrors(fieldErrors);
+      return;
+    }
 
     setLoading(true);
-    // TODO: Gọi API backend khi có
-    console.log("Register:", { name, email, password });
-    setTimeout(() => setLoading(false), 1000);
+    const { error } = await register(form.name, form.email, form.password);
+    if (error) {
+      setServerError(error);
+    } else {
+      router.push("/");
+      router.refresh();
+    }
+    setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <GoogleSignInButton />
 
-      {/* Divider */}
       <div className="relative flex items-center justify-center py-1">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-natural-border" />
@@ -63,12 +75,18 @@ export default function RegisterForm() {
         </span>
       </div>
 
+      {serverError && (
+        <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-[12px] text-red-600 font-medium">
+          {serverError}
+        </div>
+      )}
+
       <Input
         label={t("name")}
         type="text"
         placeholder={t("namePlaceholder")}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={form.name}
+        onChange={handleChange("name")}
         error={errors.name}
         autoComplete="name"
       />
@@ -77,8 +95,8 @@ export default function RegisterForm() {
         label={t("email")}
         type="email"
         placeholder={t("emailPlaceholder")}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        value={form.email}
+        onChange={handleChange("email")}
         error={errors.email}
         autoComplete="email"
       />
@@ -86,8 +104,8 @@ export default function RegisterForm() {
       <PasswordInput
         label={t("password")}
         placeholder={t("passwordPlaceholder")}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        value={form.password}
+        onChange={handleChange("password")}
         error={errors.password}
         autoComplete="new-password"
       />
@@ -95,8 +113,8 @@ export default function RegisterForm() {
       <PasswordInput
         label={t("confirmPassword")}
         placeholder={t("confirmPasswordPlaceholder")}
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
+        value={form.confirmPassword}
+        onChange={handleChange("confirmPassword")}
         error={errors.confirmPassword}
         autoComplete="new-password"
       />

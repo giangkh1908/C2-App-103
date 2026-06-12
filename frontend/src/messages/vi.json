@@ -12,7 +12,10 @@
     "roadmap": "Lộ trình lớp 1-5",
     "faq": "Câu hỏi thường gặp",
     "login": "Đăng nhập",
-    "cta": "Học thử ngay"
+    "cta": "Học thử ngay",
+    "dashboard": "Bảng điều khiển",
+    "profile": "Tài khoản",
+    "logout": "Đăng xuất"
   },
   "auth": {
     "googleButton": "Tiếp tục với Google",
@@ -29,7 +32,8 @@
       "submit": "Đăng nhập",
       "noAccount": "Chưa có tài khoản?",
       "registerLink": "Đăng ký ngay",
-      "metaTitle": "Đăng nhập"
+      "metaTitle": "Đăng nhập",
+      "serverError": "Email hoặc mật khẩu không đúng"
     },
     "register": {
       "title": "Tạo tài khoản mới",
@@ -45,7 +49,8 @@
       "submit": "Tạo tài khoản",
       "hasAccount": "Đã có tài khoản?",
       "loginLink": "Đăng nhập",
-      "metaTitle": "Đăng ký"
+      "metaTitle": "Đăng ký",
+      "serverError": "Đăng ký thất bại. Email có thể đã được sử dụng."
     },
     "errors": {
       "emailRequired": "Vui lòng nhập email",
@@ -54,6 +59,35 @@
       "nameRequired": "Vui lòng nhập họ tên",
       "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
       "passwordMismatch": "Mật khẩu xác nhận không khớp"
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "subtitle": "Nhập email để nhận link đặt lại mật khẩu",
+      "email": "Email",
+      "emailPlaceholder": "ban@email.com",
+      "submit": "Gửi link đặt lại",
+      "successMessage": "Nếu email tồn tại trong hệ thống, chúng tôi đã gửi link đặt lại mật khẩu. Vui lòng kiểm tra hộp thư.",
+      "backToLogin": "Quay lại đăng nhập"
+    },
+    "resetPassword": {
+      "title": "Đặt lại mật khẩu",
+      "subtitle": "Nhập mật khẩu mới cho tài khoản của bạn",
+      "newPassword": "Mật khẩu mới",
+      "newPasswordPlaceholder": "Ít nhất 6 ký tự",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+      "submit": "Đặt lại mật khẩu",
+      "successMessage": "Mật khẩu đã được đặt lại thành công!",
+      "goToLogin": "Đăng nhập ngay",
+      "invalidToken": "Token không hợp lệ hoặc đã hết hạn",
+      "requestNewLink": "Yêu cầu link mới"
+    },
+    "verifyEmail": {
+      "title": "Xác thực email",
+      "successMessage": "Email đã được xác thực thành công!",
+      "errorMessage": "Xác thực email thất bại. Token có thể đã hết hạn.",
+      "invalidToken": "Token xác thực không hợp lệ",
+      "goToLogin": "Đăng nhập"
     }
   },
   "hero": {

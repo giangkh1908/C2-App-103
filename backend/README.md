@@ -59,10 +59,7 @@ cp .env.example .env
 
 ```bash
 # Chạy với uvicorn (development, auto-reload)
-uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
-
-# Hoặc dùng Makefile
-make run
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Sau khi chạy, mở trình duyệt tại:

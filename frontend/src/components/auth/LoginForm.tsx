@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/useAuth";
+import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import Input from "@/components/ui/Input";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
@@ -12,41 +15,53 @@ export default function LoginForm() {
   const t = useTranslations("auth.login");
   const tAuth = useTranslations("auth");
   const tErr = useTranslations("auth.errors");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const { login } = useAuth();
+
+  const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
   const [remember, setRemember] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({});
+  const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const validate = () => {
-    const newErrors: typeof errors = {};
-    if (!email.trim()) {
-      newErrors.email = tErr("emailRequired");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = tErr("emailInvalid");
-    }
-    if (!password) {
-      newErrors.password = tErr("passwordRequired");
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (field: keyof LoginInput) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setServerError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    setServerError(null);
+
+    const result = loginSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof LoginInput, string>> = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof LoginInput;
+        fieldErrors[field] = tErr(issue.message as Parameters<typeof tErr>[0]);
+      });
+      setErrors(fieldErrors);
+      return;
+    }
 
     setLoading(true);
-    // TODO: Gọi API backend khi có
-    console.log("Login:", { email, password, remember });
-    setTimeout(() => setLoading(false), 1000);
+    const { error } = await login(form.email, form.password);
+    if (error) {
+      setServerError(t("serverError"));
+    } else {
+      router.push("/");
+      router.refresh();
+    }
+    setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <GoogleSignInButton />
 
-      {/* Divider */}
       <div className="relative flex items-center justify-center py-1">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-natural-border" />
@@ -56,12 +71,18 @@ export default function LoginForm() {
         </span>
       </div>
 
+      {serverError && (
+        <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-[12px] text-red-600 font-medium">
+          {serverError}
+        </div>
+      )}
+
       <Input
         label={t("email")}
         type="email"
         placeholder={t("emailPlaceholder")}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        value={form.email}
+        onChange={handleChange("email")}
         error={errors.email}
         autoComplete="email"
       />
@@ -69,8 +90,8 @@ export default function LoginForm() {
       <PasswordInput
         label={t("password")}
         placeholder={t("passwordPlaceholder")}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        value={form.password}
+        onChange={handleChange("password")}
         error={errors.password}
         autoComplete="current-password"
       />
@@ -85,7 +106,7 @@ export default function LoginForm() {
           />
           <span className="text-[12px] text-natural-charcoal">{t("remember")}</span>
         </label>
-        <Link href="#" className="text-[12px] font-medium text-natural-green hover:underline">
+        <Link href="/forgot-password" className="text-[12px] font-medium text-natural-green hover:underline">
           {t("forgot")}
         </Link>
       </div>

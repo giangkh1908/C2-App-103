@@ -12,7 +12,10 @@
     "roadmap": "Grade 1-5 Roadmap",
     "faq": "FAQ",
     "login": "Log in",
-    "cta": "Try Free"
+    "cta": "Try Free",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Log out"
   },
   "auth": {
     "googleButton": "Continue with Google",
@@ -29,7 +32,8 @@
       "submit": "Log in",
       "noAccount": "Don't have an account?",
       "registerLink": "Sign up now",
-      "metaTitle": "Log in"
+      "metaTitle": "Log in",
+      "serverError": "Invalid email or password"
     },
     "register": {
       "title": "Create a new account",
@@ -45,7 +49,8 @@
       "submit": "Create account",
       "hasAccount": "Already have an account?",
       "loginLink": "Log in",
-      "metaTitle": "Sign up"
+      "metaTitle": "Sign up",
+      "serverError": "Registration failed. Email may already be in use."
     },
     "errors": {
       "emailRequired": "Please enter your email",
@@ -54,6 +59,35 @@
       "nameRequired": "Please enter your name",
       "passwordMin": "Password must be at least 6 characters",
       "passwordMismatch": "Passwords do not match"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to receive a reset link",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send reset link",
+      "successMessage": "If the email exists in our system, we've sent a reset link. Please check your inbox.",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "subtitle": "Enter a new password for your account",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "At least 6 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter your new password",
+      "submit": "Reset password",
+      "successMessage": "Password has been reset successfully!",
+      "goToLogin": "Log in now",
+      "invalidToken": "Token is invalid or has expired",
+      "requestNewLink": "Request a new link"
+    },
+    "verifyEmail": {
+      "title": "Email verification",
+      "successMessage": "Email verified successfully!",
+      "errorMessage": "Email verification failed. Token may have expired.",
+      "invalidToken": "Invalid verification token",
+      "goToLogin": "Log in"
     }
   },
   "hero": {

@@ -19,62 +19,79 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b py-3.5 px-4 sm:px-6 lg:px-8 transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b px-4 py-3.5 transition-all duration-300 sm:px-6 lg:px-8 ${
         scrolled
-          ? "bg-white/90 backdrop-blur-md border-natural-border shadow-xs"
-          : "bg-white/90 backdrop-blur-md border-natural-border"
+          ? "border-natural-border bg-white/90 shadow-xs backdrop-blur-md"
+          : "border-natural-border bg-white/90 backdrop-blur-md"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div
-          className="flex items-center gap-2 cursor-pointer"
+      <div className="mx-auto flex max-w-7xl items-center justify-between">
+        <button
+          type="button"
+          className="flex cursor-pointer items-center gap-2"
           onClick={() => scrollTo("hero")}
         >
           <Image
             src="/logo.png"
-            alt="Toán Trực Quan AI logo"
+            alt="Toan Truc Quan AI logo"
             width={36}
             height={36}
             className="rounded-full shadow-md shadow-natural-green/10"
           />
-          <div>
-            <span className="font-serif italic font-bold text-lg text-natural-dark tracking-tight block leading-none">
-              Toán Trực Quan AI
+          <div className="text-left">
+            <span className="block font-serif text-lg font-bold leading-none tracking-tight text-natural-dark italic">
+              Toan Truc Quan AI
             </span>
-            <span className="text-[9px] font-bold text-natural-green tracking-widest block mt-0.5 uppercase">
+            <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-widest text-natural-green">
               Visual Tutor Helper
             </span>
           </div>
-        </div>
+        </button>
 
-        <nav className="hidden md:flex items-center gap-7 text-[13px] font-bold text-natural-charcoal/80">
-          <button onClick={() => scrollTo("loi-ich")} className="hover:text-natural-green transition-colors cursor-pointer">
-            Lợi ích cốt lõi
+        <nav className="hidden items-center gap-7 text-[13px] font-bold text-natural-charcoal/80 md:flex">
+          <button
+            type="button"
+            onClick={() => scrollTo('loi-ich')}
+            className="cursor-pointer transition-colors hover:text-natural-green"
+          >
+            Loi ich cot loi
           </button>
-          <button onClick={() => scrollTo("hoc-thu")} className="hover:text-natural-green transition-colors cursor-pointer">
-            Mô phỏng học thử
+          <Link
+            href="/learn"
+            className="cursor-pointer transition-colors hover:text-natural-orange text-natural-orange/90 flex items-center gap-1.5"
+          >
+            <span className="inline-block h-2 w-2 rounded-full bg-natural-orange animate-pulse" />
+            Mo phong hoc thu
+          </Link>
+          <button
+            type="button"
+            onClick={() => scrollTo('lo-trinh')}
+            className="cursor-pointer transition-colors hover:text-natural-green"
+          >
+            Lo trinh lop 1-5
           </button>
-          <button onClick={() => scrollTo("lo-trinh")} className="hover:text-natural-green transition-colors cursor-pointer">
-            Lộ trình lớp 1-5
-          </button>
-          <button onClick={() => scrollTo("cau-hoi")} className="hover:text-natural-green transition-colors cursor-pointer">
-            Câu hỏi thường gặp
+          <button
+            type="button"
+            onClick={() => scrollTo('cau-hoi')}
+            className="cursor-pointer transition-colors hover:text-natural-green"
+          >
+            Cau hoi thuong gap
           </button>
         </nav>
 
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="text-[13px] font-bold text-natural-charcoal hover:text-natural-green transition-colors"
+            className="text-[13px] font-bold text-natural-charcoal transition-colors hover:text-natural-green"
           >
-            Đăng nhập
+            Dang nhap
           </Link>
-          <button
-            onClick={() => scrollTo("hoc-thu")}
-            className="rounded-full bg-natural-green hover:bg-natural-green-hover transition-all text-white font-bold text-xs py-2.5 px-5 cursor-pointer shadow-md shadow-natural-green/5 active:scale-97"
+          <Link
+            href="/learn"
+            className="rounded-full bg-natural-green px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-natural-green/5 transition-all hover:bg-natural-green-hover active:scale-97"
           >
-            Học thử ngay
-          </button>
+            Hoc thu ngay
+          </Link>
         </div>
       </div>
     </header>

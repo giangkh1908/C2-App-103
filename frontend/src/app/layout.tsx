@@ -29,6 +29,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("http://localhost:3000"),
   title: {
     default: "Toán Trực Quan AI — Gia sư Toán trực quan cho học sinh tiểu học",
     template: "%s | Toán Trực Quan AI",
@@ -84,6 +85,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
+      suppressHydrationWarning
       className={`${inter.variable} ${spaceGrotesk.variable} ${lora.variable} ${playfair.variable} h-full antialiased`}
     >
       <head>

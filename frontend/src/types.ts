@@ -9,7 +9,9 @@ export type TutorIntent =
 export type ResponseMode =
   | 'explain_only'
   | 'explain_with_visual'
-  | 'explain_with_visual_and_practice';
+  | 'explain_with_visual_and_practice'
+  | 'clarification_needed';
+
 export type VisualPriority = 'low' | 'medium' | 'high';
 
 export interface VisualData {

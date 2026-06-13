@@ -1,21 +1,21 @@
 'use client';
 
-import Image from 'next/image';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Bot,
-  CheckCircle,
-  FileText,
   GraduationCap,
-  Image as ImageIcon,
   Mic,
-  Paperclip,
+  MicOff,
   Send,
   Sparkles,
   User,
   Volume2,
-  X,
+  VolumeX,
+  HelpCircle,
+  ChevronRight,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react';
 import InteractiveSimulation from './InteractiveSimulation';
 import type {
@@ -23,50 +23,32 @@ import type {
   MathDomain,
   PracticeQuestion,
   ResponseMode,
-  TutorIntent,
   VisualData,
-  VisualPriority,
 } from '../types';
 
-interface ChatFile {
-  name: string;
-  size: string;
-  type: string;
-  previewUrl?: string;
-}
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 interface Message {
   id: string;
   role: 'user' | 'ai';
   text: string;
   timestampLabel: string;
-  attachedFile?: ChatFile;
-  source?: 'openai-ai' | 'presets';
-  intent?: TutorIntent;
   responseMode?: ResponseMode;
-  visualPriority?: VisualPriority;
   followUpSuggestions?: string[];
-  concept?: string;
   title?: string;
   lifeExample?: string;
   visualData?: VisualData;
   practiceQuestion?: PracticeQuestion;
   practiceAnswerIdx?: number | null;
   practiceFeedbackChecked?: boolean;
+  simulationConfig?: ChatTurnResponse['visual_card'] extends null ? never : NonNullable<ChatTurnResponse['visual_card']>['simulation_config'];
 }
 
 interface TopicOption {
   id: MathDomain;
   label: string;
+  emoji: string;
 }
-
-type SpeechRecognitionResultLike = {
-  transcript: string;
-};
-
-type SpeechRecognitionEventLike = {
-  results?: ArrayLike<ArrayLike<SpeechRecognitionResultLike>>;
-};
 
 type BrowserSpeechRecognition = {
   continuous: boolean;
@@ -75,439 +57,503 @@ type BrowserSpeechRecognition = {
   onstart: (() => void) | null;
   onend: (() => void) | null;
   onerror: (() => void) | null;
-  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onresult: ((event: { results?: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
   start: () => void;
   stop: () => void;
 };
-
 type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
-
 type BrowserWindow = Window & {
   SpeechRecognition?: SpeechRecognitionConstructor;
   webkitSpeechRecognition?: SpeechRecognitionConstructor;
   webkitAudioContext?: typeof AudioContext;
 };
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+
 const DEFAULT_TOPICS: TopicOption[] = [
-  { id: 'multiplication', label: 'Phep nhan' },
-  { id: 'division', label: 'Phep chia' },
-  { id: 'fraction_basic', label: 'Phan so co ban' },
-  { id: 'perimeter_area_basic', label: 'Chu vi va dien tich' },
+  { id: 'multiplication', label: 'Phép nhân', emoji: '✖️' },
+  { id: 'division', label: 'Phép chia', emoji: '➗' },
+  { id: 'fraction_basic', label: 'Phân số', emoji: '🍕' },
+  { id: 'perimeter_area_basic', label: 'Chu vi & Diện tích', emoji: '📐' },
 ];
 
 const WELCOME_MESSAGE: Message = {
   id: 'welcome_1',
   role: 'ai',
-  text: 'Chao con. Co la gia su AI dong hanh cung con hoc Toan. Con cu hoi dieu con chua hieu, co se giai thich ngan gon va chi hien hinh minh hoa khi no that su giup con de hieu hon.',
-  timestampLabel: 'San sang',
-  source: 'presets',
-  intent: 'explain_concept',
+  text: 'Xin chào! Cô là gia sư Toán AI. Con hãy hỏi bất kỳ câu hỏi toán nào — cô sẽ giải thích rõ ràng và dùng hình ảnh minh họa khi cần nhé! 🌟',
+  timestampLabel: 'Sẵn sàng',
   responseMode: 'explain_only',
-  visualPriority: 'low',
   followUpSuggestions: [
-    'Giai thich phep nhan bang dia keo.',
-    'Vi sao 3/4 lon hon 1/2?',
-    'Phan biet chu vi va dien tich giup con.',
+    'Giải thích phép nhân 3 × 4 cho con',
+    'Tại sao 3/4 lớn hơn 1/2?',
+    'Phân biệt chu vi và diện tích giúp con',
+    'Con muốn học chia đều 12 : 3',
   ],
 };
+
+// ─── Helper Functions ────────────────────────────────────────────────────────
+
+function createTimestamp(): string {
+  return new Intl.DateTimeFormat('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date());
+}
+
+function playSfx(type: 'bell' | 'error' | 'sparkle'): void {
+  try {
+    const win = window as BrowserWindow;
+    const AudioCtx = window.AudioContext || win.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    if (type === 'bell') {
+      osc.frequency.setValueAtTime(523, ctx.currentTime);
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+    } else if (type === 'error') {
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    } else {
+      osc.frequency.setValueAtTime(659, ctx.currentTime);
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    }
+    osc.start();
+    osc.stop(ctx.currentTime + 0.25);
+  } catch { /* ignore */ }
+}
+
+// Simple markdown to JSX — handles **bold**, *italic*, numbered lists, bullet lists
+function renderMarkdown(text: string): React.ReactNode[] {
+  const lines = text.split('\n');
+  const nodes: React.ReactNode[] = [];
+  let listItems: string[] = [];
+  let listType: 'ol' | 'ul' | null = null;
+
+  const flushList = (key: string) => {
+    if (listItems.length === 0) return;
+    if (listType === 'ol') {
+      nodes.push(
+        <ol key={key} className="my-2 ml-4 list-decimal space-y-1">
+          {listItems.map((item, i) => (
+            <li key={i} className="text-xs sm:text-sm leading-relaxed">{renderInline(item)}</li>
+          ))}
+        </ol>
+      );
+    } else {
+      nodes.push(
+        <ul key={key} className="my-2 ml-4 list-disc space-y-1">
+          {listItems.map((item, i) => (
+            <li key={i} className="text-xs sm:text-sm leading-relaxed">{renderInline(item)}</li>
+          ))}
+        </ul>
+      );
+    }
+    listItems = [];
+    listType = null;
+  };
+
+  lines.forEach((line, idx) => {
+    const numberedMatch = line.match(/^(\d+)\.\s+(.+)/);
+    const bulletMatch = line.match(/^[-*]\s+(.+)/);
+
+    if (numberedMatch) {
+      if (listType !== 'ol') { flushList(`list-${idx}`); listType = 'ol'; }
+      listItems.push(numberedMatch[2]);
+    } else if (bulletMatch) {
+      if (listType !== 'ul') { flushList(`list-${idx}`); listType = 'ul'; }
+      listItems.push(bulletMatch[1]);
+    } else {
+      flushList(`list-${idx}`);
+      if (line.trim() === '') {
+        nodes.push(<br key={`br-${idx}`} />);
+      } else {
+        nodes.push(
+          <p key={`p-${idx}`} className="text-xs sm:text-sm leading-relaxed mb-1">
+            {renderInline(line)}
+          </p>
+        );
+      }
+    }
+  });
+  flushList('list-end');
+  return nodes;
+}
+
+function renderInline(text: string): React.ReactNode[] {
+  const parts: React.ReactNode[] = [];
+  const regex = /\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`/g;
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+    if (match[1]) parts.push(<strong key={key++} className="font-bold">{match[1]}</strong>);
+    else if (match[2]) parts.push(<em key={key++} className="italic">{match[2]}</em>);
+    else if (match[3]) parts.push(<code key={key++} className="rounded bg-gray-100 px-1 font-mono text-[11px]">{match[3]}</code>);
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts;
+}
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
+
+function ClarificationBubble({ message, onSuggestionClick }: {
+  message: Message;
+  onSuggestionClick: (text: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Câu hỏi làm rõ */}
+      <div className="flex items-start gap-3">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 border border-violet-200 text-violet-600">
+          <HelpCircle className="h-4 w-4" />
+        </div>
+        <div className="rounded-2xl rounded-tl-sm border border-violet-200 bg-violet-50 px-4 py-3 shadow-sm max-w-[80%]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-violet-500 mb-1.5">
+            Cô cần hỏi thêm 🤔
+          </p>
+          <div className="text-sm text-violet-900 leading-relaxed font-medium">
+            {message.text}
+          </div>
+        </div>
+      </div>
+      {/* Quick reply chips */}
+      {message.followUpSuggestions && message.followUpSuggestions.length > 0 && (
+        <div className="ml-11 flex flex-wrap gap-2">
+          {message.followUpSuggestions.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => onSuggestionClick(s)}
+              className="flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-3 py-1.5 text-xs font-semibold text-violet-700 shadow-xs transition-all hover:bg-violet-50 hover:border-violet-400 active:scale-97"
+            >
+              <ChevronRight className="h-3 w-3" />
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function VisualPanel({ message, onAnswerChoice }: {
+  message: Message;
+  onAnswerChoice: (msgId: string, optIdx: number, correctIdx: number) => void;
+}) {
+  const { visualData, practiceQuestion, practiceAnswerIdx, practiceFeedbackChecked } = message;
+
+  return (
+    <div className="mt-3 flex flex-col gap-3">
+      {/* Life example */}
+      {message.lifeExample && (
+        <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-xs text-amber-900 leading-relaxed">
+          💡 {message.lifeExample}
+        </div>
+      )}
+
+      {/* Interactive simulation */}
+      {visualData && (
+        <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-sm">
+          <InteractiveSimulation visualData={visualData} />
+        </div>
+      )}
+
+      {/* Practice question */}
+      {practiceQuestion && (
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-xs">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-natural-green">
+            🎯 Luyện tập nhanh
+          </p>
+          <p className="mb-3 text-sm font-medium text-gray-800 leading-relaxed">
+            {practiceQuestion.questionText}
+          </p>
+          <div className="flex flex-col gap-2">
+            {practiceQuestion.options.map((opt, optIdx) => {
+              const isSelected = practiceAnswerIdx === optIdx;
+              const isCorrect = optIdx === practiceQuestion.correctAnswerIndex;
+              const showFeedback = practiceFeedbackChecked;
+
+              let optStyle = 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300';
+              if (showFeedback && isSelected && isCorrect) optStyle = 'border-emerald-400 bg-emerald-50 text-emerald-800';
+              else if (showFeedback && isSelected && !isCorrect) optStyle = 'border-red-300 bg-red-50 text-red-800';
+              else if (showFeedback && !isSelected && isCorrect) optStyle = 'border-emerald-300 bg-emerald-50/60 text-emerald-700';
+
+              return (
+                <button
+                  key={optIdx}
+                  onClick={() => !showFeedback && onAnswerChoice(message.id, optIdx, practiceQuestion.correctAnswerIndex)}
+                  disabled={!!showFeedback}
+                  className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-left text-xs font-medium transition-all ${optStyle} ${!showFeedback ? 'cursor-pointer active:scale-[0.98]' : 'cursor-default'}`}
+                >
+                  {showFeedback && isCorrect && <CheckCircle className="h-3.5 w-3.5 shrink-0 text-emerald-500" />}
+                  {showFeedback && isSelected && !isCorrect && <XCircle className="h-3.5 w-3.5 shrink-0 text-red-500" />}
+                  {(!showFeedback || (!isCorrect && !isSelected)) && (
+                    <span className="h-3.5 w-3.5 shrink-0 rounded-full border border-current opacity-40" />
+                  )}
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {practiceFeedbackChecked && practiceAnswerIdx !== null && practiceAnswerIdx !== undefined && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`mt-3 rounded-xl px-3.5 py-2.5 text-xs font-semibold leading-relaxed ${
+                practiceAnswerIdx === practiceQuestion.correctAnswerIndex
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  : 'bg-red-50 text-red-800 border border-red-200'
+              }`}
+            >
+              {practiceAnswerIdx === practiceQuestion.correctAnswerIndex
+                ? `✅ ${practiceQuestion.successMessage}`
+                : `❌ ${practiceQuestion.failMessage}`}
+            </motion.div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpeaking }: {
+  message: Message;
+  onSuggestionClick: (text: string) => void;
+  onAnswerChoice: (msgId: string, optIdx: number, correctIdx: number) => void;
+  onSpeak: (text: string, id: string) => void;
+  isSpeaking: boolean;
+}) {
+  const isClarification = message.responseMode === 'clarification_needed';
+  const hasVisual = !isClarification && message.responseMode !== 'explain_only' && message.visualData;
+
+  if (isClarification) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <ClarificationBubble message={message} onSuggestionClick={onSuggestionClick} />
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex gap-3"
+    >
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-natural-green/20 bg-natural-green-tint text-natural-green">
+        <Bot className="h-4 w-4" />
+      </div>
+      <div className="flex max-w-[84%] flex-col gap-2 sm:max-w-[78%]">
+        {/* Title */}
+        {message.title && (
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-natural-orange" />
+            <span className="font-serif text-sm font-bold italic text-gray-800">{message.title}</span>
+          </div>
+        )}
+
+        {/* Main text bubble */}
+        <div className="rounded-2xl rounded-tl-sm border border-gray-200/90 bg-white px-4 py-3.5 shadow-xs">
+          <div className="prose-xs">{renderMarkdown(message.text)}</div>
+        </div>
+
+        {/* Visual panel */}
+        {hasVisual && (
+          <VisualPanel message={message} onAnswerChoice={onAnswerChoice} />
+        )}
+
+        {/* Footer: timestamp + TTS + follow-up suggestions */}
+        <div className="flex flex-wrap items-center gap-2 mt-0.5">
+          <span className="text-[10px] text-gray-400">{message.timestampLabel}</span>
+          <button
+            onClick={() => onSpeak(message.text, message.id)}
+            className="flex h-5 w-5 items-center justify-center rounded-full text-gray-400 transition-colors hover:text-natural-green"
+            title="Đọc to"
+          >
+            {isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+          </button>
+        </div>
+
+        {/* Follow-up suggestions (non-clarification) */}
+        {message.followUpSuggestions && message.followUpSuggestions.length > 0 && !hasVisual && (
+          <div className="flex flex-wrap gap-1.5">
+            {message.followUpSuggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => onSuggestionClick(s)}
+                className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 shadow-xs transition-all hover:border-natural-green/40 hover:text-natural-green active:scale-97"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AIExplanationChat() {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [inputText, setInputText] = useState('');
-  const [selectedGrade, setSelectedGrade] = useState<number>(3);
+  const [selectedGrade, setSelectedGrade] = useState(3);
   const [topics, setTopics] = useState<TopicOption[]>(DEFAULT_TOPICS);
   const [selectedTopic, setSelectedTopic] = useState<MathDomain | null>(null);
-  const [attachedFiles, setAttachedFiles] = useState<ChatFile[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
-  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
-  const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api/v1';
 
-  const createTimestampLabel = () =>
-    new Intl.DateTimeFormat('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).format(new Date());
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8001/api/v1';
 
-  const scrollToBottom = () => {
+  // Auto-scroll
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, [messages, isLoading]);
 
+  // Speech recognition setup
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isSearching]);
-
-  useEffect(() => {
-    const speechWindow = window as BrowserWindow;
-    const SpeechRecognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-
-    const rec = new SpeechRecognition();
+    const win = window as BrowserWindow;
+    const SR = win.SpeechRecognition || win.webkitSpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
     rec.continuous = false;
     rec.lang = 'vi-VN';
     rec.interimResults = false;
     rec.onstart = () => setIsRecording(true);
     rec.onend = () => setIsRecording(false);
     rec.onerror = () => setIsRecording(false);
-    rec.onresult = (event: SpeechRecognitionEventLike) => {
-      const transcript = event.results?.[0]?.[0]?.transcript;
-      if (transcript) {
-        setInputText((prev) => (prev ? `${prev} ${transcript}` : transcript));
-      }
+    rec.onresult = (e) => {
+      const t = e.results?.[0]?.[0]?.transcript;
+      if (t) setInputText((prev) => (prev ? `${prev} ${t}` : t));
     };
-
     recognitionRef.current = rec;
-
-    return () => {
-      recognitionRef.current?.stop();
-      recognitionRef.current = null;
-    };
+    return () => { recognitionRef.current?.stop(); recognitionRef.current = null; };
   }, []);
 
+  // TTS cleanup
   useEffect(() => {
-    return () => {
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
+    return () => { if (typeof window !== 'undefined') window.speechSynthesis?.cancel(); };
   }, []);
 
+  // Load topics from backend
   useEffect(() => {
-    let isActive = true;
-
-    const loadTopics = async () => {
-      try {
-        const response = await fetch(`${backendBaseUrl}/topics`);
-        if (!response.ok) {
-          throw new Error('Khong tai duoc danh sach chu de');
+    let active = true;
+    fetch(`${backendUrl}/topics`)
+      .then((r) => r.json())
+      .then((data: { topics?: Array<{ id: MathDomain; label: string }> }) => {
+        if (active && data.topics?.length) {
+          setTopics(
+            data.topics.map((t) => ({
+              ...t,
+              emoji: DEFAULT_TOPICS.find((d) => d.id === t.id)?.emoji ?? '📚',
+            }))
+          );
         }
+      })
+      .catch(() => { /* use defaults */ });
+    return () => { active = false; };
+  }, [backendUrl]);
 
-        const payload: { topics?: Array<{ id: MathDomain; label: string }> } = await response.json();
-        if (isActive && payload.topics?.length) {
-          setTopics(payload.topics);
-        }
-      } catch {
-        if (isActive) {
-          setTopics(DEFAULT_TOPICS);
-        }
-      }
-    };
-
-    loadTopics();
-
-    return () => {
-      isActive = false;
-    };
-  }, [backendBaseUrl]);
-
-  const playSfx = (type: 'bell' | 'error' | 'sparkle') => {
-    try {
-      const audioWindow = window as BrowserWindow;
-      const AudioCtx = window.AudioContext || audioWindow.webkitAudioContext;
-      if (!AudioCtx) return;
-
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      if (type === 'bell') {
-        osc.frequency.setValueAtTime(440, ctx.currentTime);
-        gain.gain.setValueAtTime(0.04, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.16);
-      } else if (type === 'error') {
-        osc.frequency.setValueAtTime(150, ctx.currentTime);
-        gain.gain.setValueAtTime(0.05, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.12);
-      } else {
-        osc.frequency.setValueAtTime(520, ctx.currentTime);
-        gain.gain.setValueAtTime(0.03, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.1);
-      }
-    } catch {
-      // Ignore browser audio issues.
+  const handleSpeak = useCallback((text: string, id: string) => {
+    if (!window.speechSynthesis) return;
+    if (speakingMsgId === id) {
+      window.speechSynthesis.cancel();
+      setSpeakingMsgId(null);
+      return;
     }
-  };
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text.replace(/[\\/*_#]/g, ''));
+    utter.lang = 'vi-VN';
+    utter.rate = 0.95;
+    utter.onend = () => setSpeakingMsgId(null);
+    setSpeakingMsgId(id);
+    window.speechSynthesis.speak(utter);
+  }, [speakingMsgId]);
 
   const handleSuggestionClick = (text: string) => {
     setInputText(text);
+    inputRef.current?.focus();
   };
 
   const toggleRecording = () => {
-    const recognition = recognitionRef.current;
-    if (!recognition) {
-      alert('Trinh duyet hien chua ho tro ghi am. Con hay go cau hoi nhe.');
-      return;
-    }
-
-    if (isRecording) {
-      recognition.stop();
-      return;
-    }
-
-    recognition.start();
+    if (!recognitionRef.current) return;
+    isRecording ? recognitionRef.current.stop() : recognitionRef.current.start();
   };
 
-  const speakVoice = (textToSpeak: string, msgId: string) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-
-    if (speakingMessageId === msgId) {
-      window.speechSynthesis.cancel();
-      setSpeakingMessageId(null);
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(textToSpeak.replace(/[\\/*_#]/g, ''));
-    utter.lang = 'vi-VN';
-    utter.rate = 0.95;
-    utter.onend = () => setSpeakingMessageId(null);
-    setSpeakingMessageId(msgId);
-    window.speechSynthesis.speak(utter);
+  const handleAnswerChoice = (msgId: string, optIdx: number, correctIdx: number) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === msgId
+          ? { ...m, practiceAnswerIdx: optIdx, practiceFeedbackChecked: true }
+          : m
+      )
+    );
+    playSfx(optIdx === correctIdx ? 'sparkle' : 'error');
   };
 
-  const appendSelectedFiles = (fileList: FileList) => {
-    const nextFiles: ChatFile[] = [];
-
-    for (let index = 0; index < fileList.length; index += 1) {
-      const file = fileList[index];
-      nextFiles.push({
-        name: file.name,
-        size: `${Math.round(file.size / 1024)} KB`,
-        type: file.type,
-        previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-      });
-    }
-
-    setAttachedFiles((prev) => [...prev, ...nextFiles]);
-    playSfx('sparkle');
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files?.length) {
-      appendSelectedFiles(event.target.files);
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setAttachedFiles((prev) => prev.filter((_, fileIndex) => fileIndex !== index));
-  };
-
-  const handleDrop = (event: React.DragEvent) => {
-    event.preventDefault();
-    setIsDraggingOver(false);
-    if (event.dataTransfer.files?.length) {
-      appendSelectedFiles(event.dataTransfer.files);
-    }
-  };
-
-  const createFallbackMessage = (promptText: string): Message => {
-    const domain = inferDomainFromPrompt(promptText);
-
-    const fallbackByDomain: Record<string, Omit<Message, 'id' | 'role' | 'timestamp'>> = {
-      multiplication: {
-        text: `Co dang dung preset an toan cho lop ${selectedGrade} vi AI that tam thoi gap van de. Minh van hoc tiep bang minh hoa phep nhan nhe.`,
-        source: 'presets',
-        intent: 'explain_concept',
-        responseMode: 'explain_with_visual_and_practice',
-        visualPriority: 'high',
-        title: 'Minh hoa phep nhan bang nhom do vat',
-        concept: '3 x 4',
-        lifeExample: 'Con thu dem 3 dia, moi dia co 4 vien keo, roi nhin tong so vien keo de thay phep nhan la cach cong gon.',
-        visualData: {
-          type: 'candy',
-          primaryCount: 3,
-          secondaryCount: 4,
-          totalCount: 12,
-          groupsLabel: 'So nhom',
-          itemsLabel: 'So vien moi nhom',
-        },
-        practiceQuestion: {
-          id: 'fallback_mult_practice',
-          questionText: 'Co 2 tui banh, moi tui co 5 chiec. Tong cong co bao nhieu chiec?',
-          options: ['A. 7', 'B. 10', 'C. 12', 'D. 15'],
-          correctAnswerIndex: 1,
-          successMessage: 'Dung roi. 2 x 5 bang 10.',
-          failMessage: 'Con thu dem lai theo 2 nhom, moi nhom 5 chiec nhe.',
-          hint: 'So nhom nhan voi so vat moi nhom.',
-        },
-        followUpSuggestions: ['Giai thich de hon duoc khong?', 'Cho con vi du khac nhe.', 'Cho con xem hinh minh hoa khac.'],
-        practiceAnswerIdx: null,
-        practiceFeedbackChecked: false,
-      },
-      division: {
-        text: `Co dang dung preset an toan cho lop ${selectedGrade} vi AI that tam thoi gap van de. Minh van hoc tiep bang minh hoa phep chia nhe.`,
-        source: 'presets',
-        intent: 'explain_concept',
-        responseMode: 'explain_with_visual_and_practice',
-        visualPriority: 'high',
-        title: 'Minh hoa phep chia bang chia deu',
-        concept: '12 : 3',
-        lifeExample: 'Con co 12 qua tao va chia deu cho 3 ban. Minh nhin xem moi ban nhan bao nhieu qua nhe.',
-        visualData: {
-          type: 'apple',
-          primaryCount: 12,
-          secondaryCount: 3,
-          totalCount: 4,
-          groupsLabel: 'Tong so tao',
-          itemsLabel: 'So ban',
-        },
-        practiceQuestion: {
-          id: 'fallback_div_practice',
-          questionText: 'Co 8 vien keo chia deu cho 2 ban. Moi ban duoc may vien?',
-          options: ['A. 2', 'B. 3', 'C. 4', 'D. 6'],
-          correctAnswerIndex: 2,
-          successMessage: 'Dung roi. 8 chia 2 bang 4.',
-          failMessage: 'Con thu chia deu 8 vien keo thanh 2 nhom nhe.',
-          hint: 'Lay tong so vat chia cho so nhom.',
-        },
-        followUpSuggestions: ['Vi sao chia deu lai ra 4?', 'Cho con them mot vi du khac.', 'Giai thich de hon duoc khong?'],
-        practiceAnswerIdx: null,
-        practiceFeedbackChecked: false,
-      },
-      fraction_basic: {
-        text: `Co dang dung preset an toan cho lop ${selectedGrade} vi AI that tam thoi gap van de. Minh van hoc tiep bang minh hoa phan so nhe.`,
-        source: 'presets',
-        intent: 'explain_concept',
-        responseMode: 'explain_with_visual_and_practice',
-        visualPriority: 'high',
-        title: 'Minh hoa phan so bang pizza',
-        concept: '3 / 5',
-        lifeExample: 'Chiec pizza duoc cat thanh 5 mieng bang nhau. Neu con to mau 3 mieng thi do la 3/5.',
-        visualData: {
-          type: 'pizza',
-          primaryCount: 3,
-          secondaryCount: 5,
-          totalCount: 0.6,
-          groupsLabel: 'So phan da lay',
-          itemsLabel: 'Tong so phan',
-        },
-        practiceQuestion: {
-          id: 'fallback_frac_practice',
-          questionText: 'To mau 2 phan trong tong 4 phan bang nhau la phan so nao?',
-          options: ['A. 2/4', 'B. 4/2', 'C. 1/4', 'D. 4/4'],
-          correctAnswerIndex: 0,
-          successMessage: 'Dung roi. Da to 2 phan trong tong 4 phan nen la 2/4.',
-          failMessage: 'Con nho tu so la phan da to, mau so la tong so phan nhe.',
-          hint: 'So tren la so phan da lay.',
-        },
-        followUpSuggestions: ['Vi sao 3/5 lon hon 1/5?', 'Cho con vi du khac ve phan so.', 'Giai thich ngan hon duoc khong?'],
-        practiceAnswerIdx: null,
-        practiceFeedbackChecked: false,
-      },
-      perimeter_area_basic: {
-        text: `Co dang dung preset an toan cho lop ${selectedGrade} vi AI that tam thoi gap van de. Minh van hoc tiep bang minh hoa chu vi va dien tich nhe.`,
-        source: 'presets',
-        intent: 'explain_concept',
-        responseMode: 'explain_with_visual_and_practice',
-        visualPriority: 'high',
-        title: 'Minh hoa chu vi va dien tich bang o vuong',
-        concept: '4 x 3',
-        lifeExample: 'Con nhin mot hinh chu nhat dai 4 o, rong 3 o. So o ben trong giup hieu dien tich, duong bao quanh giup hieu chu vi.',
-        visualData: {
-          type: 'grid',
-          primaryCount: 4,
-          secondaryCount: 3,
-          totalCount: 12,
-          groupsLabel: 'Chieu dai',
-          itemsLabel: 'Chieu rong',
-        },
-        practiceQuestion: {
-          id: 'fallback_area_practice',
-          questionText: 'Hinh chu nhat dai 5 o, rong 2 o co dien tich bao nhieu?',
-          options: ['A. 7', 'B. 10', 'C. 12', 'D. 14'],
-          correctAnswerIndex: 1,
-          successMessage: 'Dung roi. Dien tich = 5 x 2 = 10.',
-          failMessage: 'Con thu dem tong so o vuong ben trong hinh nhe.',
-          hint: 'Lay chieu dai nhan chieu rong.',
-        },
-        followUpSuggestions: ['Phan biet chu vi voi dien tich giup con.', 'Cho con xem hinh minh hoa khac.', 'Giai thich de hon duoc khong?'],
-        practiceAnswerIdx: null,
-        practiceFeedbackChecked: false,
-      },
-    };
-
-    return {
-      id: `ai_fallback_${Date.now()}`,
-      role: 'ai',
-      timestampLabel: createTimestampLabel(),
-      ...fallbackByDomain[domain],
-    };
-  };
-
-  const handleSendMessage = async (event?: React.FormEvent) => {
-    event?.preventDefault();
-
-    const textQuery = inputText.trim();
-    if (!textQuery && attachedFiles.length === 0) return;
-
-    const attachedFile = attachedFiles[0];
-    const promptText = attachedFile
-      ? `[Da dinh kem tep: ${attachedFile.name}]. ${textQuery || 'Hay giai thich bai toan trong tep nay bang cach de hieu.'}`
-      : textQuery;
+  const handleSend = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const text = inputText.trim();
+    if (!text || isLoading) return;
 
     setInputText('');
-    setAttachedFiles([]);
-
     setMessages((prev) => [
       ...prev,
       {
         id: `user_${Date.now()}`,
         role: 'user',
-        text: textQuery || `Dinh kem tep: ${attachedFile?.name ?? ''}`,
-        timestampLabel: createTimestampLabel(),
-        attachedFile,
+        text,
+        timestampLabel: createTimestamp(),
       },
     ]);
-    setIsSearching(true);
+    setIsLoading(true);
 
     try {
-      const response = await fetch(`${backendBaseUrl}/chat/turn`, {
+      const res = await fetch(`${backendUrl}/chat/turn`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: 'demo-user',
           session_id: sessionId,
           grade: selectedGrade,
-          message: promptText,
+          message: text,
           selected_topic: selectedTopic,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Server khong phan hoi thanh cong.');
-      }
+      if (!res.ok) throw new Error('Server error');
 
-      const payload: ChatTurnResponse = await response.json();
+      const payload: ChatTurnResponse = await res.json();
       setSessionId(payload.session_id);
 
-      const aiMessage: Message = {
+      const aiMsg: Message = {
         id: `ai_${Date.now()}`,
         role: 'ai',
         text: payload.assistant_message,
-        timestampLabel: createTimestampLabel(),
-        source: 'openai-ai',
-        intent: payload.intent,
+        timestampLabel: createTimestamp(),
         responseMode: payload.response_mode,
-        visualPriority: payload.visual_card ? 'high' : 'low',
         followUpSuggestions: payload.follow_up_suggestions,
-        concept: payload.detected_topic ?? undefined,
         title: payload.visual_card?.title,
         lifeExample: payload.visual_card?.life_example,
         visualData: payload.visual_card
@@ -533,469 +579,219 @@ export default function AIExplanationChat() {
           : undefined,
         practiceAnswerIdx: null,
         practiceFeedbackChecked: false,
+        simulationConfig: payload.visual_card?.simulation_config,
       };
 
-      setMessages((prev) => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMsg]);
       playSfx('bell');
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai_err_${Date.now()}`,
+          role: 'ai',
+          text: 'Cô gặp sự cố kết nối với server. Con thử hỏi lại sau nhé! 🙏',
+          timestampLabel: createTimestamp(),
+          responseMode: 'explain_only',
+          followUpSuggestions: ['Thử hỏi lại câu đó', 'Chọn chủ đề từ thanh bên'],
+        },
+      ]);
       playSfx('error');
-      setMessages((prev) => [...prev, createFallbackMessage(promptText)]);
     } finally {
-      setIsSearching(false);
+      setIsLoading(false);
     }
   };
 
-  const handleChoosePracticeAnswer = (msgId: string, optionIndex: number, correctIndex: number) => {
-    setMessages((prev) =>
-      prev.map((message) =>
-        message.id === msgId
-          ? {
-              ...message,
-              practiceAnswerIdx: optionIndex,
-              practiceFeedbackChecked: true,
-            }
-          : message,
-      ),
-    );
-
-    playSfx(optionIndex === correctIndex ? 'sparkle' : 'error');
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   return (
-    <div
-      className={`flex h-[calc(100vh-80px)] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-gray-200 bg-[#FAF9F5] shadow-xl md:h-[720px] ${
-        isDraggingOver ? 'ring-4 ring-[#4A6741]/40 border-[#4A6741]' : ''
-      }`}
-      onDragOver={(event) => {
-        event.preventDefault();
-        setIsDraggingOver(true);
-      }}
-      onDragLeave={(event) => {
-        event.preventDefault();
-        setIsDraggingOver(false);
-      }}
-      onDrop={handleDrop}
-    >
-      <div className="flex flex-col items-center justify-between gap-3.5 border-b border-gray-200 bg-white px-5.5 py-4 shadow-2xs sm:flex-row">
+    <div className="flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-[#FAF9F5] shadow-xl">
+      {/* ── Header ── */}
+      <div className="flex flex-col items-start justify-between gap-3 border-b border-gray-200 bg-white px-5 py-3.5 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#4A6741] font-serif font-black text-white shadow-lg shadow-[#4A6741]/10">
-            AI
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-natural-green text-white shadow-md shadow-natural-green/20">
+            <Sparkles className="h-5 w-5" />
           </div>
-          <div className="text-left">
+          <div>
             <h1 className="font-serif text-base font-bold italic leading-none text-gray-800 sm:text-lg">
-              Gia su AI chat va minh hoa theo ngu canh
+              Gia sư Toán AI
             </h1>
-            <p className="mt-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#4A6741]">
+            <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-natural-green">
               <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-              <span>AI tra loi la trung tam, visual chi hien khi can</span>
+              <span>Trả lời thông minh · Visual khi cần</span>
             </p>
           </div>
         </div>
 
+        {/* Grade selector */}
         <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-slate-50 px-2 py-1.5 text-xs font-bold">
-          <span className="flex shrink-0 items-center gap-1.5 pl-2 text-gray-500">
-            <GraduationCap className="h-3.5 w-3.5 text-[#FF8C42]" />
-            Trinh do:
-          </span>
+          <GraduationCap className="h-3.5 w-3.5 shrink-0 text-natural-orange" />
+          <span className="text-gray-500">Lớp:</span>
           <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((grade) => (
+            {[1, 2, 3, 4, 5].map((g) => (
               <button
-                key={grade}
-                onClick={() => {
-                  setSelectedGrade(grade);
-                  playSfx('sparkle');
-                }}
-                className={`flex h-7.5 w-7.5 items-center justify-center rounded-full text-xs font-bold transition-all ${
-                  selectedGrade === grade ? 'bg-[#4A6741] text-white shadow-md' : 'text-gray-600 hover:bg-gray-150'
+                key={g}
+                id={`grade-btn-${g}`}
+                onClick={() => { setSelectedGrade(g); playSfx('sparkle'); }}
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
+                  selectedGrade === g
+                    ? 'bg-natural-green text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                L{grade}
+                {g}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 border-b border-gray-150 bg-[#F4F1E8] px-4.5 py-3">
+      {/* ── Topic bar ── */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 bg-[#F4F1E8] px-4 py-2.5">
         <button
+          id="topic-btn-all"
           onClick={() => setSelectedTopic(null)}
-          className={`rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-tight transition-all ${
+          className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
             selectedTopic === null
-              ? 'border-[#4A6741] bg-[#4A6741] text-white'
-              : 'border-gray-200 bg-white text-gray-600 hover:border-[#4A6741]/30 hover:text-[#4A6741]'
+              ? 'border-natural-green bg-natural-green text-white'
+              : 'border-gray-200 bg-white text-gray-600 hover:border-natural-green/30 hover:text-natural-green'
           }`}
         >
-          Tu do hoi
+          Tự do hỏi
         </button>
         {topics.map((topic) => (
           <button
             key={topic.id}
+            id={`topic-btn-${topic.id}`}
             onClick={() => setSelectedTopic(topic.id)}
-            className={`rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-tight transition-all ${
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
               selectedTopic === topic.id
-                ? 'border-[#FF8C42] bg-[#FF8C42] text-white'
-                : 'border-gray-200 bg-white text-gray-600 hover:border-[#FF8C42]/30 hover:text-[#FF8C42]'
+                ? 'border-natural-orange bg-natural-orange text-white'
+                : 'border-gray-200 bg-white text-gray-600 hover:border-natural-orange/30 hover:text-natural-orange'
             }`}
           >
+            <span>{topic.emoji}</span>
             {topic.label}
           </button>
         ))}
       </div>
 
-      <div className="relative flex-1 space-y-5 overflow-y-auto bg-radial from-white via-[#FAF9F5] to-white px-4.5 py-6">
+      {/* ── Messages ── */}
+      <div className="flex-1 space-y-5 overflow-y-auto px-4 py-5 sm:px-5">
         <AnimatePresence initial={false}>
-          {messages.map((message) => {
-            const isUser = message.role === 'user';
-            const showVisual = !isUser && message.responseMode !== 'explain_only' && message.visualData;
-            const showPractice =
-              !isUser && message.responseMode === 'explain_with_visual_and_practice' && message.practiceQuestion;
+          {messages.map((msg) => {
+            if (msg.role === 'user') {
+              return (
+                <motion.div
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="flex flex-row-reverse gap-3"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-100 text-natural-orange">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="max-w-[78%] rounded-2xl rounded-tr-sm border border-amber-200 bg-amber-50 px-4 py-3 shadow-xs">
+                    <p className="text-xs leading-relaxed text-gray-800 sm:text-sm">{msg.text}</p>
+                    <p className="mt-1.5 text-[10px] text-amber-400">{msg.timestampLabel}</p>
+                  </div>
+                </motion.div>
+              );
+            }
 
             return (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`flex max-w-full gap-3.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
-              >
-                <div
-                  className={`flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-full border text-sm font-bold shadow-xs ${
-                    isUser
-                      ? 'border-amber-200 bg-amber-100 text-[#FF8C42]'
-                      : 'border-[#4A6741]/20 bg-[#E9F0E6] text-[#4A6741]'
-                  }`}
-                >
-                  {isUser ? <User className="h-4.5 w-4.5" /> : <Bot className="h-4.5 w-4.5" />}
-                </div>
-
-                <div className="flex max-w-[84%] flex-col gap-1.5 text-left sm:max-w-[76%]">
-                  <div
-                    className={`rounded-3xl px-5 py-4 shadow-3xs ${
-                      isUser ? 'border border-amber-200 bg-amber-50 text-gray-850' : 'border border-gray-200/90 bg-white text-gray-850'
-                    }`}
-                  >
-                    {!isUser && message.title && (
-                      <div className="mb-2 flex items-center gap-1.5 border-b border-gray-100 pb-2.5">
-                        <span className="text-xl">AI</span>
-                        <h2 className="font-serif text-sm font-bold italic leading-tight text-gray-800 sm:text-base">
-                          {message.title}
-                        </h2>
-                      </div>
-                    )}
-
-                    <div className="whitespace-pre-wrap text-xs leading-relaxed font-normal sm:text-sm">{message.text}</div>
-
-                    {isUser && message.attachedFile && (
-                      <div className="mt-3.5 flex max-w-sm items-center gap-2 rounded-2xl border border-amber-200 bg-white/70 p-2">
-                        {message.attachedFile.previewUrl ? (
-                          <Image
-                            src={message.attachedFile.previewUrl}
-                            alt="preview"
-                            width={48}
-                            height={48}
-                            unoptimized
-                            className="h-12 w-12 rounded-xl border border-gray-200 object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-100 bg-amber-50">
-                            <FileText className="h-5 w-5 text-[#FF8C42]" />
-                          </div>
-                        )}
-                        <div className="overflow-hidden text-left">
-                          <p className="truncate text-[10px] font-bold text-gray-700">{message.attachedFile.name}</p>
-                          <span className="block text-[9px] font-bold text-gray-400">
-                            {message.attachedFile.size} • {message.attachedFile.type.split('/')[1]?.toUpperCase() || 'FILE'}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {!isUser && message.lifeExample && (
-                      <div className="mt-3.5 rounded-2xl border border-sky-150/40 bg-sky-50/50 p-3.5">
-                        <h4 className="mb-1 text-[9px] font-black uppercase tracking-wider text-sky-500">Vi du gan gui:</h4>
-                        <p className="text-[11px] font-medium leading-relaxed text-gray-700 sm:text-xs">{message.lifeExample}</p>
-                      </div>
-                    )}
-
-                    {!isUser && message.followUpSuggestions && message.followUpSuggestions.length > 0 && (
-                      <div className="mt-3.5 flex flex-wrap gap-2">
-                        {message.followUpSuggestions.map((suggestion) => (
-                          <button
-                            key={`${message.id}_${suggestion}`}
-                            onClick={() => handleSuggestionClick(suggestion)}
-                            className="rounded-full border border-[#4A6741]/20 bg-[#E9F0E6] px-3 py-1.5 text-[10px] font-black uppercase tracking-tight text-[#4A6741] transition-all hover:bg-[#dfe9da]"
-                          >
-                            {suggestion}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {showPractice && (
-                      <div className="mt-4 border-t border-gray-100 pt-4.5">
-                        <div className="rounded-2xl border border-gray-150 bg-[#FAF9F5] p-3.5 text-left">
-                          <p className="mb-1.5 flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-500">
-                            <span>On tap nhanh cung con</span>
-                          </p>
-                          <p className="mb-3 text-[11px] font-bold leading-relaxed text-gray-800 sm:text-xs">
-                            {message.practiceQuestion.questionText}
-                          </p>
-
-                          <div className="space-y-1.5">
-                            {message.practiceQuestion.options.map((option, optionIndex) => {
-                              const isChecked = message.practiceAnswerIdx === optionIndex;
-                              return (
-                                <button
-                                  key={option}
-                                  onClick={() =>
-                                    handleChoosePracticeAnswer(
-                                      message.id,
-                                      optionIndex,
-                                      message.practiceQuestion!.correctAnswerIndex,
-                                    )
-                                  }
-                                  className={`flex w-full items-center justify-between rounded-xl border p-2.5 text-left text-[11px] font-semibold transition-all ${
-                                    isChecked
-                                      ? 'border-[#4A6741] bg-emerald-50 text-[#4A6741]'
-                                      : 'border-gray-200 bg-white text-gray-700 hover:bg-slate-50'
-                                  }`}
-                                >
-                                  <span>{option}</span>
-                                  {isChecked && <CheckCircle className="h-4 w-4 shrink-0 text-[#4A6741]" />}
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          {message.practiceFeedbackChecked && message.practiceAnswerIdx !== null && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 5 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className={`mt-3 rounded-xl border p-3 text-[11px] font-medium leading-relaxed sm:text-xs ${
-                                message.practiceAnswerIdx === message.practiceQuestion.correctAnswerIndex
-                                  ? 'border-emerald-200 bg-emerald-50/75 text-emerald-800'
-                                  : 'border-amber-150 bg-amber-50/75 text-amber-800'
-                              }`}
-                            >
-                              <p className="mb-1 font-extrabold">
-                                {message.practiceAnswerIdx === message.practiceQuestion.correctAnswerIndex
-                                  ? 'Con lam tot lam!'
-                                  : 'Khong sao, minh thu lai nhe:'}
-                              </p>
-                              <p>
-                                {message.practiceAnswerIdx === message.practiceQuestion.correctAnswerIndex
-                                  ? message.practiceQuestion.successMessage
-                                  : message.practiceQuestion.failMessage}
-                              </p>
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={`flex items-center gap-3.5 px-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
-                    <span className="text-[9px] font-bold tracking-tight text-gray-400">
-                      {message.timestampLabel}
-                    </span>
-
-                    {!isUser && (
-                      <button
-                        onClick={() => speakVoice(`${message.text}. ${message.lifeExample ?? ''}`, message.id)}
-                        className={`flex items-center gap-1 rounded-full border bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                          speakingMessageId === message.id
-                            ? 'border-transparent bg-[#FF8C42] text-white'
-                            : 'border-gray-200 text-gray-500 hover:text-[#4A6741]'
-                        }`}
-                      >
-                        <Volume2 className={`h-3.5 w-3.5 ${speakingMessageId === message.id ? 'animate-pulse' : ''}`} />
-                        <span>{speakingMessageId === message.id ? 'Tat phat am' : 'Nghe co giai thich'}</span>
-                      </button>
-                    )}
-                  </div>
-
-                  {showVisual && (
-                    <motion.div
-                      initial={{ scale: 0.96, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.15 }}
-                      className="mt-3.5 w-full max-w-lg border border-gray-100"
-                    >
-                      <InteractiveSimulation
-                        key={`${message.id}_${message.visualData!.type}_${message.visualData!.primaryCount}_${message.visualData!.secondaryCount}`}
-                        visualData={message.visualData!}
-                      />
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
+              <AiMessage
+                key={msg.id}
+                message={msg}
+                onSuggestionClick={handleSuggestionClick}
+                onAnswerChoice={handleAnswerChoice}
+                onSpeak={handleSpeak}
+                isSpeaking={speakingMsgId === msg.id}
+              />
             );
           })}
-
-          {isSearching && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3.5 text-left">
-              <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-full border bg-[#E9F0E6] text-[#4A6741]">
-                <Bot className="h-4.5 w-4.5 animate-bounce" />
-              </div>
-              <div className="rounded-3xl border bg-white px-5 py-3.5 text-gray-600 shadow-2xs">
-                <div className="flex items-center gap-2">
-                  <div className="flex space-x-1">
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#4A6741]" style={{ animationDelay: '0ms' }} />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#FF8C42]" style={{ animationDelay: '150ms' }} />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-[#4A6741]" style={{ animationDelay: '300ms' }} />
-                  </div>
-                  <span className="pl-1 font-sans text-xs font-bold uppercase tracking-wider text-[#4A6741]">
-                    Co dang nghi cach giai thich de con de hieu hon...
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          )}
         </AnimatePresence>
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex gap-3"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-natural-green/20 bg-natural-green-tint text-natural-green">
+              <Bot className="h-4 w-4" />
+            </div>
+            <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-5 py-4 shadow-xs">
+              <div className="flex items-center gap-1.5">
+                {[0, 0.15, 0.3].map((delay, i) => (
+                  <motion.div
+                    key={i}
+                    className="h-2 w-2 rounded-full bg-natural-green"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay }}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      {attachedFiles.length > 0 && (
-        <div className="flex flex-wrap gap-2.5 border-t border-gray-100 bg-white p-3">
-          {attachedFiles.map((file, index) => (
-            <div
-              key={`${file.name}_${index}`}
-              className="group relative flex items-center gap-2 rounded-2xl border border-gray-200 bg-slate-50 px-3 py-1.5 text-left shadow-2xs"
-            >
-              {file.previewUrl ? (
-                <Image
-                  src={file.previewUrl}
-                  alt="prev"
-                  width={28}
-                  height={28}
-                  unoptimized
-                  className="h-7 w-7 rounded-lg object-cover"
-                />
-              ) : (
-                <ImageIcon className="h-5 w-5 text-gray-400" />
-              )}
-              <div>
-                <p className="max-w-[120px] truncate text-[10px] font-bold text-gray-700">{file.name}</p>
-                <span className="mt-0.5 block text-[8px] font-bold leading-none text-gray-400">{file.size}</span>
-              </div>
-              <button onClick={() => removeFile(index)} className="ml-1 cursor-pointer text-gray-400 transition-colors hover:text-red-500">
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* ── Input area ── */}
+      <div className="border-t border-gray-200 bg-white px-4 py-3">
+        <form onSubmit={handleSend} className="flex items-end gap-2">
+          <div className="relative flex-1">
+            <textarea
+              ref={inputRef}
+              id="chat-input"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Hỏi cô bất kỳ câu toán nào... (Enter để gửi)"
+              rows={1}
+              className="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 pr-12 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all focus:border-natural-green/50 focus:bg-white focus:ring-2 focus:ring-natural-green/10"
+              style={{ maxHeight: '120px', overflowY: 'auto' }}
+            />
+          </div>
 
-      <div className="flex gap-2 overflow-x-auto whitespace-nowrap border-t border-gray-150 bg-white px-4.5 py-2.5 shadow-inner">
-        {[
-          'Giai thich phep nhan 4 x 3 bang dia keo.',
-          'Vi sao 12 chia 4 lai bang 3?',
-          'Cho con hieu 3/5 bang hinh pizza.',
-          'Phan biet chu vi va dien tich bang o vuong.',
-        ].map((suggestion) => (
-          <button
-            key={suggestion}
-            onClick={() => handleSuggestionClick(suggestion)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 text-[10px] font-black uppercase tracking-tight text-gray-600 shadow-3xs transition-all hover:border-[#4A6741]/30 hover:bg-[#E9F0E6] hover:text-[#4A6741]"
-          >
-            <Sparkles className="h-3 w-3 text-[#FF8C42]" />
-            <span>{suggestion}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="border-t border-gray-200 bg-white px-4 py-3.5">
-        <form onSubmit={handleSendMessage} className="flex items-center gap-2.5">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="image/*,.pdf,.txt,.docx"
-            multiple
-            className="hidden"
-          />
-
+          {/* Mic button */}
           <button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="group flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-2xl border border-gray-200 text-gray-500 shadow-3xs transition-all hover:border-[#4A6741]/20 hover:bg-[#E9F0E6]/30 hover:text-[#4A6741]"
-            title="Dinh kem tep"
-          >
-            <Paperclip className="h-4.5 w-4.5 transition-transform duration-200 group-hover:rotate-12" />
-          </button>
-
-          <input
-            type="text"
-            value={inputText}
-            onChange={(event) => setInputText(event.target.value)}
-            placeholder="Hoi co ve dia keo, chia tao, pizza, o vuong..."
-            className="h-11 flex-1 rounded-2xl border border-gray-200 bg-slate-50/50 px-4 text-xs font-medium text-gray-850 shadow-inner focus:border-[#4A6741] focus:outline-none focus:ring-1 focus:ring-[#4A6741] sm:text-sm"
-            disabled={isSearching}
-          />
-
-          <button
-            type="button"
+            id="mic-btn"
             onClick={toggleRecording}
-            className={`relative flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border shadow-3xs transition-all ${
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition-all ${
               isRecording
-                ? 'border-transparent bg-red-500 text-white ring-4 ring-red-200'
-                : 'border-gray-200 text-gray-500 hover:bg-amber-50/30 hover:text-[#FF8C42]'
+                ? 'border-red-300 bg-red-50 text-red-500 shadow-md animate-pulse'
+                : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100'
             }`}
-            title="Noi truc tiep"
+            title={isRecording ? 'Dừng ghi âm' : 'Ghi âm câu hỏi'}
           >
-            <Mic className="h-4.5 w-4.5" />
+            {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
           </button>
 
+          {/* Send button */}
           <button
             type="submit"
-            disabled={(!inputText.trim() && attachedFiles.length === 0) || isSearching}
-            className={`flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-2xl px-5 text-xs font-bold text-white transition-all ${
-              (!inputText.trim() && attachedFiles.length === 0) || isSearching
-                ? 'cursor-not-allowed bg-gray-200 text-gray-400 shadow-none'
-                : 'scale-100 cursor-pointer bg-[#4A6741] shadow-md shadow-[#4a6741]/10 hover:bg-[#3D5435] active:scale-97'
-            }`}
+            id="send-btn"
+            disabled={!inputText.trim() || isLoading}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-natural-green text-white shadow-md shadow-natural-green/20 transition-all hover:bg-natural-green-hover disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
           >
-            <Send className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Gui hoi</span>
+            <Send className="h-4 w-4" />
           </button>
         </form>
+        <p className="mt-2 text-center text-[10px] text-gray-400">
+          Powered by DeepSeek via OpenRouter · Visual chỉ hiện khi cần thiết
+        </p>
       </div>
     </div>
   );
-}
-
-function inferDomainFromPrompt(promptText: string): 'multiplication' | 'division' | 'fraction_basic' | 'perimeter_area_basic' {
-  const normalized = promptText.toLowerCase();
-
-  if (
-    normalized.includes('phan so') ||
-    normalized.includes('pizza') ||
-    normalized.includes('1/') ||
-    normalized.includes('2/') ||
-    normalized.includes('3/') ||
-    normalized.includes('4/') ||
-    normalized.includes('5/')
-  ) {
-    return 'fraction_basic';
-  }
-
-  if (
-    normalized.includes('chu vi') ||
-    normalized.includes('dien tich') ||
-    normalized.includes('hinh chu nhat') ||
-    normalized.includes('o vuong')
-  ) {
-    return 'perimeter_area_basic';
-  }
-
-  if (
-    normalized.includes('chia') ||
-    normalized.includes('chia deu') ||
-    normalized.includes(':')
-  ) {
-    return 'division';
-  }
-
-  return 'multiplication';
 }

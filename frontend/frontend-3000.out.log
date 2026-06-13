@@ -1,0 +1,20 @@
+
+> frontend@0.1.0 dev
+> next dev --hostname 127.0.0.1 --port 3000
+
+▲ Next.js 16.2.7 (Turbopack)
+- Local:         http://127.0.0.1:3000
+- Network:       http://127.0.0.1:3000
+- Environments: .env
+✓ Ready in 6.4s
+Creating turbopack project {
+  dir: 'D:\\Download\\Môn học\\AI in Action\\C2-App-103\\frontend',
+  testMode: true
+}
+
+○ Compiling /learn ...
+ GET /learn 200 in 11.2s (next.js: 10.6s, application-code: 682ms)
+ GET /learn 200 in 301ms (next.js: 36ms, application-code: 265ms)
+✓ Compiled in 519ms
+ GET /learn 200 in 534ms (next.js: 233ms, application-code: 301ms)
+ GET /learn 200 in 488ms (next.js: 18ms, application-code: 470ms)

@@ -28,7 +28,7 @@ class ToolRegistry:
         return list(self.tools.values())
 
     def list_tool_schemas(self) -> list[dict[str, Any]]:
-        return [tool.to_openai_tool_schema() for tool in self.tools.values()]
+        return [tool.to_tool_schema() for tool in self.tools.values()]
 
     async def call(
         self,

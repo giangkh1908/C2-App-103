@@ -24,7 +24,7 @@ class BaseTool(ABC):
     async def run(self, **kwargs: Any) -> ToolResult:
         pass
 
-    def to_openai_tool_schema(self) -> dict[str, Any]:
+    def to_tool_schema(self) -> dict[str, Any]:
         parameters = (
             self.input_schema.model_json_schema()
             if self.input_schema is not None

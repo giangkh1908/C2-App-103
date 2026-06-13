@@ -46,11 +46,17 @@ class Settings(BaseSettings):
     email_from: str = Field(default="noreply@yourdomain.com", alias="EMAIL_FROM")
 
     # LLM
-    llm_provider: Literal["openai", "anthropic", "google"] = "openai"
-    openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
-    openai_model: str = "gpt-4o-mini"
-    openai_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
-    openai_max_tokens: int = Field(default=2048, ge=1, le=128000)
+    llm_provider: Literal["openrouter", "anthropic", "google"] = "openrouter"
+    openrouter_api_key: str = Field(default="", alias="OPENROUTER_API_KEY")
+    openrouter_model: str = Field(default="openai/gpt-4o-mini", alias="OPENROUTER_MODEL")
+    openrouter_temperature: float = Field(default=0.7, ge=0.0, le=2.0, alias="OPENROUTER_TEMPERATURE")
+    openrouter_max_tokens: int = Field(default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS")
+    openrouter_base_url: str = Field(
+        default="https://openrouter.ai/api/v1",
+        alias="OPENROUTER_BASE_URL",
+    )
+    openrouter_site_url: str = Field(default="http://localhost:3000", alias="OPENROUTER_SITE_URL")
+    openrouter_app_name: str = Field(default="mathbuddy-ai-backend", alias="OPENROUTER_APP_NAME")
 
     @field_validator("debug", mode="before")
     @classmethod
@@ -63,6 +69,16 @@ class Settings(BaseSettings):
                 return False
         return value
 
+    @field_validator("llm_provider", mode="before")
+    @classmethod
+    def normalize_llm_provider(cls, value: object) -> object:
+        if isinstance(value, str):
+            normalized = value.strip().strip("'\"").lower()
+            if normalized == "openai":
+                return "openrouter"
+            return normalized
+        return value
+
     @field_validator(
         "app_name",
         "api_host",
@@ -71,8 +87,11 @@ class Settings(BaseSettings):
         "google_client_id",
         "resend_api_key",
         "email_from",
-        "openai_api_key",
-        "openai_model",
+        "openrouter_api_key",
+        "openrouter_model",
+        "openrouter_base_url",
+        "openrouter_site_url",
+        "openrouter_app_name",
         "jwt_secret_key",
         "jwt_algorithm",
         "mongodb_uri",

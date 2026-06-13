@@ -59,7 +59,7 @@ def _build_prompt(
     if tools:
         tool_lines: list[str] = []
         for schema in tools:
-            # OpenAI function-calling schema: {"type": "function", "function": {...}}
+            # Tool schema theo dinh dang function-calling tuong thich.
             fn = schema.get("function", schema)
             name = fn.get("name", "")
             description = fn.get("description", "")
@@ -105,7 +105,7 @@ class GeminiClient(BaseLLMClient):
         Args:
             messages: Danh sách message theo role (``system``, ``user``,
                 ``assistant``).
-            tools: Danh sách schema tool theo định dạng OpenAI function-calling.
+            tools: Danh sach schema tool theo dinh dang function-calling.
                 Tool call được xử lý qua JSON-in-prompt, không dùng native
                 Gemini function calling.
 

@@ -1,36 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 
 from src.agents.chat_orchestrator import TutorChatOrchestrator
-from src.agents.tutor_agent import TutorAgent
-from src.core.config import settings
-from src.llm.openai_client import OpenAIClient
 from src.models.chat import ChatTurnRequest, ChatTurnResponse
-from src.tools.registry import create_default_tool_registry
+from src.services.learning_core import LearningCoreService
+from src.services.learning_core_dependency import get_learning_core_service
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 _orchestrator: TutorChatOrchestrator | None = None
 
 
-def get_tutor_chat_orchestrator() -> TutorChatOrchestrator:
+def get_tutor_chat_orchestrator(
+    learning_core_service: LearningCoreService = Depends(get_learning_core_service),
+) -> TutorChatOrchestrator:
     global _orchestrator
 
-    if _orchestrator is None:
-        if not settings.openai_api_key:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="OPENAI_API_KEY is not configured",
-            )
-
-        llm = OpenAIClient(
-            api_key=settings.openai_api_key,
-            model=settings.openai_model,
-        )
-        tool_registry = create_default_tool_registry()
-        tutor_agent = TutorAgent(llm=llm, tool_registry=tool_registry)
+    if _orchestrator is None or _orchestrator.learning_core_service is not learning_core_service:
         _orchestrator = TutorChatOrchestrator(
-            tutor_agent=tutor_agent,
-            tool_registry=tool_registry,
+            learning_core_service=learning_core_service,
         )
 
     return _orchestrator

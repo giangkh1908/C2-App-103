@@ -16,6 +16,7 @@ ResponseMode = Literal[
     "explain_only",
     "explain_with_visual",
     "explain_with_visual_and_practice",
+    "clarification_needed",
 ]
 
 

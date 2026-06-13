@@ -6,8 +6,8 @@ import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from mongomock_motor import AsyncMongoMockClient
 
-from main import app
-from core.security import create_access_token, create_refresh_token, hash_password
+from src.main import app
+from src.core.security import create_access_token, create_refresh_token, hash_password
 
 
 @pytest.fixture(scope="session")
@@ -27,11 +27,11 @@ async def mock_db():
 
 @pytest_asyncio.fixture
 async def client(mock_db):
-    with patch("core.database.db", mock_db), \
-         patch("api.auth.get_db", return_value=mock_db), \
-         patch("core.deps.get_db", return_value=mock_db), \
-         patch("core.email.send_reset_password_email", new_callable=AsyncMock, return_value=True), \
-         patch("core.email.send_verify_email", new_callable=AsyncMock, return_value=True):
+    with patch("src.core.database.db", mock_db), \
+         patch("src.api.auth.get_db", return_value=mock_db), \
+         patch("src.core.deps.get_db", return_value=mock_db), \
+         patch("src.core.email.send_reset_password_email", new_callable=AsyncMock, return_value=True), \
+         patch("src.core.email.send_verify_email", new_callable=AsyncMock, return_value=True):
 
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as ac:

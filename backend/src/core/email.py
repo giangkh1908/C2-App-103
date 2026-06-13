@@ -1,5 +1,5 @@
 import httpx
-from core.config import settings
+from src.core.config import settings
 
 RESEND_API_URL = "https://api.resend.com/emails"
 

@@ -1,5 +1,7 @@
+from pathlib import Path
 from typing import Literal
-from pydantic import Field
+
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -18,8 +20,14 @@ class Settings(BaseSettings):
     api_prefix: str = "/api/v1"
 
     # MongoDB
-    mongodb_uri: str = Field(default="mongodb://localhost:27017", alias="MONGODB_URI")
-    mongodb_db_name: str = Field(default="toan_truc_quan", alias="MONGODB_DB_NAME")
+    mongodb_uri: str = Field(
+        default="mongodb://localhost:27017",
+        validation_alias=AliasChoices("MONGODB_URI", "MONGO_URI"),
+    )
+    mongodb_db_name: str = Field(
+        default="toan_truc_quan",
+        validation_alias=AliasChoices("MONGODB_DB_NAME", "MONGO_DB_NAME"),
+    )
 
     # JWT
     jwt_secret_key: str = Field(default="change-me-in-production", alias="JWT_SECRET_KEY")
@@ -44,8 +52,41 @@ class Settings(BaseSettings):
     openai_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     openai_max_tokens: int = Field(default=2048, ge=1, le=128000)
 
+    @field_validator("debug", mode="before")
+    @classmethod
+    def normalize_debug(cls, value: object) -> bool | object:
+        if isinstance(value, str):
+            normalized = value.strip().strip("'\"").lower()
+            if normalized in {"true", "1", "yes", "on", "debug"}:
+                return True
+            if normalized in {"false", "0", "no", "off", "release", "prod", "production"}:
+                return False
+        return value
+
+    @field_validator(
+        "app_name",
+        "api_host",
+        "api_prefix",
+        "frontend_url",
+        "google_client_id",
+        "resend_api_key",
+        "email_from",
+        "openai_api_key",
+        "openai_model",
+        "jwt_secret_key",
+        "jwt_algorithm",
+        "mongodb_uri",
+        "mongodb_db_name",
+        mode="before",
+    )
+    @classmethod
+    def strip_quoted_strings(cls, value: object) -> object:
+        if isinstance(value, str):
+            return value.strip().strip("'\"")
+        return value
+
     model_config = {
-        "env_file": ".env",
+        "env_file": str(Path(__file__).resolve().parents[2] / ".env"),
         "env_file_encoding": "utf-8",
         "case_sensitive": False,
         "extra": "ignore",

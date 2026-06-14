@@ -42,6 +42,7 @@ class LearningCoreService:
             agent_metadata = {
                 "tool_used": agent_response.tool_used,
                 "step_count": len(agent_response.steps),
+                "visual_source": None,
             }
             print("=" * 80)
             print("ANSWER:", agent_response.answer)
@@ -57,16 +58,30 @@ class LearningCoreService:
                     request=request,
                     context=context,
                     assistant_message=answer,
+                    agent_metadata=agent_metadata,
                 )
                 await self._persist(request, clarification_result)
                 return clarification_result
             else:
                 default_topic = request.selected_topic or "multiplication"
                 context = build_default_context(default_topic)
+                if agent_response.visual_data:
+                    tool_data = agent_response.visual_data
+                    agent_metadata["visual_source"] = "agent"
+                else:
+                    tool_data = build_default_tool_data(
+                        default_topic,
+                        context.tool_args,
+                    )
+                    agent_metadata["visual_source"] = "fallback"
+                print("=" * 80)
+                print("VISUAL SOURCE:", agent_metadata["visual_source"])
+                print("TOOL DATA:", tool_data)
+                print("=" * 80)
                 result = self._build_result(
                     request=request,
                     context=context,
-                    tool_data=build_default_tool_data(default_topic, context.tool_args),
+                    tool_data=tool_data,
                     assistant_message=answer,
                     response_source=response_source,
                     response_mode="explain_only",
@@ -90,6 +105,7 @@ class LearningCoreService:
         agent_metadata = {
             "tool_used": agent_response.tool_used,
             "step_count": len(agent_response.steps),
+            "visual_source": None,
         }
         print("=" * 80)
         print("ANSWER:", agent_response.answer)
@@ -106,6 +122,7 @@ class LearningCoreService:
                 request=request,
                 context=context,
                 assistant_message=answer,
+                agent_metadata=agent_metadata,
             )
             await self._persist(request, clarification_result)
             return clarification_result
@@ -115,14 +132,33 @@ class LearningCoreService:
         print("TOOL_NAME:", context.tool_name)
         print("TOOL_ARGS:", context.tool_args)
         print("=" * 80)
-        tool_result = await self.tool_registry.call(context.tool_name or "", context.tool_args)
-        if not tool_result.success:
-            tool_data = build_default_tool_data(context.topic, context.tool_args)
-            response_source = "fallback"
-        else:
-            tool_data = tool_result.data
+        if agent_response.visual_data:
+            tool_data = agent_response.visual_data
+            response_source = "agent"
+            agent_metadata["visual_source"] = "agent"
 
-        print("TOOL_DATA:", tool_data)
+        else:
+            tool_result = await self.tool_registry.call(
+                context.tool_name or "",
+                context.tool_args,
+            )
+
+            if not tool_result.success:
+                tool_data = build_default_tool_data(
+                    context.topic,
+                    context.tool_args,
+                )
+                response_source = "fallback"
+                agent_metadata["visual_source"] = "fallback"
+
+            else:
+                tool_data = tool_result.data
+                agent_metadata["visual_source"] = "legacy"
+
+        print("=" * 80)
+        print("VISUAL SOURCE:", agent_metadata["visual_source"])
+        print("TOOL DATA:", tool_data)
+        print("=" * 80)
 
         if is_low_signal_answer(answer):
             answer = build_contextual_explanation(context.topic, tool_data)
@@ -240,7 +276,7 @@ class LearningCoreService:
             session_metadata=SessionMetadata(
                 session_id=request.session_id or uuid4().hex,
                 provider=settings.llm_provider,
-                response_source="fallback" if response_source == "fallback" else "llm",
+                response_source=response_source,
             ),
             agent_metadata=agent_metadata,
         )

@@ -6,7 +6,7 @@ from src.models.chat import ChatTurnResponse, Intent, PracticeQuestion, Response
 from src.models.lesson import LessonPracticeQuestion, LessonSimulation, LessonVisual
 
 
-ResponseSource = Literal["llm", "fallback"]
+ResponseSource = Literal["llm", "fallback", "agent"]
 
 
 class LearningCoreRequest(BaseModel):

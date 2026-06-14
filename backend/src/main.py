@@ -5,11 +5,12 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from api import api_router
-from core.config import settings
-from core.database import connect_db, close_db
-from core.logging import configure_logging, request_id_ctx
+from src.api import api_router
+from src.core.config import settings
+from src.core.database import connect_db, close_db
+from src.core.logging import configure_logging, request_id_ctx
 
 configure_logging()
 
@@ -33,14 +34,6 @@ allowed_origins = {
     "http://127.0.0.1:3000",
 }
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=sorted(allowed_origins),
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 @app.middleware("http")
 async def request_logging_middleware(request: Request, call_next):
     request_id = request.headers.get("X-Request-ID") or str(uuid4())
@@ -62,7 +55,17 @@ async def request_logging_middleware(request: Request, call_next):
                 "client_ip": request.client.host if request.client else None,
             },
         )
-        raise
+        response = JSONResponse(
+            status_code=500,
+            content={"detail": "Internal server error"},
+        )
+        response.headers["X-Request-ID"] = request_id
+        origin = request.headers.get("origin")
+        if origin in allowed_origins:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Vary"] = "Origin"
+        return response
     else:
         duration_ms = round((perf_counter() - start) * 1000, 2)
         response.headers["X-Request-ID"] = request_id
@@ -81,6 +84,14 @@ async def request_logging_middleware(request: Request, call_next):
     finally:
         request_id_ctx.reset(token)
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(api_router, prefix=settings.api_prefix)
 

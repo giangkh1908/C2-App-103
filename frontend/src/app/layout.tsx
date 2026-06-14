@@ -4,26 +4,26 @@ import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["500", "700"],
 });
 
 const lora = Lora({
   variable: "--font-lora",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
@@ -87,7 +87,6 @@ export default function RootLayout({
       lang="vi"
       suppressHydrationWarning
       className={`${inter.variable} ${spaceGrotesk.variable} ${lora.variable} ${playfair.variable} h-full antialiased`}
-      suppressHydrationWarning
     >
       <head>
         <script

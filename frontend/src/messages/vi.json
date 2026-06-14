@@ -7,6 +7,9 @@
     "verified": "Thành viên Verified"
   },
   "nav": {
+    "home": "Trang chủ",
+    "learn": "Học tập",
+    "practice": "Luyện tập",
     "benefits": "Lợi ích cốt lõi",
     "sandbox": "Mô phỏng học thử",
     "roadmap": "Lộ trình lớp 1-5",
@@ -16,6 +19,38 @@
     "dashboard": "Bảng điều khiển",
     "profile": "Tài khoản",
     "logout": "Đăng xuất"
+  },
+  "learn": {
+    "topics": {
+      "multiplication": "Phép nhân",
+      "division": "Phép chia",
+      "fraction_basic": "Phân số",
+      "perimeter_area_basic": "Chu vi & Diện tích"
+    },
+    "chat": {
+      "title": "Gia sư Toán AI",
+      "subtitle": "Hỏi bất kỳ câu hỏi toán tiểu học nào",
+      "gradeLabel": "Lớp",
+      "freeTopic": "Chủ đề tự do",
+      "welcome": "Xin chào! Mình là gia sư toán AI. Bạn hỏi mình bất kỳ câu hỏi toán tiểu học nào — mình sẽ giải thích bằng ví dụ trực quan!",
+      "ready": "Sẵn sàng học!",
+      "suggestions": {
+        "multiply": "Giải thích phép nhân",
+        "compareFractions": "So sánh phân số",
+        "perimeterArea": "Chu vi & diện tích",
+        "division": "Giải thích phép chia"
+      },
+      "connectionError": "Lỗi kết nối. Vui lòng thử lại.",
+      "retrySuggestion": "Thử lại",
+      "chooseTopicSuggestion": "Chọn chủ đề khác",
+      "inputPlaceholder": "Đặt câu hỏi toán...",
+      "stopRecording": "Dừng ghi âm",
+      "startRecording": "Bắt đầu ghi âm",
+      "footer": "Gia sư AI — Học Toán Trực Quan",
+      "clarificationLabel": "Cần giải thích rõ hơn",
+      "quickPracticeLabel": "Luyện tập nhanh",
+      "readAloud": "Đọc to"
+    }
   },
   "auth": {
     "googleButton": "Tiếp tục với Google",

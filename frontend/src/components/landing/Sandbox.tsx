@@ -165,17 +165,16 @@ export default function Sandbox() {
     { key: "perimeter_area_basic", label: `🌱 ${t("tabArea")}`, color: "bg-natural-green" },
   ];
 
-  // Reset on tab change
-  useEffect(() => {
+  const resetSandboxState = (nextTab: Domain) => {
     setSelectedAnswer(null);
     setAnswersChecked(false);
-    if (activeTab === "multiplication") setCandyCounts([4, 4, 4]);
-    else if (activeTab === "division") {
+    if (nextTab === "multiplication") setCandyCounts([4, 4, 4]);
+    else if (nextTab === "division") {
       setApplesPerDoll([3, 3, 3]);
       setAppleBasket(3);
-    } else if (activeTab === "fraction_basic") setPizzaEaten([true, true, true, false]);
-    else if (activeTab === "perimeter_area_basic") setGridTiles(Array(12).fill(true));
-  }, [activeTab]);
+    } else if (nextTab === "fraction_basic") setPizzaEaten([true, true, true, false]);
+    else if (nextTab === "perimeter_area_basic") setGridTiles(Array(12).fill(true));
+  };
 
   // ── Sandbox Handlers ──
   const handlePlateClick = (idx: number) => {
@@ -459,6 +458,7 @@ export default function Sandbox() {
               onClick={() => {
                 playSound("pop");
                 setActiveTab(tab.key);
+                resetSandboxState(tab.key);
               }}
               className={`px-4 py-2 rounded-full text-xs font-bold tracking-tight cursor-pointer transition-all active:scale-97 ${
                 activeTab === tab.key

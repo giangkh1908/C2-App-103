@@ -7,6 +7,9 @@
     "verified": "Verified Member"
   },
   "nav": {
+    "home": "Home",
+    "learn": "Learn",
+    "practice": "Practice",
     "benefits": "Key Benefits",
     "sandbox": "Try Simulation",
     "roadmap": "Grade 1-5 Roadmap",
@@ -16,6 +19,38 @@
     "dashboard": "Dashboard",
     "profile": "Profile",
     "logout": "Log out"
+  },
+  "learn": {
+    "topics": {
+      "multiplication": "Multiplication",
+      "division": "Division",
+      "fraction_basic": "Fractions",
+      "perimeter_area_basic": "Perimeter & Area"
+    },
+    "chat": {
+      "title": "AI Math Tutor",
+      "subtitle": "Ask any elementary math question",
+      "gradeLabel": "Grade",
+      "freeTopic": "Free Topic",
+      "welcome": "Hello! I'm your AI math tutor. Ask me anything about elementary math — I'll explain with visual examples!",
+      "ready": "Ready to learn!",
+      "suggestions": {
+        "multiply": "Explain multiplication",
+        "compareFractions": "Compare fractions",
+        "perimeterArea": "Perimeter & area",
+        "division": "Explain division"
+      },
+      "connectionError": "Connection error. Please try again.",
+      "retrySuggestion": "Try again",
+      "chooseTopicSuggestion": "Choose a topic",
+      "inputPlaceholder": "Ask a math question...",
+      "stopRecording": "Stop recording",
+      "startRecording": "Start recording",
+      "footer": "AI Tutor — Visual Math Learning",
+      "clarificationLabel": "Clarification needed",
+      "quickPracticeLabel": "Quick Practice",
+      "readAloud": "Read aloud"
+    }
   },
   "auth": {
     "googleButton": "Continue with Google",

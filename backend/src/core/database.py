@@ -1,7 +1,7 @@
 import logging
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from core.config import settings
+from src.core.config import settings
 
 logger = logging.getLogger("toan_truc_quan.database")
 

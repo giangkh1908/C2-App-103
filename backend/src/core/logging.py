@@ -5,7 +5,7 @@ from contextvars import ContextVar
 from datetime import datetime, timezone
 from typing import Any
 
-from core.config import settings
+from src.core.config import settings
 
 request_id_ctx: ContextVar[str | None] = ContextVar("request_id", default=None)
 

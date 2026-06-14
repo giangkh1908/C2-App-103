@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
@@ -10,7 +10,6 @@ const LOCALES = [
 ] as const;
 
 export default function LocaleSwitcher() {
-  const t = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();

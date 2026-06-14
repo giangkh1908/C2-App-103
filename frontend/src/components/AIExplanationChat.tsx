@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   Bot,
   GraduationCap,
@@ -70,31 +71,35 @@ type BrowserWindow = Window & {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const DEFAULT_TOPICS: TopicOption[] = [
-  { id: 'multiplication', label: 'Phép nhân', emoji: '✖️' },
-  { id: 'division', label: 'Phép chia', emoji: '➗' },
-  { id: 'fraction_basic', label: 'Phân số', emoji: '🍕' },
-  { id: 'perimeter_area_basic', label: 'Chu vi & Diện tích', emoji: '📐' },
+const TOPIC_META: Array<{ id: MathDomain; emoji: string }> = [
+  { id: 'multiplication', emoji: '✖️' },
+  { id: 'division', emoji: '➗' },
+  { id: 'fraction_basic', emoji: '🍕' },
+  { id: 'perimeter_area_basic', emoji: '📐' },
 ];
 
-const WELCOME_MESSAGE: Message = {
+const TOPIC_EMOJIS = new Map(TOPIC_META.map((topic) => [topic.id, topic.emoji]));
+
+function buildWelcomeMessage(tChat: (key: string) => string): Message {
+  return {
   id: 'welcome_1',
   role: 'ai',
-  text: 'Xin chào! Cô là gia sư Toán AI. Con hãy hỏi bất kỳ câu hỏi toán nào — cô sẽ giải thích rõ ràng và dùng hình ảnh minh họa khi cần nhé! 🌟',
-  timestampLabel: 'Sẵn sàng',
+  text: tChat('welcome'),
+  timestampLabel: tChat('ready'),
   responseMode: 'explain_only',
   followUpSuggestions: [
-    'Giải thích phép nhân 3 × 4 cho con',
-    'Tại sao 3/4 lớn hơn 1/2?',
-    'Phân biệt chu vi và diện tích giúp con',
-    'Con muốn học chia đều 12 : 3',
+    tChat('suggestions.multiply'),
+    tChat('suggestions.compareFractions'),
+    tChat('suggestions.perimeterArea'),
+    tChat('suggestions.division'),
   ],
-};
+  };
+}
 
 // ─── Helper Functions ────────────────────────────────────────────────────────
 
-function createTimestamp(): string {
-  return new Intl.DateTimeFormat('vi-VN', {
+function createTimestamp(locale: string): string {
+  return new Intl.DateTimeFormat(locale === 'vi' ? 'vi-VN' : 'en-US', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
@@ -209,6 +214,8 @@ function ClarificationBubble({ message, onSuggestionClick }: {
   message: Message;
   onSuggestionClick: (text: string) => void;
 }) {
+  const t = useTranslations('learn.chat');
+
   return (
     <div className="flex flex-col gap-3">
       {/* Câu hỏi làm rõ */}
@@ -218,7 +225,7 @@ function ClarificationBubble({ message, onSuggestionClick }: {
         </div>
         <div className="rounded-2xl rounded-tl-sm border border-violet-200 bg-violet-50 px-4 py-3 shadow-sm max-w-[80%]">
           <p className="text-xs font-semibold uppercase tracking-wider text-violet-500 mb-1.5">
-            Cô cần hỏi thêm 🤔
+            {t('clarificationLabel')}
           </p>
           <div className="text-sm text-violet-900 leading-relaxed font-medium">
             {message.text}
@@ -248,6 +255,7 @@ function VisualPanel({ message, onAnswerChoice }: {
   message: Message;
   onAnswerChoice: (msgId: string, optIdx: number, correctIdx: number) => void;
 }) {
+  const t = useTranslations('learn.chat');
   const { visualData, practiceQuestion, practiceAnswerIdx, practiceFeedbackChecked } = message;
 
   return (
@@ -270,7 +278,7 @@ function VisualPanel({ message, onAnswerChoice }: {
       {practiceQuestion && (
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-xs">
           <p className="mb-3 text-xs font-bold uppercase tracking-wider text-natural-green">
-            🎯 Luyện tập nhanh
+            🎯 {t('quickPracticeLabel')}
           </p>
           <p className="mb-3 text-sm font-medium text-gray-800 leading-relaxed">
             {practiceQuestion.questionText}
@@ -332,6 +340,7 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
   onSpeak: (text: string, id: string) => void;
   isSpeaking: boolean;
 }) {
+  const t = useTranslations('learn.chat');
   const isClarification = message.responseMode === 'clarification_needed';
   const hasVisual = !isClarification && message.responseMode !== 'explain_only' && message.visualData;
 
@@ -382,7 +391,7 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
           <button
             onClick={() => onSpeak(message.text, message.id)}
             className="flex h-5 w-5 items-center justify-center rounded-full text-gray-400 transition-colors hover:text-natural-green"
-            title="Đọc to"
+            title={t('readAloud')}
           >
             {isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
           </button>
@@ -410,10 +419,21 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AIExplanationChat() {
-  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
+  const locale = useLocale();
+  const t = useTranslations('learn');
+  const tChat = useTranslations('learn.chat');
+  const speechLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
+  const localizeTopic = useCallback((topic: { id: MathDomain }): TopicOption => ({
+    id: topic.id,
+    label: t(`topics.${topic.id}`),
+    emoji: TOPIC_EMOJIS.get(topic.id) ?? '📚',
+  }), [t]);
+  const welcomeMessage = useMemo(() => buildWelcomeMessage(tChat), [tChat]);
+
+  const [messages, setMessages] = useState<Message[]>(() => [welcomeMessage]);
   const [inputText, setInputText] = useState('');
   const [selectedGrade, setSelectedGrade] = useState(3);
-  const [topics, setTopics] = useState<TopicOption[]>(DEFAULT_TOPICS);
+  const [topicIds, setTopicIds] = useState<MathDomain[]>(() => TOPIC_META.map((topic) => topic.id));
   const [selectedTopic, setSelectedTopic] = useState<MathDomain | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -424,7 +444,8 @@ export default function AIExplanationChat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8001/api/v1';
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api/v1';
+  const topics = useMemo(() => topicIds.map((id) => localizeTopic({ id })), [topicIds, localizeTopic]);
 
   // Auto-scroll
   useEffect(() => {
@@ -438,7 +459,7 @@ export default function AIExplanationChat() {
     if (!SR) return;
     const rec = new SR();
     rec.continuous = false;
-    rec.lang = 'vi-VN';
+    rec.lang = speechLocale;
     rec.interimResults = false;
     rec.onstart = () => setIsRecording(true);
     rec.onend = () => setIsRecording(false);
@@ -449,7 +470,7 @@ export default function AIExplanationChat() {
     };
     recognitionRef.current = rec;
     return () => { recognitionRef.current?.stop(); recognitionRef.current = null; };
-  }, []);
+  }, [speechLocale]);
 
   // TTS cleanup
   useEffect(() => {
@@ -461,14 +482,9 @@ export default function AIExplanationChat() {
     let active = true;
     fetch(`${backendUrl}/topics`)
       .then((r) => r.json())
-      .then((data: { topics?: Array<{ id: MathDomain; label: string }> }) => {
+      .then((data: { topics?: Array<{ id: MathDomain; label?: string }> }) => {
         if (active && data.topics?.length) {
-          setTopics(
-            data.topics.map((t) => ({
-              ...t,
-              emoji: DEFAULT_TOPICS.find((d) => d.id === t.id)?.emoji ?? '📚',
-            }))
-          );
+          setTopicIds(data.topics.map((topic) => topic.id));
         }
       })
       .catch(() => { /* use defaults */ });
@@ -484,12 +500,12 @@ export default function AIExplanationChat() {
     }
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text.replace(/[\\/*_#]/g, ''));
-    utter.lang = 'vi-VN';
+    utter.lang = speechLocale;
     utter.rate = 0.95;
     utter.onend = () => setSpeakingMsgId(null);
     setSpeakingMsgId(id);
     window.speechSynthesis.speak(utter);
-  }, [speakingMsgId]);
+  }, [speakingMsgId, speechLocale]);
 
   const handleSuggestionClick = (text: string) => {
     setInputText(text);
@@ -498,7 +514,11 @@ export default function AIExplanationChat() {
 
   const toggleRecording = () => {
     if (!recognitionRef.current) return;
-    isRecording ? recognitionRef.current.stop() : recognitionRef.current.start();
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
   };
 
   const handleAnswerChoice = (msgId: string, optIdx: number, correctIdx: number) => {
@@ -524,7 +544,7 @@ export default function AIExplanationChat() {
         id: `user_${Date.now()}`,
         role: 'user',
         text,
-        timestampLabel: createTimestamp(),
+        timestampLabel: createTimestamp(locale),
       },
     ]);
     setIsLoading(true);
@@ -551,7 +571,7 @@ export default function AIExplanationChat() {
         id: `ai_${Date.now()}`,
         role: 'ai',
         text: payload.assistant_message,
-        timestampLabel: createTimestamp(),
+        timestampLabel: createTimestamp(locale),
         responseMode: payload.response_mode,
         followUpSuggestions: payload.follow_up_suggestions,
         title: payload.visual_card?.title,
@@ -590,10 +610,10 @@ export default function AIExplanationChat() {
         {
           id: `ai_err_${Date.now()}`,
           role: 'ai',
-          text: 'Cô gặp sự cố kết nối với server. Con thử hỏi lại sau nhé! 🙏',
-          timestampLabel: createTimestamp(),
+          text: tChat('connectionError'),
+          timestampLabel: createTimestamp(locale),
           responseMode: 'explain_only',
-          followUpSuggestions: ['Thử hỏi lại câu đó', 'Chọn chủ đề từ thanh bên'],
+          followUpSuggestions: [tChat('retrySuggestion'), tChat('chooseTopicSuggestion')],
         },
       ]);
       playSfx('error');
@@ -610,28 +630,28 @@ export default function AIExplanationChat() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-[#FAF9F5] shadow-xl">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-[#FAF9F5] shadow-xl">
       {/* ── Header ── */}
-      <div className="flex flex-col items-start justify-between gap-3 border-b border-gray-200 bg-white px-5 py-3.5 sm:flex-row sm:items-center">
+      <div className="flex shrink-0 flex-col items-start justify-between gap-3 border-b border-gray-200 bg-white px-5 py-3.5 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-natural-green text-white shadow-md shadow-natural-green/20">
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
             <h1 className="font-serif text-base font-bold italic leading-none text-gray-800 sm:text-lg">
-              Gia sư Toán AI
+              {tChat('title')}
             </h1>
             <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-natural-green">
               <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-              <span>Trả lời thông minh · Visual khi cần</span>
+              <span>{tChat('subtitle')}</span>
             </p>
           </div>
         </div>
 
         {/* Grade selector */}
-        <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-slate-50 px-2 py-1.5 text-xs font-bold">
+        <div className="flex w-full items-center justify-between gap-2 rounded-full border border-gray-200 bg-slate-50 px-2 py-1.5 text-xs font-bold sm:w-auto sm:justify-start">
           <GraduationCap className="h-3.5 w-3.5 shrink-0 text-natural-orange" />
-          <span className="text-gray-500">Lớp:</span>
+          <span className="text-gray-500">{tChat('gradeLabel')}</span>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((g) => (
               <button
@@ -652,24 +672,24 @@ export default function AIExplanationChat() {
       </div>
 
       {/* ── Topic bar ── */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 bg-[#F4F1E8] px-4 py-2.5">
+      <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-gray-100 bg-[#F4F1E8] px-4 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           id="topic-btn-all"
           onClick={() => setSelectedTopic(null)}
-          className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
+          className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
             selectedTopic === null
               ? 'border-natural-green bg-natural-green text-white'
               : 'border-gray-200 bg-white text-gray-600 hover:border-natural-green/30 hover:text-natural-green'
           }`}
         >
-          Tự do hỏi
+          {tChat('freeTopic')}
         </button>
         {topics.map((topic) => (
           <button
             key={topic.id}
             id={`topic-btn-${topic.id}`}
             onClick={() => setSelectedTopic(topic.id)}
-            className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
+            className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
               selectedTopic === topic.id
                 ? 'border-natural-orange bg-natural-orange text-white'
                 : 'border-gray-200 bg-white text-gray-600 hover:border-natural-orange/30 hover:text-natural-orange'
@@ -682,7 +702,7 @@ export default function AIExplanationChat() {
       </div>
 
       {/* ── Messages ── */}
-      <div className="flex-1 space-y-5 overflow-y-auto px-4 py-5 sm:px-5">
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-5 sm:px-5">
         <AnimatePresence initial={false}>
           {messages.map((msg) => {
             if (msg.role === 'user') {
@@ -747,18 +767,18 @@ export default function AIExplanationChat() {
       </div>
 
       {/* ── Input area ── */}
-      <div className="border-t border-gray-200 bg-white px-4 py-3">
+      <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3">
         <form onSubmit={handleSend} className="flex items-end gap-2">
-          <div className="relative flex-1">
+          <div className="relative min-w-0 flex-1">
             <textarea
               ref={inputRef}
               id="chat-input"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Hỏi cô bất kỳ câu toán nào... (Enter để gửi)"
+              placeholder={tChat('inputPlaceholder')}
               rows={1}
-              className="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 pr-12 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all focus:border-natural-green/50 focus:bg-white focus:ring-2 focus:ring-natural-green/10"
+              className="min-h-11 w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 pr-12 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all focus:border-natural-green/50 focus:bg-white focus:ring-2 focus:ring-natural-green/10"
               style={{ maxHeight: '120px', overflowY: 'auto' }}
             />
           </div>
@@ -773,7 +793,7 @@ export default function AIExplanationChat() {
                 ? 'border-red-300 bg-red-50 text-red-500 shadow-md animate-pulse'
                 : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100'
             }`}
-            title={isRecording ? 'Dừng ghi âm' : 'Ghi âm câu hỏi'}
+            title={isRecording ? tChat('stopRecording') : tChat('startRecording')}
           >
             {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
           </button>
@@ -789,7 +809,7 @@ export default function AIExplanationChat() {
           </button>
         </form>
         <p className="mt-2 text-center text-[10px] text-gray-400">
-          Powered by DeepSeek via OpenRouter · Visual chỉ hiện khi cần thiết
+          {tChat('footer')}
         </p>
       </div>
     </div>

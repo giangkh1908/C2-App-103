@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import AliasChoices, Field, field_validator
+from pydantic import AliasChoices, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings
 
 
@@ -40,6 +40,10 @@ class Settings(BaseSettings):
 
     # Google OAuth
     google_client_id: str = Field(default="", alias="GOOGLE_CLIENT_ID")
+    google_client_secret: str = Field(default="", alias="GOOGLE_CLIENT_SECRET")
+
+    # Google GenAI
+    google_api_key: str = Field(default="", alias="GOOGLE_API_KEY")
 
     # Email (Resend)
     resend_api_key: str = Field(default="", alias="RESEND_API_KEY")
@@ -48,7 +52,7 @@ class Settings(BaseSettings):
     # LLM
     llm_provider: Literal["openrouter", "anthropic", "google"] = "openrouter"
     openrouter_api_key: str = Field(default="", alias="OPENROUTER_API_KEY")
-    openrouter_model: str = Field(default="openai/gpt-4o-mini", alias="OPENROUTER_MODEL")
+    openrouter_model: str = Field(default="deepseek/deepseek-v4-flash", alias="OPENROUTER_MODEL")
     openrouter_temperature: float = Field(default=0.7, ge=0.0, le=2.0, alias="OPENROUTER_TEMPERATURE")
     openrouter_max_tokens: int = Field(default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS")
     openrouter_base_url: str = Field(
@@ -85,6 +89,8 @@ class Settings(BaseSettings):
         "api_prefix",
         "frontend_url",
         "google_client_id",
+        "google_client_secret",
+        "google_api_key",
         "resend_api_key",
         "email_from",
         "openrouter_api_key",

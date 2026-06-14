@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from bson import ObjectId
+from google.auth.exceptions import GoogleAuthError
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
@@ -151,6 +152,11 @@ async def google_login(req: GoogleLoginRequest, response: Response):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Google token",
+        )
+    except GoogleAuthError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Google OAuth verification unavailable",
         )
 
     db = get_db()

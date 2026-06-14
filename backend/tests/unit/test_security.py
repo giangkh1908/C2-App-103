@@ -2,8 +2,8 @@ import pytest
 from datetime import datetime, timedelta, timezone
 from pydantic import ValidationError
 
-from core.config import Settings
-from core.security import (
+from src.core.config import Settings
+from src.core.security import (
     hash_password,
     verify_password,
     create_access_token,
@@ -74,7 +74,7 @@ class TestTokenDecoding:
 
     def test_decode_expired_token(self):
         from jose import jwt
-    from src.core.config import settings
+        from src.core.config import settings
 
         expired_data = {
             "sub": "user123",

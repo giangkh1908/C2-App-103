@@ -1,4 +1,5 @@
 import pytest
+from google.auth.exceptions import TransportError
 from unittest.mock import patch, AsyncMock
 from httpx import AsyncClient
 
@@ -67,7 +68,8 @@ class TestLogin:
 @pytest.mark.asyncio
 class TestRefresh:
     async def test_refresh_success(self, client: AsyncClient, test_user):
-    from src.core.security import create_refresh_token
+        from src.core.security import create_refresh_token
+
         user_id = str(test_user["_id"])
         rt = create_refresh_token(user_id)
 
@@ -90,7 +92,8 @@ class TestRefresh:
         assert response.status_code == 401
 
     async def test_refresh_access_token_rejected(self, client: AsyncClient, test_user):
-    from src.core.security import create_access_token
+        from src.core.security import create_access_token
+
         user_id = str(test_user["_id"])
         at = create_access_token(user_id, "user")
 
@@ -241,23 +244,61 @@ class TestVerifyEmail:
 @pytest.mark.asyncio
 class TestGoogleLogin:
     async def test_google_login_not_configured(self, client: AsyncClient):
-        with patch("api.auth.settings") as mock_settings:
-            mock_settings.google_client_id = ""
+        with patch("src.api.auth.settings.google_client_id", ""):
             response = await client.post("/api/v1/auth/google", json={
                 "credential": "sometoken",
             })
             assert response.status_code == 503
 
     async def test_google_login_invalid_token(self, client: AsyncClient):
-    with patch("src.core.config.settings") as mock_settings:
-            mock_settings.google_client_id = "fake-client-id"
-        with patch("src.api.auth.settings") as mock_auth_settings:
-                mock_auth_settings.google_client_id = "fake-client-id"
-                with patch("google.oauth2.id_token.verify_oauth2_token", side_effect=ValueError("Invalid")):
-                    response = await client.post("/api/v1/auth/google", json={
-                        "credential": "invalidtoken",
-                    })
-                    assert response.status_code == 401
+        with patch("src.api.auth.settings.google_client_id", "fake-client-id"):
+            with patch("google.oauth2.id_token.verify_oauth2_token", side_effect=ValueError("Invalid")):
+                response = await client.post("/api/v1/auth/google", json={
+                    "credential": "invalidtoken",
+                })
+                assert response.status_code == 401
+
+    async def test_google_login_verification_unavailable(self, client: AsyncClient):
+        with patch("src.api.auth.settings.google_client_id", "fake-client-id"):
+            with patch(
+                "google.oauth2.id_token.verify_oauth2_token",
+                side_effect=TransportError("Google cert fetch failed"),
+            ):
+                response = await client.post(
+                    "/api/v1/auth/google",
+                    headers={"Origin": "http://localhost:3000"},
+                    json={"credential": "invalidtoken"},
+                )
+                assert response.status_code == 503
+                assert response.json()["detail"] == "Google OAuth verification unavailable"
+                assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+
+    async def test_google_login_success_creates_user(self, client: AsyncClient, mock_db):
+        with patch("src.api.auth.settings.google_client_id", "fake-client-id"):
+            with patch(
+                "google.oauth2.id_token.verify_oauth2_token",
+                return_value={
+                    "email": "google@example.com",
+                    "name": "Google User",
+                    "picture": "https://example.com/avatar.png",
+                },
+            ):
+                response = await client.post(
+                    "/api/v1/auth/google",
+                    headers={"Origin": "http://localhost:3000"},
+                    json={"credential": "valid-google-credential"},
+                )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["user"]["email"] == "google@example.com"
+        assert data["user"]["name"] == "Google User"
+        assert data["user"]["verified"] is True
+        assert "accessToken" in data
+        assert "refresh_token" in response.cookies
+
+        user_doc = await mock_db.users.find_one({"email": "google@example.com"})
+        assert user_doc is not None
 
 
 @pytest.mark.asyncio

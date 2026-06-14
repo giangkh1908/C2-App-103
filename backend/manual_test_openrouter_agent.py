@@ -65,5 +65,5 @@ async def main(message: str) -> None:
 
 
 if __name__ == "__main__":
-    user_message = "Giải thích phép nhân 3 × 4 cho con"
+    user_message = "Xin chào"
     asyncio.run(main(user_message))

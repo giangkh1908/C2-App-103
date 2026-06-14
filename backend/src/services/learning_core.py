@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from src.agents.tutor_agent import TutorAgent
+from src.agents.guardrails import guard_message
 from src.core.config import settings
 from src.models.chat import Topic
 from src.services.context_detector import DEFAULT_TOOL_ARGS, detect_context
@@ -32,7 +33,32 @@ class LearningCoreService:
 
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
         print("LEARNING CORE CALLED")
-        context = detect_context(request.message, request.selected_topic)
+
+        guard_result = guard_message(request.message)
+
+        if guard_result is not None:
+            print("GUARDRAIL BLOCKED:", guard_result.category)
+
+            context = build_default_context(
+                request.selected_topic or "multiplication"
+            )
+
+            result = self._build_clarification_result(
+                request=request,
+                context=context,
+                assistant_message=guard_result.response,
+                agent_metadata={
+                    "guardrail": guard_result.category,
+                },
+            )
+
+            await self._persist(request, result)
+            return result
+
+        context = detect_context(
+            request.message,
+            request.selected_topic,
+        )
         if context.topic is None:
             agent_response = await self.tutor_agent.chat(
                 message=build_tutor_message(request.message, None, request.grade),

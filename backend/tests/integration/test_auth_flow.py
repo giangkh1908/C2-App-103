@@ -4,8 +4,8 @@ from unittest.mock import patch, AsyncMock
 from httpx import AsyncClient
 from jose import jwt
 
-from core.config import settings
-from core.security import create_access_token, create_refresh_token
+from src.core.config import settings
+from src.core.security import create_access_token, create_refresh_token
 
 
 @pytest.mark.asyncio

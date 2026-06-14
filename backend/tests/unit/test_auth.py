@@ -65,7 +65,7 @@ class TestLogin:
 @pytest.mark.asyncio
 class TestRefresh:
     async def test_refresh_success(self, client: AsyncClient, test_user):
-        from core.security import create_refresh_token
+    from src.core.security import create_refresh_token
         user_id = str(test_user["_id"])
         rt = create_refresh_token(user_id)
 
@@ -84,7 +84,7 @@ class TestRefresh:
         assert response.status_code == 401
 
     async def test_refresh_access_token_rejected(self, client: AsyncClient, test_user):
-        from core.security import create_access_token
+    from src.core.security import create_access_token
         user_id = str(test_user["_id"])
         at = create_access_token(user_id, "user")
 
@@ -232,7 +232,7 @@ class TestVerifyEmail:
 @pytest.mark.asyncio
 class TestGoogleLogin:
     async def test_google_login_not_configured(self, client: AsyncClient):
-        with patch("core.config.settings") as mock_settings:
+    with patch("src.core.config.settings") as mock_settings:
             mock_settings.google_client_id = ""
             response = await client.post("/api/v1/auth/google", json={
                 "credential": "sometoken",
@@ -240,9 +240,9 @@ class TestGoogleLogin:
             assert response.status_code == 503
 
     async def test_google_login_invalid_token(self, client: AsyncClient):
-        with patch("core.config.settings") as mock_settings:
+    with patch("src.core.config.settings") as mock_settings:
             mock_settings.google_client_id = "fake-client-id"
-            with patch("api.auth.settings") as mock_auth_settings:
+        with patch("src.api.auth.settings") as mock_auth_settings:
                 mock_auth_settings.google_client_id = "fake-client-id"
                 with patch("google.oauth2.id_token.verify_oauth2_token", side_effect=ValueError("Invalid")):
                     response = await client.post("/api/v1/auth/google", json={

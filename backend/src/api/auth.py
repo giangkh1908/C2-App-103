@@ -6,18 +6,18 @@ from bson import ObjectId
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
-from core.config import settings
-from core.database import get_db
-from core.deps import get_current_user
-from core.email import send_reset_password_email, send_verify_email
-from core.security import (
+from src.core.config import settings
+from src.core.database import get_db
+from src.core.deps import get_current_user
+from src.core.email import send_reset_password_email, send_verify_email
+from src.core.security import (
     hash_password,
     verify_password,
     create_access_token,
     create_refresh_token,
     decode_token,
 )
-from models.auth import (
+from src.models.auth import (
     LoginRequest,
     RegisterRequest,
     GoogleLoginRequest,
@@ -30,7 +30,7 @@ from models.auth import (
     VerifyEmailRequest,
     MessageResponse,
 )
-from models.user import UserInDB, user_to_response, create_user_doc
+from src.models.user import UserInDB, create_user_doc, user_to_response
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

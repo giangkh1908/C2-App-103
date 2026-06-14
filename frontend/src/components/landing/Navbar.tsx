@@ -37,123 +37,79 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b py-3.5 px-4 sm:px-6 lg:px-8 transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b px-4 py-3.5 transition-all duration-300 sm:px-6 lg:px-8 ${
         scrolled
-          ? "bg-white/90 backdrop-blur-md border-natural-border shadow-xs"
-          : "bg-white/90 backdrop-blur-md border-natural-border"
+          ? "border-natural-border bg-white/90 shadow-xs backdrop-blur-md"
+          : "border-natural-border bg-white/90 backdrop-blur-md"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div
-          className="flex items-center gap-2 cursor-pointer"
+      <div className="mx-auto flex max-w-7xl items-center justify-between">
+        <button
+          type="button"
+          className="flex cursor-pointer items-center gap-2"
           onClick={() => scrollTo("hero")}
         >
           <Image
             src="/logo.png"
-            alt={`${tCommon("brand")} logo`}
+            alt="Toan Truc Quan AI logo"
             width={36}
             height={36}
             className="rounded-full shadow-md shadow-natural-green/10"
           />
-          <div>
-            <span className="font-serif italic font-bold text-lg text-natural-dark tracking-tight block leading-none">
-              {tCommon("brand")}
+          <div className="text-left">
+            <span className="block font-serif text-lg font-bold leading-none tracking-tight text-natural-dark italic">
+              Toan Truc Quan AI
             </span>
-            <span className="text-[9px] font-bold text-natural-green tracking-widest block mt-0.5 uppercase">
-              {tCommon("brandSubtitle")}
+            <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-widest text-natural-green">
+              Visual Tutor Helper
             </span>
           </div>
-        </div>
+        </button>
 
-        <nav className="hidden md:flex items-center gap-7 text-[13px] font-bold text-natural-charcoal/80">
-          <button onClick={() => scrollTo("loi-ich")} className="hover:text-natural-green transition-colors cursor-pointer">
-            {t("benefits")}
+        <nav className="hidden items-center gap-7 text-[13px] font-bold text-natural-charcoal/80 md:flex">
+          <button
+            type="button"
+            onClick={() => scrollTo('loi-ich')}
+            className="cursor-pointer transition-colors hover:text-natural-green"
+          >
+            Loi ich cot loi
           </button>
-          <button onClick={() => scrollTo("hoc-thu")} className="hover:text-natural-green transition-colors cursor-pointer">
-            {t("sandbox")}
+          <Link
+            href="/learn"
+            className="cursor-pointer transition-colors hover:text-natural-orange text-natural-orange/90 flex items-center gap-1.5"
+          >
+            <span className="inline-block h-2 w-2 rounded-full bg-natural-orange animate-pulse" />
+            Mo phong hoc thu
+          </Link>
+          <button
+            type="button"
+            onClick={() => scrollTo('lo-trinh')}
+            className="cursor-pointer transition-colors hover:text-natural-green"
+          >
+            Lo trinh lop 1-5
           </button>
-          <button onClick={() => scrollTo("lo-trinh")} className="hover:text-natural-green transition-colors cursor-pointer">
-            {t("roadmap")}
-          </button>
-          <button onClick={() => scrollTo("cau-hoi")} className="hover:text-natural-green transition-colors cursor-pointer">
-            {t("faq")}
+          <button
+            type="button"
+            onClick={() => scrollTo('cau-hoi')}
+            className="cursor-pointer transition-colors hover:text-natural-green"
+          >
+            Cau hoi thuong gap
           </button>
         </nav>
 
-        <div className="flex items-center gap-2">
-          <LocaleSwitcher />
-
-          {isLoading ? (
-            <div className="w-8 h-8 rounded-full bg-natural-border animate-pulse" />
-          ) : isAuthenticated && user ? (
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 hover:bg-natural-bg transition-colors cursor-pointer"
-              >
-                {user.avatar ? (
-                  <Image
-                    src={user.avatar}
-                    alt={user.name ?? "User"}
-                    width={28}
-                    height={28}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-natural-green flex items-center justify-center text-white text-xs font-bold">
-                    {(user.name ?? user.email ?? "U")[0].toUpperCase()}
-                  </div>
-                )}
-                <span className="text-[12px] font-bold text-natural-charcoal hidden sm:block max-w-[100px] truncate">
-                  {user.name ?? user.email}
-                </span>
-              </button>
-
-              {menuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl border border-natural-border shadow-lg py-2 z-50">
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setMenuOpen(false)}
-                    className="block px-4 py-2 text-[12px] font-bold text-natural-charcoal hover:bg-natural-bg transition-colors"
-                  >
-                    {t("dashboard")}
-                  </Link>
-                  <Link
-                    href="/profile"
-                    onClick={() => setMenuOpen(false)}
-                    className="block px-4 py-2 text-[12px] font-bold text-natural-charcoal hover:bg-natural-bg transition-colors"
-                  >
-                    {t("profile")}
-                  </Link>
-                  <div className="border-t border-natural-border my-1" />
-                  <button
-                    onClick={() => {
-                      setMenuOpen(false);
-                      logout();
-                    }}
-                    className="block w-full text-left px-4 py-2 text-[12px] font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                  >
-                    {t("logout")}
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="text-[13px] font-bold text-natural-charcoal hover:text-natural-green transition-colors"
-              >
-                {t("login")}
-              </Link>
-              <button
-                onClick={() => scrollTo("hoc-thu")}
-                className="rounded-full bg-natural-green hover:bg-natural-green-hover transition-all text-white font-bold text-xs py-2.5 px-5 cursor-pointer shadow-md shadow-natural-green/5 active:scale-97"
-              >
-                {t("cta")}
-              </button>
-            </>
-          )}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="text-[13px] font-bold text-natural-charcoal transition-colors hover:text-natural-green"
+          >
+            Dang nhap
+          </Link>
+          <Link
+            href="/learn"
+            className="rounded-full bg-natural-green px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-natural-green/5 transition-all hover:bg-natural-green-hover active:scale-97"
+          >
+            Hoc thu ngay
+          </Link>
         </div>
       </div>
     </header>

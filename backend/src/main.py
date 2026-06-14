@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from core.config import settings
-from core.database import connect_db, close_db
-from api import api_router
+from src.api import api_router
+from src.core.config import settings
+from src.core.database import close_db, connect_db
 
 
 @asynccontextmanager
@@ -21,9 +21,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+allowed_origins = {
+    settings.frontend_url.rstrip("/"),
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+}
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
+    allow_origins=sorted(allowed_origins),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -201,13 +201,25 @@ export default function App() {
     }
   }, [activeTab]);
 
+  // Singleton AudioContext — tránh rò rỉ bộ nhớ khi tạo mới mỗi lần phát âm thanh
+  const getSharedAudioContext = (): AudioContext | null => {
+    const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!Ctor) return null;
+    if (!(window as any).__mathAudioCtx || (window as any).__mathAudioCtx.state === 'closed') {
+      (window as any).__mathAudioCtx = new Ctor();
+    }
+    if ((window as any).__mathAudioCtx.state === 'suspended') {
+      (window as any).__mathAudioCtx.resume();
+    }
+    return (window as any).__mathAudioCtx as AudioContext;
+  };
+
   // Synthesizes charming children audio feedback
   const playSoundEffect = (type: 'pop' | 'crunch' | 'correct' | 'win' | 'synth') => {
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContext) return;
-      const ctx = new AudioContext();
-      
+      const ctx = getSharedAudioContext();
+      if (!ctx) return;
+
       if (type === 'pop') {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -262,23 +274,20 @@ export default function App() {
     }
   };
 
-  // Speak-aloud TTS assistant block
+  // Speak-aloud TTS assistant block — dùng ref để tránh stale closure
   const [speakingText, setSpeakingText] = useState<string | null>(null);
-  const [synth, setSynth] = useState<SpeechSynthesis | null>(null);
+  const speakingTextRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      setSynth(window.speechSynthesis);
-    }
-  }, []);
+    speakingTextRef.current = speakingText;
+  }, [speakingText]);
 
   const speakText = (text: string) => {
-    if (!synth) return;
-    
-    // Stop current speech
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const synth = window.speechSynthesis;
     synth.cancel();
 
-    if (speakingText === text) {
+    if (speakingTextRef.current === text) {
       setSpeakingText(null);
       return;
     }
@@ -286,22 +295,16 @@ export default function App() {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'vi-VN';
     utter.rate = 0.95;
-    
-    utter.onend = () => {
-      setSpeakingText(null);
-    };
-
+    utter.onend = () => setSpeakingText(null);
     setSpeakingText(text);
     synth.speak(utter);
   };
 
   useEffect(() => {
     return () => {
-      if (synth) {
-        synth.cancel();
-      }
+      window.speechSynthesis?.cancel();
     };
-  }, [synth]);
+  }, []);
 
   // Handle tactile sandbox element updates
   const handlePlateCandyClick = (pIdx: number) => {

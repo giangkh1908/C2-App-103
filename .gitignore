@@ -23,6 +23,8 @@ next-env.d.ts
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
+*.out.log
+*.err.log
 .vercel
 
 # OS
@@ -36,3 +38,7 @@ Thumbs.db
 
 # AI logs — tracked structure, ignored content
 .ai-log/*.jsonl
+
+.ai-log/
+
+.ai-log/

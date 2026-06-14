@@ -74,7 +74,7 @@ class TestTokenDecoding:
 
     def test_decode_expired_token(self):
         from jose import jwt
-        from core.config import settings
+    from src.core.config import settings
 
         expired_data = {
             "sub": "user123",

@@ -39,6 +39,10 @@ class LearningCoreService:
                 level=grade_to_level(request.grade),
                 use_tools=True,
             )
+            agent_metadata = {
+                "tool_used": agent_response.tool_used,
+                "step_count": len(agent_response.steps),
+            }
             print("=" * 80)
             print("ANSWER:", agent_response.answer)
             print("TOOL USED:", agent_response.tool_used)
@@ -72,6 +76,7 @@ class LearningCoreService:
                         "Con muốn học phân số.",
                         "Con muốn học chu vi và diện tích.",
                     ],
+                    agent_metadata=agent_metadata
                 )
                 await self._persist(request, result)
                 return result
@@ -82,6 +87,10 @@ class LearningCoreService:
             level=grade_to_level(request.grade),
             use_tools=True,
         )
+        agent_metadata = {
+            "tool_used": agent_response.tool_used,
+            "step_count": len(agent_response.steps),
+        }
         print("=" * 80)
         print("ANSWER:", agent_response.answer)
         print("TOOL USED:", agent_response.tool_used)
@@ -127,6 +136,7 @@ class LearningCoreService:
             response_source=response_source,
             response_mode="explain_with_visual_and_practice",
             follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
+            agent_metadata=agent_metadata,
         )
 
         try:
@@ -143,6 +153,7 @@ class LearningCoreService:
                 response_source="fallback",
                 response_mode="explain_with_visual_and_practice",
                 follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
+                agent_metadata=agent_metadata,
             )
             validate_learning_core_result(result)
             lesson_resp = to_lesson_response(result)
@@ -157,6 +168,7 @@ class LearningCoreService:
         request: LearningCoreRequest,
         context: LearningContext,
         assistant_message: str,
+        agent_metadata: dict | None = None,
     ) -> LearningCoreResult:
         """Build kết quả khi agent cần hỏi lại người dùng."""
         topic = context.topic or "multiplication"
@@ -186,6 +198,7 @@ class LearningCoreService:
                 provider=settings.llm_provider,
                 response_source="llm",
             ),
+            agent_metadata=agent_metadata,
         )
 
 
@@ -198,6 +211,7 @@ class LearningCoreService:
         response_source: str,
         response_mode: str,
         follow_up_suggestions: list[str],
+        agent_metadata: dict | None = None
     ) -> LearningCoreResult:
         topic = context.topic or "multiplication"
         visual_spec, simulation_spec, visual_card = build_visual_bundle(
@@ -228,6 +242,7 @@ class LearningCoreService:
                 provider=settings.llm_provider,
                 response_source="fallback" if response_source == "fallback" else "llm",
             ),
+            agent_metadata=agent_metadata,
         )
 
     async def _persist(self, request: LearningCoreRequest, result: LearningCoreResult) -> None:

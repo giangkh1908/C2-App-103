@@ -48,7 +48,7 @@ class LearningCoreResult(BaseModel):
     response_mode: ResponseMode
     follow_up_suggestions: list[str] = Field(default_factory=list)
     session_metadata: SessionMetadata
-
+    agent_metadata: dict | None = None
 
 class LearningPersistencePayload(BaseModel):
     request: LearningCoreRequest

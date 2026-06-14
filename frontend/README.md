@@ -1,113 +1,53 @@
-# AI20K Chat — Frontend
+# Frontend — Visual Math AI
 
-Frontend ứng dụng **AI20K Chat** được xây dựng bằng Next.js + TypeScript.
+Frontend Next.js cho ứng dụng Visual Math AI.
 
-## Công nghệ sử dụng
+## Yêu cầu
 
-| Công nghệ | Phiên bản | Mô tả |
-|---|---|---|
-| [Next.js](https://nextjs.org/) | 16.2.7 | Framework React với App Router |
-| [React](https://react.dev/) | 19.2.4 | Thư viện UI |
-| [TypeScript](https://www.typescriptlang.org/) | ^5 | Type-safe JavaScript |
-| [Tailwind CSS](https://tailwindcss.com/) | v4 | Utility-first CSS framework |
-| [ESLint](https://eslint.org/) | v9 | Linting & code quality |
+- **Node.js** >= 18
 
-## Cấu trúc thư mục
+## Biến môi trường
 
-```
-frontend/
-├── public/                 # Static assets (images, fonts, favicon...)
-├── src/
-│   └── app/
-│       ├── layout.tsx      # Root layout (chung cho tất cả trang)
-│       ├── page.tsx        # Trang chủ (/)
-│       ├── globals.css     # Global styles + Tailwind import
-│       └── favicon.ico     # Favicon
-├── next.config.ts          # Cấu hình Next.js
-├── tsconfig.json           # Cấu hình TypeScript
-├── postcss.config.mjs      # Cấu hình PostCSS (Tailwind v4)
-├── eslint.config.mjs       # Cấu hình ESLint
-└── package.json
+Tạo file `.env.local` từ template:
+
+```env
+# ── FastAPI Backend (client-side) ──
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000/api/v1
+
+# ── Google OAuth (Client ID for frontend SDK) ──
+# Cùng giá trị với GOOGLE_CLIENT_ID bên backend
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+
+# ── App Config ──
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=Toán Trực Quan AI
 ```
 
-## Cách chạy
-
-### Cài đặt dependencies
+## Cài đặt & chạy
 
 ```bash
 npm install
-```
-
-### Chế độ development
-
-```bash
 npm run dev
 ```
 
-Mở trình duyệt tại [http://localhost:3000](http://localhost:3000)
+Mở [http://localhost:3000](http://localhost:3000).
 
-### Build production
-
-```bash
-npm run build
-npm start
-```
-
-### Lint code
-
-```bash
-npm run lint
-```
-
-## Các lệnh có sẵn
+## Scripts
 
 | Lệnh | Mô tả |
 |---|---|
-| `npm run dev` | Khởi động dev server (với Turbopack) |
+| `npm run dev` | Dev server (Webpack, port 3000) |
 | `npm run build` | Build production |
 | `npm start` | Chạy production build |
-| `npm run lint` | Chạy ESLint kiểm tra code |
+| `npm run lint` | Kiểm tra ESLint |
 
-## Import alias
-
-Sử dụng `@/*` để import từ thư mục `src/`:
-
-```tsx
-// Thay vì: import Button from "../../../components/Button"
-import Button from "@/components/Button"
-```
-
-## Tailwind CSS v4
-
-Project sử dụng **Tailwind CSS v4** — phiên bản mới, không cần file `tailwind.config.ts`. Chỉ cần import trong CSS:
-
-```css
-@import "tailwindcss";
-```
-
-Sử dụng trực tiếp class Tailwind trong JSX:
-
-```tsx
-<div className="flex items-center justify-center bg-blue-500 text-white p-4 rounded-lg">
-  Hello AI20K
-</div>
-```
-
-## Bắt đầu phát triển
-
-Trang chính nằm tại `src/app/page.tsx`. Để thêm trang mới, tạo file `page.tsx` trong thư mục con:
+## Cấu trúc
 
 ```
-src/app/
-├── page.tsx              → /
-├── about/page.tsx        → /about
-├── chat/page.tsx         → /chat
-└── chat/[id]/page.tsx    → /chat/123 (dynamic route)
+src/
+├── app/[locale]/    # Pages theo locale (vi, en)
+├── components/      # React components
+├── i18n/            # next-intl config
+├── messages/        # File dịch (en.json, vi.json)
+└── middleware.ts    # Locale redirect
 ```
-
-## Tài liệu tham khảo
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://react.dev/)
-- [Tailwind CSS v4](https://tailwindcss.com/blog/tailwindcss-v4)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)

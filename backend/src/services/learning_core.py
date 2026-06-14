@@ -31,13 +31,20 @@ class LearningCoreService:
         self.session_repository = session_repository or SessionRepository()
 
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
+        print("LEARNING CORE CALLED")
         context = detect_context(request.message, request.selected_topic)
         if context.topic is None:
             agent_response = await self.tutor_agent.chat(
                 message=build_tutor_message(request.message, None, request.grade),
                 level=grade_to_level(request.grade),
-                use_tools=False,
+                use_tools=True,
             )
+            print("=" * 80)
+            print("ANSWER:", agent_response.answer)
+            print("TOOL USED:", agent_response.tool_used)
+            print("VISUAL DATA:", agent_response.visual_data)
+            print("STEPS:", agent_response.steps)
+            print("=" * 80)
             answer = normalize_answer(agent_response.answer)
             response_source = "llm"
 
@@ -73,8 +80,14 @@ class LearningCoreService:
         agent_response = await self.tutor_agent.chat(
             message=build_tutor_message(request.message, context.topic, request.grade),
             level=grade_to_level(request.grade),
-            use_tools=False,
+            use_tools=True,
         )
+        print("=" * 80)
+        print("ANSWER:", agent_response.answer)
+        print("TOOL USED:", agent_response.tool_used)
+        print("VISUAL DATA:", agent_response.visual_data)
+        print("STEPS:", agent_response.steps)
+        print("=" * 80)
         answer = normalize_answer(agent_response.answer)
         response_source = "llm"
 
@@ -88,12 +101,19 @@ class LearningCoreService:
             await self._persist(request, clarification_result)
             return clarification_result
 
+        print("=" * 80)
+        print("CONTEXT:", context)
+        print("TOOL_NAME:", context.tool_name)
+        print("TOOL_ARGS:", context.tool_args)
+        print("=" * 80)
         tool_result = await self.tool_registry.call(context.tool_name or "", context.tool_args)
         if not tool_result.success:
             tool_data = build_default_tool_data(context.topic, context.tool_args)
             response_source = "fallback"
         else:
             tool_data = tool_result.data
+
+        print("TOOL_DATA:", tool_data)
 
         if is_low_signal_answer(answer):
             answer = build_contextual_explanation(context.topic, tool_data)

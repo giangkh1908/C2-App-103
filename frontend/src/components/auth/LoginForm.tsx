@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import { getSafeRedirect } from "@/lib/redirect";
 import Input from "@/components/ui/Input";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
@@ -16,6 +17,8 @@ export default function LoginForm() {
   const tAuth = useTranslations("auth");
   const tErr = useTranslations("auth.errors");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const locale = useLocale();
   const { login } = useAuth();
 
   const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
@@ -53,7 +56,8 @@ export default function LoginForm() {
     if (error) {
       setServerError(error);
     } else {
-      router.push("/");
+      const redirectTo = searchParams.get("redirectTo");
+      router.replace(getSafeRedirect(redirectTo, locale));
       router.refresh();
     }
     setLoading(false);
@@ -107,7 +111,7 @@ export default function LoginForm() {
           />
           <span className="text-[12px] text-natural-charcoal">{t("remember")}</span>
         </label>
-        <Link href="/forgot-password" className="text-[12px] font-medium text-natural-green hover:underline">
+        <Link href={`/${locale}/forgot-password`} className="text-[12px] font-medium text-natural-green hover:underline">
           {t("forgot")}
         </Link>
       </div>
@@ -118,7 +122,7 @@ export default function LoginForm() {
 
       <p className="text-center text-[12px] text-natural-charcoal">
         {t("noAccount")}{" "}
-        <Link href="/register" className="font-bold text-natural-green hover:underline">
+        <Link href={`/${locale}/register`} className="font-bold text-natural-green hover:underline">
           {t("registerLink")}
         </Link>
       </p>

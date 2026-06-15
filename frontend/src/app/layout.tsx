@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+const beVietnamPro = Be_Vietnam_Pro({
+  variable: "--font-be-vietnam-pro",
+  subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700"],
 });
 
@@ -65,7 +65,7 @@ export default function RootLayout({
   return (
     <html
       suppressHydrationWarning
-      className={`${inter.variable} h-full antialiased`}
+      className={`${beVietnamPro.variable} h-full antialiased`}
     >
       <head>
         <script

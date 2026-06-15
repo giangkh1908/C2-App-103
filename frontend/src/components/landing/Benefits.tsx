@@ -30,7 +30,7 @@ export default async function Benefits() {
       <div className="max-w-7xl mx-auto">
         <ScrollReveal>
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl font-serif italic font-medium tracking-tight text-natural-dark sm:text-4xl">
+            <h2 className="text-3xl italic font-medium tracking-tight text-natural-dark sm:text-4xl">
               {t("badge")} <br />
               <span className="text-natural-green font-semibold">{t("badgeHighlight")}</span>
             </h2>

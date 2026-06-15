@@ -16,7 +16,7 @@ export default async function Testimonials() {
       <div className="max-w-7xl mx-auto">
         <ScrollReveal>
           <div className="text-center max-w-xl mx-auto mb-11">
-            <h2 className="text-3xl font-serif italic text-natural-dark">
+            <h2 className="text-3xl italic text-natural-dark">
               {t("title")}
             </h2>
             <p className="mt-3 text-xs sm:text-sm text-natural-charcoal/85 max-w-md mx-auto">

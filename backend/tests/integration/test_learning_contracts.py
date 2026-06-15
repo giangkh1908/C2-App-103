@@ -143,7 +143,21 @@ def build_core_result(
 
 
 @pytest.mark.asyncio
-async def test_lessons_generate_returns_spec_payload(client) -> None:
+async def test_lessons_generate_without_token_returns_401(client) -> None:
+    response = await client.post(
+        "/api/v1/lessons/generate",
+        json={
+            "grade": 3,
+            "topic": "multiplication",
+            "prompt": "Giai thich 3 x 4",
+        },
+    )
+
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_lessons_generate_returns_spec_payload(client, auth_headers, test_user) -> None:
     from src.api.lessons import get_learning_core_service
 
     fake_service = AsyncMock()
@@ -155,11 +169,11 @@ async def test_lessons_generate_returns_spec_payload(client) -> None:
     response = await client.post(
         "/api/v1/lessons/generate",
         json={
-            "user_id": "user_1",
             "grade": 3,
             "topic": "multiplication",
             "prompt": "Giai thich 3 x 4",
         },
+        headers=auth_headers,
     )
 
     app.dependency_overrides.clear()
@@ -170,10 +184,15 @@ async def test_lessons_generate_returns_spec_payload(client) -> None:
     assert payload["visual"]["visual_type"] == "equal_groups"
     assert payload["simulation"]["simulation_type"] == "equal_groups_builder"
     assert payload["practice_question"]["correct_answer"] == "12"
+    # Assert LearningCoreRequest.user_id comes from auth user
+    call_kwargs = fake_service.generate.call_args
+    assert call_kwargs is not None
+    args, _ = call_kwargs
+    assert args[0].user_id == str(test_user["_id"])
 
 
 @pytest.mark.asyncio
-async def test_chat_and_lesson_share_the_same_core_shape(client) -> None:
+async def test_chat_and_lesson_share_the_same_core_shape(client, auth_headers) -> None:
     from src.api.lessons import get_learning_core_service as get_lessons_core_service
     from src.api.chat import get_tutor_chat_orchestrator
 
@@ -182,7 +201,7 @@ async def test_chat_and_lesson_share_the_same_core_shape(client) -> None:
     fake_service.generate.return_value = core_result
 
     class FakeOrchestrator:
-        async def handle_turn(self, request):
+        async def handle_turn(self, request, user_id):
             return ChatTurnResponse(
                 session_id=core_result.session_metadata.session_id,
                 assistant_message=core_result.assistant_message,
@@ -201,20 +220,20 @@ async def test_chat_and_lesson_share_the_same_core_shape(client) -> None:
     lesson_response = await client.post(
         "/api/v1/lessons/generate",
         json={
-            "user_id": "user_1",
             "grade": 3,
             "topic": "division",
             "prompt": "Giai thich 12 chia 4",
         },
+        headers=auth_headers,
     )
     chat_response = await client.post(
         "/api/v1/chat/turn",
         json={
-            "user_id": "user_1",
             "grade": 3,
             "message": "Giai thich 12 chia 4",
             "selected_topic": "division",
         },
+        headers=auth_headers,
     )
 
     app.dependency_overrides.clear()
@@ -233,15 +252,15 @@ async def test_chat_and_lesson_share_the_same_core_shape(client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_lessons_generate_rejects_invalid_topic(client) -> None:
+async def test_lessons_generate_rejects_invalid_topic(client, auth_headers) -> None:
     response = await client.post(
         "/api/v1/lessons/generate",
         json={
-            "user_id": "user_1",
             "grade": 3,
             "topic": "geometry_magic",
             "prompt": "Giai thich",
         },
+        headers=auth_headers,
     )
 
     assert response.status_code == 422

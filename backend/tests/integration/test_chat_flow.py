@@ -13,7 +13,20 @@ async def test_topics_endpoint_returns_four_topics(client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_chat_turn_returns_structured_payload(client, monkeypatch) -> None:
+async def test_chat_turn_without_token_returns_401(client) -> None:
+    response = await client.post(
+        "/api/v1/chat/turn",
+        json={
+            "grade": 3,
+            "message": "Giai thich phep nhan 3 x 4",
+        },
+    )
+
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_chat_turn_returns_structured_payload(client, auth_headers, test_user) -> None:
     from src.api import chat as chat_api
     from src.models.chat import ChatTurnResponse
 
@@ -68,10 +81,10 @@ async def test_chat_turn_returns_structured_payload(client, monkeypatch) -> None
     response = await client.post(
         "/api/v1/chat/turn",
         json={
-            "user_id": "user_1",
             "grade": 3,
             "message": "Giai thich phep nhan 3 x 4",
         },
+        headers=auth_headers,
     )
 
     app.dependency_overrides.clear()
@@ -80,3 +93,45 @@ async def test_chat_turn_returns_structured_payload(client, monkeypatch) -> None
     payload = response.json()
     assert payload["detected_topic"] == "multiplication"
     assert payload["visual_card"]["visual_data"]["type"] == "candy"
+    # Assert the user_id passed to orchestrator comes from auth, not body
+    call_args = fake_orchestrator.handle_turn.call_args
+    assert call_args is not None
+    args, _ = call_args
+    assert args[1] == str(test_user["_id"])
+
+
+@pytest.mark.asyncio
+async def test_chat_turn_body_user_id_ignored(client, auth_headers, test_user) -> None:
+    from src.api import chat as chat_api
+    from src.models.chat import ChatTurnResponse
+
+    fake_response = ChatTurnResponse(
+        session_id="session_123",
+        assistant_message="Test",
+        detected_topic="multiplication",
+        intent="explain_concept",
+        response_mode="explain_only",
+    )
+
+    fake_orchestrator = AsyncMock()
+    fake_orchestrator.handle_turn.return_value = fake_response
+    app = client._transport.app
+    app.dependency_overrides[chat_api.get_tutor_chat_orchestrator] = lambda: fake_orchestrator
+
+    response = await client.post(
+        "/api/v1/chat/turn",
+        json={
+            "user_id": "evil-user",
+            "grade": 3,
+            "message": "Giai thich",
+        },
+        headers=auth_headers,
+    )
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    call_args = fake_orchestrator.handle_turn.call_args
+    assert call_args is not None
+    args, _ = call_args
+    assert args[1] == str(test_user["_id"])

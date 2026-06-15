@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLocale, useTranslations } from 'next-intl';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Bot,
   GraduationCap,
@@ -371,7 +372,7 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
         {message.title && (
           <div className="flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-natural-orange" />
-            <span className="font-serif text-sm font-bold italic text-gray-800">{message.title}</span>
+            <span className="text-sm font-bold italic text-gray-800">{message.title}</span>
           </div>
         )}
 
@@ -421,6 +422,7 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
 export default function AIExplanationChat() {
   const locale = useLocale();
   const t = useTranslations('learn');
+  const { apiFetch } = useAuth();
   const tChat = useTranslations('learn.chat');
   const speechLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
   const localizeTopic = useCallback((topic: { id: MathDomain }): TopicOption => ({
@@ -550,11 +552,9 @@ export default function AIExplanationChat() {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${backendUrl}/chat/turn`, {
+      const res = await apiFetch('/chat/turn', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: 'demo-user',
           session_id: sessionId,
           grade: selectedGrade,
           message: text,
@@ -638,7 +638,7 @@ export default function AIExplanationChat() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="font-serif text-base font-bold italic leading-none text-gray-800 sm:text-lg">
+            <h1 className="text-base font-bold italic leading-none text-gray-800 sm:text-lg">
               {tChat('title')}
             </h1>
             <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-natural-green">

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
+import { getSafeRedirect } from "@/lib/redirect";
 import Input from "@/components/ui/Input";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
@@ -16,6 +17,8 @@ export default function RegisterForm() {
   const tAuth = useTranslations("auth");
   const tErr = useTranslations("auth.errors");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const locale = useLocale();
   const { register } = useAuth();
 
   const [form, setForm] = useState<RegisterInput>({
@@ -57,7 +60,8 @@ export default function RegisterForm() {
     if (error) {
       setServerError(error);
     } else {
-      router.push("/");
+      const redirectTo = searchParams.get("redirectTo");
+      router.replace(getSafeRedirect(redirectTo, locale));
       router.refresh();
     }
     setLoading(false);
@@ -126,7 +130,7 @@ export default function RegisterForm() {
 
       <p className="text-center text-[12px] text-natural-charcoal">
         {t("hasAccount")}{" "}
-        <Link href="/login" className="font-bold text-natural-green hover:underline">
+        <Link href={`/${locale}/login`} className="font-bold text-natural-green hover:underline">
           {t("loginLink")}
         </Link>
       </p>

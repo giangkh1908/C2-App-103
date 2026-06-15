@@ -14,7 +14,7 @@ VisualType = Literal[
 
 
 class LessonGenerateRequest(BaseModel):
-    user_id: str = Field(min_length=1)
+    user_id: str | None = None
     grade: int = Field(ge=1, le=5)
     topic: Topic
     prompt: str = Field(min_length=1)

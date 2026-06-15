@@ -63,7 +63,7 @@ export default function Navbar() {
             className="rounded-full shadow-md shadow-natural-green/10"
           />
           <div className="text-left">
-            <span className="block font-serif text-lg font-bold leading-none tracking-tight text-natural-dark italic">
+            <span className="block text-lg font-bold leading-none tracking-tight text-natural-dark italic">
               {tCommon("brand")}
             </span>
             <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-widest text-natural-green">

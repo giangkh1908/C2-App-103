@@ -55,25 +55,34 @@ backend/
 │   │   ├── config.py        # Environment settings
 │   │   ├── database.py      # MongoDB connection
 │   │   ├── security.py      # JWT + bcrypt
-│   │   ├── deps.py          # FastAPI dependencies
+│   │   ├── deps.py          # get_current_user, get_current_admin
 │   │   └── email.py         # Email service
 │   ├── models/              # Pydantic models
 │   │   ├── user.py          # User document model
-│   │   └── auth.py          # Auth request/response
+│   │   ├── auth.py          # Auth request/response
+│   │   ├── chat.py          # ChatTurnRequest/Response
+│   │   └── lesson.py        # LessonGenerateRequest/Response
 │   ├── api/                 # API routes
 │   │   ├── __init__.py      # Router aggregator
-│   │   └── auth.py          # Auth endpoints
-│   └── agent/               # AI agent (future)
+│   │   ├── auth.py          # Auth endpoints
+│   │   ├── chat.py          # POST /chat/turn (auth required)
+│   │   ├── lessons.py       # POST /lessons/generate (auth required)
+│   │   └── topics.py        # GET /topics (public)
+│   ├── services/            # Business logic
+│   │   ├── learning_core.py # LearningCoreService
+│   │   └── ...
+│   └── agents/              # AI agents
+│       ├── chat_orchestrator.py
+│       └── tutor_agent.py
 ├── tests/
-│   ├── conftest.py          # Shared fixtures
+│   ├── conftest.py          # Shared fixtures (test_user, auth_headers)
 │   ├── unit/                # Unit tests
-│   │   ├── test_auth.py     # Auth endpoint tests
-│   │   └── test_security.py # Security utility tests
 │   ├── integration/         # Integration tests
-│   │   └── test_auth_flow.py # Full auth flow tests
-│   └── eval/                # Agent evaluation tests
+│   │   ├── test_auth_flow.py
+│   │   ├── test_chat_flow.py
+│   │   └── test_learning_contracts.py
+│   └── agents/              # Agent tests
 ├── docs/                    # Documentation
-├── eval/                    # Evaluation datasets
 └── pyproject.toml           # Dependencies
 ```
 
@@ -96,6 +105,16 @@ backend/
 
 5. Logout:
    Client → POST /auth/logout (Bearer AT) → Clear RT in DB → Return success
+```
+
+### Protected API Flow
+
+```
+Chat: Client → apiFetch("/chat/turn", ...) → Bearer AT injected → Verify AT → TutorChatOrchestrator.handle_turn(request, user_id) → LearningCoreService
+
+Lessons: Client → apiFetch("/lessons/generate", ...) → Bearer AT injected → Verify AT → LearningCoreService.generate(LearningCoreRequest(user_id=auth_user.id))
+
+Topics: Client → fetch("/topics") → Public (no auth) → Return topic list
 ```
 
 ### Token Strategy

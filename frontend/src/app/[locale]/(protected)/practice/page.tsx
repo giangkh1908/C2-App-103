@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PracticePage({ params }: Props) {
+export default async function PracticePage() {
   return (
     <main className="min-h-screen bg-natural-bg">
       <Navbar />

@@ -55,7 +55,7 @@ export default function Hero() {
             </ScrollReveal>
 
             <ScrollReveal delay={100}>
-              <h1 className="font-serif italic text-4xl sm:text-5xl lg:text-6xl leading-[1.1] text-natural-dark font-medium">
+              <h1 className="italic text-4xl sm:text-5xl lg:text-6xl leading-[1.1] text-natural-dark font-medium">
                 {t("headline1")} <span className="text-natural-orange font-semibold">{t("headline2")}</span> <br />
                 {t("headline3")}
               </h1>

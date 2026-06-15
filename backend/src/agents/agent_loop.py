@@ -24,12 +24,14 @@ class AgentLoop:
         self,
         user_message: str,
         config: AgentRunConfig | None = None,
+        history: list[dict[str, str]] | None = None,
     ) -> AgentResponse:
         """Chạy agent loop và trả về câu trả lời cuối cùng.
 
         Args:
             user_message: Câu hỏi hoặc yêu cầu của học sinh.
             config: Cấu hình chạy agent; dùng giá trị mặc định nếu ``None``.
+            history: Lịch sử cuộc trò chuyện dưới dạng danh sách các dictionary.
 
         Returns:
             :class:`AgentResponse` chứa câu trả lời và danh sách các bước
@@ -38,8 +40,16 @@ class AgentLoop:
         if config is None:
             config = AgentRunConfig()
 
+        history_messages = []
+        if history:
+            for msg in history:
+                history_messages.append(
+                    LLMMessage(role=msg["role"], content=msg["content"])
+                )
+
         messages: list[LLMMessage] = [
             LLMMessage(role="system", content=build_tutor_system_prompt(config.level)),
+            *history_messages,
             LLMMessage(role="user", content=user_message),
         ]
 

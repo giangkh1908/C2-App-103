@@ -5,6 +5,7 @@ from src.agents.guardrails import guard_message
 from src.core.config import settings
 from src.models.chat import Topic
 from src.services.context_detector import DEFAULT_TOOL_ARGS, detect_context
+from src.services.memory_repository import MemoryRepository
 from src.services.practice_builder import build_practice_questions
 from src.services.response_mapper import to_chat_response, to_lesson_response
 from src.services.session_repository import SessionRepository
@@ -30,9 +31,10 @@ class LearningCoreService:
         self.tutor_agent = tutor_agent
         self.tool_registry = tool_registry
         self.session_repository = session_repository or SessionRepository()
+        self.memory_repository = MemoryRepository()
 
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
-        print("LEARNING CORE CALLED")
+        session_id = request.session_id or uuid4().hex
 
         guard_result = guard_message(request.message)
 
@@ -47,10 +49,18 @@ class LearningCoreService:
                 request=request,
                 context=context,
                 assistant_message=guard_result.response,
+                session_id=session_id,
                 agent_metadata={
                     "guardrail": guard_result.category,
                 },
             )
+
+            if session_id is not None:
+                await self.memory_repository.append_turn(
+                    session_id=session_id,
+                    user_message=request.message,
+                    assistant_message=result.assistant_message,
+                )
 
             await self._persist(request, result)
             return result
@@ -59,23 +69,29 @@ class LearningCoreService:
             request.message,
             request.selected_topic,
         )
+
+        history_payload = None
+        if session_id is not None:
+            history_messages = await self.memory_repository.load_messages(
+                session_id
+            )
+            history_payload = [
+                {"role": msg.role, "content": msg.content}
+                for msg in history_messages
+            ]
+
         if context.topic is None:
             agent_response = await self.tutor_agent.chat(
                 message=build_tutor_message(request.message, None, request.grade),
                 level=grade_to_level(request.grade),
                 use_tools=True,
+                history=history_payload,
             )
             agent_metadata = {
                 "tool_used": agent_response.tool_used,
                 "step_count": len(agent_response.steps),
                 "visual_source": None,
             }
-            print("=" * 80)
-            print("ANSWER:", agent_response.answer)
-            print("TOOL USED:", agent_response.tool_used)
-            print("VISUAL DATA:", agent_response.visual_data)
-            print("STEPS:", agent_response.steps)
-            print("=" * 80)
             answer = normalize_answer(agent_response.answer)
             response_source = "llm"
 
@@ -84,8 +100,15 @@ class LearningCoreService:
                     request=request,
                     context=context,
                     assistant_message=answer,
+                    session_id=session_id,
                     agent_metadata=agent_metadata,
                 )
+                if session_id is not None:
+                    await self.memory_repository.append_turn(
+                        session_id=session_id,
+                        user_message=request.message,
+                        assistant_message=clarification_result.assistant_message,
+                    )
                 await self._persist(request, clarification_result)
                 return clarification_result
             else:
@@ -100,10 +123,6 @@ class LearningCoreService:
                         context.tool_args,
                     )
                     agent_metadata["visual_source"] = "fallback"
-                print("=" * 80)
-                print("VISUAL SOURCE:", agent_metadata["visual_source"])
-                print("TOOL DATA:", tool_data)
-                print("=" * 80)
                 result = self._build_result(
                     request=request,
                     context=context,
@@ -117,28 +136,29 @@ class LearningCoreService:
                         "Con muốn học phân số.",
                         "Con muốn học chu vi và diện tích.",
                     ],
+                    session_id=session_id,
                     agent_metadata=agent_metadata
                 )
+                if session_id is not None:
+                    await self.memory_repository.append_turn(
+                        session_id=session_id,
+                        user_message=request.message,
+                        assistant_message=result.assistant_message,
+                    )
                 await self._persist(request, result)
                 return result
-
 
         agent_response = await self.tutor_agent.chat(
             message=build_tutor_message(request.message, context.topic, request.grade),
             level=grade_to_level(request.grade),
             use_tools=True,
+            history=history_payload,
         )
         agent_metadata = {
             "tool_used": agent_response.tool_used,
             "step_count": len(agent_response.steps),
             "visual_source": None,
         }
-        print("=" * 80)
-        print("ANSWER:", agent_response.answer)
-        print("TOOL USED:", agent_response.tool_used)
-        print("VISUAL DATA:", agent_response.visual_data)
-        print("STEPS:", agent_response.steps)
-        print("=" * 80)
         answer = normalize_answer(agent_response.answer)
         response_source = "llm"
 
@@ -148,16 +168,19 @@ class LearningCoreService:
                 request=request,
                 context=context,
                 assistant_message=answer,
+                session_id=session_id,
                 agent_metadata=agent_metadata,
             )
+            if session_id is not None:
+                await self.memory_repository.append_turn(
+                    session_id=session_id,
+                    user_message=request.message,
+                    assistant_message=clarification_result.assistant_message,
+                )
+
             await self._persist(request, clarification_result)
             return clarification_result
 
-        print("=" * 80)
-        print("CONTEXT:", context)
-        print("TOOL_NAME:", context.tool_name)
-        print("TOOL_ARGS:", context.tool_args)
-        print("=" * 80)
         if agent_response.visual_data:
             tool_data = agent_response.visual_data
             response_source = "agent"
@@ -181,11 +204,6 @@ class LearningCoreService:
                 tool_data = tool_result.data
                 agent_metadata["visual_source"] = "legacy"
 
-        print("=" * 80)
-        print("VISUAL SOURCE:", agent_metadata["visual_source"])
-        print("TOOL DATA:", tool_data)
-        print("=" * 80)
-
         if is_low_signal_answer(answer):
             answer = build_contextual_explanation(context.topic, tool_data)
             response_source = "fallback"
@@ -198,6 +216,7 @@ class LearningCoreService:
             response_source=response_source,
             response_mode="explain_with_visual_and_practice",
             follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
+            session_id=session_id,
             agent_metadata=agent_metadata,
         )
 
@@ -215,12 +234,20 @@ class LearningCoreService:
                 response_source="fallback",
                 response_mode="explain_with_visual_and_practice",
                 follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
+                session_id=session_id,
                 agent_metadata=agent_metadata,
             )
             validate_learning_core_result(result)
             lesson_resp = to_lesson_response(result)
             if lesson_resp is not None:
                 validate_lesson_response(lesson_resp)
+
+        if session_id is not None:
+            await self.memory_repository.append_turn(
+                session_id=session_id,
+                user_message=request.message,
+                assistant_message=result.assistant_message,
+            )
 
         await self._persist(request, result)
         return result
@@ -230,6 +257,7 @@ class LearningCoreService:
         request: LearningCoreRequest,
         context: LearningContext,
         assistant_message: str,
+        session_id: str,
         agent_metadata: dict | None = None,
     ) -> LearningCoreResult:
         """Build kết quả khi agent cần hỏi lại người dùng."""
@@ -256,7 +284,7 @@ class LearningCoreService:
                 "Con muốn học chu vi và diện tích.",
             ],
             session_metadata=SessionMetadata(
-                session_id=request.session_id or uuid4().hex,
+                session_id=session_id or uuid4().hex,
                 provider=settings.llm_provider,
                 response_source="llm",
             ),
@@ -273,6 +301,7 @@ class LearningCoreService:
         response_source: str,
         response_mode: str,
         follow_up_suggestions: list[str],
+        session_id: str,
         agent_metadata: dict | None = None
     ) -> LearningCoreResult:
         topic = context.topic or "multiplication"
@@ -300,7 +329,7 @@ class LearningCoreService:
             response_mode=response_mode,
             follow_up_suggestions=follow_up_suggestions,
             session_metadata=SessionMetadata(
-                session_id=request.session_id or uuid4().hex,
+                session_id=session_id or uuid4().hex,
                 provider=settings.llm_provider,
                 response_source=response_source,
             ),

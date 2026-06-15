@@ -1,12 +1,18 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import AIExplanationChat from '@/components/AIExplanationChat';
 import Navbar from '@/components/landing/Navbar';
 
-export const metadata: Metadata = {
-  title: 'Mô phỏng học thử | Toán Trực Quan AI',
-  description:
-    'Hỏi gia sư AI về bất kỳ bài toán tiểu học nào. AI giải thích thân thiện, hỏi lại khi cần, và minh họa bằng hình ảnh trực quan khi thật sự cần thiết.',
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+  return {
+    title: t('learnTitle'),
+    description: t('learnDescription'),
+  };
+}
 
 export default async function LearnPage({
   params,

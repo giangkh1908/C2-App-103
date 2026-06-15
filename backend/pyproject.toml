@@ -18,6 +18,8 @@ dependencies = [
     "google-auth>=2.29.0",
     "google-genai>=1.0.0",
     "requests>=2.32.0",
+    "structlog>=24.1.0",
+    "langfuse>=2.0.0",
 ]
 
 [project.optional-dependencies]

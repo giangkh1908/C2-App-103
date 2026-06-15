@@ -1,9 +1,9 @@
-import logging
-
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from src.core.config import settings
 
-logger = logging.getLogger("toan_truc_quan.database")
+from src.core.config import settings
+from src.core.logging import get_logger
+
+logger = get_logger("toan_truc_quan.database")
 
 client: AsyncIOMotorClient | None = None
 db: AsyncIOMotorDatabase | None = None
@@ -16,8 +16,8 @@ async def connect_db() -> None:
     await db.users.create_index("email", unique=True)
     await db.learning_sessions.create_index("session_id")
     await db.learning_sessions.create_index("user_id")
-    print(f"Connected to MongoDB: {settings.mongodb_db_name}")
-    logger.info("mongodb_connected", extra={"mongodb_db_name": settings.mongodb_db_name})
+    logger.info("mongodb_connected", mongodb_db_name=settings.mongodb_db_name)
+
 
 
 async def close_db() -> None:

@@ -1,15 +1,15 @@
-import logging
-
 import httpx
+
 from src.core.config import settings
+from src.core.logging import get_logger
 
 RESEND_API_URL = "https://api.resend.com/emails"
-logger = logging.getLogger("toan_truc_quan.email")
+logger = get_logger("toan_truc_quan.email")
 
 
 async def send_email(to: str, subject: str, html: str) -> bool:
     if not settings.resend_api_key:
-        logger.info("email_disabled", extra={"email_to": to, "email_subject": subject})
+        logger.info("email_disabled", email_to=to, email_subject=subject)
         return True
 
     try:
@@ -28,20 +28,18 @@ async def send_email(to: str, subject: str, html: str) -> bool:
                 },
             )
             if res.status_code == 200:
-                logger.info("email_sent", extra={"email_to": to, "email_subject": subject})
+                logger.info("email_sent", email_to=to, email_subject=subject)
                 return True
 
             logger.warning(
                 "email_send_failed",
-                extra={
-                    "email_to": to,
-                    "email_subject": subject,
-                    "status_code": res.status_code,
-                },
+                email_to=to,
+                email_subject=subject,
+                status_code=res.status_code,
             )
             return False
     except Exception:
-        logger.exception("email_send_exception", extra={"email_to": to, "email_subject": subject})
+        logger.exception("email_send_exception", email_to=to, email_subject=subject)
         return False
 
 

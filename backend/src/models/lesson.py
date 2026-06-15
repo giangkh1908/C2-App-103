@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 
 from src.models.chat import Topic
 
-
 VisualType = Literal[
     "equal_groups",
     "sharing",

@@ -1,9 +1,15 @@
 import json
+from time import perf_counter
 from typing import Any
 
 import httpx
 
+from src.core.logging import get_logger
+from src.core.metrics import record_llm_failure, record_llm_request
+
 from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMToolCall
+
+logger = get_logger("toan_truc_quan.llm.openrouter")
 
 
 class OpenRouterClient(BaseLLMClient):
@@ -50,17 +56,41 @@ class OpenRouterClient(BaseLLMClient):
             "X-Title": self.app_name,
         }
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                f"{self.base_url}/chat/completions",
-                headers=headers,
-                json=payload,
+        start = perf_counter()
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(
+                    f"{self.base_url}/chat/completions",
+                    headers=headers,
+                    json=payload,
+                )
+                response.raise_for_status()
+                data = response.json()
+        except Exception as exc:
+            logger.exception(
+                "openrouter_request_failed",
+                model=self.model,
+                message_count=len(messages),
             )
-            response.raise_for_status()
-            data = response.json()
+            record_llm_failure(type(exc).__name__)
+            raise
+        finally:
+            latency_ms = round((perf_counter() - start) * 1000, 2)
 
         message = data["choices"][0]["message"]
         tool_calls = message.get("tool_calls") or []
+        usage = data.get("usage") or {}
+        tokens = usage.get("total_tokens", 0)
+
+        record_llm_request(model=self.model, tokens=tokens, latency_ms=latency_ms)
+
+        logger.debug(
+            "openrouter_response_received",
+            model=self.model,
+            tokens_used=tokens,
+            latency_ms=latency_ms,
+            has_tool_call=bool(tool_calls),
+        )
 
         if tool_calls:
             raw_tool_call = tool_calls[0]

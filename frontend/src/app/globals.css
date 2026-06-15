@@ -2,8 +2,7 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
-  --font-serif: "Lora", "Playfair Display", Georgia, serif;
+  --font-serif: Georgia, serif;
 
   --color-natural-bg: #FAF9F5;
   --color-natural-dark: #2D2A26;

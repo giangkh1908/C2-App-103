@@ -115,7 +115,7 @@ class TestLogout:
 
     async def test_logout_without_auth(self, client: AsyncClient):
         response = await client.post("/api/v1/auth/logout")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
 
 @pytest.mark.asyncio
@@ -129,7 +129,7 @@ class TestGetMe:
 
     async def test_get_me_without_auth(self, client: AsyncClient):
         response = await client.get("/api/v1/auth/me")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     async def test_get_me_invalid_token(self, client: AsyncClient):
         headers = {"Authorization": "Bearer invalid.token.here"}
@@ -306,4 +306,7 @@ class TestHealthCheck:
     async def test_health(self, client: AsyncClient):
         response = await client.get("/health")
         assert response.status_code == 200
-        assert response.json() == {"status": "ok"}
+        data = response.json()
+        assert data["status"] == "ok"
+        assert "langfuse_connected" in data
+        assert "mongodb_connected" in data

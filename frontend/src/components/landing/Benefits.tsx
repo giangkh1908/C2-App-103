@@ -1,10 +1,8 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
-export default function Benefits() {
-  const t = useTranslations("benefits");
+export default async function Benefits() {
+  const t = await getTranslations("benefits");
 
   const benefits = [
     {

@@ -2,9 +2,15 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from src.models.chat import ChatTurnResponse, Intent, PracticeQuestion, ResponseMode, Topic, VisualCard
+from src.models.chat import (
+    ChatTurnResponse,
+    Intent,
+    PracticeQuestion,
+    ResponseMode,
+    Topic,
+    VisualCard,
+)
 from src.models.lesson import LessonPracticeQuestion, LessonSimulation, LessonVisual
-
 
 ResponseSource = Literal["llm", "fallback", "agent"]
 

@@ -42,7 +42,7 @@ interface Message {
   practiceQuestion?: PracticeQuestion;
   practiceAnswerIdx?: number | null;
   practiceFeedbackChecked?: boolean;
-  simulationConfig?: ChatTurnResponse['visual_card'] extends null ? never : NonNullable<ChatTurnResponse['visual_card']>['simulation_config'];
+  simulationConfig?: NonNullable<ChatTurnResponse['visual_card']>['simulation_config'];
 }
 
 interface TopicOption {
@@ -507,10 +507,10 @@ export default function AIExplanationChat() {
     window.speechSynthesis.speak(utter);
   }, [speakingMsgId, speechLocale]);
 
-  const handleSuggestionClick = (text: string) => {
+  const handleSuggestionClick = useCallback((text: string) => {
     setInputText(text);
     inputRef.current?.focus();
-  };
+  }, []);
 
   const toggleRecording = () => {
     if (!recognitionRef.current) return;
@@ -521,7 +521,7 @@ export default function AIExplanationChat() {
     }
   };
 
-  const handleAnswerChoice = (msgId: string, optIdx: number, correctIdx: number) => {
+  const handleAnswerChoice = useCallback((msgId: string, optIdx: number, correctIdx: number) => {
     setMessages((prev) =>
       prev.map((m) =>
         m.id === msgId
@@ -530,7 +530,7 @@ export default function AIExplanationChat() {
       )
     );
     playSfx(optIdx === correctIdx ? 'sparkle' : 'error');
-  };
+  }, []);
 
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import { getAudioContext } from "@/lib/audio";
@@ -111,7 +111,7 @@ export default function Sandbox() {
   }, []);
 
   // Lesson data from translations
-  const LESSONS: Record<Domain, { title: string; grade: number; shortExplanation: string; lifeExample: string; questionText: string; options: string[]; correctAnswerIndex: number; successMessage: string; failMessage: string }> = {
+  const LESSONS = useMemo(() => ({
     multiplication: {
       title: t("multiplication.title"),
       grade: 2,
@@ -156,7 +156,7 @@ export default function Sandbox() {
       successMessage: t("area.correctMsg"),
       failMessage: t("area.incorrectMsg"),
     },
-  };
+  }), [t]);
 
   const TABS: { key: Domain; label: string; color: string }[] = [
     { key: "multiplication", label: `🍬 ${t("tabMultiplication")}`, color: "bg-natural-green" },

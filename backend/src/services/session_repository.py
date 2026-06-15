@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from src.core.database import get_db
 from src.services.types import LearningPersistencePayload
@@ -24,6 +24,6 @@ class SessionRepository:
                 "chat_snapshot": payload.chat_snapshot.model_dump(),
                 "visual_snapshot": payload.result.visual_card.model_dump(),
                 "practice_snapshot": payload.result.practice_question_chat.model_dump(),
-                "created_at": datetime.now(timezone.utc),
+                "created_at": datetime.now(UTC),
             }
         )

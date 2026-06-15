@@ -41,7 +41,8 @@ export default function LoginForm() {
       const fieldErrors: Partial<Record<keyof LoginInput, string>> = {};
       result.error.issues.forEach((issue) => {
         const field = issue.path[0] as keyof LoginInput;
-        fieldErrors[field] = tErr(issue.message as Parameters<typeof tErr>[0]);
+        const key = issue.message as Parameters<typeof tErr>[0];
+        fieldErrors[field] = tErr(key) || key;
       });
       setErrors(fieldErrors);
       return;
@@ -50,7 +51,7 @@ export default function LoginForm() {
     setLoading(true);
     const { error } = await login(form.email, form.password);
     if (error) {
-      setServerError(t("serverError"));
+      setServerError(error);
     } else {
       router.push("/");
       router.refresh();

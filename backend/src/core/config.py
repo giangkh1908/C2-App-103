@@ -30,10 +30,14 @@ class Settings(BaseSettings):
     )
 
     # JWT
-    jwt_secret_key: str = Field(default="change-me-in-production", alias="JWT_SECRET_KEY")
+    jwt_secret_key: str = Field(default="", alias="JWT_SECRET_KEY")
     jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
-    jwt_access_token_expire_minutes: int = Field(default=15, alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
-    jwt_refresh_token_expire_days: int = Field(default=7, alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS")
+    jwt_access_token_expire_minutes: int = Field(
+        default=15, alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES"
+    )
+    jwt_refresh_token_expire_days: int = Field(
+        default=7, alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS"
+    )
 
     # CORS
     frontend_url: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
@@ -49,12 +53,31 @@ class Settings(BaseSettings):
     resend_api_key: str = Field(default="", alias="RESEND_API_KEY")
     email_from: str = Field(default="noreply@yourdomain.com", alias="EMAIL_FROM")
 
+    # Langfuse
+    langfuse_enabled: bool = Field(default=False, alias="LANGFUSE_ENABLED")
+    langfuse_secret_key: str = Field(default="", alias="LANGFUSE_SECRET_KEY")
+    langfuse_public_key: str = Field(default="", alias="LANGFUSE_PUBLIC_KEY")
+    langfuse_host: str = Field(default="https://cloud.langfuse.com", alias="LANGFUSE_HOST")
+    langfuse_capture_content: bool = Field(default=False, alias="LANGFUSE_CAPTURE_CONTENT")
+
+    # Logging
+    log_file_path: str = Field(default="logs/app.jsonl", alias="LOG_FILE_PATH")
+    log_file_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(
+        default="DEBUG", alias="LOG_FILE_LEVEL"
+    )
+    log_file_max_bytes: int = Field(default=10_485_760, alias="LOG_FILE_MAX_BYTES")  # 10 MB
+    log_file_backup_count: int = Field(default=5, alias="LOG_FILE_BACKUP_COUNT")
+
     # LLM
     llm_provider: Literal["openrouter", "anthropic", "google"] = "openrouter"
     openrouter_api_key: str = Field(default="", alias="OPENROUTER_API_KEY")
     openrouter_model: str = Field(default="deepseek/deepseek-v4-flash", alias="OPENROUTER_MODEL")
-    openrouter_temperature: float = Field(default=0.7, ge=0.0, le=2.0, alias="OPENROUTER_TEMPERATURE")
-    openrouter_max_tokens: int = Field(default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS")
+    openrouter_temperature: float = Field(
+        default=0.7, ge=0.0, le=2.0, alias="OPENROUTER_TEMPERATURE"
+    )
+    openrouter_max_tokens: int = Field(
+        default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS"
+    )
     openrouter_base_url: str = Field(
         default="https://openrouter.ai/api/v1",
         alias="OPENROUTER_BASE_URL",
@@ -102,6 +125,10 @@ class Settings(BaseSettings):
         "jwt_algorithm",
         "mongodb_uri",
         "mongodb_db_name",
+        "langfuse_secret_key",
+        "langfuse_public_key",
+        "langfuse_host",
+        "log_file_path",
         mode="before",
     )
     @classmethod

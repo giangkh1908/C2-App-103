@@ -1,14 +1,20 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import Navbar from '@/components/landing/Navbar';
 import Sandbox from '@/components/landing/Sandbox';
 
-export const metadata: Metadata = {
-  title: 'Luyện tập | Toán Trực Quan AI',
-  description:
-    'Luyện tập Toán tiểu học qua mô phỏng trực quan, câu hỏi nhanh và phản hồi tức thì.',
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default function PracticePage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+  return {
+    title: t('practiceTitle'),
+    description: t('practiceDescription'),
+  };
+}
+
+export default async function PracticePage({ params }: Props) {
   return (
     <main className="min-h-screen bg-natural-bg">
       <Navbar />

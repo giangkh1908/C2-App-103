@@ -2,7 +2,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 Topic = Literal["multiplication", "division", "fraction_basic", "perimeter_area_basic"]
 Intent = Literal[
     "explain_concept",

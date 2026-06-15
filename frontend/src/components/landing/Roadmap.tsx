@@ -1,10 +1,8 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
-export default function Roadmap() {
-  const t = useTranslations("roadmap");
+export default async function Roadmap() {
+  const t = await getTranslations("roadmap");
 
   const milestones = [
     {

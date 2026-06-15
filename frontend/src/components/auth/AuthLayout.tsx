@@ -29,7 +29,7 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2.5 mb-8">
         <Image
-          src="/logo.png"
+          src="/logo.webp"
           alt={`${t("brand")} logo`}
           width={40}
           height={40}

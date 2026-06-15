@@ -2,14 +2,14 @@
 test_agent_loop.py – Unit tests cho AgentLoop với fake LLM.
 """
 
+from typing import Any
+
 import pytest
 
 from src.agents.agent_loop import AgentLoop
 from src.agents.schemas import AgentRunConfig
 from src.llm.base import BaseLLMClient, LLMMessage, LLMResponse, LLMToolCall
 from src.tools.registry import create_default_tool_registry
-from typing import Any
-
 
 # ---------------------------------------------------------------------------
 # Fake LLM – luôn trả về final answer ngay lập tức

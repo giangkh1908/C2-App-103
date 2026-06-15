@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 import { Trophy, RotateCcw } from 'lucide-react';
 
 interface VisualDataProps {
@@ -39,6 +40,7 @@ function buildInitialGardenTiles(primary: number, secondary: number): boolean[] 
 }
 
 export default function InteractiveSimulation({ visualData }: { visualData: VisualDataProps }) {
+  const t = useTranslations('simulation');
   // Safe default bounds
   const safePrimary = Math.max(1, Math.min(visualData.primaryCount || 3, 12));
   const safeSecondary = Math.max(1, Math.min(visualData.secondaryCount || 4, 12));
@@ -114,7 +116,7 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
     return (
       <div className="flex flex-col items-center gap-3 w-full text-center">
         <span className="text-[11px] font-bold text-[#4A6741] bg-[#E9F0E6] px-3 py-1 rounded-full border border-[#4A6741]/20">
-          🍬 Chạm đĩa để tăng giảm số kẹo ngọt dâu (1-6 kẹo)
+          {t('candyHint')}
         </span>
 
         <div className="flex flex-wrap justify-center gap-3 py-2 w-full">
@@ -133,24 +135,24 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
               }}
               className="flex flex-col items-center bg-white p-3 rounded-2xl border border-gray-200 min-w-[90px] shadow-xs cursor-pointer select-none"
             >
-              <span className="text-[9px] font-bold text-gray-400 mb-1.5 uppercase">Đĩa {idx + 1}</span>
+              <span className="text-[9px] font-bold text-gray-400 mb-1.5 uppercase">{t('candyPlate', { n: idx + 1 })}</span>
               <div className="grid grid-cols-3 gap-1 min-h-[30px] items-center">
                 {Array.from({ length: count }).map((_, cIdx) => (
                   <span key={cIdx} className="text-sm select-none">🍬</span>
                 ))}
               </div>
-              <span className="text-[10px] font-bold text-gray-600 mt-2">{count} viên</span>
+              <span className="text-[10px] font-bold text-gray-600 mt-2">{t('candyCount', { n: count })}</span>
             </motion.div>
           ))}
         </div>
 
         <div className="bg-[#FAF9F5] p-3 rounded-xl border border-gray-200 w-full max-w-sm">
           <p className="text-xs font-semibold text-gray-700">
-            Phép cộng lặp: {candyCounts.join(' + ')} = <span className="text-[#4A6741] font-bold">{totalCandies}</span> viên
+            {t('candyAddition', { sum: candyCounts.join(' + '), total: totalCandies })}
           </p>
           {areAllEqual && (
             <p className="text-xs text-[#4A6741] font-bold mt-1.5 bg-[#E9F0E6] px-2.5 py-1 rounded-full w-fit mx-auto">
-              Nhân gọn: {candyCounts.length} đĩa × {candyCounts[0]} kẹo = {totalCandies} kẹo ngọt
+              {t('candyMultiply', { plates: candyCounts.length, perPlate: candyCounts[0], total: totalCandies })}
             </p>
           )}
         </div>
@@ -192,7 +194,7 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
     return (
       <div className="flex flex-col items-center gap-3 w-full text-center">
         <span className="text-[11px] font-bold text-[#FF8C42] bg-[#FFF4E5] px-3 py-1 rounded-full border border-[#FF8C42]/20">
-          🍎 Chạm giỏ để phát táo, chạm búp bê để trả táo về giỏ!
+          {t('appleHint')}
         </span>
 
         {/* Giỏ táo */}
@@ -201,7 +203,7 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
           onClick={handleFeedDoll}
           className="bg-[#FFF4E5] p-3 rounded-2xl border border-[#FF8C42]/30 cursor-pointer w-full max-w-[200px] text-center"
         >
-          <span className="text-[10px] uppercase font-bold text-[#FF8C42] block mb-1">🧺 Giỏ táo ({appleBasket} quả)</span>
+          <span className="text-[10px] uppercase font-bold text-[#FF8C42] block mb-1">{t('appleBasket', { n: appleBasket })}</span>
           {appleBasket > 0 ? (
             <div className="flex flex-wrap justify-center gap-1">
               {Array.from({ length: appleBasket }).map((_, i) => (
@@ -209,7 +211,7 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
               ))}
             </div>
           ) : (
-            <span className="text-[10px] text-gray-400 italic">Đã chia hết táo rồi bé nhé!</span>
+            <span className="text-[10px] text-gray-400 italic">{t('appleEmpty')}</span>
           )}
         </motion.div>
 
@@ -222,25 +224,25 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
               onClick={() => handleReturnApple(idx)}
               className="flex flex-col items-center bg-emerald-50/40 p-2.5 rounded-2xl border border-dashed border-[#4A6741]/30 min-w-[75px] cursor-pointer hover:bg-emerald-50"
             >
-              <span className="text-[10px] font-bold text-[#4A6741]">🎎 Bạn {idx + 1}</span>
+              <span className="text-[10px] font-bold text-[#4A6741]">{t('appleDoll', { n: idx + 1 })}</span>
               <div className="flex flex-wrap justify-center items-center gap-0.5 mt-1.5 min-h-[22px]">
                 {apples > 0 ? (
                   Array.from({ length: apples }).map((_, i) => (
                     <span key={i} className="text-sm select-none">🍎</span>
                   ))
                 ) : (
-                  <span className="text-[8px] text-gray-400 italic">...</span>
+                    <span className="text-[8px] text-gray-400 italic">{t('appleDots')}</span>
                 )}
               </div>
               <span className="text-[9px] font-bold text-[#4A6741] mt-1.5 bg-white px-1.5 py-0.5 rounded-full border border-[#4A6741]/10">
-                {apples} quả
+                {t('applePortion', { n: apples })}
               </span>
             </motion.div>
           ))}
         </div>
 
         <div className="text-[10px] text-gray-500 font-medium">
-          Dư trong giỏ: <span className="font-bold text-[#FF8C42]">{appleBasket}</span> quả | Mỗi bạn được chia: <span className="font-bold text-[#4A6741]">{Math.min(...applesPerDoll)} - {Math.max(...applesPerDoll)}</span> quả
+          {t('appleStatus', { basket: appleBasket, min: Math.min(...applesPerDoll), max: Math.max(...applesPerDoll) })}
         </div>
       </div>
     );
@@ -263,7 +265,7 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
     return (
       <div className="flex flex-col items-center gap-3 w-full text-center">
         <span className="text-[11px] font-bold text-[#FF8C42] bg-[#FFF4E5] px-3 py-1 rounded-full border border-[#FF8C42]/20">
-          🍕 Chạm vào các miếng cắt để đổi phần bánh ăn dâu
+          {t('pizzaHint')}
         </span>
 
         <div className="relative h-32 w-32 flex items-center justify-center bg-white rounded-full p-2 shadow-sm border border-gray-150">
@@ -310,10 +312,10 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
 
         <div className="flex gap-3 text-[10px] font-bold text-gray-600">
           <span className="bg-[#FFF4E5] text-[#FF8C42] px-2.5 py-1 rounded-full">
-            Đã ăn: {activeSlices} lát
+            {t('pizzaEaten', { n: activeSlices })}
           </span>
           <span className="bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">
-            Tổng cắt: {totalSlices} miếng
+            {t('pizzaTotal', { n: totalSlices })}
           </span>
         </div>
       </div>
@@ -339,7 +341,7 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
     return (
       <div className="flex flex-col items-center gap-3 w-full text-center">
         <span className="text-[11px] font-bold text-[#4A6741] bg-[#E9F0E6] px-3 py-1 rounded-full border border-[#4A6741]/20">
-          🌱 Nhấp vào ô vuông để gieo hạt mầm mọc cỏ dại
+          {t('gridHint')}
         </span>
 
         <div className="p-2 bg-slate-50 border border-gray-200 rounded-xl inline-block">
@@ -366,10 +368,10 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
 
         <div className="flex flex-wrap justify-center gap-2">
           <span className="bg-[#E9F0E6] text-[#4A6741] text-[10px] font-bold px-2.5 py-1 rounded-full">
-            Diện tích (Hạt mầm cỏ) = {activeSprouts} m²
+            {t('gridArea', { n: activeSprouts })}
           </span>
           <span className="bg-gray-100 text-gray-800 text-[10px] font-bold px-2.5 py-1 rounded-full">
-            Chu vi hàng rào = {perimeter} m
+            {t('gridPerimeter', { n: perimeter })}
           </span>
         </div>
       </div>
@@ -381,14 +383,14 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
       <div className="flex items-center justify-between border-b border-gray-100 pb-2.5 mb-4">
         <div className="flex items-center gap-1">
           <Trophy className="h-4 w-4 text-amber-500 animate-bounce" />
-          <span className="text-xs font-extrabold text-gray-800 uppercase tracking-tight">Học cụ xúc giác AI</span>
+          <span className="text-xs font-extrabold text-gray-800 uppercase tracking-tight">{t('title')}</span>
         </div>
         <button
           onClick={handleReset}
           className="flex items-center gap-1 text-[10px] font-extrabold text-gray-500 hover:text-[#4A6741] transition-colors uppercase cursor-pointer"
         >
           <RotateCcw className="h-3 w-3" />
-          <span>Đặt lại</span>
+          <span>{t('reset')}</span>
         </button>
       </div>
 

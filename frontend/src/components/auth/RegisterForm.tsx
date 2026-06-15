@@ -45,7 +45,8 @@ export default function RegisterForm() {
       const fieldErrors: Partial<Record<keyof RegisterInput, string>> = {};
       result.error.issues.forEach((issue) => {
         const field = issue.path[0] as keyof RegisterInput;
-        fieldErrors[field] = tErr(issue.message as Parameters<typeof tErr>[0]);
+        const key = issue.message as Parameters<typeof tErr>[0];
+        fieldErrors[field] = tErr(key) || key;
       });
       setErrors(fieldErrors);
       return;

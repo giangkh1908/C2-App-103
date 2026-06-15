@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
+import { getSafeRedirect } from "@/lib/redirect";
 
 declare global {
   interface Window {
@@ -22,6 +23,8 @@ declare global {
 export default function GoogleSignInButton() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const locale = useLocale();
   const { googleLogin } = useAuth();
   const btnRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
@@ -37,11 +40,12 @@ export default function GoogleSignInButton() {
       if (error) {
         setError(error);
       } else {
-        router.push("/");
+        const redirectTo = searchParams.get("redirectTo");
+        router.replace(getSafeRedirect(redirectTo, locale));
         router.refresh();
       }
     },
-    [googleLogin, router]
+    [googleLogin, router, searchParams, locale]
   );
 
   useEffect(() => {

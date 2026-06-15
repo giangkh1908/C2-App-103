@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
 
 from src.agents.chat_orchestrator import TutorChatOrchestrator
+from src.core.deps import get_current_user
 from src.models.chat import ChatTurnRequest, ChatTurnResponse
+from src.models.user import UserInDB
 from src.services.learning_core import LearningCoreService
 from src.services.learning_core_dependency import get_learning_core_service
 
@@ -27,5 +29,6 @@ def get_tutor_chat_orchestrator(
 async def chat_turn(
     request: ChatTurnRequest,
     orchestrator: TutorChatOrchestrator = Depends(get_tutor_chat_orchestrator),
+    current_user: UserInDB = Depends(get_current_user),
 ) -> ChatTurnResponse:
-    return await orchestrator.handle_turn(request)
+    return await orchestrator.handle_turn(request, str(current_user.id))

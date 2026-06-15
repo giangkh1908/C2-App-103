@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLocale, useTranslations } from 'next-intl';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Bot,
   GraduationCap,
@@ -421,6 +422,7 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
 export default function AIExplanationChat() {
   const locale = useLocale();
   const t = useTranslations('learn');
+  const { apiFetch } = useAuth();
   const tChat = useTranslations('learn.chat');
   const speechLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
   const localizeTopic = useCallback((topic: { id: MathDomain }): TopicOption => ({
@@ -550,11 +552,9 @@ export default function AIExplanationChat() {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${backendUrl}/chat/turn`, {
+      const res = await apiFetch('/chat/turn', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: 'demo-user',
           session_id: sessionId,
           grade: selectedGrade,
           message: text,

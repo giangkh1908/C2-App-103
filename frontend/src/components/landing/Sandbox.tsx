@@ -441,7 +441,7 @@ export default function Sandbox() {
       <div className="max-w-4xl mx-auto">
         <ScrollReveal>
           <div className="text-center max-w-xl mx-auto mb-10">
-            <h2 className="text-3xl font-serif italic font-medium text-natural-dark">
+            <h2 className="text-3xl italic font-medium text-natural-dark">
               {t("title")}
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-natural-charcoal/80">
@@ -482,7 +482,7 @@ export default function Sandbox() {
                 <span className="inline-block bg-natural-green-tint text-natural-green text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2 border border-natural-green/10">
                   {t("gradeLabel", { grade: activeLesson.grade })}
                 </span>
-                <h3 className="text-lg sm:text-xl font-serif italic text-natural-dark font-medium leading-tight">
+                <h3 className="text-lg sm:text-xl italic text-natural-dark font-medium leading-tight">
                   {activeLesson.title}
                 </h3>
               </div>

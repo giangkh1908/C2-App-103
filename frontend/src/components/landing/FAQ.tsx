@@ -20,7 +20,7 @@ export default function FAQ() {
       <div className="max-w-3xl mx-auto">
         <ScrollReveal>
           <div className="text-center mb-11">
-            <h2 className="text-3xl font-serif italic text-natural-dark">
+            <h2 className="text-3xl italic text-natural-dark">
               {t("title")}
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-500">

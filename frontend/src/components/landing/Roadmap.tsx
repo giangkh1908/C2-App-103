@@ -45,7 +45,7 @@ export default async function Roadmap() {
             <span className="text-natural-orange text-[10px] sm:text-xs font-black uppercase tracking-widest block mb-2 font-mono">
               {t("badge")}
             </span>
-            <h2 className="text-3xl font-serif italic text-natural-dark leading-tight">
+            <h2 className="text-3xl italic text-natural-dark leading-tight">
               {t("title")}
             </h2>
             <p className="mt-3 text-sm text-natural-charcoal/80 leading-relaxed">

@@ -372,7 +372,7 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
         {message.title && (
           <div className="flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-natural-orange" />
-            <span className="font-serif text-sm font-bold italic text-gray-800">{message.title}</span>
+            <span className="text-sm font-bold italic text-gray-800">{message.title}</span>
           </div>
         )}
 
@@ -638,7 +638,7 @@ export default function AIExplanationChat() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="font-serif text-base font-bold italic leading-none text-gray-800 sm:text-lg">
+            <h1 className="text-base font-bold italic leading-none text-gray-800 sm:text-lg">
               {tChat('title')}
             </h1>
             <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-natural-green">

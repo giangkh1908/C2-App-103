@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import {
   Bot,
   GraduationCap,
+  History,
   Mic,
   MicOff,
   Send,
@@ -19,6 +20,14 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react';
+import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
+import {
+  getHistory,
+  getSession,
+  deleteSession,
+  createSession,
+  type ChatSessionSummary,
+} from '@/lib/chatHistoryApi';
 import InteractiveSimulation from './InteractiveSimulation';
 import type {
   ChatTurnResponse,
@@ -442,6 +451,11 @@ export default function AIExplanationChat() {
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
+  // ── Session history state ──
+  const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
@@ -478,6 +492,30 @@ export default function AIExplanationChat() {
   useEffect(() => {
     return () => { if (typeof window !== 'undefined') window.speechSynthesis?.cancel(); };
   }, []);
+
+  // ── Session history ──
+  const loadHistory = useCallback(async () => {
+    try {
+      const data = await getHistory(apiFetch);
+      setSessions(data);
+    } catch (error) {
+      console.error('Failed to load history', error);
+    }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    let active = true;
+
+    getHistory(apiFetch)
+      .then((data) => {
+        if (active) setSessions(data);
+      })
+      .catch((error) => {
+        console.error('Failed to load history', error);
+      });
+
+    return () => { active = false; };
+  }, [apiFetch]);
 
   // Load topics from backend
   useEffect(() => {
@@ -534,10 +572,69 @@ export default function AIExplanationChat() {
     playSfx(optIdx === correctIdx ? 'sparkle' : 'error');
   }, []);
 
+  const handleCreateNewSession = useCallback(async () => {
+    try {
+      const result = await createSession(apiFetch);
+      if (result) {
+        setActiveSessionId(result.session_id);
+        setSessionId(result.session_id);
+      }
+      setMessages([]);
+      await loadHistory();
+      setIsSidebarOpen(false);
+    } catch (error) {
+      console.error('Failed to create session', error);
+    }
+  }, [apiFetch, loadHistory]);
+
+  const handleSelectSession = useCallback(async (selectedSessionId: string) => {
+    try {
+      const session = await getSession(apiFetch, selectedSessionId);
+      const restoredMessages: Message[] = session.messages.map((message, index) => ({
+        id: `${selectedSessionId}-${index}`,
+        role: message.role === 'user' ? 'user' : 'ai',
+        text: message.content,
+        timestampLabel: '',
+      }));
+
+      setMessages(restoredMessages);
+      setActiveSessionId(selectedSessionId);
+      setSessionId(selectedSessionId);
+      setIsSidebarOpen(false);
+    } catch (error) {
+      console.error('Failed to select session', error);
+    }
+  }, [apiFetch]);
+
+  const handleDeleteSession = useCallback(async (selectedSessionId: string) => {
+    try {
+      await deleteSession(apiFetch, selectedSessionId);
+      if (activeSessionId === selectedSessionId) {
+        setMessages([]);
+        setActiveSessionId(null);
+        setSessionId(null);
+      }
+      await loadHistory();
+    } catch (error) {
+      console.error('Failed to delete session', error);
+    }
+  }, [activeSessionId, apiFetch, loadHistory]);
+
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const text = inputText.trim();
     if (!text || isLoading) return;
+
+    // Auto-create session if none is active (null-safe: history API may be unavailable)
+    let currentSessionId = activeSessionId ?? sessionId;
+    if (!currentSessionId) {
+      const newSession = await createSession(apiFetch);
+      if (newSession) {
+        currentSessionId = newSession.session_id;
+        setActiveSessionId(newSession.session_id);
+        setSessionId(newSession.session_id);
+      }
+    }
 
     setInputText('');
     setMessages((prev) => [
@@ -555,7 +652,7 @@ export default function AIExplanationChat() {
       const res = await apiFetch('/chat/turn', {
         method: 'POST',
         body: JSON.stringify({
-          session_id: sessionId,
+          session_id: currentSessionId,
           grade: selectedGrade,
           message: text,
           selected_topic: selectedTopic,
@@ -566,6 +663,7 @@ export default function AIExplanationChat() {
 
       const payload: ChatTurnResponse = await res.json();
       setSessionId(payload.session_id);
+      setActiveSessionId(payload.session_id);
 
       const aiMsg: Message = {
         id: `ai_${Date.now()}`,
@@ -604,6 +702,7 @@ export default function AIExplanationChat() {
 
       setMessages((prev) => [...prev, aiMsg]);
       playSfx('bell');
+      await loadHistory();
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -630,7 +729,20 @@ export default function AIExplanationChat() {
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-[#FAF9F5] shadow-xl">
+    <div className="flex h-full">
+      {/* ── Chat history sidebar ── */}
+      <ChatHistorySidebar
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onCreateSession={handleCreateNewSession}
+        onSelectSession={handleSelectSession}
+        onDeleteSession={handleDeleteSession}
+      />
+
+      {/* ── Main chat panel ── */}
+      <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-[#FAF9F5] shadow-xl relative">
       {/* ── Header ── */}
       <div className="flex shrink-0 flex-col items-start justify-between gap-3 border-b border-gray-200 bg-white px-5 py-3.5 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
@@ -648,26 +760,36 @@ export default function AIExplanationChat() {
           </div>
         </div>
 
-        {/* Grade selector */}
-        <div className="flex w-full items-center justify-between gap-2 rounded-full border border-gray-200 bg-slate-50 px-2 py-1.5 text-xs font-bold sm:w-auto sm:justify-start">
-          <GraduationCap className="h-3.5 w-3.5 shrink-0 text-natural-orange" />
-          <span className="text-gray-500">{tChat('gradeLabel')}</span>
-          <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((g) => (
-              <button
-                key={g}
-                id={`grade-btn-${g}`}
-                onClick={() => { setSelectedGrade(g); playSfx('sparkle'); }}
-                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
-                  selectedGrade === g
-                    ? 'bg-natural-green text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {g}
-              </button>
-            ))}
+        {/* Grade selector + History button */}
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <div className="flex flex-1 items-center justify-between gap-2 rounded-full border border-gray-200 bg-slate-50 px-2 py-1.5 text-xs font-bold sm:flex-none sm:justify-start">
+            <GraduationCap className="h-3.5 w-3.5 shrink-0 text-natural-orange" />
+            <span className="text-gray-500">{tChat('gradeLabel')}</span>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((g) => (
+                <button
+                  key={g}
+                  id={`grade-btn-${g}`}
+                  onClick={() => { setSelectedGrade(g); playSfx('sparkle'); }}
+                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
+                    selectedGrade === g
+                      ? 'bg-natural-green text-white shadow-md'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
           </div>
+          <button
+            onClick={() => setIsSidebarOpen(prev => !prev)}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-slate-50 text-gray-500 transition-colors hover:border-natural-green/30 hover:bg-natural-green-tint hover:text-natural-green"
+            title="Lịch sử hội thoại"
+            aria-label="Mở lịch sử hội thoại"
+          >
+            <History className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
@@ -811,6 +933,7 @@ export default function AIExplanationChat() {
         <p className="mt-2 text-center text-[10px] text-gray-400">
           {tChat('footer')}
         </p>
+      </div>
       </div>
     </div>
   );

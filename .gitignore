@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.docker.example
 
 # Python
 __pycache__/
@@ -37,7 +38,7 @@ Thumbs.db
 .idea/
 
 # AI logs — tracked structure, ignored content
-.ai-log/*.jsonl
+# .ai-log/*.jsonl
 
 .ai-log/
 

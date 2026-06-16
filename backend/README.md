@@ -145,3 +145,124 @@ Chạy `make` hoặc `make help` để xem danh sách lệnh.
 ```bash
 pytest tests/integration/test_chat_flow.py tests/integration/test_learning_contracts.py -q
 ```
+
+## Practice integration test
+
+`/practice` integration test da chuyen sang Mongo that de khoa contract truoc khi harden UI.
+
+Bien moi truong test mac dinh:
+
+```env
+PRACTICE_TEST_MONGODB_URI=mongodb://127.0.0.1:27018
+PRACTICE_TEST_MONGODB_DB_NAME=toan_truc_quan_practice_test
+```
+
+Chay nhanh bang script:
+
+```bash
+python scripts/run_practice_integration.py
+```
+
+Script se:
+
+- `docker compose up -d mongo-practice-test`
+- doi Mongo san sang
+- chay `pytest tests/integration/test_practice_api.py -q`
+- `docker compose down` khi xong, trừ khi dung `--keep-up`
+
+Neu muon tu chay thu cong:
+
+```bash
+docker compose up -d mongo-practice-test
+pytest tests/integration/test_practice_api.py -q
+docker compose down
+```
+
+## Practice dataset pipeline
+
+`/practice` runtime doc truc tiep tu file local. Snapshot that trong repo la:
+
+```text
+backend/data/practice/vi_grade_school_math_mcq_full.json
+```
+
+Pipeline production hien tai:
+
+- `load_raw_snapshot`
+- `clean_and_filter`
+- `curate_with_manifest`
+- `serve_from_local_file`
+
+Rule clean quan trong:
+
+- chi nhan cau `MCQ` co `choices` hop le
+- phai suy ra duoc dap an dung tu `explanation`
+- loai cau phu thuoc hinh nhu `hinh ben`, `quan sat hinh`, `phan to mau`, `so do`
+- khong expose `source_url` ra contract frontend
+
+Lenh huu ich:
+
+```bash
+python scripts/validate_practice_pipeline.py
+python scripts/generate_practice_manifest.py --output-path data/practice/vi_grade_school_math_mcq_curated_manifest.draft.json
+```
+
+Neu sua tay du lieu:
+
+- sua `backend/data/practice/vi_grade_school_math_mcq_full.json`
+- neu can, doi `backend/data/practice/vi_grade_school_math_mcq_curated_manifest.json`
+- restart backend de runtime nap lai catalog trong bo nho
+
+## Practice acceptance on a dedicated dev DB
+
+Neu muon ra soat `/practice` tren UI that ma khong dung DB dev chung:
+
+1. Bootstrap DB acceptance rieng:
+
+```bash
+python scripts/bootstrap_practice_acceptance.py
+```
+
+Mac dinh script se:
+
+- reset sach `practice_attempts` trong DB acceptance
+- copy `users` tu DB source sang DB acceptance de login/test
+- khong dung den collection trong DB dev chung
+
+Neu muon giu lai history de debug compatibility, can opt-in ro rang:
+
+```bash
+python scripts/bootstrap_practice_acceptance.py --copy-attempts
+```
+
+Co the scope theo user test:
+
+```bash
+python scripts/bootstrap_practice_acceptance.py --user-email student@example.com
+```
+
+2. Chay backend voi DB acceptance:
+
+```bash
+python scripts/run_practice_acceptance_backend.py --reload --port 8000
+```
+
+3. Smoke check API `/practice` bang user that:
+
+```bash
+python scripts/smoke_practice_acceptance_api.py --email student@example.com --password your-password
+```
+
+Smoke script se:
+
+- dang nhap bang user test trong DB acceptance
+- xac nhan lich su `practice_attempts` ban dau dang rong
+- check du 5 khoi lop va moi lop co dung 10 de active
+- mo exam detail mau va dam bao khong lo `source_url`
+- fail neu curated set con sot noi dung phu thuoc hinh
+
+- login that qua `/auth/login`
+- check `/practice/grades` co du 5 lop
+- check moi lop co dung 10 de
+- check exam detail khong con `source_url`
+- check curated set khong lo cau phu thuoc hinh

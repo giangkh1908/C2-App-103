@@ -1,6 +1,4 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
 const reviews = [
@@ -9,16 +7,16 @@ const reviews = [
   { avatar: "👨‍👧", textKey: "review3Text", authorKey: "review3Author" },
 ];
 
-export default function Testimonials() {
-  const t = useTranslations("testimonials");
-  const tCommon = useTranslations("common");
+export default async function Testimonials() {
+  const t = await getTranslations("testimonials");
+  const tCommon = await getTranslations("common");
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-natural-bg border-b border-natural-border">
       <div className="max-w-7xl mx-auto">
         <ScrollReveal>
           <div className="text-center max-w-xl mx-auto mb-11">
-            <h2 className="text-3xl font-serif italic text-natural-dark">
+            <h2 className="text-3xl italic text-natural-dark">
               {t("title")}
             </h2>
             <p className="mt-3 text-xs sm:text-sm text-natural-charcoal/85 max-w-md mx-auto">

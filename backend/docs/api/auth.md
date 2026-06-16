@@ -36,12 +36,12 @@ Register a new user.
     "avatar": null,
     "createdAt": "2024-01-01T00:00:00+00:00"
   },
-  "tokens": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
+
+The refresh token is set as an `httpOnly` `refresh_token` cookie scoped to `/api/v1/auth`.
+It is not returned in the JSON response and must not be read or stored by frontend JavaScript.
 
 **Errors:**
 - `409` - Email already registered
@@ -89,22 +89,18 @@ Login with Google ID token.
 
 ### POST /auth/refresh
 
-Get new access token using refresh token.
+Get a new access token using the `httpOnly` `refresh_token` cookie.
 
-**Request Body:**
-```json
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
+**Cookies:** `refresh_token=<refresh_token>`
 
 **Response (200):**
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
+
+A rotated refresh token is set in the `refresh_token` cookie.
 
 **Errors:**
 - `401` - Invalid refresh token
@@ -137,7 +133,7 @@ Get current user info.
 
 ### POST /auth/logout 🔒
 
-Logout and revoke refresh token.
+Logout and clear the `refresh_token` cookie.
 
 **Headers:** `Authorization: Bearer <access_token>`
 
@@ -225,6 +221,100 @@ Confirm email verification.
 
 **Errors:**
 - `400` - Invalid or expired verification token
+
+---
+
+### POST /chat/turn 🔒
+
+Send a chat message and get an AI tutor response.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Request Body:**
+```json
+{
+  "session_id": "optional-session-id",
+  "grade": 3,
+  "message": "Giải thích phép nhân 3 x 4",
+  "selected_topic": "multiplication"
+}
+```
+
+**Response (200):**
+```json
+{
+  "session_id": "session_123",
+  "assistant_message": "Phep nhan 3 x 4...",
+  "detected_topic": "multiplication",
+  "intent": "explain_concept",
+  "response_mode": "explain_with_visual_and_practice",
+  "visual_card": { "..." },
+  "practice_question": { "..." },
+  "follow_up_suggestions": ["..."]
+}
+```
+
+**Errors:**
+- `401` - Missing or invalid access token
+- `422` - Validation error
+
+**Note:** `user_id` is ignored if provided in the request body. The authenticated user is used for session persistence.
+
+---
+
+### POST /lessons/generate 🔒
+
+Generate a lesson for a given topic.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Request Body:**
+```json
+{
+  "grade": 3,
+  "topic": "multiplication",
+  "prompt": "Giải thích 3 x 4"
+}
+```
+
+**Response (200):**
+```json
+{
+  "topic": "multiplication",
+  "grade": 3,
+  "title": "...",
+  "simple_explanation": "...",
+  "real_life_example": "...",
+  "visual": { "..." },
+  "simulation": { "..." },
+  "practice_question": { "..." },
+  "tts_text": "..."
+}
+```
+
+**Errors:**
+- `401` - Missing or invalid access token
+- `422` - Validation error
+
+**Note:** `user_id` is ignored if provided in the request body. The authenticated user is used for session persistence.
+
+---
+
+### GET /topics
+
+Get available learning topics (public, no auth required).
+
+**Response (200):**
+```json
+{
+  "topics": [
+    { "id": "multiplication", "label": "Phep nhan" },
+    { "id": "division", "label": "Phep chia" },
+    { "id": "fraction_basic", "label": "Phan so" },
+    { "id": "perimeter_area_basic", "label": "Chu vi / Dien tich" }
+  ]
+}
+```
 
 ---
 

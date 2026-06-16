@@ -13,7 +13,7 @@ export default function Footer() {
     <footer className="bg-natural-dark text-natural-border/80 py-12 px-4 sm:px-6 lg:px-8 border-t border-natural-border/10">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/10 text-center md:text-left">
         <div className="flex flex-col items-center md:items-start gap-1">
-          <span className="font-serif italic font-bold text-lg text-white">
+          <span className="italic font-bold text-lg text-white">
             {t("brand")} © {new Date().getFullYear()}
           </span>
           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">

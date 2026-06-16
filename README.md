@@ -1,3 +1,33 @@
+## Chạy Backend
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e ".[dev]"
+copy .env.example .env
+```
+
+Sửa `backend/.env`, điền các biến bắt buộc: `OPENROUTER_API_KEY`, `MONGODB_URI`, `MONGODB_DB_NAME`.
+
+```bash
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Swagger UI: http://localhost:8000/docs
+
+## Chạy Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Mở http://localhost:3000. Frontend mặc định gọi backend tại `http://localhost:8000/api/v1`.
+
+---
+
 # Starter Code Template — Cohort 2
 
 Empty starter template for AI20K Build Cohort 2 team repositories. Includes pre-configured AI usage logging hooks for Claude Code, Cursor, Codex, Gemini CLI, Antigravity, and GitHub Copilot.

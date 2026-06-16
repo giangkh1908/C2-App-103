@@ -1,10 +1,10 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from bson import ObjectId
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from core.database import get_db
-from core.security import decode_token
-from models.user import UserInDB
+from src.core.database import get_db
+from src.core.security import decode_token
+from src.models.user import UserInDB
 
 security = HTTPBearer()
 

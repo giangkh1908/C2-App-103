@@ -7,6 +7,9 @@
     "verified": "Thành viên Verified"
   },
   "nav": {
+    "home": "Trang chủ",
+    "learn": "Học tập",
+    "practice": "Luyện tập",
     "benefits": "Lợi ích cốt lõi",
     "sandbox": "Mô phỏng học thử",
     "roadmap": "Lộ trình lớp 1-5",
@@ -16,6 +19,38 @@
     "dashboard": "Bảng điều khiển",
     "profile": "Tài khoản",
     "logout": "Đăng xuất"
+  },
+  "learn": {
+    "topics": {
+      "multiplication": "Phép nhân",
+      "division": "Phép chia",
+      "fraction_basic": "Phân số",
+      "perimeter_area_basic": "Chu vi & Diện tích"
+    },
+    "chat": {
+      "title": "Gia sư Toán AI",
+      "subtitle": "Hỏi bất kỳ câu hỏi toán tiểu học nào",
+      "gradeLabel": "Lớp",
+      "freeTopic": "Chủ đề tự do",
+      "welcome": "Xin chào! Mình là gia sư toán AI. Bạn hỏi mình bất kỳ câu hỏi toán tiểu học nào — mình sẽ giải thích bằng ví dụ trực quan!",
+      "ready": "Sẵn sàng học!",
+      "suggestions": {
+        "multiply": "Giải thích phép nhân",
+        "compareFractions": "So sánh phân số",
+        "perimeterArea": "Chu vi & diện tích",
+        "division": "Giải thích phép chia"
+      },
+      "connectionError": "Lỗi kết nối. Vui lòng thử lại.",
+      "retrySuggestion": "Thử lại",
+      "chooseTopicSuggestion": "Chọn chủ đề khác",
+      "inputPlaceholder": "Đặt câu hỏi toán...",
+      "stopRecording": "Dừng ghi âm",
+      "startRecording": "Bắt đầu ghi âm",
+      "footer": "Gia sư AI — Học Toán Trực Quan",
+      "clarificationLabel": "Cần giải thích rõ hơn",
+      "quickPracticeLabel": "Luyện tập nhanh",
+      "readAloud": "Đọc to"
+    }
   },
   "auth": {
     "googleButton": "Tiếp tục với Google",
@@ -214,6 +249,28 @@
       "perimeterValue": "14 mét"
     }
   },
+  "simulation": {
+    "title": "Học cụ xúc giác AI",
+    "reset": "Đặt lại",
+    "candyHint": "🍬 Chạm đĩa để tăng giảm số kẹo ngọt dâu (1-6 kẹo)",
+    "candyPlate": "Đĩa {n}",
+    "candyCount": "{n} viên",
+    "candyAddition": "Phép cộng lặp: {sum} = {total} viên",
+    "candyMultiply": "Nhân gọn: {plates} đĩa × {perPlate} kẹo = {total} kẹo ngọt",
+    "appleHint": "🍎 Chạm giỏ để phát táo, chạm búp bê để trả táo về giỏ!",
+    "appleBasket": "🧺 Giỏ táo ({n} quả)",
+    "appleEmpty": "Đã chia hết táo rồi bé nhé!",
+    "appleDoll": "🎎 Bạn {n}",
+    "appleDots": "...",
+    "applePortion": "{n} quả",
+    "appleStatus": "Dư trong giỏ: {basket} quả | Mỗi bạn: {min}–{max} quả",
+    "pizzaHint": "🍕 Chạm vào các miếng cắt để đổi phần bánh ăn dâu",
+    "pizzaEaten": "Đã ăn: {n} lát",
+    "pizzaTotal": "Tổng cắt: {n} miếng",
+    "gridHint": "🌱 Nhấp vào ô vuông để gieo hạt mầm mọc cỏ dại",
+    "gridArea": "Diện tích (Hạt mầm cỏ) = {n} m²",
+    "gridPerimeter": "Chu vi hàng rào = {n} m"
+  },
   "roadmap": {
     "badge": "Bản đồ học thuật toàn diện",
     "title": "Lộ trình đầy đặn hình ảnh — từ Lớp 1 - Lớp 5",
@@ -268,7 +325,11 @@
   "metadata": {
     "titleDefault": "Toán Trực Quan AI — Gia sư Toán trực quan cho học sinh tiểu học",
     "titleTemplate": "%s | Toán Trực Quan AI",
-    "description": "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh, thao tác trực quan và phản hồi tức thì. Học phép nhân, phép chia, phân số, chu vi & diện tích bằng Visual Card và Mini Simulation.",
+    "description": "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh, thao tác trực quan và phản hồi tức thì. Học phép nhân, phép chia, phân số, chu vi & diện tích với Visual Card và Mini Simulation.",
+    "learnTitle": "Mô phỏng học thử | Toán Trực Quan AI",
+    "learnDescription": "Hỏi gia sư AI về bất kỳ bài toán tiểu học nào. AI giải thích thân thiện, hỏi lại khi cần, và minh họa bằng hình ảnh trực quan khi thật sự cần thiết.",
+    "practiceTitle": "Luyện tập | Toán Trực Quan AI",
+    "practiceDescription": "Luyện tập Toán tiểu học qua mô phỏng trực quan, câu hỏi nhanh và phản hồi tức thì.",
     "ogTitle": "Toán Trực Quan AI — Hiểu sâu bản chất Toán bằng mắt nhìn, chạm thử",
     "ogDescription": "AI không làm bài thay học sinh. AI giúp học sinh hiểu bản chất khái niệm Toán qua Visual Card và Mini Simulation.",
     "twitterTitle": "Toán Trực Quan AI — Gia sư Toán trực quan",

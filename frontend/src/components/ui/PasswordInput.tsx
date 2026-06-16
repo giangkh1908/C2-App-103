@@ -34,6 +34,7 @@ export default function PasswordInput({ label, error, id, className = "", ...pro
           onClick={() => setShow(!show)}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-natural-dashed hover:text-natural-charcoal transition-colors cursor-pointer"
           tabIndex={-1}
+          aria-label={show ? "Hide password" : "Show password"}
         >
           {show ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

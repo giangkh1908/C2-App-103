@@ -74,9 +74,12 @@ Xác thực học sinh và trả về thông tin hồ sơ tối thiểu để b�
   "display_name": "Minh",
   "grade": 3,
   "role": "student",
-  "token": "jwt-or-session-token"
+  "accessToken": "jwt-access-token"
 }
 ```
+
+Refresh tokens are delivered only via an `httpOnly` `refresh_token` cookie scoped to auth
+endpoints. Frontend code must not store access or refresh tokens in `localStorage`.
 
 ## `GET /topics`
 

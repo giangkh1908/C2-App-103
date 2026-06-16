@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
@@ -10,7 +10,6 @@ const LOCALES = [
 ] as const;
 
 export default function LocaleSwitcher() {
-  const t = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -31,11 +30,13 @@ export default function LocaleSwitcher() {
   }, []);
 
   const switchLocale = (newLocale: string) => {
-    // Remove current locale prefix from pathname
-    const segments = pathname.split("/");
-    // pathname is like /vi/login or /en or /vi
-    segments[1] = newLocale;
-    router.push(segments.join("/"));
+    if (pathname === "/") {
+      router.push(`/${newLocale}`);
+    } else {
+      const segments = pathname.split("/");
+      segments[1] = newLocale;
+      router.push(segments.join("/"));
+    }
     setOpen(false);
   };
 

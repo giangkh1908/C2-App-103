@@ -204,10 +204,9 @@ def main():
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
-    # Codex Stop hooks validate stdout against their own hook schema. This
-    # logger is side-effect-only for Codex, so stdout must stay empty.
-    if tool != "codex":
-        print(json.dumps({"status": "logged"}))
+    # Codex hook stdout must match the event output schema. A generic
+    # {"status": "..."} response is invalid for UserPromptSubmit/Stop.
+    print(json.dumps({"continue": True}))
 
 
 if __name__ == "__main__":

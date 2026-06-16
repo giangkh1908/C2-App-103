@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import AuthLayout from "@/components/auth/AuthLayout";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
@@ -12,16 +12,13 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000/ap
 export default function VerifyEmailPage() {
   const t = useTranslations("auth.verifyEmail");
   const searchParams = useSearchParams();
+  const locale = useLocale();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!token) {
-      setStatus("error");
-      setMessage(t("invalidToken"));
-      return;
-    }
+    if (!token) return;
 
     fetch(`${API_URL}/auth/verify-email/confirm?token=${token}`)
       .then(async (res) => {
@@ -39,6 +36,22 @@ export default function VerifyEmailPage() {
         setMessage(t("errorMessage"));
       });
   }, [token, t]);
+
+  if (!token) {
+    return (
+      <AuthLayout title={t("title")} subtitle="">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-full bg-red-50 flex items-center justify-center">
+            <span className="text-2xl">❌</span>
+          </div>
+          <p className="text-sm text-natural-charcoal">{t("invalidToken")}</p>
+          <Link href={`/${locale}/login`}>
+            <Button>{t("goToLogin")}</Button>
+          </Link>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout title={t("title")} subtitle="">
@@ -60,7 +73,7 @@ export default function VerifyEmailPage() {
         <p className="text-sm text-natural-charcoal">{message}</p>
 
         {status !== "loading" && (
-          <Link href="/login">
+          <Link href={`/${locale}/login`}>
             <Button>{t("goToLogin")}</Button>
           </Link>
         )}

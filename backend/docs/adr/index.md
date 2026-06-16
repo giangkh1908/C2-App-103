@@ -154,7 +154,7 @@ The frontend needs to:
 
 ## Decision
 
-We chose a **custom AuthContext** with localStorage:
+We chose a **custom AuthContext** with in-memory access tokens and httpOnly refresh cookies:
 
 ### Why not NextAuth.js?
 
@@ -163,48 +163,46 @@ We chose a **custom AuthContext** with localStorage:
 - Backend handles all auth logic
 - Simpler architecture
 
-### Why localStorage over httpOnly cookies?
+### Why httpOnly refresh cookies over localStorage?
 
-- Simpler implementation
-- Works with any backend (not just Next.js API routes)
-- Can be upgraded to httpOnly cookies later
-- Current threat model acceptable for MVP
+- Refresh tokens are not readable by frontend JavaScript
+- Access tokens are short-lived and kept only in memory
+- Sessions can still survive reloads through `/auth/refresh`
+- This reduces token exposure during XSS incidents
 
 ### Token Storage
 
 ```typescript
-localStorage.setItem("auth", JSON.stringify({
-  user: { id, name, email, role },
-  accessToken: "...",
-  refreshToken: "..."
-}));
+// Access token is kept in React memory.
+accessTokenRef.current = authResponse.accessToken;
+
+// Refresh token is set by the backend as an httpOnly cookie.
+fetch("/api/v1/auth/refresh", { method: "POST", credentials: "include" });
 ```
 
 ### Auto-refresh Strategy
 
 1. Frontend makes API call with AT
-2. If 401 response, automatically call /auth/refresh
-3. Store new tokens
+2. If 401/403 response, automatically call /auth/refresh with cookies
+3. Store new access token in memory
 4. Retry original request
 
 ## Consequences
 
 ### Positive
 
-- Simple implementation
-- No server-side session management
-- Works with any backend
-- Easy to debug
+- Refresh token is shielded from JavaScript access
+- No token persistence in browser storage
+- Works with FastAPI-managed auth cookies
 
 ### Negative
 
-- localStorage vulnerable to XSS
 - Need to handle token refresh logic
-- No server-side session revocation
+- Requires correct CORS and cookie settings
 
 ### Mitigations
 
 - Short AT expiry limits exposure
 - RT can be revoked on logout
 - CSP headers to prevent XSS
-- Can upgrade to httpOnly cookies for production
+- Refresh cookie is `httpOnly`, `SameSite=Lax`, and `Secure` outside development

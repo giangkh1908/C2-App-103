@@ -17,15 +17,19 @@ frontend/src/
 │   ├── layout.tsx                 # Root layout (fonts, metadata)
 │   ├── globals.css                # Tailwind + custom theme
 │   └── [locale]/
-│       ├── layout.tsx             # NextIntlClientProvider + AuthProvider
+│       ├── layout.tsx             # NextIntlClientProvider + AuthProvider + Toaster
 │       ├── page.tsx               # Landing page
-│       └── (auth)/
-│           ├── layout.tsx         # Auth layout
-│           ├── login/page.tsx
-│           ├── register/page.tsx
-│           ├── forgot-password/page.tsx
-│           ├── reset-password/page.tsx
-│           └── verify-email/page.tsx
+│       ├── (auth)/
+│       │   ├── layout.tsx         # Auth layout
+│       │   ├── login/page.tsx
+│       │   ├── register/page.tsx
+│       │   ├── forgot-password/page.tsx
+│       │   ├── reset-password/page.tsx
+│       │   └── verify-email/page.tsx
+│       └── (protected)/
+│           ├── layout.tsx         # RequireAuth + Suspense
+│           ├── learn/page.tsx     # AI chat tutor
+│           └── practice/page.tsx  # Interactive sandbox
 ├── components/
 │   ├── auth/                      # Auth form components
 │   │   ├── AuthLayout.tsx
@@ -33,6 +37,7 @@ frontend/src/
 │   │   ├── RegisterForm.tsx
 │   │   ├── GoogleSignInButton.tsx
 │   │   ├── ForgotPasswordForm.tsx
+│   │   ├── RequireAuth.tsx       # Route guard (toast + redirect login)
 │   │   └── ResetPasswordForm.tsx
 │   ├── landing/                   # Landing page components
 │   │   ├── Navbar.tsx
@@ -52,6 +57,7 @@ frontend/src/
 │   └── useAuth.ts                 # Auth hook re-export
 ├── lib/
 │   ├── audio.ts                   # AudioContext singleton
+│   ├── redirect.ts               # Safe redirect validation
 │   └── validations/
 │       └── auth.ts                # Zod schemas
 ├── messages/
@@ -73,7 +79,7 @@ Component (LoginForm, RegisterForm, etc.)
     ▼
 AuthProvider (Context)
     │  fetch() to backend API
-    │  Store response in localStorage
+    │  Keep access token in memory; refresh token stays in httpOnly cookie
     ▼
 Backend API (FastAPI)
     │
@@ -85,22 +91,33 @@ MongoDB
 
 ### Register
 ```
-RegisterForm → useAuth().register() → POST /auth/register → Save to localStorage → Redirect /
+RegisterForm → useAuth().register() → POST /auth/register → Store access token in memory → Redirect to redirectTo (or home)
 ```
 
 ### Login
 ```
-LoginForm → useAuth().login() → POST /auth/login → Save to localStorage → Redirect /
+LoginForm → useAuth().login() → POST /auth/login → Store access token in memory → Redirect to redirectTo (or home)
+```
+
+### Protected Page Access
+```
+User opens /vi/learn → RequireAuth (useAuth) → Not authenticated → Toast → Redirect to /vi/login?redirectTo=/vi/learn
+User logs in → LoginForm reads redirectTo → getSafeRedirect() → Redirect to /vi/learn
 ```
 
 ### Auto Refresh
 ```
-apiFetch() → 401 response → POST /auth/refresh → Retry original request
+apiFetch() → 401/403 response → POST /auth/refresh with httpOnly cookie → Retry original request
 ```
 
 ### Logout
 ```
-Navbar → useAuth().logout() → POST /auth/logout → Clear localStorage → Redirect /
+Navbar → useAuth().logout() → POST /auth/logout → Clear in-memory auth state and cookie → Redirect /
+```
+
+### Chat / Lessons API (Protected)
+```
+AIExplanationChat → useAuth().apiFetch("/chat/turn", ...) → Bearer token auto-injected → POST /api/v1/chat/turn
 ```
 
 ## Route Protection
@@ -113,10 +130,25 @@ Navbar → useAuth().logout() → POST /auth/logout → Clear localStorage → R
 | `/forgot-password` | No | Public |
 | `/reset-password` | No | Public |
 | `/verify-email` | No | Public |
-| `/dashboard` | Yes | Redirect to `/login` if not logged in |
-| `/profile` | Yes | Redirect to `/login` if not logged in |
+| `/learn` | Yes | Toast + redirect to `/login?redirectTo=/vi/learn` |
+| `/practice` | Yes | Toast + redirect to `/login?redirectTo=/vi/practice` |
 
-**Note**: Route protection is handled by Next.js middleware (`middleware.ts`) which checks for auth token in cookies/localStorage.
+### Protected Route Flow
+
+1. User opens `/vi/learn` without login
+2. `RequireAuth` shows toast "Vui lòng đăng nhập để tiếp tục."
+3. Redirects to `/vi/login?redirectTo=%2Fvi%2Flearn`
+4. User logs in → `getSafeRedirect` validates → redirects to `/vi/learn`
+
+### Backend API Protection
+
+- `POST /api/v1/chat/turn` — requires Bearer token
+- `POST /api/v1/lessons/generate` — requires Bearer token
+- `GET /api/v1/topics` — public (no auth)
+
+`user_id` in request body is ignored. Authenticated user is used for session persistence.
+
+**Note**: Access tokens are kept only in memory. Refresh tokens are held in `httpOnly` cookies and are not readable by frontend JavaScript.
 
 ## Styling
 

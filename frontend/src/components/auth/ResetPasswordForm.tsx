@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
@@ -14,6 +14,7 @@ interface Props {
 export default function ResetPasswordForm({ token }: Props) {
   const t = useTranslations("auth.resetPassword");
   const tErr = useTranslations("auth.errors");
+  const locale = useLocale();
   const { resetPassword } = useAuth();
 
   const [password, setPassword] = useState("");
@@ -60,7 +61,7 @@ export default function ResetPasswordForm({ token }: Props) {
           <span className="text-2xl">✅</span>
         </div>
         <p className="text-sm text-natural-charcoal">{t("successMessage")}</p>
-        <Link href="/login" className="inline-block">
+        <Link href={`/${locale}/login`} className="inline-block">
           <Button>{t("goToLogin")}</Button>
         </Link>
       </div>

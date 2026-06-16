@@ -1,42 +1,68 @@
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status
 from bson import ObjectId
-from google.oauth2 import id_token
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from google.auth.exceptions import GoogleAuthError
 from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
 
-from core.config import settings
-from core.database import get_db
-from core.deps import get_current_user
-from core.email import send_reset_password_email, send_verify_email
-from core.security import (
-    hash_password,
-    verify_password,
+from src.core.config import settings
+from src.core.database import get_db
+from src.core.deps import get_current_user
+from src.core.email import send_reset_password_email, send_verify_email
+from src.core.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
+    hash_password,
+    verify_password,
 )
-from models.auth import (
-    LoginRequest,
-    RegisterRequest,
-    GoogleLoginRequest,
+from src.models.auth import (
     AuthResponse,
+    ForgotPasswordRequest,
+    GoogleLoginRequest,
+    LoginRequest,
+    MessageResponse,
+    RegisterRequest,
+    ResetPasswordRequest,
     TokenResponse,
     UserResponse,
-    RefreshRequest,
-    ForgotPasswordRequest,
-    ResetPasswordRequest,
-    VerifyEmailRequest,
-    MessageResponse,
 )
-from models.user import UserInDB, user_to_response, create_user_doc
+from src.models.user import UserInDB, create_user_doc, user_to_response
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+REFRESH_COOKIE_NAME = "refresh_token"
+
+
+def refresh_cookie_path() -> str:
+    return f"{settings.api_prefix}/auth"
+
+
+def set_refresh_cookie(response: Response, refresh_token: str) -> None:
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=refresh_token,
+        max_age=settings.jwt_refresh_token_expire_days * 24 * 60 * 60,
+        path=refresh_cookie_path(),
+        httponly=True,
+        secure=settings.app_env != "development",
+        samesite="lax",
+    )
+
+
+def clear_refresh_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=REFRESH_COOKIE_NAME,
+        path=refresh_cookie_path(),
+        httponly=True,
+        secure=settings.app_env != "development",
+        samesite="lax",
+    )
 
 
 @router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-async def register(req: RegisterRequest):
+async def register(req: RegisterRequest, response: Response):
     db = get_db()
     email = req.email.strip().lower()
 
@@ -59,15 +85,16 @@ async def register(req: RegisterRequest):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
         user=user_to_response(user),
-        tokens=TokenResponse(accessToken=access_token, refreshToken=refresh_token),
+        accessToken=access_token,
     )
 
 
 @router.post("/login", response_model=AuthResponse)
-async def login(req: LoginRequest):
+async def login(req: LoginRequest, response: Response):
     db = get_db()
     email = req.email.strip().lower()
 
@@ -88,15 +115,16 @@ async def login(req: LoginRequest):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
         user=user_to_response(user),
-        tokens=TokenResponse(accessToken=access_token, refreshToken=refresh_token),
+        accessToken=access_token,
     )
 
 
 @router.post("/google", response_model=AuthResponse)
-async def google_login(req: GoogleLoginRequest):
+async def google_login(req: GoogleLoginRequest, response: Response):
     if not settings.google_client_id:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -125,6 +153,11 @@ async def google_login(req: GoogleLoginRequest):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Google token",
         )
+    except GoogleAuthError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Google OAuth verification unavailable",
+        )
 
     db = get_db()
     user_doc = await db.users.find_one({"email": email})
@@ -146,17 +179,22 @@ async def google_login(req: GoogleLoginRequest):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
         user=user_to_response(user),
-        tokens=TokenResponse(accessToken=access_token, refreshToken=refresh_token),
+        accessToken=access_token,
     )
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh(req: RefreshRequest):
-    payload = decode_token(req.refreshToken)
+async def refresh(
+    response: Response,
+    refresh_token: str | None = Cookie(default=None, alias=REFRESH_COOKIE_NAME),
+):
+    payload = decode_token(refresh_token) if refresh_token else None
     if not payload or payload.get("type") != "refresh":
+        clear_refresh_cookie(response)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token",
@@ -169,6 +207,7 @@ async def refresh(req: RefreshRequest):
     except Exception:
         user_doc = None
     if not user_doc:
+        clear_refresh_cookie(response)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
@@ -176,9 +215,10 @@ async def refresh(req: RefreshRequest):
 
     user = UserInDB.from_mongo(user_doc)
     access_token = create_access_token(user.id, user.role)
-    refresh_token = create_refresh_token(user.id)
+    new_refresh_token = create_refresh_token(user.id)
+    set_refresh_cookie(response, new_refresh_token)
 
-    return TokenResponse(accessToken=access_token, refreshToken=refresh_token)
+    return TokenResponse(accessToken=access_token)
 
 
 @router.get("/me", response_model=UserResponse)
@@ -187,7 +227,7 @@ async def get_me(current_user: UserInDB = Depends(get_current_user)):
 
 
 @router.post("/logout", response_model=MessageResponse)
-async def logout(current_user: UserInDB = Depends(get_current_user)):
+async def logout(response: Response, current_user: UserInDB = Depends(get_current_user)):
     db = get_db()
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
@@ -196,6 +236,7 @@ async def logout(current_user: UserInDB = Depends(get_current_user)):
             "refresh_token_expires": None,
         }},
     )
+    clear_refresh_cookie(response)
     return MessageResponse(detail="Logged out successfully")
 
 
@@ -209,7 +250,7 @@ async def forgot_password(req: ForgotPasswordRequest):
         return MessageResponse(detail="If the email exists, a reset link has been sent")
 
     reset_token = secrets.token_urlsafe(32)
-    reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+    reset_expires = datetime.now(UTC) + timedelta(hours=1)
 
     await db.users.update_one(
         {"_id": user_doc["_id"]},
@@ -230,7 +271,7 @@ async def reset_password(req: ResetPasswordRequest):
 
     user_doc = await db.users.find_one({
         "reset_token": req.token,
-        "reset_token_expires": {"$gt": datetime.now(timezone.utc)},
+        "reset_token_expires": {"$gt": datetime.now(UTC)},
     })
 
     if not user_doc:
@@ -261,7 +302,7 @@ async def request_email_verification(
         return MessageResponse(detail="Email already verified")
 
     verify_token = secrets.token_urlsafe(32)
-    verify_expires = datetime.now(timezone.utc) + timedelta(hours=24)
+    verify_expires = datetime.now(UTC) + timedelta(hours=24)
 
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
@@ -282,7 +323,7 @@ async def confirm_email_verification(token: str):
 
     user_doc = await db.users.find_one({
         "verify_token": token,
-        "verify_token_expires": {"$gt": datetime.now(timezone.utc)},
+        "verify_token_expires": {"$gt": datetime.now(UTC)},
     })
 
     if not user_doc:

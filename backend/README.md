@@ -1,67 +1,59 @@
-# C2-App-103 — Backend
+# C2-App-103 Backend
 
-Backend API cho dự án AI Agent, xây dựng bằng **FastAPI** và **LangGraph**.
+Backend API cho prototype Gia su AI Chat + Visual, xay dung bang FastAPI.
 
-## Cấu trúc thư mục
-
-```
-backend/
-├── src/
-│   ├── agent/           # LangGraph Agent logic (graph, state, nodes, tools)
-│   ├── api/             # FastAPI endpoints (routes, middleware, dependency injection)
-│   ├── core/            # Cấu hình & tiện ích dùng chung (config, logging)
-│   └── models/          # Pydantic models (request/response schemas)
-├── tests/
-│   ├── unit/            # Unit tests
-│   ├── integration/     # Integration tests
-│   └── eval/            # Agent evaluation tests
-├── docs/                # Tài liệu kiến trúc, API, ADR
-├── eval/                # Evaluation datasets & scripts
-├── .env.example         # Mẫu biến môi trường
-├── pyproject.toml       # Project metadata & dependencies
-├── Makefile             # Lệnh shortcut
-├── Dockerfile           # Container definition
-└── docker-compose.yml   # Multi-container orchestration
-```
-
-## Yêu cầu hệ thống
-
-- Python 3.11+
-- pip (phiên bản mới nhất)
-- Git 2.30+
-- (Tùy chọn) Docker Desktop
-
-## Cài đặt
+## Cai dat
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/AI20K-Build-Cohort-2/C2-App-103.git
-cd C2-App-103/backend
-
-# 2. Tạo virtual environment
-python3.11 -m venv .venv
-
-# Kích hoạt venv (macOS/Linux)
-source .venv/bin/activate
-
-# Kích hoạt venv (Windows)
+cd backend
+python -m venv .venv
 .venv\Scripts\activate
-
-# 3. Cài dependencies
 pip install -e ".[dev]"
-
-# 4. Cấu hình biến môi trường
-cp .env.example .env
-# Mở file .env và điền giá trị thực (đặc biệt là OPENAI_API_KEY)
+copy .env.example .env
 ```
 
-## Chạy server
+Mo `backend/.env` va dien cac bien can thiet, dac biet:
+
+```env
+LLM_PROVIDER=openrouter
+OPENROUTER_API_KEY=your_key_here
+OPENROUTER_MODEL=openai/gpt-4o-mini
+MONGODB_URI=your_mongodb_uri
+MONGODB_DB_NAME=toan_truc_quan
+FRONTEND_URL=http://localhost:3000
+```
+
+## Chay server
 
 ```bash
-# Chạy với uvicorn (development, auto-reload)
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn src.main:app --reload --reload-dir src --host 0.0.0.0 --port 8000
 ```
 
+Sau khi chay:
+
+- Swagger UI: `http://localhost:8000/docs`
+- Health check: `http://localhost:8000/api/v1/health`
+
+## Learning API
+
+- `GET /api/v1/health`
+- `GET /api/v1/topics`
+- `POST /api/v1/chat/turn`
+- `POST /api/v1/lessons/generate`
+
+## LLM provider
+
+Backend learning core hien tai chi dung OpenRouter cho lane AI chinh.
+
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL`
+- `OPENROUTER_TEMPERATURE`
+- `OPENROUTER_MAX_TOKENS`
+- `OPENROUTER_BASE_URL`
+- `OPENROUTER_SITE_URL`
+- `OPENROUTER_APP_NAME`
+
+## Test
 Sau khi chạy, mở trình duyệt tại:
 - **Swagger UI (API docs):** http://localhost:8000/docs
 - **Health check:** http://localhost:8000/api/v1/health
@@ -84,6 +76,15 @@ Sau khi chạy, mở trình duyệt tại:
 | `OPENAI_MAX_TOKENS` | Số token tối đa | `2048` |
 | `DATABASE_URL` | Connection string database | `sqlite:///./data/app.db` |
 | `VECTOR_STORE_TYPE` | Loại vector store | `chroma` |
+
+## Logging
+
+Backend ghi log dạng JSON line ra stdout/stderr để phù hợp container và nền tảng deploy.
+`LOG_LEVEL` điều khiển mức log (`DEBUG`, `INFO`, `WARNING`, `ERROR`).
+
+Mỗi request có `X-Request-ID`; backend sẽ giữ giá trị client gửi lên hoặc tự sinh mới,
+trả lại header này trong response và gắn vào request log. Không log request body,
+`Authorization`, cookies, password hoặc token.
 
 ## Lệnh thường dùng (Makefile)
 
@@ -142,45 +143,5 @@ Chạy `make` hoặc `make help` để xem danh sách lệnh.
 ## Testing
 
 ```bash
-# Chạy tất cả tests
-pytest tests/ -v
-
-# Chạy chỉ unit tests
-pytest tests/unit/ -v
-
-# Chạy với coverage
-pytest tests/ -v --cov=src
-```
-
-## Docker
-
-```bash
-# Build và chạy với docker-compose
-docker-compose up --build
-
-# Chạy trong background
-docker-compose up -d
-```
-
-## Phát triển
-
-### Branching strategy
-
-- `main` — Branch chính, luôn ổn định, không push trực tiếp.
-- `develop` — Branch tích hợp, merge feature branches vào đây.
-- `feature/TÊN-FEATURE` — Branch cho từng tính năng.
-
-### Commit message format
-
-```
-type(scope): mô tả ngắn gọn
-
-type: feat | fix | docs | test | refactor | chore
-scope: agent | api | config | models | tests
-```
-
-Ví dụ:
-```
-feat(agent): thêm tool tìm kiếm web
-fix(api): sửa lỗi timeout ở endpoint /chat
+pytest tests/integration/test_chat_flow.py tests/integration/test_learning_contracts.py -q
 ```

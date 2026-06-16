@@ -135,3 +135,100 @@ export interface TestCase {
   input: string;
   preset: MathExplanation;
 }
+
+export interface PracticeGradeSummary {
+  grade: number;
+  exam_count: number;
+}
+
+export interface PracticeExamSummary {
+  exam_id: string;
+  title: string;
+  grade: number;
+  question_count: number;
+  preview_text: string;
+  attempt_status: 'not_started' | 'in_progress' | 'submitted_recently';
+}
+
+export interface PracticeExamQuestion {
+  question_id: string;
+  question_text: string;
+  choices: string[];
+  correct_choice_index: number;
+  explanation: string;
+}
+
+export interface PracticeExamDetail extends PracticeExamSummary {
+  source: string;
+  source_row_id: string;
+  source_split: string;
+  tags: string[];
+  is_active: boolean;
+  sort_order?: number | null;
+  curation_status: string;
+  questions: PracticeExamQuestion[];
+}
+
+export interface PracticeAttemptCreateResponse {
+  attempt_id: string;
+  started_at: string;
+  exam: PracticeExamDetail;
+}
+
+export interface PracticeAttemptSubmitAnswer {
+  question_id: string;
+  selected_choice_index: number | null;
+}
+
+export interface PracticeAttemptSubmitRequest {
+  answers: PracticeAttemptSubmitAnswer[];
+}
+
+export interface PracticeAttemptQuestionResult {
+  question_id: string;
+  question_text: string;
+  choices: string[];
+  selected_choice_index: number | null;
+  correct_choice_index: number;
+  is_correct: boolean;
+  explanation: string;
+}
+
+export interface PracticeAttemptResultSummary {
+  score: number;
+  correct_count: number;
+  total_count: number;
+  badge_label: string;
+}
+
+export interface PracticeAttemptResult {
+  attempt_id: string;
+  exam_id: string;
+  exam_title: string;
+  grade: number;
+  status: string;
+  started_at: string;
+  updated_at: string;
+  submitted_at: string | null;
+  result_summary: PracticeAttemptResultSummary | null;
+  answers: PracticeAttemptSubmitAnswer[];
+  questions: PracticeAttemptQuestionResult[];
+}
+
+export interface PracticeAttemptHistoryItem {
+  attempt_id: string;
+  exam_id: string;
+  exam_title: string;
+  grade: number;
+  status: string;
+  score: number | null;
+  correct_count: number | null;
+  total_count: number | null;
+  submitted_at: string | null;
+  started_at: string;
+  updated_at: string;
+}
+
+export interface PracticeAttemptLookupResponse {
+  attempt: PracticeAttemptResult | null;
+}

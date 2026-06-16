@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Navbar from '@/components/landing/Navbar';
-import Sandbox from '@/components/landing/Sandbox';
+import PracticeExperience from '@/components/practice/PracticeExperience';
 
 export const metadata: Metadata = {
   title: 'Luyện tập | Toán Trực Quan AI',
@@ -12,7 +12,7 @@ export default function PracticePage() {
   return (
     <main className="min-h-screen bg-natural-bg">
       <Navbar />
-      <Sandbox />
+      <PracticeExperience />
     </main>
   );
 }

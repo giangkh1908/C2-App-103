@@ -10,7 +10,8 @@ from pathlib import Path
 
 DEFAULT_MONGODB_URI = "mongodb://127.0.0.1:27018"
 DEFAULT_MONGODB_DB_NAME = "toan_truc_quan_practice_test"
-DEFAULT_SERVICE_NAME = "mongo-practice-test"
+DEFAULT_CONTAINER_NAME = "c2-practice-test-mongo"
+DEFAULT_MONGO_IMAGE = "mongo:7"
 
 
 def wait_for_mongo(uri: str, timeout_seconds: int) -> None:
@@ -33,7 +34,7 @@ def wait_for_mongo(uri: str, timeout_seconds: int) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Start Mongo test container and run /practice integration tests")
+    parser = argparse.ArgumentParser(description="Run /practice integration tests against a disposable Mongo container")
     parser.add_argument("--keep-up", action="store_true", help="Keep the Mongo test container running after tests")
     parser.add_argument(
         "--timeout-seconds",
@@ -48,11 +49,21 @@ def main() -> int:
     env.setdefault("PRACTICE_TEST_MONGODB_URI", DEFAULT_MONGODB_URI)
     env.setdefault("PRACTICE_TEST_MONGODB_DB_NAME", DEFAULT_MONGODB_DB_NAME)
 
-    up_cmd = ["docker", "compose", "up", "-d", DEFAULT_SERVICE_NAME]
+    cleanup_cmd = ["docker", "rm", "-f", DEFAULT_CONTAINER_NAME]
+    run_cmd = [
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        DEFAULT_CONTAINER_NAME,
+        "-p",
+        "27018:27017",
+        DEFAULT_MONGO_IMAGE,
+    ]
     test_cmd = ["pytest", "tests/integration/test_practice_api.py", "-q"]
-    down_cmd = ["docker", "compose", "down"]
 
-    subprocess.run(up_cmd, cwd=backend_dir, env=env, check=True)
+    subprocess.run(cleanup_cmd, cwd=backend_dir, env=env, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(run_cmd, cwd=backend_dir, env=env, check=True)
     wait_for_mongo(env["PRACTICE_TEST_MONGODB_URI"], args.timeout_seconds)
 
     try:
@@ -60,7 +71,7 @@ def main() -> int:
         return result.returncode
     finally:
         if not args.keep_up:
-            subprocess.run(down_cmd, cwd=backend_dir, env=env, check=False)
+            subprocess.run(cleanup_cmd, cwd=backend_dir, env=env, check=False)
 
 
 if __name__ == "__main__":

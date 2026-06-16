@@ -190,10 +190,18 @@ async def test_submit_rejects_question_not_in_exam(client, auth_headers, seeded_
 async def test_submit_with_missing_answers_marks_unanswered_wrong(client, auth_headers, seeded_practice_data):
     del seeded_practice_data
     exams_res = await client.get("/api/v1/practice/exams?grade=2", headers=auth_headers)
-    exam_id = exams_res.json()["exams"][0]["exam_id"]
+    exam_id = None
+    exam_detail = None
+    for exam in exams_res.json()["exams"]:
+        detail_res = await client.get(f"/api/v1/practice/exams/{exam['exam_id']}", headers=auth_headers)
+        candidate_detail = detail_res.json()
+        if len(candidate_detail["questions"]) >= 2:
+            exam_id = exam["exam_id"]
+            exam_detail = candidate_detail
+            break
 
-    detail_res = await client.get(f"/api/v1/practice/exams/{exam_id}", headers=auth_headers)
-    exam_detail = detail_res.json()
+    assert exam_id is not None
+    assert exam_detail is not None
     first_question = exam_detail["questions"][0]
     second_question = exam_detail["questions"][1]
 

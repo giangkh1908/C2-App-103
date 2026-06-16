@@ -29,13 +29,13 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2.5 mb-8">
         <Image
-          src="/logo.png"
+          src="/logo.webp"
           alt={`${t("brand")} logo`}
           width={40}
           height={40}
           className="rounded-full"
         />
-        <span className="font-serif italic font-bold text-xl text-natural-dark tracking-tight">
+        <span className="italic font-bold text-xl text-natural-dark tracking-tight">
           {t("brand")}
         </span>
       </Link>
@@ -43,7 +43,7 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
       {/* Card */}
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <h1 className="font-serif italic text-2xl sm:text-3xl text-natural-dark mb-1.5">
+          <h1 className="italic text-2xl sm:text-3xl text-natural-dark mb-1.5">
             {title}
           </h1>
           <p className="text-xs sm:text-sm text-natural-charcoal">

@@ -1,35 +1,8 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, Lora, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin", "latin-ext"],
-  weight: ["500", "700"],
-});
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
-
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: {
     default: "Toán Trực Quan AI — Gia sư Toán trực quan cho học sinh tiểu học",
     template: "%s | Toán Trực Quan AI",
@@ -57,7 +30,7 @@ export const metadata: Metadata = {
       "AI không làm bài thay học sinh. AI giúp học sinh hiểu bản chất khái niệm Toán qua Visual Card và Mini Simulation.",
     images: [
       {
-        url: "/logo.png",
+        url: "/logo.webp",
         width: 512,
         height: 512,
         alt: "Toán Trực Quan AI logo",
@@ -69,7 +42,7 @@ export const metadata: Metadata = {
     title: "Toán Trực Quan AI — Gia sư Toán trực quan",
     description:
       "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh và thao tác trực quan.",
-    images: ["/logo.png"],
+    images: ["/logo.webp"],
   },
   robots: {
     index: true,
@@ -83,11 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="vi"
-      suppressHydrationWarning
-      className={`${inter.variable} ${spaceGrotesk.variable} ${lora.variable} ${playfair.variable} h-full antialiased`}
-    >
+    <html suppressHydrationWarning className="h-full antialiased">
       <head>
         <script
           type="application/ld+json"

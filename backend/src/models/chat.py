@@ -2,7 +2,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 Topic = Literal["multiplication", "division", "fraction_basic", "perimeter_area_basic"]
 Intent = Literal[
     "explain_concept",
@@ -21,7 +20,7 @@ ResponseMode = Literal[
 
 
 class ChatTurnRequest(BaseModel):
-    user_id: str = Field(min_length=1)
+    user_id: str | None = None
     session_id: str | None = None
     grade: int = Field(ge=1, le=5)
     message: str = Field(min_length=1)

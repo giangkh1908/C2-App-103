@@ -3,7 +3,6 @@ import re
 from src.models.chat import Intent, Topic
 from src.services.types import LearningContext
 
-
 DEFAULT_TOOL_ARGS: dict[Topic, dict[str, int | str]] = {
     "multiplication": {
         "groups": 3,

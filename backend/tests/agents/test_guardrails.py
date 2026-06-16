@@ -2,10 +2,8 @@
 test_guardrails.py – Unit tests for src.agents.guardrails.
 """
 
-import pytest
 
 from src.agents.guardrails import (
-    GuardrailResult,
     guard_message,
     is_gibberish,
     is_greeting,
@@ -13,7 +11,6 @@ from src.agents.guardrails import (
     is_prompt_injection,
     normalize_text,
 )
-
 
 # ---------------------------------------------------------------------------
 # normalize_text

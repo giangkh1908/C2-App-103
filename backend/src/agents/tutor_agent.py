@@ -6,10 +6,11 @@ tutor_agent.py – Lớp điều phối cấp cao cho agent dạy toán.
 
 from pydantic import ValidationError
 
-from .agent_loop import AgentLoop
-from .schemas import AgentResponse, AgentRunConfig
 from src.llm.base import BaseLLMClient
 from src.tools.registry import ToolRegistry
+
+from .agent_loop import AgentLoop
+from .schemas import AgentResponse, AgentRunConfig
 
 _FALLBACK_LEVEL = "L3"
 
@@ -27,6 +28,7 @@ class TutorAgent:
         message: str,
         level: str = "L3",
         use_tools: bool = True,
+        history: list[dict[str, str]] | None = None,
     ) -> AgentResponse:
         """Xử lý một câu hỏi toán học của học sinh.
 
@@ -35,6 +37,7 @@ class TutorAgent:
             level: Cấp độ học sinh (vd. ``"L1"``, ``"L2"``, ``"L3"``).
                 Nếu không hợp lệ sẽ tự động fallback về ``"L3"``.
             use_tools: Cho phép agent dùng tool trực quan hay không.
+            history: Lịch sử cuộc trò chuyện truyền xuống AgentLoop.
 
         Returns:
             :class:`AgentResponse` chứa câu trả lời và các bước trung gian.
@@ -50,7 +53,7 @@ class TutorAgent:
             config = AgentRunConfig(level=_FALLBACK_LEVEL, use_tools=use_tools)
 
         try:
-            return await self.agent_loop.run(user_message=message, config=config)
+            return await self.agent_loop.run(user_message=message, config=config, history=history)
         except Exception:
             return AgentResponse(
                 answer="Mình gặp lỗi khi xử lý câu hỏi. Bạn thử hỏi lại ngắn hơn nhé."

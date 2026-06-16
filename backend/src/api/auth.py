@@ -1,33 +1,33 @@
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from bson import ObjectId
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from google.auth.exceptions import GoogleAuthError
-from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
 
 from src.core.config import settings
 from src.core.database import get_db
 from src.core.deps import get_current_user
 from src.core.email import send_reset_password_email, send_verify_email
 from src.core.security import (
-    hash_password,
-    verify_password,
     create_access_token,
     create_refresh_token,
     decode_token,
+    hash_password,
+    verify_password,
 )
 from src.models.auth import (
-    LoginRequest,
-    RegisterRequest,
-    GoogleLoginRequest,
     AuthResponse,
+    ForgotPasswordRequest,
+    GoogleLoginRequest,
+    LoginRequest,
+    MessageResponse,
+    RegisterRequest,
+    ResetPasswordRequest,
     TokenResponse,
     UserResponse,
-    ForgotPasswordRequest,
-    ResetPasswordRequest,
-    MessageResponse,
 )
 from src.models.user import UserInDB, create_user_doc, user_to_response
 
@@ -250,7 +250,7 @@ async def forgot_password(req: ForgotPasswordRequest):
         return MessageResponse(detail="If the email exists, a reset link has been sent")
 
     reset_token = secrets.token_urlsafe(32)
-    reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+    reset_expires = datetime.now(UTC) + timedelta(hours=1)
 
     await db.users.update_one(
         {"_id": user_doc["_id"]},
@@ -271,7 +271,7 @@ async def reset_password(req: ResetPasswordRequest):
 
     user_doc = await db.users.find_one({
         "reset_token": req.token,
-        "reset_token_expires": {"$gt": datetime.now(timezone.utc)},
+        "reset_token_expires": {"$gt": datetime.now(UTC)},
     })
 
     if not user_doc:
@@ -302,7 +302,7 @@ async def request_email_verification(
         return MessageResponse(detail="Email already verified")
 
     verify_token = secrets.token_urlsafe(32)
-    verify_expires = datetime.now(timezone.utc) + timedelta(hours=24)
+    verify_expires = datetime.now(UTC) + timedelta(hours=24)
 
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
@@ -323,7 +323,7 @@ async def confirm_email_verification(token: str):
 
     user_doc = await db.users.find_one({
         "verify_token": token,
-        "verify_token_expires": {"$gt": datetime.now(timezone.utc)},
+        "verify_token_expires": {"$gt": datetime.now(UTC)},
     })
 
     if not user_doc:

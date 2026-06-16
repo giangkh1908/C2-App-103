@@ -249,6 +249,28 @@
       "perimeterValue": "14 mét"
     }
   },
+  "simulation": {
+    "title": "Học cụ xúc giác AI",
+    "reset": "Đặt lại",
+    "candyHint": "🍬 Chạm đĩa để tăng giảm số kẹo ngọt dâu (1-6 kẹo)",
+    "candyPlate": "Đĩa {n}",
+    "candyCount": "{n} viên",
+    "candyAddition": "Phép cộng lặp: {sum} = {total} viên",
+    "candyMultiply": "Nhân gọn: {plates} đĩa × {perPlate} kẹo = {total} kẹo ngọt",
+    "appleHint": "🍎 Chạm giỏ để phát táo, chạm búp bê để trả táo về giỏ!",
+    "appleBasket": "🧺 Giỏ táo ({n} quả)",
+    "appleEmpty": "Đã chia hết táo rồi bé nhé!",
+    "appleDoll": "🎎 Bạn {n}",
+    "appleDots": "...",
+    "applePortion": "{n} quả",
+    "appleStatus": "Dư trong giỏ: {basket} quả | Mỗi bạn: {min}–{max} quả",
+    "pizzaHint": "🍕 Chạm vào các miếng cắt để đổi phần bánh ăn dâu",
+    "pizzaEaten": "Đã ăn: {n} lát",
+    "pizzaTotal": "Tổng cắt: {n} miếng",
+    "gridHint": "🌱 Nhấp vào ô vuông để gieo hạt mầm mọc cỏ dại",
+    "gridArea": "Diện tích (Hạt mầm cỏ) = {n} m²",
+    "gridPerimeter": "Chu vi hàng rào = {n} m"
+  },
   "roadmap": {
     "badge": "Bản đồ học thuật toàn diện",
     "title": "Lộ trình đầy đặn hình ảnh — từ Lớp 1 - Lớp 5",
@@ -303,7 +325,11 @@
   "metadata": {
     "titleDefault": "Toán Trực Quan AI — Gia sư Toán trực quan cho học sinh tiểu học",
     "titleTemplate": "%s | Toán Trực Quan AI",
-    "description": "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh, thao tác trực quan và phản hồi tức thì. Học phép nhân, phép chia, phân số, chu vi & diện tích bằng Visual Card và Mini Simulation.",
+    "description": "Ứng dụng AI giúp học sinh lớp 1–5 hiểu bản chất Toán qua hình ảnh, thao tác trực quan và phản hồi tức thì. Học phép nhân, phép chia, phân số, chu vi & diện tích với Visual Card và Mini Simulation.",
+    "learnTitle": "Mô phỏng học thử | Toán Trực Quan AI",
+    "learnDescription": "Hỏi gia sư AI về bất kỳ bài toán tiểu học nào. AI giải thích thân thiện, hỏi lại khi cần, và minh họa bằng hình ảnh trực quan khi thật sự cần thiết.",
+    "practiceTitle": "Luyện tập | Toán Trực Quan AI",
+    "practiceDescription": "Luyện tập Toán tiểu học qua mô phỏng trực quan, câu hỏi nhanh và phản hồi tức thì.",
     "ogTitle": "Toán Trực Quan AI — Hiểu sâu bản chất Toán bằng mắt nhìn, chạm thử",
     "ogDescription": "AI không làm bài thay học sinh. AI giúp học sinh hiểu bản chất khái niệm Toán qua Visual Card và Mini Simulation.",
     "twitterTitle": "Toán Trực Quan AI — Gia sư Toán trực quan",

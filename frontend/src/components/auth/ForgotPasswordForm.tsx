@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 export default function ForgotPasswordForm() {
   const t = useTranslations("auth.forgotPassword");
   const tErr = useTranslations("auth.errors");
+  const locale = useLocale();
   const { forgotPassword } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -49,7 +50,7 @@ export default function ForgotPasswordForm() {
           <span className="text-2xl">📧</span>
         </div>
         <p className="text-sm text-natural-charcoal">{t("successMessage")}</p>
-        <Link href="/login" className="text-[12px] font-bold text-natural-green hover:underline">
+        <Link href={`/${locale}/login`} className="text-[12px] font-bold text-natural-green hover:underline">
           {t("backToLogin")}
         </Link>
       </div>
@@ -83,7 +84,7 @@ export default function ForgotPasswordForm() {
       </Button>
 
       <p className="text-center text-[12px] text-natural-charcoal">
-        <Link href="/login" className="font-bold text-natural-green hover:underline">
+        <Link href={`/${locale}/login`} className="font-bold text-natural-green hover:underline">
           {t("backToLogin")}
         </Link>
       </p>

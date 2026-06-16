@@ -1,8 +1,7 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
-from bson import ObjectId
 
 
 class UserInDB(BaseModel):
@@ -13,8 +12,8 @@ class UserInDB(BaseModel):
     role: Literal["user", "admin"] = "user"
     verified: bool = False
     avatar: str | None = None
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     model_config = {"populate_by_name": True}
 
@@ -37,7 +36,7 @@ def user_to_response(user: UserInDB) -> dict:
 
 
 def create_user_doc(name: str, email: str, password_hash: str) -> dict:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return {
         "name": name,
         "email": email,

@@ -56,14 +56,14 @@ export default function Navbar() {
           className="flex cursor-pointer items-center gap-2"
         >
           <Image
-            src="/logo.png"
+            src="/logo.webp"
             alt={`${tCommon("brand")} logo`}
             width={36}
             height={36}
             className="rounded-full shadow-md shadow-natural-green/10"
           />
           <div className="text-left">
-            <span className="block font-serif text-lg font-bold leading-none tracking-tight text-natural-dark italic">
+            <span className="block text-lg font-bold leading-none tracking-tight text-natural-dark italic">
               {tCommon("brand")}
             </span>
             <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-widest text-natural-green">
@@ -100,10 +100,7 @@ export default function Navbar() {
           >
             {t("practice")}
           </Link>
-          <span
-            aria-disabled="true"
-            className="cursor-default text-natural-charcoal/50"
-          >
+          <span className="cursor-default text-natural-charcoal/50">
             {t("faq")}
           </span>
         </nav>

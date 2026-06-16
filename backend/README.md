@@ -26,7 +26,7 @@ FRONTEND_URL=http://localhost:3000
 ## Chay server
 
 ```bash
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn src.main:app --reload --reload-dir src --host 0.0.0.0 --port 8000
 ```
 
 Sau khi chay:

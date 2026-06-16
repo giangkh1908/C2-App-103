@@ -1,14 +1,15 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
-from datetime import datetime, timedelta, timezone
 from pydantic import ValidationError
 
 from src.core.config import Settings
 from src.core.security import (
-    hash_password,
-    verify_password,
     create_access_token,
     create_refresh_token,
     decode_token,
+    hash_password,
+    verify_password,
 )
 
 
@@ -74,12 +75,13 @@ class TestTokenDecoding:
 
     def test_decode_expired_token(self):
         from jose import jwt
+
         from src.core.config import settings
 
         expired_data = {
             "sub": "user123",
             "type": "access",
-            "exp": datetime.now(timezone.utc) - timedelta(hours=1),
+            "exp": datetime.now(UTC) - timedelta(hours=1),
         }
         token = jwt.encode(expired_data, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
         payload = decode_token(token)

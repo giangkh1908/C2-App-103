@@ -1,8 +1,0 @@
-{
-  "name": "Remix: Toán Trực Quan AI",
-  "description": "Landing page giới thiệu Web App AI gia sư trực quan giúp học sinh tiểu học hiểu bản chất Toán học thông qua Visual Cards và Mini Simulations tương tác.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

@@ -224,6 +224,100 @@ Confirm email verification.
 
 ---
 
+### POST /chat/turn 🔒
+
+Send a chat message and get an AI tutor response.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Request Body:**
+```json
+{
+  "session_id": "optional-session-id",
+  "grade": 3,
+  "message": "Giải thích phép nhân 3 x 4",
+  "selected_topic": "multiplication"
+}
+```
+
+**Response (200):**
+```json
+{
+  "session_id": "session_123",
+  "assistant_message": "Phep nhan 3 x 4...",
+  "detected_topic": "multiplication",
+  "intent": "explain_concept",
+  "response_mode": "explain_with_visual_and_practice",
+  "visual_card": { "..." },
+  "practice_question": { "..." },
+  "follow_up_suggestions": ["..."]
+}
+```
+
+**Errors:**
+- `401` - Missing or invalid access token
+- `422` - Validation error
+
+**Note:** `user_id` is ignored if provided in the request body. The authenticated user is used for session persistence.
+
+---
+
+### POST /lessons/generate 🔒
+
+Generate a lesson for a given topic.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Request Body:**
+```json
+{
+  "grade": 3,
+  "topic": "multiplication",
+  "prompt": "Giải thích 3 x 4"
+}
+```
+
+**Response (200):**
+```json
+{
+  "topic": "multiplication",
+  "grade": 3,
+  "title": "...",
+  "simple_explanation": "...",
+  "real_life_example": "...",
+  "visual": { "..." },
+  "simulation": { "..." },
+  "practice_question": { "..." },
+  "tts_text": "..."
+}
+```
+
+**Errors:**
+- `401` - Missing or invalid access token
+- `422` - Validation error
+
+**Note:** `user_id` is ignored if provided in the request body. The authenticated user is used for session persistence.
+
+---
+
+### GET /topics
+
+Get available learning topics (public, no auth required).
+
+**Response (200):**
+```json
+{
+  "topics": [
+    { "id": "multiplication", "label": "Phep nhan" },
+    { "id": "division", "label": "Phep chia" },
+    { "id": "fraction_basic", "label": "Phan so" },
+    { "id": "perimeter_area_basic", "label": "Chu vi / Dien tich" }
+  ]
+}
+```
+
+---
+
 ### GET /health
 
 Health check endpoint.

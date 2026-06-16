@@ -1,10 +1,8 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 
-export default function Benefits() {
-  const t = useTranslations("benefits");
+export default async function Benefits() {
+  const t = await getTranslations("benefits");
 
   const benefits = [
     {
@@ -32,7 +30,7 @@ export default function Benefits() {
       <div className="max-w-7xl mx-auto">
         <ScrollReveal>
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl font-serif italic font-medium tracking-tight text-natural-dark sm:text-4xl">
+            <h2 className="text-3xl italic font-medium tracking-tight text-natural-dark sm:text-4xl">
               {t("badge")} <br />
               <span className="text-natural-green font-semibold">{t("badgeHighlight")}</span>
             </h2>

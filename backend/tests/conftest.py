@@ -10,7 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from src.core.database import ensure_indexes
 from src.core.security import create_access_token, create_refresh_token, hash_password
 from src.main import app
-from src.services.practice_dataset import build_exam_catalog, load_rows_from_file
+from src.services.practice_dataset import build_exam_catalog, load_rows_from_file, parse_exam_rows
 
 TEST_MONGODB_URI = os.getenv("PRACTICE_TEST_MONGODB_URI", "mongodb://127.0.0.1:27018")
 TEST_MONGODB_DB_NAME = os.getenv("PRACTICE_TEST_MONGODB_DB_NAME", "toan_truc_quan_practice_test")
@@ -40,8 +40,8 @@ async def client(mock_db):
         patch("src.core.database.db", mock_db),
         patch("src.api.auth.get_db", return_value=mock_db),
         patch("src.core.deps.get_db", return_value=mock_db),
-        patch("src.main.connect_db", new_callable=AsyncMock, return_value=None),
-        patch("src.main.close_db", new_callable=AsyncMock, return_value=None),
+        patch("src.main.db_module.connect_db", new_callable=AsyncMock, return_value=None),
+        patch("src.main.db_module.close_db", new_callable=AsyncMock, return_value=None),
         patch("src.core.email.send_reset_password_email", new_callable=AsyncMock, return_value=True),
         patch("src.core.email.send_verify_email", new_callable=AsyncMock, return_value=True),
     ):
@@ -96,12 +96,13 @@ async def admin_headers(admin_user):
 
 @pytest_asyncio.fixture
 async def seeded_practice_data(mock_db):
-    dataset_path = Path(__file__).resolve().parents[1] / "data" / "practice" / "vi_grade_school_math_mcq_seed.json"
+    dataset_path = Path(__file__).resolve().parents[1] / "data" / "practice" / "vi_grade_school_math_mcq_full.json"
     rows = load_rows_from_file(dataset_path)
-    curated_manifest: dict[int, list[str]] = {grade: [] for grade in range(1, 6)}
-    for row in rows:
-        grade = int(str(row["grade"]).strip())
-        curated_manifest[grade].append(str(row["id"]).strip())
+    parsed_exams, _stats = parse_exam_rows(rows)
+    curated_manifest: dict[int, list[str]] = {}
+    for grade in range(1, 6):
+        grade_exam_ids = [exam["source_row_id"] for exam in parsed_exams if exam["grade"] == grade][:10]
+        curated_manifest[grade] = grade_exam_ids
     return build_exam_catalog(rows, curated_manifest=curated_manifest)
 
 

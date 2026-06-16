@@ -26,6 +26,50 @@ npm run dev
 
 Mở http://localhost:3000. Frontend mặc định gọi backend tại `http://localhost:8000/api/v1`.
 
+## Chạy Bằng Docker
+
+Docker setup này dùng để đóng gói và chạy cả project trên mọi máy có Docker.
+MongoDB mặc định dùng Atlas qua `MONGODB_URI`, không chạy Mongo container local.
+
+```bash
+copy .env.docker.example .env.docker
+```
+
+Sửa `.env.docker` và điền các biến thật, tối thiểu:
+
+- `MONGODB_URI`
+- `MONGODB_DB_NAME`
+- `JWT_SECRET_KEY` dài ít nhất 32 ký tự
+- `OPENROUTER_API_KEY`
+
+Tạo nhanh `JWT_SECRET_KEY` bằng PowerShell:
+
+```powershell
+$bytes = New-Object byte[] 48
+[System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+[Convert]::ToBase64String($bytes)
+```
+
+Copy kết quả vào `.env.docker`:
+
+```env
+JWT_SECRET_KEY=<chuoi-vua-generate>
+```
+
+Sau đó chạy từ root repo:
+
+```bash
+docker compose --env-file .env.docker up --build
+```
+
+Kiểm tra:
+
+- Frontend: http://localhost:3000
+- Backend health: http://localhost:8000/health
+- Swagger UI: http://localhost:8000/docs
+
+Không commit `.env.docker`; file này chứa secret thật. Chỉ commit `.env.docker.example`.
+
 ---
 
 # Starter Code Template — Cohort 2

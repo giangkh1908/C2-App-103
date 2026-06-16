@@ -19,7 +19,6 @@ from google import genai
 
 from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMToolCall
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

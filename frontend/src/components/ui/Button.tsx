@@ -16,7 +16,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const t = useTranslations("common");
-  const base = "rounded-full font-bold text-sm py-3 px-6 transition-all duration-150 ease-out active:scale-97 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+  const base = "rounded-full font-bold text-sm py-3 px-6 transition-all duration-150 ease-out active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
   const variants = {
     primary: "bg-natural-green hover:bg-natural-green-hover text-white shadow-md shadow-natural-green/10",
     secondary: "bg-white border border-natural-border text-natural-charcoal hover:border-natural-green hover:text-natural-green",

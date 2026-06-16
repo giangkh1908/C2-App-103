@@ -236,10 +236,6 @@ def guard_message(text: str) -> GuardrailResult | None:
         GuardrailResult if the message should be blocked,
         None if it should continue to TutorAgent / AgentLoop.
     """
-    print("GUARD INPUT:", text)
-    print("IS GREETING:", is_greeting(text))
-    print("IS NON_MATH:", is_non_math_request(text))
-    print("IS PROMPT_INJECTION:", is_prompt_injection(text))
 
     if is_prompt_injection(text):
         return GuardrailResult(

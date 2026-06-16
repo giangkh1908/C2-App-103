@@ -1,5 +1,4 @@
 from uuid import uuid4
-
 from src.agents.tutor_agent import TutorAgent
 from src.agents.guardrails import guard_message
 from src.core.config import settings
@@ -36,49 +35,71 @@ class LearningCoreService:
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
         session_id = request.session_id or uuid4().hex
 
+        # 1. Đọc lượt chat trước đó để thừa kế context (Topic, Bộ số cũ)
+        prev_turn = None
+        if session_id is not None:
+            prev_turn = await self.session_repository.get_latest_turn(session_id)
+
         guard_result = guard_message(request.message)
 
         if guard_result is not None:
-            print("GUARDRAIL BLOCKED:", guard_result.category)
-
-            context = build_default_context(
-                request.selected_topic or "multiplication"
-            )
-
+            context = build_default_context(request.selected_topic or "multiplication")
             result = self._build_clarification_result(
                 request=request,
                 context=context,
                 assistant_message=guard_result.response,
                 session_id=session_id,
-                agent_metadata={
-                    "guardrail": guard_result.category,
-                },
+                agent_metadata={"guardrail": guard_result.category},
             )
-
             if session_id is not None:
                 await self.memory_repository.append_turn(
                     session_id=session_id,
                     user_message=request.message,
                     assistant_message=result.assistant_message,
                 )
-
             await self._persist(request, result)
             return result
 
+        # 2. Khôi phục Topic nếu request hiện tại gửi lên trống (do tải lại session cũ)
+        current_selected_topic = request.selected_topic
+        if not current_selected_topic and prev_turn:
+            current_selected_topic = prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
+
         context = detect_context(
             request.message,
-            request.selected_topic,
+            current_selected_topic,
         )
+
+        # 3. Kế thừa & Thay đổi bộ số khi học sinh yêu cầu "Ví dụ khác"
+        if prev_turn and any(kw in request.message.lower() for kw in ["ví dụ khác", "vi du khac", "ví dụ mới", "vi du moi"]):
+            if not context.topic and prev_turn.get("detected_topic"):
+                context.topic = prev_turn.get("detected_topic")
+            
+            old_visual = prev_turn.get("visual_snapshot") or {}
+            old_data = old_visual.get("visual_data") or {}
+            
+            # Nếu AI hoặc Detector chưa tự tạo bộ số mới, ta chủ động gán bộ số mới khác số cũ
+            if not context.tool_args or len(context.tool_args) <= 1:
+                if context.topic == "multiplication":
+                    old_g = int(old_data.get("primary_count") or 3)
+                    old_i = int(old_data.get("secondary_count") or 4)
+                    context.tool_args = {
+                        "groups": old_g + 1 if old_g < 6 else 2,
+                        "items_per_group": old_i - 1 if old_i > 2 else 5,
+                        "item_name": "cái kẹo",
+                        "group_name": "chiếc đĩa"
+                    }
+                elif context.topic == "division":
+                    context.tool_args = {"total_items": 16, "groups": 4, "item_name": "quả táo", "group_name": "bạn"}
+                elif context.topic == "fraction_basic":
+                    context.tool_args = {"numerator": 3, "denominator": 8, "whole_name": "chiếc pizza"}
+                elif context.topic == "perimeter_area_basic":
+                    context.tool_args = {"length": 6, "width": 4, "unit": "cm", "mode": "area_grid"}
 
         history_payload = None
         if session_id is not None:
-            history_messages = await self.memory_repository.load_messages(
-                session_id
-            )
-            history_payload = [
-                {"role": msg.role, "content": msg.content}
-                for msg in history_messages
-            ]
+            history_messages = await self.memory_repository.load_messages(session_id)
+            history_payload = [{"role": msg.role, "content": msg.content} for msg in history_messages]
 
         if context.topic is None:
             agent_response = await self.tutor_agent.chat(
@@ -118,10 +139,7 @@ class LearningCoreService:
                     tool_data = agent_response.visual_data
                     agent_metadata["visual_source"] = "agent"
                 else:
-                    tool_data = build_default_tool_data(
-                        default_topic,
-                        context.tool_args,
-                    )
+                    tool_data = build_default_tool_data(default_topic, context.tool_args)
                     agent_metadata["visual_source"] = "fallback"
                 result = self._build_result(
                     request=request,
@@ -162,7 +180,6 @@ class LearningCoreService:
         answer = normalize_answer(agent_response.answer)
         response_source = "llm"
 
-        # Nếu LLM hỏi lại (clarification) → trả ngay, không cần visual
         if is_clarification_response(answer):
             clarification_result = self._build_clarification_result(
                 request=request,
@@ -177,29 +194,22 @@ class LearningCoreService:
                     user_message=request.message,
                     assistant_message=clarification_result.assistant_message,
                 )
-
             await self._persist(request, clarification_result)
             return clarification_result
 
-        if agent_response.visual_data:
+        if agent_response.visual_data and isinstance(agent_response.visual_data, dict) and len(agent_response.visual_data) > 0:
             tool_data = agent_response.visual_data
             response_source = "agent"
             agent_metadata["visual_source"] = "agent"
-
         else:
             tool_result = await self.tool_registry.call(
                 context.tool_name or "",
                 context.tool_args,
             )
-
             if not tool_result.success:
-                tool_data = build_default_tool_data(
-                    context.topic,
-                    context.tool_args,
-                )
+                tool_data = build_default_tool_data(context.topic, context.tool_args)
                 response_source = "fallback"
                 agent_metadata["visual_source"] = "fallback"
-
             else:
                 tool_data = tool_result.data
                 agent_metadata["visual_source"] = "legacy"
@@ -260,7 +270,6 @@ class LearningCoreService:
         session_id: str,
         agent_metadata: dict | None = None,
     ) -> LearningCoreResult:
-        """Build kết quả khi agent cần hỏi lại người dùng."""
         topic = context.topic or "multiplication"
         return LearningCoreResult(
             topic=topic,
@@ -290,7 +299,6 @@ class LearningCoreService:
             ),
             agent_metadata=agent_metadata,
         )
-
 
     def _build_result(
         self,
@@ -355,48 +363,49 @@ def build_default_context(topic: Topic) -> LearningContext:
 
 
 def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> dict:
+    # Sử dụng .get() để tránh hoàn toàn lỗi KeyError khi sinh dữ liệu mặc định
     if topic == "multiplication":
-        groups = int(tool_args["groups"])
-        items_per_group = int(tool_args["items_per_group"])
+        groups = int(tool_args.get("groups") or 3)
+        items_per_group = int(tool_args.get("items_per_group") or 4)
         return {
             "type": "candy_multiplication",
             "groups": groups,
             "items_per_group": items_per_group,
-            "item_name": tool_args["item_name"],
-            "group_name": tool_args["group_name"],
+            "item_name": tool_args.get("item_name") or "cái kẹo",
+            "group_name": tool_args.get("group_name") or "chiếc đĩa",
             "total": groups * items_per_group,
         }
     if topic == "division":
-        total_items = int(tool_args["total_items"])
-        groups = int(tool_args["groups"])
-        items_per_group = total_items // groups
+        total_items = int(tool_args.get("total_items") or 12)
+        groups = int(tool_args.get("groups") or 3)
+        items_per_group = total_items // groups if groups else 4
         return {
             "type": "equal_division",
             "total_items": total_items,
             "groups": groups,
             "items_per_group": items_per_group,
-            "remainder": total_items % groups,
-            "item_name": tool_args["item_name"],
-            "group_name": tool_args["group_name"],
+            "remainder": total_items % groups if groups else 0,
+            "item_name": tool_args.get("item_name") or "quả táo",
+            "group_name": tool_args.get("group_name") or "bạn",
         }
     if topic == "fraction_basic":
-        numerator = int(tool_args["numerator"])
-        denominator = int(tool_args["denominator"])
+        numerator = int(tool_args.get("numerator") or 1)
+        denominator = int(tool_args.get("denominator") or 4)
         return {
             "type": "fraction_pizza",
             "numerator": numerator,
             "denominator": denominator,
-            "whole_name": tool_args["whole_name"],
+            "whole_name": tool_args.get("whole_name") or "chiếc pizza",
             "fraction_text": f"{numerator}/{denominator}",
         }
-    length = int(tool_args["length"])
-    width = int(tool_args["width"])
+    length = int(tool_args.get("length") or 5)
+    width = int(tool_args.get("width") or 3)
     return {
         "type": "rectangle_measurement",
         "length": length,
         "width": width,
-        "unit": tool_args["unit"],
-        "mode": tool_args["mode"],
+        "unit": tool_args.get("unit") or "cm",
+        "mode": tool_args.get("mode") or "area_grid",
         "area": length * width,
         "perimeter": 2 * (length + width),
     }
@@ -421,7 +430,6 @@ def normalize_answer(answer: str) -> str:
 
 
 def is_low_signal_answer(answer: str) -> bool:
-    """Chỉ bắt các error message của agent, để LLM answer thật sự đi qua."""
     error_phrases = {
         "hien tai minh chua xu ly duoc cau hoi nay. ban thu hoi lai ngan hon nhe.",
         "minh gap loi khi xu ly cau hoi. ban thu hoi lai ngan hon nhe.",
@@ -434,19 +442,14 @@ def grade_to_level(grade: int) -> str:
     return mapping.get(grade, "L3")
 
 
-
-
 def is_clarification_response(answer: str) -> bool:
-    """Detect khi LLM đang hỏi lại học sinh (clarification)."""
     stripped = answer.strip()
     if not stripped:
         return False
-    # LLM hỏi lại nếu: kết thúc bằng dấu ? và ngắn (< 200 ký tự)
     lines = [line.strip() for line in stripped.splitlines() if line.strip()]
     last_line = lines[-1] if lines else ""
     ends_with_question = last_line.endswith("?")
     is_short = len(stripped) < 250
-    # Không có giải thích dài kèm theo
     no_numbered_steps = not any(line[:2] in ("1.", "2.", "3.") for line in lines)
     return ends_with_question and is_short and no_numbered_steps
 
@@ -454,36 +457,36 @@ def is_clarification_response(answer: str) -> bool:
 def build_contextual_explanation(topic: Topic, tool_data: dict) -> str:
     if topic == "multiplication":
         return (
-            f"Con co {tool_data['groups']} nhom va moi nhom co {tool_data['items_per_group']} vat. "
-            f"Minh cong {tool_data['items_per_group']} lap lai {tool_data['groups']} lan, "
-            f"nen duoc {tool_data['total']}."
+            f"Con có {tool_data.get('groups', 3)} nhóm và mỗi nhóm có {tool_data.get('items_per_group', 4)} vật. "
+            f"Mình cộng {tool_data.get('items_per_group', 4)} lặp lại {tool_data.get('groups', 3)} lần, "
+            f"nên được {tool_data.get('total', 12)}."
         )
     if topic == "division":
         return (
-            f"Con lay {tool_data['total_items']} vat chia deu cho {tool_data['groups']} nhom. "
-            f"Moi nhom nhan {tool_data['items_per_group']} vat"
-            + (f" va con du {tool_data['remainder']} vat." if tool_data["remainder"] else ".")
+            f"Con lấy {tool_data.get('total_items', 12)} vật chia đều cho {tool_data.get('groups', 3)} nhóm. "
+            f"Mỗi nhóm nhận {tool_data.get('items_per_group', 4)} vật"
+            + (f" và còn dư {tool_data['remainder']} vật." if tool_data.get("remainder") else ".")
         )
     if topic == "fraction_basic":
         return (
-            f"Phan so {tool_data['fraction_text']} nghia la lay {tool_data['numerator']} phan "
-            f"trong tong {tool_data['denominator']} phan bang nhau."
+            f"Phân số {tool_data.get('fraction_text', '1/4')} nghĩa là lấy {tool_data.get('numerator', 1)} phần "
+            f"trong tổng {tool_data.get('denominator', 4)} phần bằng nhau."
         )
     return (
-        f"Hinh chu nhat dai {tool_data['length']} va rong {tool_data['width']}. "
-        f"Dien tich la {tool_data['area']} o vuong, con chu vi la {tool_data['perimeter']} don vi."
+        f"Hình chữ nhật dài {tool_data.get('length', 5)} và rộng {tool_data.get('width', 3)}. "
+        f"Diện tích là {tool_data.get('area', 15)} ô vuông, còn chu vi là {tool_data.get('perimeter', 16)} đơn vị."
     )
 
 
 def build_follow_up_suggestions(topic: Topic, intent: str) -> list[str]:
     if topic == "division":
-        return ["Vi sao chia deu lai ra dap an nay?", "Cho con them mot vi du chia.", "Cho con xem hinh minh hoa."]
+        return ["Vì sao chia đều lại ra đáp án này?", "Cho con thêm một ví dụ chia.", "Cho con xem hình minh họa."]
     if topic == "fraction_basic":
-        return ["Vi sao phan so nay lon hon?", "Cho con vi du khac ve pizza.", "Giai thich ngan hon duoc khong?"]
+        return ["Vì sao phân số này lớn hơn?", "Cho con ví dụ khác về pizza.", "Giải thích ngắn hơn được không?"]
     if topic == "perimeter_area_basic":
-        return ["Phan biet chu vi va dien tich.", "Cho con hinh minh hoa khac.", "Vi sao phai nhan chieu dai voi chieu rong?"]
+        return ["Phân biệt chu vi và diện tích.", "Cho con hình minh họa khác.", "Vì sao phải nhân chiều dài với chiều rộng?"]
     if topic == "multiplication":
-        return ["Vi sao day la phep nhan?", "Cho con them mot vi du nhom deu.", "Giai thich de hon duoc khong?"]
+        return ["Vì sao đây là phép nhân?", "Cho con thêm một ví dụ nhóm đều.", "Giải thích dễ hơn được không?"]
     if intent == "show_visual":
-        return ["Cho con hinh minh hoa nhe.", "Giai thich bang do vat quen thuoc.", "Cho con mot bai tap nhanh."]
-    return ["Giai thich de hon duoc khong?", "Cho con mot vi du khac.", "Cho con mot bai tap nho nhe."]
+        return ["Cho con hình minh họa nhé.", "Giải thích bằng đồ vật quen thuộc.", "Cho con một bài tập nhanh."]
+    return ["Giải thích dễ hơn được không?", "Cho con một ví dụ khác.", "Cho con một bài tập nhỏ nhé."]

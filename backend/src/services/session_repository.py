@@ -44,6 +44,13 @@ class SessionRepository:
     # Chat History Sidebar methods
     # -------------------------------------------------------------------------
 
+    async def get_latest_turn(self, session_id: str) -> dict | None:
+            """Lấy lượt hội thoại gần nhất của session_id để kế thừa ngữ cảnh chủ đề và hình ảnh."""
+            return await self._collection.find_one(
+                {"session_id": session_id},
+                sort=[("created_at", -1)],
+            )
+
     async def list_sessions(self) -> list[dict]:
         """Lấy danh sách session duy nhất, group theo session_id.
 

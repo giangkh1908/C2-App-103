@@ -2,6 +2,7 @@ import re
 
 from src.models.chat import Intent, Topic
 from src.services.types import LearningContext
+import unicodedata
 
 DEFAULT_TOOL_ARGS: dict[Topic, dict[str, int | str]] = {
     "multiplication": {
@@ -30,8 +31,18 @@ DEFAULT_TOOL_ARGS: dict[Topic, dict[str, int | str]] = {
 }
 
 
+def normalize_text(text: str) -> str:
+    text = unicodedata.normalize("NFD", text)
+    text = "".join(
+        ch
+        for ch in text
+        if unicodedata.category(ch) != "Mn"
+    )
+    text = text.lower()
+    return text.replace("đ", 'd')
+
 def detect_context(message: str, selected_topic: Topic | None) -> LearningContext:
-    normalized = message.lower()
+    normalized = normalize_text(message)
     topic = selected_topic or infer_topic(normalized)
     intent = infer_intent(normalized)
 

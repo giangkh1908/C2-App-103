@@ -322,6 +322,127 @@
     "roadmap": "Lộ trình phổ thông",
     "copyright": "Sản phẩm được tối ưu hoàn chỉnh, tích hợp gia sư AI phát thanh trực quan Việt ngữ bám sát chương trình tiểu học hiện hành."
   },
+  "practice": {
+    "close": "Đóng",
+    "notSubmitted": "Chưa nộp",
+    "loading": "Đang tải khu luyện tập...",
+    "status": {
+      "inProgress": "Đang làm dở",
+      "submittedRecent": "Đã nộp gần đây",
+      "notAttempted": "Chưa làm"
+    },
+    "loginPrompt": {
+      "badge": "Luyện tập có lưu lịch sử",
+      "title": "Đăng nhập để mở bộ đề theo lớp, làm bài trọn bộ và xem chữa chi tiết",
+      "description": "Trang luyện tập sẽ gợi ý đúng nhóm đề của từng lớp, tự chấm điểm sau khi nộp bài và lưu lại kết quả để học sinh xem lại bất cứ lúc nào.",
+      "loginButton": "Đăng nhập",
+      "aiTutorLink": "Học cùng gia sư AI"
+    },
+    "sidebar": {
+      "badge": "Khu luyện tập",
+      "title": "Chọn lớp và đề",
+      "description": "Mỗi lớp có đúng 10 đề đã chọn lọc. Em có thể tiếp tục bài đang làm dở hoặc làm lại từ đầu nếu muốn.",
+      "selectGrade": "Chọn lớp",
+      "gradeButton": "L{grade}",
+      "examCount": "{count} đề",
+      "examListTitle": "Bộ đề lớp {grade}",
+      "loadingExams": "Đang tải danh sách đề...",
+      "examNumber": "Đề {number}",
+      "questionCount": "{count} câu",
+      "openExam": "Mở đề",
+      "recentHistory": "Lịch sử gần đây",
+      "inProgress": "Đang làm dở",
+      "inProgressItem": "Lớp {grade} • Lưu lúc {time}",
+      "noHistory": "Chưa có bài nào được nộp. Em hãy chọn một đề để bắt đầu nhé.",
+      "submittedItem": "Lớp {grade} • Đã nộp"
+    },
+    "workspace": {
+      "headerBrowser": "Practice workspace",
+      "headerExam": "Đang làm bài",
+      "headerResult": "Kết quả bài làm",
+      "defaultTitle": "Bộ đề luyện tập theo lớp",
+      "browserDesc": "Chọn một đề bên trái để bắt đầu. Nếu có bài đang làm dở, hệ thống sẽ cho em chọn tiếp tục hoặc làm lại.",
+      "examDesc": "Lớp {grade} • {answered}/{total} câu đã chọn",
+      "resultDesc": "Lớp {grade} • Nộp lúc {time}",
+      "gradeInfo": "L{grade} • {count} đề",
+      "selectGrade": "Chọn lớp",
+      "progress": "Tiến độ {percent}%",
+      "saving": "Đang lưu nháp...",
+      "saved": "Đã lưu nháp",
+      "saveError": "Lưu nháp lỗi",
+      "idle": "Nháp cục bộ sẵn sàng"
+    },
+    "browser": {
+      "readyBadge": "Sẵn sàng làm bài",
+      "readyTitle": "Chọn đề ở cột bên trái để bắt đầu",
+      "feature1Title": "10 đề mỗi lớp",
+      "feature1Desc": "Bộ đề đã được chọn lọc và sắp sẵn theo thứ tự dễ theo dõi.",
+      "feature2Title": "Tiếp tục bài dở",
+      "feature2Desc": "Nếu em chưa làm xong một đề, hệ thống sẽ mời em tiếp tục đúng lượt cũ.",
+      "feature3Title": "Tự chấm ngay",
+      "feature3Desc": "Sau khi nộp bài, trang sẽ trả lại điểm và lời giải chi tiết từng câu.",
+      "tipsBadge": "Gợi ý nhanh",
+      "tipsTitle": "Lộ trình nhỏ để bắt nhịp",
+      "step1": "Chọn lớp của em ở khối bên trái.",
+      "step2": "Mở một trong 10 đề đã được chuẩn bị cho lớp đó.",
+      "step3": "Nếu đề đang làm dở, chọn tiếp tục hoặc làm lại từ đầu.",
+      "step4": "Trả lời từng câu, bài sẽ tự lưu nháp theo thời gian ngắn.",
+      "step5": "Khi còn câu trống, em vẫn có thể xác nhận nộp nếu muốn."
+    },
+    "exam": {
+      "progress": "Tiến độ làm bài",
+      "selected": "Đã chọn",
+      "questionNav": "Điều hướng câu hỏi",
+      "questionCounter": "Câu {current} / {total}",
+      "exit": "Thoát đề",
+      "prevQuestion": "Câu trước",
+      "nextQuestion": "Câu tiếp",
+      "saveDraft": "Lưu nháp",
+      "submit": "Nộp bài",
+      "mobilePrev": "Trước",
+      "mobileSave": "Lưu",
+      "mobileNext": "Tiếp"
+    },
+    "result": {
+      "badge": "Kết quả bài làm",
+      "description": "Em đã hoàn thành bài luyện tập lớp {grade}. Dưới đây là điểm số và phần chữa chi tiết cho từng câu.",
+      "score": "{correct}/{total} câu đúng",
+      "questionNumber": "Câu {number}",
+      "correct": "Đúng",
+      "incorrect": "Cần xem lại",
+      "explanation": "Giải thích:",
+      "backToList": "Quay lại danh sách đề"
+    },
+    "resume": {
+      "title": "Tiếp tục hay làm lại?",
+      "description": "Đề này đang có một bài làm dở. Em muốn tiếp tục phần đang làm hay bắt đầu lại từ đầu?",
+      "info": "Lần lưu gần nhất: {time}. Đã chọn {count}/{total} câu.",
+      "continue": "Tiếp tục bài cũ",
+      "restart": "Làm lại từ đầu"
+    },
+    "confirm": {
+      "title": "Bài vẫn còn câu trống",
+      "description": "Em còn {count} câu chưa chọn đáp án. Em có thể quay lại làm tiếp hoặc vẫn nộp bài ngay.",
+      "goBack": "Quay lại làm tiếp",
+      "submit": "Vẫn nộp bài"
+    },
+    "errors": {
+      "loadGrades": "Không tải được danh sách lớp.",
+      "loadHistory": "Không tải được lịch sử làm bài.",
+      "generic": "Đã có lỗi xảy ra.",
+      "loadExams": "Không tải được danh sách đề.",
+      "loadPracticeExams": "Không tải được đề luyện tập.",
+      "saveDraft": "Không lưu được bài làm dở.",
+      "createAttempt": "Không tạo được lượt làm bài.",
+      "openExam": "Không mở được đề này.",
+      "checkInProgress": "Không kiểm tra được bài làm dở.",
+      "openResult": "Không mở được kết quả bài làm.",
+      "openHistory": "Không mở được lịch sử bài làm.",
+      "submitFailed": "Không nộp được bài.",
+      "restartFailed": "Không thể làm lại bài.",
+      "draftSaved": "Đã lưu nháp trên thiết bị và máy chủ."
+    }
+  },
   "metadata": {
     "titleDefault": "Toán Trực Quan AI — Gia sư Toán trực quan cho học sinh tiểu học",
     "titleTemplate": "%s | Toán Trực Quan AI",

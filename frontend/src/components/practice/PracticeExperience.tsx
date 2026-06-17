@@ -112,7 +112,7 @@ function ModalShell({
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="font-serif text-2xl font-bold text-[#203049]">{title}</h3>
+            <h3 className="font-sans text-2xl font-bold text-[#203049]">{title}</h3>
             <p className="mt-2 text-sm leading-7 text-[#616A63]">{description}</p>
           </div>
           <button
@@ -462,7 +462,7 @@ export default function PracticeExperience() {
               <Sparkles className="h-4 w-4" />
               Luyện tập có lưu lịch sử
             </div>
-            <h1 className="mt-5 font-serif text-3xl font-bold leading-tight text-[#203049] sm:text-4xl">
+            <h1 className="mt-5 font-sans text-3xl font-bold leading-tight text-[#203049] sm:text-4xl">
               Đăng nhập để mở bộ đề theo lớp, làm bài trọn bộ và xem chữa chi tiết
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-[#5F685F] sm:text-base">
@@ -497,7 +497,7 @@ export default function PracticeExperience() {
                 </div>
                 <div>
                   <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#5A7A4B]">Khu luyện tập</p>
-                  <h2 className="mt-1 font-serif text-2xl font-bold text-[#203049]">Chọn lớp và đề</h2>
+                  <h2 className="mt-1 font-sans text-2xl font-bold text-[#203049]">Chọn lớp và đề</h2>
                 </div>
               </div>
               <p className="mt-4 text-sm leading-7 text-[#616A63]">
@@ -561,7 +561,7 @@ export default function PracticeExperience() {
                           <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#6D8A5B]">
                             Đề {String(index + 1).padStart(2, "0")}
                           </p>
-                          <h3 className="mt-2 line-clamp-2 font-serif text-xl font-bold leading-snug text-[#203049]">
+                          <h3 className="mt-2 line-clamp-2 font-sans text-xl font-bold leading-snug text-[#203049]">
                             {exam.title}
                           </h3>
                         </div>
@@ -657,7 +657,7 @@ export default function PracticeExperience() {
                     <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#5A7A4B]">
                       {workspaceMode === "browser" ? "Practice workspace" : workspaceMode === "exam" ? "Đang làm bài" : "Kết quả bài làm"}
                     </p>
-                    <h1 className="mt-2 font-serif text-2xl font-bold text-[#203049] sm:text-3xl">
+                    <h1 className="mt-2 font-sans text-2xl font-bold text-[#203049] sm:text-3xl">
                       {currentExam?.title ?? currentResult?.exam_title ?? "Bộ đề luyện tập theo lớp"}
                     </h1>
                     <p className="mt-2 text-sm text-[#637068]">
@@ -721,7 +721,7 @@ export default function PracticeExperience() {
                         </div>
                         <div>
                           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#5A7A4B]">Sẵn sàng làm bài</p>
-                          <h2 className="mt-1 font-serif text-2xl font-bold text-[#203049]">Chọn đề ở cột bên trái để bắt đầu</h2>
+                          <h2 className="mt-1 font-sans text-2xl font-bold text-[#203049]">Chọn đề ở cột bên trái để bắt đầu</h2>
                         </div>
                       </div>
                       <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -746,7 +746,7 @@ export default function PracticeExperience() {
 
                     <div className="rounded-[30px] border border-[#D7E1CD] bg-[linear-gradient(180deg,#f5f8f0_0%,#ffffff_100%)] p-6 shadow-sm">
                       <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#5A7A4B]">Gợi ý nhanh</p>
-                      <h2 className="mt-2 font-serif text-2xl font-bold text-[#203049]">Lộ trình nhỏ để bắt nhịp</h2>
+                      <h2 className="mt-2 font-sans text-2xl font-bold text-[#203049]">Lộ trình nhỏ để bắt nhịp</h2>
                       <ol className="mt-5 space-y-4">
                         {[
                           "Chọn lớp của em ở khối bên trái.",
@@ -828,7 +828,7 @@ export default function PracticeExperience() {
                           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#5A7A4B]">
                             Câu {currentQuestionIndex + 1} / {currentExam.questions.length}
                           </p>
-                          <h2 className="mt-2 font-serif text-2xl font-bold text-[#203049]">{currentExam.title}</h2>
+                          <h2 className="mt-2 font-sans text-2xl font-bold text-[#203049]">{currentExam.title}</h2>
                         </div>
                         <button
                           type="button"
@@ -925,7 +925,7 @@ export default function PracticeExperience() {
                     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
                       <div className="rounded-[30px] border border-[#DED7C8] bg-white p-6 shadow-sm">
                         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#5A7A4B]">Kết quả bài làm</p>
-                        <h2 className="mt-2 font-serif text-3xl font-bold text-[#203049]">{currentResult.exam_title}</h2>
+                        <h2 className="mt-2 font-sans text-3xl font-bold text-[#203049]">{currentResult.exam_title}</h2>
                         <p className="mt-3 text-sm leading-7 text-[#647068]">
                           Em đã hoàn thành bài luyện tập lớp {currentResult.grade}. Dưới đây là điểm số và phần chữa chi tiết cho từng câu.
                         </p>

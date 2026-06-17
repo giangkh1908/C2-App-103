@@ -43,7 +43,7 @@ Sau khi chay:
 
 ## LLM provider
 
-Backend learning core hien tai chi dung OpenRouter cho lane AI chinh.
+Backend learning core hien tai chi dung OpenRouter cho lane AI chinh. Google OAuth van dung `google-auth`, nhung backend khong cai hoac goi Google GenAI SDK.
 
 - `OPENROUTER_API_KEY`
 - `OPENROUTER_MODEL`
@@ -69,13 +69,13 @@ Sau khi chạy, mở trình duyệt tại:
 | `API_HOST` | Host lắng nghe | `0.0.0.0` |
 | `API_PORT` | Port lắng nghe | `8000` |
 | `API_PREFIX` | URL prefix cho API | `/api/v1` |
-| `LLM_PROVIDER` | LLM provider (`openai` / `anthropic` / `google`) | `openai` |
-| `OPENAI_API_KEY` | OpenAI API key | *(bắt buộc)* |
-| `OPENAI_MODEL` | Model sử dụng | `gpt-4o-mini` |
-| `OPENAI_TEMPERATURE` | Độ sáng tạo (0.0 - 2.0) | `0.7` |
-| `OPENAI_MAX_TOKENS` | Số token tối đa | `2048` |
-| `DATABASE_URL` | Connection string database | `sqlite:///./data/app.db` |
-| `VECTOR_STORE_TYPE` | Loại vector store | `chroma` |
+| `LLM_PROVIDER` | LLM provider | `openrouter` |
+| `OPENROUTER_API_KEY` | OpenRouter API key | *(bắt buộc)* |
+| `OPENROUTER_MODEL` | Model sử dụng | `openai/gpt-4o-mini` |
+| `OPENROUTER_TEMPERATURE` | Độ sáng tạo (0.0 - 2.0) | `0.7` |
+| `OPENROUTER_MAX_TOKENS` | Số token tối đa | `2048` |
+| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017` |
+| `MONGODB_DB_NAME` | Tên database MongoDB | `toan_truc_quan` |
 
 ## Logging
 

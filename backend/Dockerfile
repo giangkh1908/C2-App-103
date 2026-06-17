@@ -1,5 +1,7 @@
 FROM python:3.11-slim AS runtime
 
+ARG BACKEND_EXTRAS=""
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
@@ -12,8 +14,14 @@ RUN addgroup --system app && adduser --system --ingroup app app
 COPY pyproject.toml README.md ./
 COPY src ./src
 
-RUN pip install --upgrade pip \
-    && pip install .
+RUN if [ -n "$BACKEND_EXTRAS" ]; then \
+        pip install --no-cache-dir --no-compile ".[${BACKEND_EXTRAS}]"; \
+    else \
+        pip install --no-cache-dir --no-compile .; \
+    fi
+
+COPY data/practice/vi_grade_school_math_mcq_full.json ./data/practice/vi_grade_school_math_mcq_full.json
+COPY data/practice/vi_grade_school_math_mcq_curated_manifest.json ./data/practice/vi_grade_school_math_mcq_curated_manifest.json
 
 RUN mkdir -p /app/logs && chown -R app:app /app
 

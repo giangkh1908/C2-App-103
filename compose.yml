@@ -3,6 +3,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        BACKEND_EXTRAS: ${BACKEND_EXTRAS:-}
     environment:
       APP_NAME: ${APP_NAME:-toan-truc-quan-backend}
       APP_ENV: ${APP_ENV:-production}
@@ -20,7 +22,6 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
       LANGFUSE_ENABLED: ${LANGFUSE_ENABLED:-false}
       LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
       LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}

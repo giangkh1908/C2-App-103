@@ -46,9 +46,6 @@ class Settings(BaseSettings):
     google_client_id: str = Field(default="", alias="GOOGLE_CLIENT_ID")
     google_client_secret: str = Field(default="", alias="GOOGLE_CLIENT_SECRET")
 
-    # Google GenAI
-    google_api_key: str = Field(default="", alias="GOOGLE_API_KEY")
-
     # Email (Resend)
     resend_api_key: str = Field(default="", alias="RESEND_API_KEY")
     email_from: str = Field(default="noreply@yourdomain.com", alias="EMAIL_FROM")
@@ -69,7 +66,7 @@ class Settings(BaseSettings):
     log_file_backup_count: int = Field(default=5, alias="LOG_FILE_BACKUP_COUNT")
 
     # LLM
-    llm_provider: Literal["openrouter", "anthropic", "google"] = "openrouter"
+    llm_provider: Literal["openrouter"] = "openrouter"
     openrouter_api_key: str = Field(default="", alias="OPENROUTER_API_KEY")
     openrouter_model: str = Field(default="deepseek/deepseek-v4-flash", alias="OPENROUTER_MODEL")
     openrouter_temperature: float = Field(
@@ -113,7 +110,6 @@ class Settings(BaseSettings):
         "frontend_url",
         "google_client_id",
         "google_client_secret",
-        "google_api_key",
         "resend_api_key",
         "email_from",
         "openrouter_api_key",

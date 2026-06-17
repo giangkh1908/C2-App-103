@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
@@ -144,79 +146,7 @@ function playSfx(type: 'bell' | 'error' | 'sparkle'): void {
   } catch { /* ignore */ }
 }
 
-// Simple markdown to JSX — handles **bold**, *italic*, numbered lists, bullet lists
-function renderMarkdown(text: string): React.ReactNode[] {
-  const lines = text.split('\n');
-  const nodes: React.ReactNode[] = [];
-  let listItems: string[] = [];
-  let listType: 'ol' | 'ul' | null = null;
 
-  const flushList = (key: string) => {
-    if (listItems.length === 0) return;
-    if (listType === 'ol') {
-      nodes.push(
-        <ol key={key} className="my-2 ml-4 list-decimal space-y-1">
-          {listItems.map((item, i) => (
-            <li key={i} className="text-xs sm:text-sm leading-relaxed">{renderInline(item)}</li>
-          ))}
-        </ol>
-      );
-    } else {
-      nodes.push(
-        <ul key={key} className="my-2 ml-4 list-disc space-y-1">
-          {listItems.map((item, i) => (
-            <li key={i} className="text-xs sm:text-sm leading-relaxed">{renderInline(item)}</li>
-          ))}
-        </ul>
-      );
-    }
-    listItems = [];
-    listType = null;
-  };
-
-  lines.forEach((line, idx) => {
-    const numberedMatch = line.match(/^(\d+)\.\s+(.+)/);
-    const bulletMatch = line.match(/^[-*]\s+(.+)/);
-
-    if (numberedMatch) {
-      if (listType !== 'ol') { flushList(`list-${idx}`); listType = 'ol'; }
-      listItems.push(numberedMatch[2]);
-    } else if (bulletMatch) {
-      if (listType !== 'ul') { flushList(`list-${idx}`); listType = 'ul'; }
-      listItems.push(bulletMatch[1]);
-    } else {
-      flushList(`list-${idx}`);
-      if (line.trim() === '') {
-        nodes.push(<br key={`br-${idx}`} />);
-      } else {
-        nodes.push(
-          <p key={`p-${idx}`} className="text-xs sm:text-sm leading-relaxed mb-1">
-            {renderInline(line)}
-          </p>
-        );
-      }
-    }
-  });
-  flushList('list-end');
-  return nodes;
-}
-
-function renderInline(text: string): React.ReactNode[] {
-  const parts: React.ReactNode[] = [];
-  const regex = /\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`/g;
-  let lastIndex = 0;
-  let match;
-  let key = 0;
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
-    if (match[1]) parts.push(<strong key={key++} className="font-bold">{match[1]}</strong>);
-    else if (match[2]) parts.push(<em key={key++} className="italic">{match[2]}</em>);
-    else if (match[3]) parts.push(<code key={key++} className="rounded bg-gray-100 px-1 font-mono text-[11px]">{match[3]}</code>);
-    lastIndex = regex.lastIndex;
-  }
-  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
-  return parts;
-}
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -386,8 +316,10 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
         )}
 
         {/* Main text bubble */}
-        <div className="rounded-2xl rounded-tl-sm border border-gray-200/90 bg-white px-4 py-3.5 shadow-xs">
-          <div className="prose-xs">{renderMarkdown(message.text)}</div>
+        <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {message.text}
+          </ReactMarkdown>
         </div>
 
         {/* Visual panel */}
@@ -539,8 +471,11 @@ export default function AIExplanationChat() {
       return;
     }
     window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text.replace(/[\\/*_#]/g, ''));
-    utter.lang = speechLocale;
+    const plainText = text
+      .replace(/[#>*`_-]/g, '')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '$1');
+
+    const utter = new SpeechSynthesisUtterance(plainText);    utter.lang = speechLocale;
     utter.rate = 0.95;
     utter.onend = () => setSpeakingMsgId(null);
     setSpeakingMsgId(id);

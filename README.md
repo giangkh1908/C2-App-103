@@ -59,7 +59,41 @@ JWT_SECRET_KEY=<chuoi-vua-generate>
 Sau đó chạy từ root repo:
 
 ```bash
-docker compose --env-file .env.docker up --build
+docker compose --env-file .env.docker up --build -d
+```
+
+### Chạy Docker nhanh sau lần build đầu
+
+Không cần dùng `--build` mỗi lần mở app. `--build` sẽ chạy lại build pipeline, frontend phải `next build` nên có thể rất lâu.
+
+Những lần sau, nếu chỉ muốn chạy lại container với image đã build:
+
+```bash
+docker compose --env-file .env.docker up -d
+```
+
+Nếu container đang chạy và chỉ muốn restart:
+
+```bash
+docker compose --env-file .env.docker restart
+```
+
+Chỉ build lại khi sửa code, `Dockerfile`, `package.json` / `package-lock.json`, `pyproject.toml`, hoặc các biến `NEXT_PUBLIC_*` trong `.env.docker`.
+
+Build lại từng service khi cần:
+
+```bash
+docker compose --env-file .env.docker build backend
+docker compose --env-file .env.docker up -d --no-deps backend
+
+docker compose --env-file .env.docker build frontend
+docker compose --env-file .env.docker up -d --no-deps frontend
+```
+
+Nếu chỉ đổi biến runtime backend như `OPENROUTER_API_KEY`, `MONGODB_URI`, `JWT_SECRET_KEY`, thường không cần build lại; chạy lại:
+
+```bash
+docker compose --env-file .env.docker up -d
 ```
 
 Kiểm tra:

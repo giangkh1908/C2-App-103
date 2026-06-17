@@ -1,0 +1,64 @@
+{
+  "grades": {
+    "1": [
+      "6b8ee5d69959f81b1d29c79a2b173e6e",
+      "b630eb59da13666dd4a21748e1c8425b",
+      "490508bdbe190af20a2cd30153ee1f0a",
+      "3e6717acfb773cca9feb4fe8b42e7ec9",
+      "efdf1345ce536e34143539a46d8eb289",
+      "3d3f98d86f42d9e0e1ae51cee7c7c9cf",
+      "04172c15cf665411a55e6a9a79d55461",
+      "1db43b1393a6428883a789103d24e99a",
+      "1b89c2b313a561f83696d214e7a1bb1f",
+      "91155fcbddd2d671d96522a5d7af6fd9"
+    ],
+    "2": [
+      "b9ba401e6411abd1e2d9068b95bfdd46",
+      "dbf7fc7a0bf9d713c21cfe9a2bf814ee",
+      "21818d599568f11026665e74bfa5f21b",
+      "26cbac955230b6bd27c4f34e47802d59",
+      "5a193e6744f934f2390fb63ff587ea64",
+      "48873481eb08680ed5d0e13325219ca9",
+      "274e9215d9654e22694baf9d4edf014d",
+      "5f055a5f3350e1c67d449c54f1ad451a",
+      "ac2a279e465e874acd5099db93a153f9",
+      "9739853d3a90040c7efb7798a26c0b5f"
+    ],
+    "3": [
+      "fd805431380b483debc0957d62f646f7",
+      "de54e56da2ab6c7e45a602505e40d33a",
+      "ba41299d9ecf8820d3341951dd594ea5",
+      "a8ab81fe4a5e363983e4dff38dc8d3de",
+      "1b93085bc9ac75b91287c5675dc9949f",
+      "9e4d1e77ff41f38118f9a3b206c6db7b",
+      "8ecc1e04e0c4a5c19e249a310e739816",
+      "b8a859050c1435040b698e78e2c7a991",
+      "c34c65bab0fe4939a11713d9eaca03d5",
+      "229ddb3c67e5c2023238c527d93d7049"
+    ],
+    "4": [
+      "38f398e01124da3d94a08225a05a74a5",
+      "3adf46651d9dee1a5d6ebc7cbf010ff4",
+      "13ff326a1dac2eaffdd5e9febd604a77",
+      "9291ec5d3b8b669a07121b20064a9e74",
+      "e2840c52446b0956d299dac63d1898d6",
+      "ab62fa7f219e82831ee59d3a259fc9c2",
+      "fec356d0251acceb247fe8afacc31244",
+      "4ea368e719bfaf25cca3944f7fab5183",
+      "4c8c6e5ecff553ad9a62665ebb9308d6",
+      "6a8146e2c3186686417648208c51b2b6"
+    ],
+    "5": [
+      "b378f2dca86a3761da035d20ce30c14b",
+      "a146e65fd4e1cdbe694acd195482d0c8",
+      "070518e86332718e3789814dcd285316",
+      "13674aa6fc653137ad2ef9190df63b1d",
+      "1a1a169c32dc9189557b01b892c1c53b",
+      "ef87a5066bdca00d8cf6a7ac81a00396",
+      "e666d360c16f98c596d2d6cb50cbe5eb",
+      "29a8566a95a532e542fb4bb56c7d9f10",
+      "824e5157f843164373934eb523fba3db",
+      "b023935cabd562de6b35cbec42b801d2"
+    ]
+  }
+}

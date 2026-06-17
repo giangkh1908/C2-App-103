@@ -50,7 +50,7 @@ class LLMResponse(BaseModel):
 class BaseLLMClient(ABC):
     """Interface chung cho mọi LLM client.
 
-    Subclass cụ thể (vd. ``OpenAIClient``, ``GeminiClient``) phải
+    Subclass cụ thể (vd. ``OpenRouterClient``) phải
     implement phương thức ``generate``.
     """
 

@@ -1,4 +1,5 @@
 .deepeval/
+.mypy_cache/
 .pytest_cache/
 .ruff_cache/
 __pycache__/
@@ -10,12 +11,17 @@ build/
 dist/
 docs/
 eval/
+scripts/
 tests/
 logs/
 *.log
 *.out.log
 *.err.log
+.coverage
+coverage.xml
 .env
 .env.*
+!data/practice/
+!data/practice/*.json
 Dockerfile
 docker-compose.yml

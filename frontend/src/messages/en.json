@@ -323,6 +323,127 @@
     "roadmap": "Curriculum Roadmap",
     "copyright": "Fully optimized product with AI tutor featuring visual Vietnamese narration aligned with the current elementary curriculum."
   },
+  "practice": {
+    "close": "Close",
+    "notSubmitted": "Not submitted",
+    "loading": "Loading practice area...",
+    "status": {
+      "inProgress": "In progress",
+      "submittedRecent": "Recently submitted",
+      "notAttempted": "Not attempted"
+    },
+    "loginPrompt": {
+      "badge": "Practice with history",
+      "title": "Log in to access grade-based exams, take full tests, and view detailed solutions",
+      "description": "The practice area suggests the right exam set for each grade, auto-scores after submission, and saves results so students can review anytime.",
+      "loginButton": "Log in",
+      "aiTutorLink": "Learn with AI Tutor"
+    },
+    "sidebar": {
+      "badge": "Practice Area",
+      "title": "Pick a grade & exam",
+      "description": "Each grade has exactly 10 curated exams. You can continue an in-progress attempt or restart from scratch.",
+      "selectGrade": "Pick grade",
+      "gradeButton": "G{grade}",
+      "examCount": "{count} exams",
+      "examListTitle": "Exams for grade {grade}",
+      "loadingExams": "Loading exams...",
+      "examNumber": "Exam {number}",
+      "questionCount": "{count} questions",
+      "openExam": "Open exam",
+      "recentHistory": "Recent history",
+      "inProgress": "In progress",
+      "inProgressItem": "Grade {grade} • Saved at {time}",
+      "noHistory": "No submitted exams yet. Pick an exam to get started.",
+      "submittedItem": "Grade {grade} • Submitted"
+    },
+    "workspace": {
+      "headerBrowser": "Practice workspace",
+      "headerExam": "Taking exam",
+      "headerResult": "Exam results",
+      "defaultTitle": "Grade-based practice exams",
+      "browserDesc": "Pick an exam from the sidebar. If you have an in-progress attempt, the system will ask if you want to continue or start over.",
+      "examDesc": "Grade {grade} • {answered}/{total} questions answered",
+      "resultDesc": "Grade {grade} • Submitted at {time}",
+      "gradeInfo": "G{grade} • {count} exams",
+      "selectGrade": "Pick grade",
+      "progress": "Progress {percent}%",
+      "saving": "Saving draft...",
+      "saved": "Draft saved",
+      "saveError": "Draft save failed",
+      "idle": "Local draft ready"
+    },
+    "browser": {
+      "readyBadge": "Ready to practice",
+      "readyTitle": "Pick an exam from the left sidebar to get started",
+      "feature1Title": "10 exams per grade",
+      "feature1Desc": "The exam set is curated and arranged in a logical order.",
+      "feature2Title": "Resume in-progress",
+      "feature2Desc": "If you haven't finished an exam, the system will invite you to continue where you left off.",
+      "feature3Title": "Instant scoring",
+      "feature3Desc": "After submitting, the page will show your score and detailed explanations for each question.",
+      "tipsBadge": "Quick tips",
+      "tipsTitle": "A mini roadmap to get started",
+      "step1": "Pick your grade from the left panel.",
+      "step2": "Open one of the 10 curated exams for that grade.",
+      "step3": "If the exam has an in-progress attempt, choose to continue or restart.",
+      "step4": "Answer each question — your work auto-saves periodically.",
+      "step5": "Even if some questions are left blank, you can still confirm submission."
+    },
+    "exam": {
+      "progress": "Progress",
+      "selected": "Answered",
+      "questionNav": "Question navigation",
+      "questionCounter": "Q{current} / {total}",
+      "exit": "Exit exam",
+      "prevQuestion": "Previous",
+      "nextQuestion": "Next",
+      "saveDraft": "Save draft",
+      "submit": "Submit",
+      "mobilePrev": "Back",
+      "mobileSave": "Save",
+      "mobileNext": "Next"
+    },
+    "result": {
+      "badge": "Exam results",
+      "description": "You've completed the practice exam for grade {grade}. Below is your score and detailed solutions for each question.",
+      "score": "{correct}/{total} correct",
+      "questionNumber": "Q{number}",
+      "correct": "Correct",
+      "incorrect": "Review needed",
+      "explanation": "Explanation:",
+      "backToList": "Back to exam list"
+    },
+    "resume": {
+      "title": "Continue or restart?",
+      "description": "This exam has an in-progress attempt. Do you want to continue where you left off or start over?",
+      "info": "Last saved: {time}. Answered {count}/{total} questions.",
+      "continue": "Continue previous",
+      "restart": "Start over"
+    },
+    "confirm": {
+      "title": "Some questions unanswered",
+      "description": "There are {count} unanswered questions. You can go back and finish them or submit as is.",
+      "goBack": "Go back",
+      "submit": "Submit anyway"
+    },
+    "errors": {
+      "loadGrades": "Could not load grade list.",
+      "loadHistory": "Could not load attempt history.",
+      "generic": "An error occurred.",
+      "loadExams": "Could not load exam list.",
+      "loadPracticeExams": "Could not load practice exams.",
+      "saveDraft": "Could not save draft.",
+      "createAttempt": "Could not create attempt.",
+      "openExam": "Could not open this exam.",
+      "checkInProgress": "Could not check in-progress attempts.",
+      "openResult": "Could not open exam result.",
+      "openHistory": "Could not open attempt history.",
+      "submitFailed": "Could not submit exam.",
+      "restartFailed": "Could not restart exam.",
+      "draftSaved": "Draft saved on device and server."
+    }
+  },
   "metadata": {
     "titleDefault": "Visual Math AI — Visual Math Tutor for Elementary Students",
     "titleTemplate": "%s | Visual Math AI",

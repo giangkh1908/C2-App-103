@@ -1,3 +1,7 @@
+# MVP Demo
+
+Video demo MVP: https://youtu.be/v_MkTLE1-Lw
+
 ## Chạy Backend
 
 ```bash

@@ -18,6 +18,7 @@ from src.core.logging import (
     unbind_request_context,
 )
 from src.core.metrics import record_request_duration, reset_metrics
+from src.services.practice_dataset import load_exam_catalog_from_db
 
 configure_logging()
 
@@ -39,6 +40,8 @@ async def lifespan(app: FastAPI):
         log_level=settings.log_level,
     )
     await db_module.connect_db()
+    catalog = await load_exam_catalog_from_db(db_module.db)
+    logger.info("practice_catalog_loaded", exam_count=len(catalog.exams_by_id))
     yield
     logger.info("app_stopped")
     await db_module.close_db()

@@ -180,18 +180,25 @@ docker compose down
 
 ## Practice dataset pipeline
 
-`/practice` runtime doc truc tiep tu file local. Snapshot that trong repo la:
+`/practice` runtime doc du lieu tu MongoDB collection `practice_exam_sets`. De setup:
 
-```text
-backend/data/practice/vi_grade_school_math_mcq_full.json
+### Import practice data vao MongoDB
+
+```bash
+# Import voi manifest co san
+python scripts/import_practice_dataset.py --replace
+
+# Neu manifest chua co, script se auto-generate
+python scripts/import_practice_dataset.py --replace --manifest-path data/practice/vi_grade_school_math_mcq_curated_manifest.json
 ```
 
-Pipeline production hien tai:
+Script se:
+- Parse dataset tu `data/practice/vi_grade_school_math_mcq_full.json`
+- Curate 10 exams/grade theo manifest
+- Upsert vao collection `practice_exam_sets` trong MongoDB
+- Tao indexes can thiet (exam_id, grade, is_active)
 
-- `load_raw_snapshot`
-- `clean_and_filter`
-- `curate_with_manifest`
-- `serve_from_local_file`
+Sau khi import, restart backend de runtime nap catalog trong bo nho.
 
 Rule clean quan trong:
 
@@ -210,7 +217,7 @@ python scripts/generate_practice_manifest.py --output-path data/practice/vi_grad
 Neu sua tay du lieu:
 
 - sua `backend/data/practice/vi_grade_school_math_mcq_full.json`
-- neu can, doi `backend/data/practice/vi_grade_school_math_mcq_curated_manifest.json`
+- chay lai import: `python scripts/import_practice_dataset.py --replace`
 - restart backend de runtime nap lai catalog trong bo nho
 
 ## Practice acceptance on a dedicated dev DB

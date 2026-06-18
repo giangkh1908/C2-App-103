@@ -18,6 +18,10 @@ async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:
     await target_db.practice_attempts.create_index("exam_id")
     await target_db.practice_attempts.create_index([("user_id", 1), ("exam_id", 1), ("status", 1)])
     await target_db.practice_attempts.create_index("submitted_at")
+    await target_db.practice_exam_sets.create_index("exam_id", unique=True)
+    await target_db.practice_exam_sets.create_index("grade")
+    await target_db.practice_exam_sets.create_index("is_active")
+    await target_db.practice_exam_sets.create_index([("grade", 1), ("is_active", 1), ("sort_order", 1)])
 
 
 async def connect_db() -> None:

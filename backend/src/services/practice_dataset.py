@@ -1,14 +1,17 @@
 import json
+import logging
 import re
 import unicodedata
 from collections import defaultdict
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
-from dataclasses import dataclass
 from typing import Any
 
 from src.models.practice import PracticeExamQuestion
+
+logger = logging.getLogger("toan_truc_quan.practice_dataset")
 
 ACTIVE_EXAMS_PER_GRADE = 10
 DATASET_SOURCE = "hllj/vi_grade_school_math_mcq"
@@ -407,11 +410,61 @@ def build_exam_catalog(
     return PracticeExamCatalog(exams_by_id=exams_by_id, active_exam_ids_by_grade=active_exam_ids_by_grade)
 
 
+_mongo_catalog: PracticeExamCatalog | None = None
+
+
+async def load_exam_catalog_from_db(db) -> PracticeExamCatalog:
+    """Load exam catalog from MongoDB practice_exam_sets collection.
+
+    Falls back to local JSON file if the MongoDB collection is empty.
+    """
+    global _mongo_catalog
+    exams = await db.practice_exam_sets.find(
+        {"is_active": True},
+        {"_id": 0},
+    ).sort([("grade", 1), ("sort_order", 1)]).to_list(length=None)
+
+    if not exams:
+        logger.warning(
+            "practice_exam_sets_empty_fallback",
+            extra={"fallback": "local_json"},
+        )
+        _mongo_catalog = get_runtime_exam_catalog()
+        return _mongo_catalog
+
+    exams_by_id: dict[str, dict[str, Any]] = {exam["exam_id"]: exam for exam in exams}
+    active_exam_ids_by_grade: dict[int, list[str]] = {}
+    for grade in range(1, 6):
+        active_exam_ids_by_grade[grade] = [
+            exam["exam_id"] for exam in exams if exam["grade"] == grade
+        ]
+
+    _mongo_catalog = PracticeExamCatalog(
+        exams_by_id=exams_by_id,
+        active_exam_ids_by_grade=active_exam_ids_by_grade,
+    )
+    return _mongo_catalog
+
+
+def get_cached_exam_catalog() -> PracticeExamCatalog:
+    """Get the cached catalog. Raises RuntimeError if not loaded yet."""
+    if _mongo_catalog is None:
+        raise RuntimeError("Practice exam catalog not loaded. Run import script and restart app.")
+    return _mongo_catalog
+
+
+def set_exam_catalog(catalog: PracticeExamCatalog | None) -> None:
+    """Set the catalog directly (used by tests and import script)."""
+    global _mongo_catalog
+    _mongo_catalog = catalog
+
+
 @lru_cache(maxsize=1)
 def get_runtime_exam_catalog(
     dataset_path: Path = DEFAULT_FULL_DATASET_PATH,
     manifest_path: Path = DEFAULT_CURATED_MANIFEST_PATH,
 ) -> PracticeExamCatalog:
+    """Load catalog from local JSON files (used by import script only)."""
     rows = load_rows_from_file(dataset_path)
     manifest = load_curated_manifest(manifest_path)
     return build_exam_catalog(rows, curated_manifest=manifest)

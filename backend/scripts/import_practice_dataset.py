@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import asyncio
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -10,12 +10,27 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.core.config import settings
 from src.services.practice_dataset import (
+    ACTIVE_EXAMS_PER_GRADE,
     DEFAULT_CURATED_MANIFEST_PATH,
     DEFAULT_FULL_DATASET_PATH,
     build_exam_documents_from_rows,
     load_curated_manifest,
     load_rows_from_file,
+    parse_exam_rows,
 )
+
+
+def _auto_generate_manifest(rows: list) -> dict[int, list[str]]:
+    """Auto-generate curated manifest by picking top 10 exams per grade."""
+    parsed_exams, _stats = parse_exam_rows(rows)
+    manifest: dict[int, list[str]] = {}
+    for grade in range(1, 6):
+        grade_exams = sorted(
+            [e for e in parsed_exams if e["grade"] == grade],
+            key=lambda e: (-e["question_count"], e["title"].lower(), e["exam_id"]),
+        )
+        manifest[grade] = [e["source_row_id"] for e in grade_exams[:ACTIVE_EXAMS_PER_GRADE]]
+    return manifest
 
 
 async def main() -> None:
@@ -42,7 +57,15 @@ async def main() -> None:
     args = parser.parse_args()
 
     rows = load_rows_from_file(args.dataset_path)
-    manifest = load_curated_manifest(args.manifest_path)
+
+    if args.manifest_path.exists():
+        manifest = load_curated_manifest(args.manifest_path)
+        print(f"Loaded manifest from {args.manifest_path}")
+    else:
+        print(f"Manifest not found at {args.manifest_path}, auto-generating...")
+        manifest = _auto_generate_manifest(rows)
+        print(f"Auto-generated manifest with {sum(len(v) for v in manifest.values())} exams")
+
     exams, stats = build_exam_documents_from_rows(rows, curated_manifest=manifest)
 
     client = AsyncIOMotorClient(settings.mongodb_uri)

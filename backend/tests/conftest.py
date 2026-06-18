@@ -2,15 +2,19 @@ import os
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.core.database import ensure_indexes
-from src.core.security import create_access_token, create_refresh_token, hash_password
+from src.core.security import create_access_token, hash_password
 from src.main import app
-from src.services.practice_dataset import build_exam_catalog, load_rows_from_file, parse_exam_rows
+from src.services.practice_dataset import (
+    build_exam_catalog,
+    load_rows_from_file,
+    parse_exam_rows,
+    set_exam_catalog,
+)
 
 TEST_MONGODB_URI = os.getenv("PRACTICE_TEST_MONGODB_URI", "mongodb://127.0.0.1:27018")
 TEST_MONGODB_DB_NAME = os.getenv("PRACTICE_TEST_MONGODB_DB_NAME", "toan_truc_quan_practice_test")
@@ -108,5 +112,6 @@ async def seeded_practice_data(mock_db):
 
 @pytest_asyncio.fixture(autouse=True)
 async def patched_practice_catalog(seeded_practice_data):
-    with patch("src.services.practice_service.get_runtime_exam_catalog", return_value=seeded_practice_data):
-        yield
+    set_exam_catalog(seeded_practice_data)
+    yield
+    set_exam_catalog(None)

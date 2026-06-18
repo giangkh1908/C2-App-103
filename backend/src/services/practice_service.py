@@ -19,7 +19,7 @@ from src.services.practice_dataset import (
     ACTIVE_EXAMS_PER_GRADE,
     build_badge,
     build_fallback_explanation,
-    get_runtime_exam_catalog,
+    get_cached_exam_catalog,
 )
 
 logger = logging.getLogger("toan_truc_quan.practice")
@@ -27,7 +27,7 @@ logger = logging.getLogger("toan_truc_quan.practice")
 
 class PracticeService:
     def _get_catalog(self):
-        return get_runtime_exam_catalog()
+        return get_cached_exam_catalog()
 
     async def _get_exam_row(self, exam_id: str, *, active_only: bool) -> dict[str, Any]:
         row = self._get_catalog().get_exam(exam_id, active_only=active_only)

@@ -5,6 +5,8 @@ ARG BACKEND_EXTRAS=""
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
+    PIP_DEFAULT_TIMEOUT=300 \
+    PIP_RETRIES=5 \
     PATH="/home/app/.local/bin:${PATH}"
 
 WORKDIR /app
@@ -14,10 +16,12 @@ RUN addgroup --system app && adduser --system --ingroup app app
 COPY pyproject.toml README.md ./
 COPY src ./src
 
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
 RUN if [ -n "$BACKEND_EXTRAS" ]; then \
-        pip install --no-cache-dir --no-compile ".[${BACKEND_EXTRAS}]"; \
+        pip install --no-cache-dir --no-compile --default-timeout=120 ".[${BACKEND_EXTRAS}]"; \
     else \
-        pip install --no-cache-dir --no-compile .; \
+        pip install --no-cache-dir --no-compile --default-timeout=120 .; \
     fi
 
 COPY data/practice/vi_grade_school_math_mcq_full.json ./data/practice/vi_grade_school_math_mcq_full.json

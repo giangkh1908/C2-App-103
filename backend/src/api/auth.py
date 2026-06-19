@@ -47,7 +47,7 @@ def set_refresh_cookie(response: Response, refresh_token: str) -> None:
         path=refresh_cookie_path(),
         httponly=True,
         secure=settings.app_env != "development",
-        samesite="lax",
+        samesite="none",
     )
 
 
@@ -57,7 +57,7 @@ def clear_refresh_cookie(response: Response) -> None:
         path=refresh_cookie_path(),
         httponly=True,
         secure=settings.app_env != "development",
-        samesite="lax",
+        samesite="none",
     )
 
 

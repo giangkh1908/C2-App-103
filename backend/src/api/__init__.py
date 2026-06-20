@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from src.api.auth import router as auth_router
 from src.api.chat import router as chat_router
 from src.api.chat_history import router as chat_history_router
+from src.api.chat_stream import router as chat_stream_router
 from src.api.health import router as health_router
 from src.api.lessons import router as lessons_router
 from src.api.metrics import router as metrics_router
@@ -12,6 +13,7 @@ from src.api.topics import router as topics_router
 api_router = APIRouter()
 api_router.include_router(auth_router)
 api_router.include_router(chat_router)
+api_router.include_router(chat_stream_router)
 api_router.include_router(health_router)
 api_router.include_router(lessons_router)
 api_router.include_router(metrics_router)

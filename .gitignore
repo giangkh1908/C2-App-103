@@ -37,6 +37,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# OpenCode local config (user-specific global plugin path)
+.opencode/
+
 # AI logs — tracked structure, ignored content
 # .ai-log/*.jsonl
 

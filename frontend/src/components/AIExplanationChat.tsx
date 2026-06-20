@@ -30,6 +30,7 @@ import {
   createSession,
   type ChatSessionSummary,
 } from '@/lib/chatHistoryApi';
+import { useChatStream } from '@/lib/useChatStream';
 import InteractiveSimulation from './InteractiveSimulation';
 import type {
   ChatTurnResponse,
@@ -273,12 +274,13 @@ function VisualPanel({ message, onAnswerChoice }: {
 }
 
 
-function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpeaking }: {
+function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpeaking, isLoading}: {
   message: Message;
   onSuggestionClick: (text: string) => void;
   onAnswerChoice: (msgId: string, optIdx: number, correctIdx: number) => void;
   onSpeak: (text: string, id: string) => void;
   isSpeaking: boolean;
+  isLoading: boolean;
 }) {
   const t = useTranslations('learn.chat');
   const isClarification = message.responseMode === 'clarification_needed';
@@ -320,6 +322,10 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {message.text}
           </ReactMarkdown>
+          {/* Cursor nhấp nháy khi đang stream */}
+          {isLoading && message.text !== '' && !message.responseMode?.includes('visual') && !message.visualData && (
+            <span className="inline-block h-4 w-0.5 bg-natural-green align-middle animate-pulse ml-0.5" />
+          )}
         </div>
 
         {/* Visual panel */}
@@ -379,6 +385,7 @@ export default function AIExplanationChat() {
   const [topicIds, setTopicIds] = useState<MathDomain[]>(() => TOPIC_META.map((topic) => topic.id));
   const [selectedTopic, setSelectedTopic] = useState<MathDomain | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [streamStatusText, setStreamStatusText] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -393,6 +400,7 @@ export default function AIExplanationChat() {
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api/v1';
+  const { sendStream, abort: abortStream } = useChatStream(apiFetch);
   const topics = useMemo(() => topicIds.map((id) => localizeTopic({ id })), [topicIds, localizeTopic]);
 
   // Auto-scroll
@@ -582,77 +590,125 @@ export default function AIExplanationChat() {
       },
     ]);
     setIsLoading(true);
+    setStreamStatusText(null);
+
+    // Tạo placeholder message cho AI – sẽ được update từng chunk
+    const aiMsgId = `ai_${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: aiMsgId,
+        role: 'ai',
+        text: '',
+        timestampLabel: createTimestamp(locale),
+        responseMode: 'explain_only',
+      },
+    ]);
 
     try {
-      const res = await apiFetch('/chat/turn', {
-        method: 'POST',
-        body: JSON.stringify({
+      await sendStream(
+        {
           session_id: currentSessionId,
           grade: selectedGrade,
           message: text,
           selected_topic: selectedTopic,
-        }),
-      });
-
-      if (!res.ok) throw new Error('Server error');
-
-      const payload: ChatTurnResponse = await res.json();
-      setSessionId(payload.session_id);
-      setActiveSessionId(payload.session_id);
-
-      const aiMsg: Message = {
-        id: `ai_${Date.now()}`,
-        role: 'ai',
-        text: payload.assistant_message,
-        timestampLabel: createTimestamp(locale),
-        responseMode: payload.response_mode,
-        followUpSuggestions: payload.follow_up_suggestions,
-        title: payload.visual_card?.title,
-        lifeExample: payload.visual_card?.life_example,
-        visualData: payload.visual_card
-          ? {
-              type: payload.visual_card.visual_data.type,
-              primaryCount: payload.visual_card.visual_data.primary_count,
-              secondaryCount: payload.visual_card.visual_data.secondary_count,
-              totalCount: payload.visual_card.visual_data.total_count,
-              groupsLabel: payload.visual_card.visual_data.groups_label,
-              itemsLabel: payload.visual_card.visual_data.items_label,
-            }
-          : undefined,
-        practiceQuestion: payload.practice_question
-          ? {
-              id: payload.practice_question.id,
-              questionText: payload.practice_question.question_text,
-              options: payload.practice_question.options,
-              correctAnswerIndex: payload.practice_question.correct_answer_index,
-              successMessage: payload.practice_question.success_message,
-              failMessage: payload.practice_question.fail_message,
-              hint: payload.practice_question.hint,
-            }
-          : undefined,
-        practiceAnswerIdx: null,
-        practiceFeedbackChecked: false,
-        simulationConfig: payload.visual_card?.simulation_config,
-      };
-
-      setMessages((prev) => [...prev, aiMsg]);
-      playSfx('bell');
-      await loadHistory();
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `ai_err_${Date.now()}`,
-          role: 'ai',
-          text: tChat('connectionError'),
-          timestampLabel: createTimestamp(locale),
-          responseMode: 'explain_only',
-          followUpSuggestions: [tChat('retrySuggestion'), tChat('chooseTopicSuggestion')],
         },
-      ]);
+        {
+          onStatus: (message) => {
+            setStreamStatusText(message);
+          },
+
+          onToken: (chunk) => {
+            // Append chunk vào text của AI message placeholder
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === aiMsgId ? { ...m, text: m.text + chunk } : m,
+              ),
+            );
+          },
+
+          onDone: (payload) => {
+            setStreamStatusText(null);
+            setSessionId(payload.session_id);
+            setActiveSessionId(payload.session_id);
+
+            // Replace placeholder bằng full message với visual/practice data
+            const finalMsg: Message = {
+              id: aiMsgId,
+              role: 'ai',
+              text: payload.assistant_message,
+              timestampLabel: createTimestamp(locale),
+              responseMode: payload.response_mode,
+              followUpSuggestions: payload.follow_up_suggestions,
+              title: payload.visual_card?.title,
+              lifeExample: payload.visual_card?.life_example,
+              visualData: payload.visual_card
+                ? {
+                    type: payload.visual_card.visual_data.type,
+                    primaryCount: payload.visual_card.visual_data.primary_count,
+                    secondaryCount: payload.visual_card.visual_data.secondary_count,
+                    totalCount: payload.visual_card.visual_data.total_count,
+                    groupsLabel: payload.visual_card.visual_data.groups_label,
+                    itemsLabel: payload.visual_card.visual_data.items_label,
+                  }
+                : undefined,
+              practiceQuestion: payload.practice_question
+                ? {
+                    id: payload.practice_question.id,
+                    questionText: payload.practice_question.question_text,
+                    options: payload.practice_question.options,
+                    correctAnswerIndex: payload.practice_question.correct_answer_index,
+                    successMessage: payload.practice_question.success_message,
+                    failMessage: payload.practice_question.fail_message,
+                    hint: payload.practice_question.hint,
+                  }
+                : undefined,
+              practiceAnswerIdx: null,
+              practiceFeedbackChecked: false,
+              simulationConfig: payload.visual_card?.simulation_config,
+            };
+
+            setMessages((prev) => prev.map((m) => (m.id === aiMsgId ? finalMsg : m)));
+            playSfx('bell');
+            loadHistory();
+          },
+
+          onError: (message) => {
+            setStreamStatusText(null);
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === aiMsgId
+                  ? {
+                      ...m,
+                      text: message,
+                      responseMode: 'explain_only' as const,
+                      followUpSuggestions: [tChat('retrySuggestion'), tChat('chooseTopicSuggestion')],
+                    }
+                  : m,
+              ),
+            );
+            playSfx('error');
+          },
+        },
+      );
+    } catch {
+      setStreamStatusText(null);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === aiMsgId
+            ? {
+                ...m,
+                text: tChat('connectionError'),
+                responseMode: 'explain_only' as const,
+                followUpSuggestions: [tChat('retrySuggestion'), tChat('chooseTopicSuggestion')],
+              }
+            : m,
+        ),
+      );
       playSfx('error');
     } finally {
       setIsLoading(false);
+      setStreamStatusText(null);
     }
   };
 
@@ -790,13 +846,14 @@ export default function AIExplanationChat() {
                 onAnswerChoice={handleAnswerChoice}
                 onSpeak={handleSpeak}
                 isSpeaking={speakingMsgId === msg.id}
+                isLoading={isLoading}
               />
             );
           })}
         </AnimatePresence>
 
-        {/* Loading indicator */}
-        {isLoading && (
+        {/* Loading indicator – chỉ hiện khi chưa có placeholder message */}
+        {isLoading && !messages.some((m) => m.role === 'ai' && m.text === '' && m.id.startsWith('ai_')) && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -806,18 +863,27 @@ export default function AIExplanationChat() {
               <Bot className="h-4 w-4" />
             </div>
             <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-5 py-4 shadow-xs">
-              <div className="flex items-center gap-1.5">
-                {[0, 0.15, 0.3].map((delay, i) => (
-                  <motion.div
-                    key={i}
-                    className="h-2 w-2 rounded-full bg-natural-green"
-                    animate={{ y: [0, -6, 0] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay }}
-                  />
-                ))}
-              </div>
+              {streamStatusText ? (
+                <p className="text-xs text-gray-400 italic">{streamStatusText}</p>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  {[0, 0.15, 0.3].map((delay, i) => (
+                    <motion.div
+                      key={i}
+                      className="h-2 w-2 rounded-full bg-natural-green"
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
+        )}
+
+        {/* Streaming status overlay khi có placeholder đang được fill */}
+        {isLoading && streamStatusText && messages.some((m) => m.role === 'ai' && m.text === '') && (
+          <div className="ml-11 -mt-1 text-[10px] text-gray-400 italic">{streamStatusText}</div>
         )}
 
         <div ref={messagesEndRef} />

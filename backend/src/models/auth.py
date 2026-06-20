@@ -27,6 +27,8 @@ class UserResponse(BaseModel):
     role: str
     verified: bool
     avatar: str | None = None
+    planId: str = ""
+    subscriptionStatus: str = "active"
     createdAt: str
 
 

@@ -20,6 +20,7 @@ export default function Navbar() {
   const homePath = `/${locale}`;
   const learnPath = `${homePath}/learn`;
   const practicePath = `${homePath}/practice`;
+  const pricingPath = `${homePath}/pricing`;
   const loginPath = `${homePath}/login`;
   const faqPath = `${homePath}/faq`;
   const normalizedPathname = pathname.replace(/\/$/, "") || "/";
@@ -102,6 +103,14 @@ export default function Navbar() {
             {t("practice")}
           </Link>
           <Link
+            href={pricingPath}
+            className={`cursor-pointer transition-colors hover:text-natural-green ${
+              isActivePath(pricingPath) ? "text-natural-green" : ""
+            }`}
+          >
+            {t("pricing")}
+          </Link>
+          <Link
             href={faqPath}
             className={`cursor-pointer transition-colors hover:text-natural-green ${
               isActivePath(faqPath) ? "text-natural-green" : ""
@@ -151,11 +160,11 @@ export default function Navbar() {
                     {t("dashboard")}
                   </Link>
                   <Link
-                    href={learnPath}
+                    href={pricingPath}
                     onClick={() => setMenuOpen(false)}
                     className="block px-4 py-2 text-[12px] font-bold text-natural-charcoal transition-colors hover:bg-natural-bg"
                   >
-                    {t("profile")}
+                    {t("pricing")}
                   </Link>
                   <div className="my-1 border-t border-natural-border" />
                   <button

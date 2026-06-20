@@ -1,0 +1,24 @@
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:45.943352+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:47.714070+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:49.710038+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:51.659268+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:53.509246+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:55.637668+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:57.292022+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:02:59.509653+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:01.176512+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:03.291175+00:00"}
+{"user_id":"6a36b9b92289269a741bc5c1","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-20T16:03:05.024615+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:05.034285+00:00"}
+{"user_id":"6a36b9bb2289269a741bc5c2","action":"chat_turns","new_count":6,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-20T16:03:07.104346+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:07.110750+00:00"}
+{"user_id":"6a36b9bd2289269a741bc5c3","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-20T16:03:09.009401+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:09.016502+00:00"}
+{"user_id":"6a36b9be2289269a741bc5c4","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-20T16:03:10.847586+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:10.859337+00:00"}
+{"user_id":"6a36b9c12289269a741bc5c5","event":"record_usage_user_not_found","logger":"toan_truc_quan.usage_service","level":"warning","timestamp":"2026-06-20T16:03:13.429300+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:13.438387+00:00"}
+{"user_id":"invalid_id","event":"record_usage_invalid_id","logger":"toan_truc_quan.usage_service","level":"warning","timestamp":"2026-06-20T16:03:15.882127+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:15.890534+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:17.690185+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-20T16:03:19.574009+00:00"}

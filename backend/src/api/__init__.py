@@ -7,8 +7,11 @@ from src.api.chat_stream import router as chat_stream_router
 from src.api.health import router as health_router
 from src.api.lessons import router as lessons_router
 from src.api.metrics import router as metrics_router
+from src.api.plans import router as plans_router
 from src.api.practice import router as practice_router
+from src.api.subscription import router as subscription_router
 from src.api.topics import router as topics_router
+from src.api.user import router as user_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router)
@@ -17,6 +20,9 @@ api_router.include_router(chat_stream_router)
 api_router.include_router(health_router)
 api_router.include_router(lessons_router)
 api_router.include_router(metrics_router)
+api_router.include_router(plans_router)
 api_router.include_router(practice_router)
 api_router.include_router(topics_router)
 api_router.include_router(chat_history_router)
+api_router.include_router(user_router)
+api_router.include_router(subscription_router)

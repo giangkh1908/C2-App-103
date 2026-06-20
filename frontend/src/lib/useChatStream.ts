@@ -107,8 +107,13 @@ export function useChatStream(
       }
 
       if (!response.ok) {
-        callbacks.onError(`Lỗi server (${response.status}). Bạn thử hỏi lại nhé.`);
-        return;
+        const error = new Error(`HTTP ${response.status}`);
+        if (response.status === 429) {
+          callbacks.onError('Bạn đã hết lượt chat miễn phí hôm nay. Vui lòng nâng cấp gói để tiếp tục học.');
+        } else {
+          callbacks.onError(`Lỗi server (${response.status}). Bạn thử hỏi lại nhé.`);
+        }
+        throw error;
       }
 
       if (!response.body) {

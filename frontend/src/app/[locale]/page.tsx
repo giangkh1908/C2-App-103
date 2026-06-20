@@ -5,7 +5,6 @@ import Benefits from "@/components/landing/Benefits";
 import Sandbox from "@/components/landing/Sandbox";
 import Roadmap from "@/components/landing/Roadmap";
 import Testimonials from "@/components/landing/Testimonials";
-import FAQ from "@/components/landing/FAQ";
 import Footer from "@/components/landing/Footer";
 
 export default async function Home({
@@ -25,7 +24,6 @@ export default async function Home({
         <Sandbox />
         <Roadmap />
         <Testimonials />
-        <FAQ />
       </main>
       <Footer />
     </div>

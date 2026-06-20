@@ -143,8 +143,7 @@ export function useChatStream(
 
               case 'token': {
                 try {
-                  // Backend escapes \n → "\\n" trong data field
-                  const raw = frame.data.replace(/\\n/g, '\n');
+                  const raw = frame.data;
                   const parsed = JSON.parse(raw) as { text: string };
                   callbacks.onToken(parsed.text);
                 } catch {
@@ -155,7 +154,7 @@ export function useChatStream(
 
               case 'done': {
                 try {
-                  const raw = frame.data.replace(/\\n/g, '\n');
+                  const raw = frame.data;
                   const payload = JSON.parse(raw) as ChatTurnResponse;
                   callbacks.onDone(payload);
                 } catch {

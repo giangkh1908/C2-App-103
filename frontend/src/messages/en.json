@@ -355,7 +355,11 @@
       "inProgress": "In progress",
       "inProgressItem": "Grade {grade} • Saved at {time}",
       "noHistory": "No submitted exams yet. Pick an exam to get started.",
-      "submittedItem": "Grade {grade} • Submitted"
+      "submittedItem": "Grade {grade} • Submitted",
+      "tabs": {
+        "exams": "Exam sets",
+        "history": "History"
+      }
     },
     "workspace": {
       "headerBrowser": "Practice workspace",
@@ -384,6 +388,10 @@
       "feature3Desc": "After submitting, the page will show your score and detailed explanations for each question.",
       "tipsBadge": "Quick tips",
       "tipsTitle": "A mini roadmap to get started",
+      "selectedExam": "Selected exam",
+      "preview": "Preview",
+      "continueExam": "Continue exam",
+      "noExams": "No practice exams are available for this grade.",
       "step1": "Pick your grade from the left panel.",
       "step2": "Open one of the 10 curated exams for that grade.",
       "step3": "If the exam has an in-progress attempt, choose to continue or restart.",

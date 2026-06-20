@@ -354,7 +354,11 @@
       "inProgress": "Đang làm dở",
       "inProgressItem": "Lớp {grade} • Lưu lúc {time}",
       "noHistory": "Chưa có bài nào được nộp. Em hãy chọn một đề để bắt đầu nhé.",
-      "submittedItem": "Lớp {grade} • Đã nộp"
+      "submittedItem": "Lớp {grade} • Đã nộp",
+      "tabs": {
+        "exams": "Bộ đề",
+        "history": "Lịch sử"
+      }
     },
     "workspace": {
       "headerBrowser": "Practice workspace",
@@ -383,6 +387,10 @@
       "feature3Desc": "Sau khi nộp bài, trang sẽ trả lại điểm và lời giải chi tiết từng câu.",
       "tipsBadge": "Gợi ý nhanh",
       "tipsTitle": "Lộ trình nhỏ để bắt nhịp",
+      "selectedExam": "Đề đang chọn",
+      "preview": "Xem trước",
+      "continueExam": "Tiếp tục làm bài",
+      "noExams": "Chưa có đề luyện tập cho lớp này.",
       "step1": "Chọn lớp của em ở khối bên trái.",
       "step2": "Mở một trong 10 đề đã được chuẩn bị cho lớp đó.",
       "step3": "Nếu đề đang làm dở, chọn tiếp tục hoặc làm lại từ đầu.",

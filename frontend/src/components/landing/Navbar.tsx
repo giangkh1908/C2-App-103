@@ -21,6 +21,7 @@ export default function Navbar() {
   const learnPath = `${homePath}/learn`;
   const practicePath = `${homePath}/practice`;
   const loginPath = `${homePath}/login`;
+  const faqPath = `${homePath}/faq`;
   const normalizedPathname = pathname.replace(/\/$/, "") || "/";
   const isHomeActive = normalizedPathname === homePath || normalizedPathname === "/";
   const isActivePath = (path: string) =>
@@ -100,9 +101,14 @@ export default function Navbar() {
           >
             {t("practice")}
           </Link>
-          <span className="cursor-default text-natural-charcoal/50">
+          <Link
+            href={faqPath}
+            className={`cursor-pointer transition-colors hover:text-natural-green ${
+              isActivePath(faqPath) ? "text-natural-green" : ""
+            }`}
+          >
             {t("faq")}
-          </span>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">

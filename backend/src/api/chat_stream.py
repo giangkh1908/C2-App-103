@@ -12,18 +12,20 @@ import asyncio
 import json
 from collections.abc import AsyncGenerator
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 
 from src.agents.chat_orchestrator import TutorChatOrchestrator
 from src.api.chat import get_tutor_chat_orchestrator
+from src.core.database import get_db
 from src.core.deps import get_current_user
+from src.core.logging import get_logger
 from src.models.chat import ChatTurnRequest
 from src.models.user import UserInDB
-from src.services.learning_core import LearningCoreService
-from src.services.learning_core_dependency import get_learning_core_service
+from src.services.usage_service import UsageService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+logger = get_logger("toan_truc_quan.chat_stream")
 
 
 def _sse(event: str, data: str) -> str:
@@ -65,7 +67,7 @@ async def _stream_chat_turn(
         from src.services.response_mapper import to_chat_response
         chat_response = to_chat_response(result)
 
-    except Exception as exc:
+    except Exception:
         yield _sse(
             "error",
             json.dumps(
@@ -97,13 +99,42 @@ async def chat_stream(
     orchestrator: TutorChatOrchestrator = Depends(get_tutor_chat_orchestrator),
     current_user: UserInDB = Depends(get_current_user),
 ) -> StreamingResponse:
-    """Streaming SSE endpoint. Gửi lần lượt: status → token(s) → done."""
+    """Streaming SSE endpoint. Pre-deducts quota before calling AI."""
+    user_id = str(current_user.id)
+    db = get_db()
+    usage_service = UsageService(db=db)
+
+    # Pre-deduct quota atomically
+    has_quota, remaining, limit = await usage_service.check_and_record_usage(
+        user_id, "chat_turns"
+    )
+    if not has_quota:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={
+                "error_code": "QUOTA_EXCEEDED",
+                "remaining": remaining,
+                "limit": limit,
+                "message": "Đã hết lượt chat. Vui lòng nâng cấp gói.",
+            },
+        )
+
+    async def _stream_with_refund():
+        try:
+            async for chunk in _stream_chat_turn(request, orchestrator, user_id):
+                yield chunk
+        except Exception as e:
+            # Refund usage if AI call failed
+            await usage_service.refund_usage(user_id, "chat_turns")
+            logger.error("chat_stream_failed_refunded", user_id=user_id, error=str(e))
+            raise
+
     return StreamingResponse(
-        _stream_chat_turn(request, orchestrator, str(current_user.id)),
+        _stream_with_refund(),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",  # tắt nginx buffering nếu có
+            "X-Accel-Buffering": "no",
             "Connection": "keep-alive",
         },
     )

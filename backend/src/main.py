@@ -18,6 +18,7 @@ from src.core.logging import (
     unbind_request_context,
 )
 from src.core.metrics import record_request_duration, reset_metrics
+from src.services.plan_service import seed_default_plans
 from src.services.practice_dataset import load_exam_catalog_from_db
 
 configure_logging()
@@ -27,8 +28,6 @@ logger = get_logger(APP_LOGGER_NAME := "toan_truc_quan")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Re-apply our logging configuration after uvicorn has installed its own
-    # default plain-text handlers.
     configure_logging()
     clear_request_context()
     reset_metrics()
@@ -40,6 +39,8 @@ async def lifespan(app: FastAPI):
         log_level=settings.log_level,
     )
     await db_module.connect_db()
+    await seed_default_plans()
+    logger.info("plans_seeded")
     catalog = await load_exam_catalog_from_db(db_module.db)
     logger.info("practice_catalog_loaded", exam_count=len(catalog.exams_by_id))
     yield

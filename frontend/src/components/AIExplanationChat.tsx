@@ -23,6 +23,8 @@ import {
   XCircle,
 } from 'lucide-react';
 import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
+import UsageCounter from '@/components/UsageCounter';
+import UpgradeModal from '@/components/UpgradeModal';
 import {
   getHistory,
   getSession,
@@ -389,6 +391,8 @@ export default function AIExplanationChat() {
   const [isRecording, setIsRecording] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [chatTurnCount, setChatTurnCount] = useState(0);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // ── Session history state ──
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
@@ -631,6 +635,7 @@ export default function AIExplanationChat() {
             setStreamStatusText(null);
             setSessionId(payload.session_id);
             setActiveSessionId(payload.session_id);
+            setChatTurnCount((c) => c + 1);
 
             // Replace placeholder bằng full message với visual/practice data
             const finalMsg: Message = {
@@ -691,16 +696,28 @@ export default function AIExplanationChat() {
           },
         },
       );
-    } catch {
+    } catch (err) {
       setStreamStatusText(null);
+      
+      // Check if it's a 429 quota error
+      const isQuotaError = err instanceof Error && err.message.includes('429');
+      
+      if (isQuotaError) {
+        setShowUpgradeModal(true);
+      }
+      
       setMessages((prev) =>
         prev.map((m) =>
           m.id === aiMsgId
             ? {
                 ...m,
-                text: tChat('connectionError'),
+                text: isQuotaError
+                  ? 'Bạn đã hết lượt chat miễn phí hôm nay. Vui lòng nâng cấp gói để tiếp tục học.'
+                  : tChat('connectionError'),
                 responseMode: 'explain_only' as const,
-                followUpSuggestions: [tChat('retrySuggestion'), tChat('chooseTopicSuggestion')],
+                followUpSuggestions: isQuotaError
+                  ? ['Nâng cấp gói', 'Chọn chủ đề khác']
+                  : [tChat('retrySuggestion'), tChat('chooseTopicSuggestion')],
               }
             : m,
         ),
@@ -781,6 +798,7 @@ export default function AIExplanationChat() {
           >
             <History className="h-4 w-4" />
           </button>
+          <UsageCounter refreshTrigger={chatTurnCount} />
         </div>
       </div>
 
@@ -936,6 +954,9 @@ export default function AIExplanationChat() {
         </p>
       </div>
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
     </div>
   );
 }

@@ -30,6 +30,7 @@ from src.models.auth import (
     UserResponse,
 )
 from src.models.user import UserInDB, create_user_doc, user_to_response
+from src.services.plan_service import get_free_plan_id
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 REFRESH_COOKIE_NAME = "refresh_token"
@@ -73,10 +74,17 @@ async def register(req: RegisterRequest, response: Response):
             detail="Email already registered",
         )
 
+    try:
+        free_plan_id = await get_free_plan_id()
+    except Exception:
+        # Fallback: proceed without plan, will be assigned on first usage
+        free_plan_id = ""
+
     user_doc = create_user_doc(
         name=req.name.strip(),
         email=email,
         password_hash=hash_password(req.password),
+        plan_id=free_plan_id,
     )
 
     result = await db.users.insert_one(user_doc)
@@ -170,7 +178,11 @@ async def google_login(req: GoogleLoginRequest, response: Response):
                 {"$set": {"avatar": avatar}},
             )
     else:
-        new_user = create_user_doc(name=name, email=email, password_hash="")
+        try:
+            free_plan_id = await get_free_plan_id()
+        except Exception:
+            free_plan_id = ""
+        new_user = create_user_doc(name=name, email=email, password_hash="", plan_id=free_plan_id)
         new_user["verified"] = True
         new_user["avatar"] = avatar
         result = await db.users.insert_one(new_user)

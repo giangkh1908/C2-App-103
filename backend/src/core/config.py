@@ -82,6 +82,21 @@ class Settings(BaseSettings):
     openrouter_site_url: str = Field(default="http://localhost:3000", alias="OPENROUTER_SITE_URL")
     openrouter_app_name: str = Field(default="mathbuddy-ai-backend", alias="OPENROUTER_APP_NAME")
 
+    # SePay webhook (Vietnam payment gateway)
+    sepay_webhook_api_key: str = Field(default="", alias="SEPAY_WEBHOOK_API_KEY")
+    sepay_bank_account: str = Field(
+        default="",
+        validation_alias=AliasChoices("SEPAY_BANK_ACCOUNT", "SEPAY_ACCOUNT_NUMBER"),
+    )
+    sepay_bank_name: str = Field(
+        default="",
+        validation_alias=AliasChoices("SEPAY_BANK_NAME", "SEPAY_BANK_CODE"),
+    )
+    sepay_account_holder: str = Field(
+        default="",
+        validation_alias=AliasChoices("SEPAY_ACCOUNT_HOLDER", "SEPAY_ACCOUNT_NAME"),
+    )
+
     @field_validator("debug", mode="before")
     @classmethod
     def normalize_debug(cls, value: object) -> bool | object:
@@ -125,6 +140,10 @@ class Settings(BaseSettings):
         "langfuse_public_key",
         "langfuse_host",
         "log_file_path",
+        "sepay_webhook_api_key",
+        "sepay_bank_account",
+        "sepay_bank_name",
+        "sepay_account_holder",
         mode="before",
     )
     @classmethod

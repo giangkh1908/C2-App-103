@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 from time import perf_counter
 from uuid import uuid4
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -18,12 +20,88 @@ from src.core.logging import (
     unbind_request_context,
 )
 from src.core.metrics import record_request_duration, reset_metrics
+from src.services.payment_service import (
+    expire_overdue_payments,
+    reconcile_paid_payments,
+)
 from src.services.plan_service import seed_default_plans
 from src.services.practice_dataset import load_exam_catalog_from_db
+from src.services.subscription_service import (
+    expire_overdue_subscriptions,
+    send_expiry_reminder_emails,
+)
 
 configure_logging()
 
 logger = get_logger(APP_LOGGER_NAME := "toan_truc_quan")
+
+# Timezone used by every cron job below. We keep it in a single
+# constant so it can be promoted to ``settings`` later without
+# touching the scheduler wiring.
+_SCHEDULER_TIMEZONE = "Asia/Ho_Chi_Minh"
+
+
+def _run_async_job(coro) -> None:
+    """Bridge a coroutine to a BackgroundScheduler thread.
+
+    ``BackgroundScheduler`` runs jobs in a thread pool, so async
+    coroutines must be driven through a fresh event loop in that
+    thread. ``asyncio.run`` is the canonical helper for that.
+    """
+    import asyncio
+
+    asyncio.run(coro())
+
+
+def _build_scheduler() -> BackgroundScheduler:
+    """Create the BackgroundScheduler with the subscription cron jobs.
+
+    Two daily jobs:
+
+    - ``expire_overdue_subscriptions`` at 00:00 local time — sweeps
+      active users whose expiry is in the past and downgrades them.
+    - ``send_expiry_reminder_emails`` at 09:00 local time — emails
+      users whose subscription expires in 3 days.
+    """
+    scheduler = BackgroundScheduler(timezone=_SCHEDULER_TIMEZONE)
+
+    scheduler.add_job(
+        lambda: _run_async_job(expire_overdue_subscriptions),
+        CronTrigger(hour=0, minute=0, timezone=_SCHEDULER_TIMEZONE),
+        id="expire_overdue_subscriptions",
+        name="Expire overdue subscriptions",
+        replace_existing=True,
+    )
+
+    scheduler.add_job(
+        lambda: _run_async_job(send_expiry_reminder_emails),
+        CronTrigger(hour=9, minute=0, timezone=_SCHEDULER_TIMEZONE),
+        id="send_expiry_reminder_emails",
+        name="Send subscription expiry reminder emails",
+        replace_existing=True,
+    )
+
+    # Payment reconciliation: every 5 minutes, activate any paid
+    # payments whose user was not upgraded (catches failed activations).
+    scheduler.add_job(
+        lambda: _run_async_job(reconcile_paid_payments),
+        CronTrigger(minute="*/5", timezone=_SCHEDULER_TIMEZONE),
+        id="reconcile_paid_payments",
+        name="Reconcile paid but unactivated payments",
+        replace_existing=True,
+    )
+
+    # Payment expiry: every hour, expire pending payment intents older
+    # than 24 hours.
+    scheduler.add_job(
+        lambda: _run_async_job(expire_overdue_payments),
+        CronTrigger(minute=0, timezone=_SCHEDULER_TIMEZONE),
+        id="expire_overdue_payments",
+        name="Expire overdue payment intents",
+        replace_existing=True,
+    )
+
+    return scheduler
 
 
 @asynccontextmanager
@@ -43,9 +121,22 @@ async def lifespan(app: FastAPI):
     logger.info("plans_seeded")
     catalog = await load_exam_catalog_from_db(db_module.db)
     logger.info("practice_catalog_loaded", exam_count=len(catalog.exams_by_id))
-    yield
-    logger.info("app_stopped")
-    await db_module.close_db()
+
+    scheduler = _build_scheduler()
+    scheduler.start()
+    logger.info(
+        "subscription_scheduler_started",
+        timezone=_SCHEDULER_TIMEZONE,
+        job_count=len(scheduler.get_jobs()),
+    )
+
+    try:
+        yield
+    finally:
+        scheduler.shutdown(wait=False)
+        logger.info("subscription_scheduler_stopped")
+        logger.info("app_stopped")
+        await db_module.close_db()
 
 
 app = FastAPI(

@@ -5,17 +5,27 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { getPlans } from "@/lib/planApi";
+import {
+  createCheckout,
+  PaymentApiError,
+  PaymentAuthError,
+  type ApiFetch,
+} from "@/lib/paymentApi";
 import type { Plan } from "@/types/auth";
+import type { PaymentBilling } from "@/types/payment";
 import Navbar from "@/components/landing/Navbar";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function PricingClient({ locale }: { locale: string }) {
   const t = useTranslations("pricing");
-  const { apiFetch, isAuthenticated } = useAuth();
+  const { apiFetch, isAuthenticated } = useAuth() as {
+    apiFetch: ApiFetch;
+    isAuthenticated: boolean;
+  };
   const router = useRouter();
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [billing, setBilling] = useState<PaymentBilling>("monthly");
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [upgradeResult, setUpgradeResult] = useState<{ success: boolean; message: string } | null>(null);
@@ -72,24 +82,28 @@ export default function PricingClient({ locale }: { locale: string }) {
     setUpgradeResult(null);
 
     try {
-      const res = await apiFetch("/subscription/upgrade", {
-        method: "POST",
-        body: JSON.stringify({ plan_name: planName }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.detail || "Upgrade failed");
-      }
-
-      setUpgradeResult({ success: true, message: "Nâng cấp thành công!" });
-      setTimeout(() => {
-        router.push(`/${locale}/learn`);
-      }, 1500);
+      await createCheckout(apiFetch, planName, billing);
+      // Bounce to the checkout page; the QR is generated and the
+      // status is polled there. We don't show the "Nâng cấp thành công"
+      // success message here because the payment isn't confirmed yet —
+      // it lives on the success page.
+      router.push(
+        `/${locale}/payment?plan=${encodeURIComponent(planName)}&billing=${billing}`,
+      );
     } catch (err) {
+      if (err instanceof PaymentAuthError) {
+        router.push(`/${locale}/login`);
+        return;
+      }
+      const message =
+        err instanceof PaymentApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : t("errorGeneric");
       setUpgradeResult({
         success: false,
-        message: err instanceof Error ? err.message : "Có lỗi xảy ra",
+        message,
       });
     } finally {
       setUpgrading(null);

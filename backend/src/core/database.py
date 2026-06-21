@@ -9,6 +9,20 @@ client: AsyncIOMotorClient | None = None
 db: AsyncIOMotorDatabase | None = None
 
 
+async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
+    """Create indexes for the `payments` collection.
+
+    `payment_code` must be unique — it's the business code we show
+    the user in the QR content and is also the lookup key from the
+    SePay webhook. `user_id` and `status` are queried for the
+    user's payment history and for the background sweeper that
+    expires stale `pending` intents.
+    """
+    await target_db.payments.create_index("payment_code", unique=True)
+    await target_db.payments.create_index("user_id")
+    await target_db.payments.create_index("status")
+
+
 async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:
     await target_db.users.create_index("email", unique=True)
     await target_db.learning_sessions.create_index("session_id")
@@ -27,6 +41,7 @@ async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:
     await target_db.usage_logs.create_index("user_id")
     await target_db.usage_logs.create_index("timestamp")
     await target_db.usage_logs.create_index([("user_id", 1), ("action", 1), ("timestamp", 1)])
+    await ensure_payment_indexes(target_db)
 
 
 async def connect_db() -> None:

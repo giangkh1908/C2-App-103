@@ -78,8 +78,11 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const handleUpgrade = useCallback(
     (planName: string) => {
       onClose();
-      // Use window.location for reliable navigation
-      window.location.href = `/${locale}/pricing`;
+      // Hand off to the dedicated checkout page; the QR is generated and
+      // the status is polled there. We default to monthly since the modal
+      // doesn't expose a billing toggle.
+      const url = `/${locale}/payment?plan=${encodeURIComponent(planName)}&billing=monthly`;
+      window.location.href = url;
     },
     [onClose, locale],
   );

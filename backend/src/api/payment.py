@@ -258,8 +258,9 @@ async def sepay_webhook(
         gateway_txn_id = str(raw_txn)
 
     # 7) Delegate the atomic flip + user activation to the service.
-    #    Any exception here is logged and swallowed — we still answer
-    #    200 to keep the gateway's retry budget for genuine failures.
+    #    On transient exceptions (DB blip, network timeout), return 500
+    #    so the gateway retries. The reconciliation job also catches
+    #    any payments that slipped through.
     try:
         updated = await payment_service.verify_and_mark_paid(
             payment_code=payment_code,
@@ -273,7 +274,12 @@ async def sepay_webhook(
             payment_code=payment_code,
             gateway_txn_id=gateway_txn_id,
         )
-        return {"success": True}
+        # Return 500 so SePay retries — a transient DB error should
+        # not be swallowed as 200.
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Processing error — gateway should retry.",
+        )
 
     if updated is None:
         # Service refused: unknown code, wrong amount, already settled,

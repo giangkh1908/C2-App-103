@@ -17,10 +17,17 @@ The "pending -> paid" flip uses a single `find_one_and_update` with
   user.
 - an `expired` payment cannot be paid: the sweeper flipped the status
   to `expired` first, the guard skips it.
+
+When the payment is marked `paid` but user activation fails (DB blip,
+network timeout), the system enters an inconsistent state. A background
+``reconcile_paid_payments`` job runs periodically to find and fix these
+by checking each `paid` payment's ``plan_id`` against the user's
+current ``plan_id`` and re-applying if they differ.
 """
 
 from __future__ import annotations
 
+import asyncio
 import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
@@ -63,6 +70,12 @@ _USER_ID_SHORT_LEN = 6
 _BILLING_MONTHLY = "monthly"
 _BILLING_YEARLY = "yearly"
 
+# Retry config for user activation after payment flip.
+# If the first activation attempt fails (DB blip, network timeout),
+# we retry up to _ACTIVATE_MAX_RETRIES times with exponential backoff.
+_ACTIVATE_MAX_RETRIES = 3
+_ACTIVATE_RETRY_DELAY = 1.0  # seconds, doubled each retry
+
 
 def _safe_objectid(user_id: str) -> ObjectId | None:
     """Coerce a string user id to a bson ObjectId, returning None on
@@ -96,11 +109,21 @@ def _resolve_amount(plan: dict[str, Any], billing: str) -> int:
     and we should never mint a zero-vnd payment intent.
     """
     if billing == _BILLING_MONTHLY:
-        amount = int(plan.get("price_monthly", 0))
+        price_key = "price_monthly"
     elif billing == _BILLING_YEARLY:
-        amount = int(plan.get("price_yearly", 0))
+        price_key = "price_yearly"
     else:
         raise ValueError(f"Invalid billing cycle: {billing!r}")
+
+    raw = plan.get(price_key)
+    if raw is None:
+        logger.warning(
+            "plan_missing_price_field",
+            plan_name=plan.get("name", "?"),
+            price_key=price_key,
+        )
+    amount = int(raw) if raw is not None else 0
+
     if amount <= 0:
         raise ValueError(
             f"Plan {plan.get('name', '?')!r} has no positive price for billing={billing!r}"
@@ -259,6 +282,8 @@ async def verify_and_mark_paid(
     # Activate the user. We deliberately *clear* `usage` so the
     # user gets a fresh quota window on the new plan (mirrors the
     # behavior of the existing `/subscription/upgrade` endpoint).
+    # If activation fails after retries, the payment stays "paid"
+    # and a background reconciliation job will pick it up.
     user_oid = _safe_objectid(updated["user_id"])
     if user_oid is None:
         logger.error(
@@ -266,22 +291,24 @@ async def verify_and_mark_paid(
             payment_code=payment_code,
             user_id=updated.get("user_id"),
         )
-        # The payment is already paid; the user just won't be
-        # activated. Surface as None so the caller can investigate.
-        return None
+        # Payment is already paid; user won't be activated.
+        # Reconciliation job will catch this later.
+        return PaymentInDB.from_mongo(updated)
 
-    await db.users.update_one(
-        {"_id": user_oid},
-        {
-            "$set": {
-                "plan_id": updated["plan_id"],
-                "subscription_status": "active",
-                "subscription_expires_at": updated.get("expires_at"),
-                "usage": {},
-                "updated_at": now,
-            }
-        },
+    activation_succeeded = await _activate_user(
+        db=db,
+        user_oid=user_oid,
+        payment=updated,
+        now=now,
     )
+
+    if not activation_succeeded:
+        logger.error(
+            "payment_activation_failed_after_retries",
+            payment_code=payment_code,
+            user_id=updated["user_id"],
+            plan_id=updated["plan_id"],
+        )
 
     logger.info(
         "payment_marked_paid",
@@ -289,8 +316,49 @@ async def verify_and_mark_paid(
         user_id=updated["user_id"],
         plan_id=updated["plan_id"],
         gateway_txn_id=gateway_txn_id,
+        activation_succeeded=activation_succeeded,
     )
     return PaymentInDB.from_mongo(updated)
+
+
+async def _activate_user(
+    db: Any,
+    user_oid: ObjectId,
+    payment: dict[str, Any],
+    now: datetime,
+) -> bool:
+    """Attempt to activate the user with retry logic.
+
+    Returns ``True`` if activation succeeded, ``False`` if all
+    retries failed (payment is still "paid" — reconciliation will
+    handle it later).
+    """
+    for attempt in range(_ACTIVATE_MAX_RETRIES):
+        try:
+            await db.users.update_one(
+                {"_id": user_oid},
+                {
+                    "$set": {
+                        "plan_id": payment["plan_id"],
+                        "subscription_status": "active",
+                        "subscription_expires_at": payment.get("expires_at"),
+                        "usage": {},
+                        "updated_at": now,
+                    }
+                },
+            )
+            return True
+        except Exception:
+            delay = _ACTIVATE_RETRY_DELAY * (2 ** attempt)
+            logger.warning(
+                "payment_activation_retry",
+                attempt=attempt + 1,
+                max_retries=_ACTIVATE_MAX_RETRIES,
+                delay=delay,
+                user_id=str(payment.get("user_id")),
+            )
+            await asyncio.sleep(delay)
+    return False
 
 
 async def expire_overdue_payments() -> int:
@@ -312,6 +380,83 @@ async def expire_overdue_payments() -> int:
     if modified:
         logger.info("payments_expired_sweep", count=modified, cutoff=cutoff.isoformat())
     return modified
+
+
+async def reconcile_paid_payments() -> int:
+    """Find paid payments whose user was never activated and activate them.
+
+    This catches the edge case where ``verify_and_mark_paid`` flipped
+    the payment to ``paid`` but user activation failed after all
+    retries. The function compares each paid payment's ``plan_id``
+    with the user's current ``plan_id`` and re-applies the upgrade
+    if they differ.
+
+    Designed to be called by a background scheduler (APScheduler /
+    FastAPI startup hook). Returns the number of users activated.
+    """
+    db = get_db()
+    now = datetime.now(UTC)
+    activated = 0
+
+    # Find paid payments. We look for payments where the user's
+    # current plan doesn't match the payment's plan_id, meaning
+    # the user paid but was never upgraded.
+    paid_payments = await db.payments.find(
+        {"status": PaymentStatus.PAID.value}
+    ).to_list(length=100)  # cap at 100 per sweep cycle
+
+    for doc in paid_payments:
+        user_oid = _safe_objectid(doc.get("user_id", ""))
+        if user_oid is None:
+            continue
+
+        try:
+            user = await db.users.find_one({"_id": user_oid})
+        except Exception:
+            logger.warning(
+                "reconcile_user_lookup_failed",
+                payment_code=doc.get("payment_code"),
+                user_id=doc.get("user_id"),
+            )
+            continue
+
+        if user is None:
+            continue
+
+        # Already on the right plan — skip.
+        if user.get("plan_id") == doc.get("plan_id"):
+            continue
+
+        try:
+            await db.users.update_one(
+                {"_id": user_oid},
+                {
+                    "$set": {
+                        "plan_id": doc["plan_id"],
+                        "subscription_status": "active",
+                        "subscription_expires_at": doc.get("expires_at"),
+                        "usage": {},
+                        "updated_at": now,
+                    }
+                },
+            )
+            activated += 1
+            logger.info(
+                "reconcile_user_activated",
+                payment_code=doc.get("payment_code"),
+                user_id=doc.get("user_id"),
+                plan_id=doc.get("plan_id"),
+            )
+        except Exception:
+            logger.exception(
+                "reconcile_activation_failed",
+                payment_code=doc.get("payment_code"),
+                user_id=doc.get("user_id"),
+            )
+
+    if activated:
+        logger.info("reconcile_completed", activated=activated)
+    return activated
 
 
 async def get_payment_by_code(payment_code: str) -> PaymentInDB | None:

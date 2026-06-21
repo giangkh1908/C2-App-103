@@ -20,6 +20,10 @@ from src.core.logging import (
     unbind_request_context,
 )
 from src.core.metrics import record_request_duration, reset_metrics
+from src.services.payment_service import (
+    expire_overdue_payments,
+    reconcile_paid_payments,
+)
 from src.services.plan_service import seed_default_plans
 from src.services.practice_dataset import load_exam_catalog_from_db
 from src.services.subscription_service import (
@@ -74,6 +78,26 @@ def _build_scheduler() -> BackgroundScheduler:
         CronTrigger(hour=9, minute=0, timezone=_SCHEDULER_TIMEZONE),
         id="send_expiry_reminder_emails",
         name="Send subscription expiry reminder emails",
+        replace_existing=True,
+    )
+
+    # Payment reconciliation: every 5 minutes, activate any paid
+    # payments whose user was not upgraded (catches failed activations).
+    scheduler.add_job(
+        lambda: _run_async_job(reconcile_paid_payments),
+        CronTrigger(minute="*/5", timezone=_SCHEDULER_TIMEZONE),
+        id="reconcile_paid_payments",
+        name="Reconcile paid but unactivated payments",
+        replace_existing=True,
+    )
+
+    # Payment expiry: every hour, expire pending payment intents older
+    # than 24 hours.
+    scheduler.add_job(
+        lambda: _run_async_job(expire_overdue_payments),
+        CronTrigger(minute=0, timezone=_SCHEDULER_TIMEZONE),
+        id="expire_overdue_payments",
+        name="Expire overdue payment intents",
         replace_existing=True,
     )
 

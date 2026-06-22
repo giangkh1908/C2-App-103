@@ -11,7 +11,7 @@ import {
   PaymentAuthError,
   type ApiFetch,
 } from "@/lib/paymentApi";
-import type { Plan } from "@/types/auth";
+import type { Plan, User } from "@/types/auth";
 import type { PaymentBilling } from "@/types/payment";
 import Navbar from "@/components/landing/Navbar";
 import { Check, X, Sparkles, Loader2 } from "lucide-react";
@@ -19,9 +19,10 @@ import Link from "next/link";
 
 export default function PricingClient({ locale }: { locale: string }) {
   const t = useTranslations("pricing");
-  const { apiFetch, isAuthenticated } = useAuth() as {
+  const { apiFetch, isAuthenticated, user: authUser } = useAuth() as {
     apiFetch: ApiFetch;
     isAuthenticated: boolean;
+    user: User | null;
   };
   const router = useRouter();
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -29,6 +30,15 @@ export default function PricingClient({ locale }: { locale: string }) {
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [upgradeResult, setUpgradeResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    planName: string;
+    planDisplayName: string;
+    currentPlanName: string;
+    targetPlanName: string;
+    currentSortOrder: number;
+    targetSortOrder: number;
+  } | null>(null);
 
   useEffect(() => {
     getPlans(apiFetch)
@@ -77,19 +87,75 @@ export default function PricingClient({ locale }: { locale: string }) {
     return `${value} ${t("perDay")}`;
   };
 
+  const getSortOrder = (planName: string) => {
+    const order: Record<string, number> = { free: 0, plus: 1, premium: 2 };
+    return order[planName] ?? -1;
+  };
+
   const handleUpgrade = async (planName: string) => {
     setUpgrading(planName);
     setUpgradeResult(null);
 
     try {
+      const currentPlan = plans.find((p) => p.id === authUser?.planId);
+      const currentPlanName = currentPlan?.name ?? "free";
+      const currentSort = getSortOrder(currentPlanName);
+      const targetSort = getSortOrder(planName);
+
+      // Case 1: Free plan → go to learning page
+      if (planName === "free") {
+        const res = await apiFetch("/subscription/change", {
+          method: "POST",
+          body: JSON.stringify({ plan_name: "free", billing: "monthly" }),
+        });
+        if (res.ok) {
+          router.push(`/${locale}`);
+        }
+        return;
+      }
+
+      // Case 2: Same plan → change billing cycle
+      if (planName === currentPlanName) {
+        if (billing === "monthly") {
+          const res = await apiFetch("/subscription/change", {
+            method: "POST",
+            body: JSON.stringify({ plan_name: planName, billing: "yearly" }),
+          });
+          if (res.ok) {
+            setUpgradeResult({ success: true, message: "Đã chuyển sang thanh toán năm!" });
+            setTimeout(() => setUpgradeResult(null), 3000);
+          }
+        } else {
+          const res = await apiFetch("/subscription/change", {
+            method: "POST",
+            body: JSON.stringify({ plan_name: planName, billing: "monthly" }),
+          });
+          if (res.ok) {
+            setUpgradeResult({ success: true, message: "Đã chuyển sang thanh toán tháng!" });
+            setTimeout(() => setUpgradeResult(null), 3000);
+          }
+        }
+        return;
+      }
+
+      // Case 3: Downgrade (target sort < current sort)
+      if (targetSort < currentSort) {
+        const targetPlan = plans.find((p) => p.name === planName);
+        setConfirmDialog({
+          open: true,
+          planName,
+          planDisplayName: targetPlan?.displayName?.vi ?? planName,
+          currentPlanName,
+          targetPlanName: planName,
+          currentSortOrder: currentSort,
+          targetSortOrder: targetSort,
+        });
+        return;
+      }
+
+      // Case 4: Upgrade (target sort > current sort) → payment flow
       await createCheckout(apiFetch, planName, billing);
-      // Bounce to the checkout page; the QR is generated and the
-      // status is polled there. We don't show the "Nâng cấp thành công"
-      // success message here because the payment isn't confirmed yet —
-      // it lives on the success page.
-      router.push(
-        `/${locale}/payment?plan=${encodeURIComponent(planName)}&billing=${billing}`,
-      );
+      router.push(`/${locale}/payment?plan=${encodeURIComponent(planName)}&billing=${billing}`);
     } catch (err) {
       if (err instanceof PaymentAuthError) {
         router.push(`/${locale}/login`);
@@ -135,6 +201,41 @@ export default function PricingClient({ locale }: { locale: string }) {
           </div>
         )}
 
+        {confirmDialog?.open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+              <h3 className="text-lg font-bold text-natural-charcoal">Xác nhận thay đổi gói</h3>
+              <p className="mt-2 text-sm text-natural-charcoal/70">
+                Bạn đang giảm gói từ <strong>{confirmDialog.currentPlanName}</strong> xuống{" "}
+                <strong>{confirmDialog.planDisplayName}</strong>. Một số tính năng sẽ bị giới hạn.
+              </p>
+              <div className="mt-4 flex gap-3">
+                <button
+                  onClick={() => setConfirmDialog(null)}
+                  className="flex-1 rounded-full border border-natural-border py-2.5 text-sm font-bold text-natural-charcoal"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={async () => {
+                    const res = await apiFetch("/subscription/change", {
+                      method: "POST",
+                      body: JSON.stringify({ plan_name: confirmDialog.planName, billing }),
+                    });
+                    if (res.ok) {
+                      router.push(`/${locale}`);
+                    }
+                    setConfirmDialog(null);
+                  }}
+                  className="flex-1 rounded-full bg-red-500 py-2.5 text-sm font-bold text-white hover:bg-red-600"
+                >
+                  Đồng ý
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mt-8 flex items-center justify-center gap-3">
           <button
             onClick={() => setBilling("monthly")}
@@ -169,7 +270,7 @@ export default function PricingClient({ locale }: { locale: string }) {
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {sortedPlans.map((plan) => {
               const isRecommended = plan.name === "plus";
-              const isCurrentPlan = false; // TODO: compare with user.planId
+              const isCurrentPlan = authUser?.planId === plan.id;
               const isUpgrading = upgrading === plan.name;
 
               return (
@@ -255,14 +356,16 @@ export default function PricingClient({ locale }: { locale: string }) {
                   {isAuthenticated ? (
                     <button
                       onClick={() => handleUpgrade(plan.name)}
-                      disabled={isUpgrading}
+                      disabled={isUpgrading || isCurrentPlan}
                       className={`flex items-center justify-center gap-2 rounded-full py-3 text-sm font-bold transition-colors ${
                         isRecommended
                           ? "bg-natural-green text-white hover:bg-natural-green-hover disabled:opacity-60"
                           : "bg-natural-bg text-natural-charcoal hover:bg-natural-border disabled:opacity-60"
                       }`}
                     >
-                      {isUpgrading ? (
+                      {isCurrentPlan ? (
+                        "Gói hiện tại"
+                      ) : isUpgrading ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
                           Đang xử lý...

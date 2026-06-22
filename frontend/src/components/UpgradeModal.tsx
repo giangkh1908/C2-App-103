@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Sparkles, Check, Crown } from "lucide-react";
+import { X, Sparkles, Check, Crown, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -44,7 +45,9 @@ const FALLBACK_PLANS = [
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const locale = useLocale();
   const router = useRouter();
+  const { apiFetch } = useAuth();
   const [plans, setPlans] = useState(FALLBACK_PLANS);
+  const [upgrading, setUpgrading] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -76,7 +79,31 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   );
 
   const handleUpgrade = useCallback(
-    (planName: string) => {
+    async (planName: string) => {
+      if (planName === "free") {
+        setUpgrading(planName);
+        try {
+          const res = await apiFetch("/subscription/upgrade", {
+            method: "POST",
+            body: JSON.stringify({ plan_name: planName }),
+          });
+          if (!res.ok) {
+            const detail = (await res.json().catch(() => null))?.detail as
+              | string
+              | undefined;
+            alert(detail ?? "Kích hoạt gói miễn phí thất bại");
+            return;
+          }
+          onClose();
+          window.location.href = `/${locale}`;
+        } catch {
+          alert("Kích hoạt gói miễn phí thất bại");
+        } finally {
+          setUpgrading(null);
+        }
+        return;
+      }
+
       onClose();
       // Hand off to the dedicated checkout page; the QR is generated and
       // the status is polled there. We default to monthly since the modal
@@ -84,7 +111,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       const url = `/${locale}/payment?plan=${encodeURIComponent(planName)}&billing=monthly`;
       window.location.href = url;
     },
-    [onClose, locale],
+    [onClose, locale, apiFetch],
   );
 
   const quotaLabels: Record<string, string> = {
@@ -208,16 +235,25 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
                       <button
                         onClick={() => handleUpgrade(plan.name)}
-                        disabled={isFree}
+                        disabled={upgrading === plan.name}
                         className={`w-full rounded-lg py-2.5 text-sm font-bold transition-colors ${
                           isFree
-                            ? "cursor-not-allowed bg-gray-100 text-gray-400"
+                            ? "bg-natural-green/10 text-natural-green hover:bg-natural-green/20"
                             : isRecommended
                               ? "bg-natural-green text-white hover:bg-natural-green-hover"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
+                        } ${upgrading === plan.name ? "opacity-60" : ""}`}
                       >
-                        {isFree ? "Gói hiện tại" : "Nâng cấp ngay"}
+                        {upgrading === plan.name ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Đang xử lý...
+                          </span>
+                        ) : isFree ? (
+                          "Tiếp tục miễn phí"
+                        ) : (
+                          "Nâng cấp ngay"
+                        )}
                       </button>
                     </div>
                   );

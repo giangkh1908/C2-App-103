@@ -320,14 +320,16 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
         )}
 
         {/* Main text bubble */}
-        <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {message.text}
-          </ReactMarkdown>
-          {/* Cursor nhấp nháy khi đang stream */}
-          {isLoading && message.text !== '' && !message.responseMode?.includes('visual') && !message.visualData && (
-            <span className="inline-block h-4 w-0.5 bg-natural-green align-middle animate-pulse ml-0.5" />
-          )}
+        <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-4 py-3 shadow-xs">
+          <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message.text}
+            </ReactMarkdown>
+            {/* Cursor nhấp nháy khi đang stream */}
+            {isLoading && message.text !== '' && !message.responseMode?.includes('visual') && !message.visualData && (
+              <span className="inline-block h-4 w-0.5 bg-natural-green align-middle animate-pulse ml-0.5" />
+            )}
+          </div>
         </div>
 
         {/* Visual panel */}

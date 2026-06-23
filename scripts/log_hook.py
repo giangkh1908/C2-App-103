@@ -155,6 +155,9 @@ def normalize(data: dict, tool: str) -> dict | None:
         base.update(
             {
                 "prompt": data.get("prompt", "")[:1000],
+                "tool_name": data.get("tool_name", ""),
+                "tool_input": data.get("tool_input") if event != "UserPromptSubmit" else None,
+                "tool_response": str(data.get("tool_response", ""))[:500],
             }
         )
 

@@ -337,7 +337,7 @@ export default function PricingClient({ locale }: { locale: string }) {
                   {isAuthenticated ? (
                     <button
                       onClick={() => handleUpgrade(plan.name)}
-                      disabled={isUpgrading || isCurrentPlan}
+                      disabled={upgrading !== null || isCurrentPlan}
                       className={`flex items-center justify-center gap-2 rounded-full py-3 text-sm font-bold transition-colors ${
                         isRecommended
                           ? "bg-natural-green text-white hover:bg-natural-green-hover disabled:opacity-60"

@@ -1,0 +1,154 @@
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:10.384496+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-23T15:14:14.412162+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-23T15:14:14.413675+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-12345","event":"sepay_webhook_received","request_id":"96739495-2b38-4f15-924c-f02d973d192a","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:14.687392+00:00"}
+{"payment_code":"TTQ_T1_1700000000","user_id":"6a3aa2c6b7f5197368a4b05a","plan_id":"6a3aa2c6b7f5197368a4b059","gateway_txn_id":"12345","activation_succeeded":true,"event":"payment_marked_paid","request_id":"96739495-2b38-4f15-924c-f02d973d192a","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:14:14.688406+00:00"}
+{"payment_code":"TTQ_T1_1700000000","gateway_txn_id":"12345","plan_name":"plus","event":"sepay_webhook_paid","request_id":"96739495-2b38-4f15-924c-f02d973d192a","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:14.690406+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":200,"duration_ms":8.96,"client_ip":"127.0.0.1","event":"request_completed","request_id":"96739495-2b38-4f15-924c-f02d973d192a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:14.691593+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:14.692593+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:14.698596+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-99999","event":"sepay_webhook_received","request_id":"10b24f3a-8954-4dd0-bffe-176f5c74eb26","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:18.617101+00:00"}
+{"supplied_key_hash":"5e179de47cd1","event":"sepay_webhook_unauthorized","request_id":"10b24f3a-8954-4dd0-bffe-176f5c74eb26","logger":"toan_truc_quan.payment_api","level":"warning","timestamp":"2026-06-23T15:14:18.618122+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":401,"duration_ms":2.99,"client_ip":"127.0.0.1","event":"request_completed","request_id":"10b24f3a-8954-4dd0-bffe-176f5c74eb26","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:18.619104+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:18.620610+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-99999","event":"sepay_webhook_received","request_id":"db8c9f34-4e1f-4ca7-b850-2b0fa6a41c41","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:18.622618+00:00"}
+{"supplied_key_hash":"5e179de47cd1","event":"sepay_webhook_unauthorized","request_id":"db8c9f34-4e1f-4ca7-b850-2b0fa6a41c41","logger":"toan_truc_quan.payment_api","level":"warning","timestamp":"2026-06-23T15:14:18.623625+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":401,"duration_ms":2.44,"client_ip":"127.0.0.1","event":"request_completed","request_id":"db8c9f34-4e1f-4ca7-b850-2b0fa6a41c41","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:18.623625+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:18.624625+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-99999","event":"sepay_webhook_received","request_id":"c9effe8f-2394-4bec-a214-0aa3369aa7f6","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:18.626628+00:00"}
+{"supplied_key_hash":"","event":"sepay_webhook_unauthorized","request_id":"c9effe8f-2394-4bec-a214-0aa3369aa7f6","logger":"toan_truc_quan.payment_api","level":"warning","timestamp":"2026-06-23T15:14:18.627626+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":401,"duration_ms":2.26,"client_ip":"127.0.0.1","event":"request_completed","request_id":"c9effe8f-2394-4bec-a214-0aa3369aa7f6","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:18.627626+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:18.628625+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:18.632143+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-777","event":"sepay_webhook_received","request_id":"64e914cc-5fd0-4d90-950e-d7883029dca0","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:22.589159+00:00"}
+{"payment_code":"TTQ_T1_1700000000","user_id":"6a3aa2ceb7f5197368a4b061","plan_id":"6a3aa2ceb7f5197368a4b062","gateway_txn_id":"777","activation_succeeded":true,"event":"payment_marked_paid","request_id":"64e914cc-5fd0-4d90-950e-d7883029dca0","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:14:22.591685+00:00"}
+{"payment_code":"TTQ_T1_1700000000","gateway_txn_id":"777","plan_name":"plus","event":"sepay_webhook_paid","request_id":"64e914cc-5fd0-4d90-950e-d7883029dca0","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:22.591685+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":200,"duration_ms":3.42,"client_ip":"127.0.0.1","event":"request_completed","request_id":"64e914cc-5fd0-4d90-950e-d7883029dca0","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:22.592685+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:22.594764+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-777","event":"sepay_webhook_received","request_id":"cd706d2c-ec6b-4703-9b91-39d65036bc9d","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:22.595763+00:00"}
+{"payment_code":"TTQ_T1_1700000000","current_status":"paid","event":"payment_verify_already_settled","request_id":"cd706d2c-ec6b-4703-9b91-39d65036bc9d","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:14:22.596679+00:00"}
+{"payment_code":"TTQ_T1_1700000000","gateway_txn_id":"777","event":"sepay_webhook_no_op","request_id":"cd706d2c-ec6b-4703-9b91-39d65036bc9d","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:22.596679+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":200,"duration_ms":2.41,"client_ip":"127.0.0.1","event":"request_completed","request_id":"cd706d2c-ec6b-4703-9b91-39d65036bc9d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:22.597682+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:22.598726+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:22.602026+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":100,"reference_code":"REF-888","event":"sepay_webhook_received","request_id":"455cb08a-1640-4c02-92b0-e007c4f2e374","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:26.494588+00:00"}
+{"payment_code":"TTQ_T1_1700000000","expected":49000,"received":100,"event":"payment_verify_amount_mismatch","request_id":"455cb08a-1640-4c02-92b0-e007c4f2e374","logger":"toan_truc_quan.payment_service","level":"warning","timestamp":"2026-06-23T15:14:26.495596+00:00"}
+{"payment_code":"TTQ_T1_1700000000","gateway_txn_id":"888","event":"sepay_webhook_no_op","request_id":"455cb08a-1640-4c02-92b0-e007c4f2e374","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:26.496595+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":200,"duration_ms":2.81,"client_ip":"127.0.0.1","event":"request_completed","request_id":"455cb08a-1640-4c02-92b0-e007c4f2e374","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:26.496595+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:26.498586+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:26.502106+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"out","transfer_amount":49000,"reference_code":"REF-555","event":"sepay_webhook_received","request_id":"1d8ee0de-d6b1-4a54-93a5-80a299cdbd96","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:30.301688+00:00"}
+{"transfer_type":"out","event":"sepay_webhook_skipped_non_inbound","request_id":"1d8ee0de-d6b1-4a54-93a5-80a299cdbd96","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:14:30.302705+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":200,"duration_ms":2.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"1d8ee0de-d6b1-4a54-93a5-80a299cdbd96","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:14:30.303694+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:14:30.304697+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:50.432951+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:52.239371+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:53.937465+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:55.601578+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:57.246978+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:58.816638+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:00.412898+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:01.989645+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:03.717802+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:05.467383+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:07.057614+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:08.602533+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:10.227284+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:11.863662+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:13.481821+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:15.078942+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:17.096248+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:19.234859+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:21.193231+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:23.079116+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:23.084629+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:25.003647+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:25.011152+00:00"}
+{"payment_code":"TTQ507f1f1782227726ab4225","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:26.931740+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:26.936826+00:00"}
+{"payment_code":"TTQ507f1f178222772822e7ad","plan_name":"plus","billing":"yearly","amount_vnd":399000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:28.549567+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:28.554098+00:00"}
+{"payment_code":"TTQ507f1f178222773026d641","plan_name":"premium","billing":"monthly","amount_vnd":99000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:30.146716+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:30.152226+00:00"}
+{"payment_code":"TTQ507f1f1782227731b050af","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:31.711093+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:31.716114+00:00"}
+{"payment_code":"TTQ507f1f1782227733574bb2","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:33.407006+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:33.411497+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:35.162402+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:37.009453+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:38.749183+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","plan_id":"507f1f77bcf86cd799439012","gateway_txn_id":"TXN-123","activation_succeeded":true,"event":"payment_marked_paid","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:40.911333+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:40.919334+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","plan_id":"507f1f77bcf86cd799439012","gateway_txn_id":"TXN-X","activation_succeeded":true,"event":"payment_marked_paid","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:42.948386+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:42.955509+00:00"}
+{"payment_code":"TTQ507f1f1700000000","current_status":"paid","event":"payment_verify_already_settled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:44.930474+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:44.945509+00:00"}
+{"payment_code":"TTQ507f1f1700000000","expected":49000,"received":100,"event":"payment_verify_amount_mismatch","logger":"toan_truc_quan.payment_service","level":"warning","timestamp":"2026-06-23T15:15:46.725695+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:46.731698+00:00"}
+{"payment_code":"TTQ507f1f1700000000","current_status":"expired","event":"payment_verify_already_settled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:48.664733+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:48.673740+00:00"}
+{"payment_code":"TTQ_NOPE","event":"payment_verify_unknown_code","logger":"toan_truc_quan.payment_service","level":"warning","timestamp":"2026-06-23T15:15:50.691041+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:50.695563+00:00"}
+{"count":3,"cutoff":"2026-06-22T15:15:52.722845+00:00","event":"payments_expired_sweep","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:15:52.722845+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:52.727452+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:54.578596+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:56.382780+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:15:58.116554+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:00.139964+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:02.150910+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:03.841699+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:05.971364+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-23T15:16:07.917931+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-23T15:16:07.917931+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":3.67,"client_ip":"127.0.0.1","event":"request_completed","request_id":"aab6be3f-3d82-4b8c-8730-2cb37cf69138","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:08.202794+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:08.205323+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:08.378435+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":5.16,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8b210931-c50e-42ef-b08e-8af75bbf6749","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:10.646559+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:10.649567+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:10.662637+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":200,"duration_ms":2.0,"client_ip":"127.0.0.1","event":"request_completed","request_id":"ca0f8453-fcfd-4ed1-8d70-a1e13659c436","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:12.811722+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:12.812707+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:12.817232+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":0.96,"client_ip":"127.0.0.1","event":"request_completed","request_id":"98f7b189-4d15-41a6-8c99-5cd4b8a23231","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:14.930134+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:14.932136+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:14.936789+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":2.47,"client_ip":"127.0.0.1","event":"request_completed","request_id":"1be2287d-f360-49a6-8058-1a998ef97f7e","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:17.283163+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:17.284674+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:17.302732+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":401,"duration_ms":1.09,"client_ip":"127.0.0.1","event":"request_completed","request_id":"05114afc-b7b1-4f37-a833-5cb1a3209a21","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:20.577529+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:20.578528+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:20.584530+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":2.29,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d9bb7926-0079-4a1d-9e68-c402b610a1be","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:23.078216+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:23.081228+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:23.101294+00:00"}
+{"count":1,"event":"subscriptions_expired_sweep","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-23T15:16:25.031415+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:25.035876+00:00"}
+{"count":5,"event":"subscriptions_expired_sweep","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-23T15:16:27.169781+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:27.174770+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:28.972427+00:00"}
+{"email_to":"[EMAIL_REDACTED]","event":"subscription_reminder_sent","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-23T15:16:31.170276+00:00"}
+{"count":1,"event":"subscription_reminders_dispatched","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-23T15:16:31.171281+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:31.176798+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:33.825326+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:37.222264+00:00"}
+{"email_to":"[EMAIL_REDACTED]","event":"subscription_reminder_send_exception","logger":"toan_truc_quan.subscription_service","level":"error","timestamp":"2026-06-23T15:16:39.331771+00:00","exception":"Traceback (most recent call last):\n  File \"D:\\Vin\\C2-App-103\\backend\\src\\services\\subscription_service.py\", line 152, in send_expiry_reminder_emails\n    await send_email(email, subject, html)\n  File \"C:\\Users\\KimHo\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\unittest\\mock.py\", line 2240, in _execute_mock_call\n    raise effect\nRuntimeError: resend 503"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:39.359849+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-12345","event":"sepay_webhook_received","request_id":"da462981-5074-4b79-b5d3-705b9d990615","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:16:44.046753+00:00"}
+{"payment_code":"TTQ_T1_1700000000","user_id":"6a3aa35b53e3a94524aea246","plan_id":"6a3aa35b53e3a94524aea245","gateway_txn_id":"12345","activation_succeeded":true,"event":"payment_marked_paid","request_id":"da462981-5074-4b79-b5d3-705b9d990615","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-23T15:16:44.047754+00:00"}
+{"payment_code":"TTQ_T1_1700000000","gateway_txn_id":"12345","plan_name":"plus","event":"sepay_webhook_paid","request_id":"da462981-5074-4b79-b5d3-705b9d990615","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:16:44.048757+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":200,"duration_ms":6.26,"client_ip":"127.0.0.1","event":"request_completed","request_id":"da462981-5074-4b79-b5d3-705b9d990615","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:44.049752+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:44.051745+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:44.054835+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-99999","event":"sepay_webhook_received","request_id":"5469c10c-2c9d-49e0-bcf4-38b1f323d75d","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:16:47.720293+00:00"}
+{"supplied_key_hash":"5e179de47cd1","event":"sepay_webhook_unauthorized","request_id":"5469c10c-2c9d-49e0-bcf4-38b1f323d75d","logger":"toan_truc_quan.payment_api","level":"warning","timestamp":"2026-06-23T15:16:47.721287+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":401,"duration_ms":2.14,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5469c10c-2c9d-49e0-bcf4-38b1f323d75d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:47.721287+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:47.723284+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-99999","event":"sepay_webhook_received","request_id":"a56ea22f-39dc-4ef6-815f-b67686a1ca07","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:16:47.724798+00:00"}
+{"supplied_key_hash":"5e179de47cd1","event":"sepay_webhook_unauthorized","request_id":"a56ea22f-39dc-4ef6-815f-b67686a1ca07","logger":"toan_truc_quan.payment_api","level":"warning","timestamp":"2026-06-23T15:16:47.724798+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":401,"duration_ms":2.06,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a56ea22f-39dc-4ef6-815f-b67686a1ca07","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:47.725824+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:47.726837+00:00"}
+{"gateway":"Vietcombank","code":"TTQ_T1_1700000000","transfer_type":"in","transfer_amount":49000,"reference_code":"REF-99999","event":"sepay_webhook_received","request_id":"2ef23d55-5445-4a68-b05e-dbc09c1efd62","logger":"toan_truc_quan.payment_api","level":"info","timestamp":"2026-06-23T15:16:47.728849+00:00"}
+{"supplied_key_hash":"","event":"sepay_webhook_unauthorized","request_id":"2ef23d55-5445-4a68-b05e-dbc09c1efd62","logger":"toan_truc_quan.payment_api","level":"warning","timestamp":"2026-06-23T15:16:47.728849+00:00"}
+{"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":401,"duration_ms":2.02,"client_ip":"127.0.0.1","event":"request_completed","request_id":"2ef23d55-5445-4a68-b05e-dbc09c1efd62","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:47.729835+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:47.732361+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:47.736892+00:00"}

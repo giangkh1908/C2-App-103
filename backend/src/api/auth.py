@@ -62,6 +62,17 @@ def clear_refresh_cookie(response: Response) -> None:
     )
 
 
+async def _store_refresh_token(db, user_id: str, refresh_token: str) -> None:
+    expires = datetime.now(UTC) + timedelta(days=settings.jwt_refresh_token_expire_days)
+    await db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {
+            "refresh_token": refresh_token,
+            "refresh_token_expires": expires,
+        }}
+    )
+
+
 @router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 async def register(req: RegisterRequest, response: Response):
     db = get_db()
@@ -93,6 +104,7 @@ async def register(req: RegisterRequest, response: Response):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    await _store_refresh_token(db, user.id, refresh_token)
     set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
@@ -123,6 +135,7 @@ async def login(req: LoginRequest, response: Response):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    await _store_refresh_token(db, user.id, refresh_token)
     set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
@@ -191,6 +204,7 @@ async def google_login(req: GoogleLoginRequest, response: Response):
 
     access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
+    await _store_refresh_token(db, user.id, refresh_token)
     set_refresh_cookie(response, refresh_token)
 
     return AuthResponse(
@@ -225,9 +239,38 @@ async def refresh(
             detail="User not found",
         )
 
+    # Refresh token rotation: verify token matches DB
+    stored_token = user_doc.get("refresh_token")
+    if stored_token is None:
+        # No token stored → force re-login (logout was called or token was never stored)
+        clear_refresh_cookie(response)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session expired, please login again",
+        )
+
+    if stored_token != refresh_token:
+        # Token reuse detected! Attacker may be using a stolen token.
+        # Clear all sessions for this user.
+        await db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {
+                "refresh_token": None,
+                "refresh_token_expires": None,
+            }}
+        )
+        clear_refresh_cookie(response)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session terminated due to security concern",
+        )
+
     user = UserInDB.from_mongo(user_doc)
     access_token = create_access_token(user.id, user.role)
     new_refresh_token = create_refresh_token(user.id)
+
+    # Store new token (rotation)
+    await _store_refresh_token(db, user.id, new_refresh_token)
     set_refresh_cookie(response, new_refresh_token)
 
     return TokenResponse(accessToken=access_token)

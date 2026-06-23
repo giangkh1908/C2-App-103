@@ -67,11 +67,16 @@ class TestLogin:
 
 @pytest.mark.asyncio
 class TestRefresh:
-    async def test_refresh_success(self, client: AsyncClient, test_user):
+    async def test_refresh_success(self, client: AsyncClient, test_user, mock_db):
         from src.core.security import create_refresh_token
 
         user_id = str(test_user["_id"])
         rt = create_refresh_token(user_id)
+        # Store refresh token in DB so rotation validation passes
+        await mock_db.users.update_one(
+            {"_id": test_user["_id"]},
+            {"$set": {"refresh_token": rt}},
+        )
 
         response = await client.post("/api/v1/auth/refresh", cookies={"refresh_token": rt})
         assert response.status_code == 200

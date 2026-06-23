@@ -102,43 +102,24 @@ export default function PricingClient({ locale }: { locale: string }) {
       const currentSort = getSortOrder(currentPlanName);
       const targetSort = getSortOrder(planName);
 
-      // Case 1: Free plan → go to learning page
+      // Case 1: Free plan → go to learning page (no API call, no plan change)
       if (planName === "free") {
-        const res = await apiFetch("/subscription/change", {
-          method: "POST",
-          body: JSON.stringify({ plan_name: "free", billing: "monthly" }),
-        });
-        if (res.ok) {
-          router.push(`/${locale}`);
-        }
+        router.push(`/${locale}/learn`);
         return;
       }
 
-      // Case 2: Same plan → change billing cycle
+      // Case 2: Same plan → billing switch not supported
       if (planName === currentPlanName) {
-        if (billing === "monthly") {
-          const res = await apiFetch("/subscription/change", {
-            method: "POST",
-            body: JSON.stringify({ plan_name: planName, billing: "yearly" }),
-          });
-          if (res.ok) {
-            setUpgradeResult({ success: true, message: "Đã chuyển sang thanh toán năm!" });
-            setTimeout(() => setUpgradeResult(null), 3000);
-          }
-        } else {
-          const res = await apiFetch("/subscription/change", {
-            method: "POST",
-            body: JSON.stringify({ plan_name: planName, billing: "monthly" }),
-          });
-          if (res.ok) {
-            setUpgradeResult({ success: true, message: "Đã chuyển sang thanh toán tháng!" });
-            setTimeout(() => setUpgradeResult(null), 3000);
-          }
-        }
+        setUpgradeResult({
+          success: false,
+          message: "Liên hệ hỗ trợ để đổi chu kỳ thanh toán",
+        });
+        setTimeout(() => setUpgradeResult(null), 3000);
         return;
       }
 
       // Case 3: Downgrade (target sort < current sort)
+      // Backend validates: same-tier or downgrade allowed, upgrade rejected.
       if (targetSort < currentSort) {
         const targetPlan = plans.find((p) => p.name === planName);
         setConfirmDialog({

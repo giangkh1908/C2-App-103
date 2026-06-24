@@ -245,6 +245,8 @@ class TestCreatePaymentHappy:
         ``create_payment`` must catch ``DuplicateKeyError`` and return
         the existing pending payment instead of raising."""
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        # Cleanup mock — the service runs it before the insert loop.
+        mock_db.payments.update_many = AsyncMock()
         # insert_one raises DuplicateKeyError — the partial index on
         # (user_id, plan_name, billing, status=pending) already exists.
         mock_db.payments.insert_one = AsyncMock(
@@ -262,13 +264,43 @@ class TestCreatePaymentHappy:
         assert payment.status == PaymentStatus.PENDING
 
     @pytest.mark.asyncio
-    async def test_old_pending_payments_not_expired_on_new_checkout(
+    async def test_duplicate_key_retries_when_existing_no_longer_pending(
         self, mock_db, user_id, plus_plan_doc
     ):
-        """With the partial unique index, ``create_payment`` no longer
-        runs an explicit ``update_many`` cleanup — the index prevents
-        duplicate pending intents at the DB level."""
+        """When DuplicateKeyError fires but the existing payment is no
+        longer pending (expired/paid), the service must retry the insert
+        instead of raising."""
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        mock_db.payments.update_many = AsyncMock()
+        # First insert raises DuplicateKeyError, second succeeds.
+        mock_db.payments.insert_one = AsyncMock(
+            side_effect=[
+                DuplicateKeyError("dup", None),
+                MagicMock(inserted_id=_new_payment_id()),
+            ]
+        )
+        # Existing payment is no longer pending — retry insert.
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+
+        with patch("src.services.payment_service.get_db", return_value=mock_db):
+            payment = await create_payment(user_id, "plus", "monthly")
+
+        assert payment is not None
+        assert payment.status == PaymentStatus.PENDING
+        # insert_one was called twice (first failed, second succeeded).
+        assert mock_db.payments.insert_one.call_count == 2
+        # find_one was called once (inside the retry handler).
+        mock_db.payments.find_one.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_cleanup_expires_stale_pending_before_insert(
+        self, mock_db, user_id, plus_plan_doc
+    ):
+        """``create_payment`` expires stale pending payments (older than
+        5 minutes) before inserting the new one so the user's payment
+        list stays clean."""
+        mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        mock_db.payments.update_many = AsyncMock()
         mock_db.payments.insert_one = AsyncMock(
             return_value=MagicMock(inserted_id=_new_payment_id())
         )
@@ -278,9 +310,13 @@ class TestCreatePaymentHappy:
 
         assert payment is not None
         assert payment.status == PaymentStatus.PENDING
-        # No explicit cleanup is triggered anymore.
-        if hasattr(mock_db.payments, "update_many"):
-            mock_db.payments.update_many.assert_not_called()
+        # Cleanup was triggered before the insert.
+        mock_db.payments.update_many.assert_called_once()
+        call_args = mock_db.payments.update_many.call_args
+        query = call_args[0][0]
+        assert query["user_id"] == user_id
+        assert query["status"] == PaymentStatus.PENDING.value
+        assert "$lt" in query["created_at"]
 
 
 class TestCreatePaymentFailures:

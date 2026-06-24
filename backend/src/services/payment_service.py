@@ -183,25 +183,40 @@ async def create_payment(
         expires_at=expires_at,
     )
 
-    try:
-        result = await db.payments.insert_one(doc)
-    except DuplicateKeyError:
-        # A pending payment with the same (user_id, plan_name, billing)
-        # already exists — return the existing one.
-        existing = await db.payments.find_one({
-            "user_id": user_id,
-            "plan_name": plan_name,
-            "billing": billing,
-            "status": PaymentStatus.PENDING.value,
-        })
-        if existing:
-            logger.info(
-                "payment_duplicate_skipped",
-                payment_code=existing.get("payment_code"),
-                plan_name=plan_name,
-            )
-            return PaymentInDB.from_mongo(existing)
-        raise  # Should never happen with the partial index
+    # Cleanup: expire stale pending payments for this user so the
+    # payment list stays clean.
+    await db.payments.update_many({
+        "user_id": user_id,
+        "status": PaymentStatus.PENDING.value,
+        "created_at": {"$lt": datetime.now(UTC) - timedelta(minutes=5)},
+    }, {"$set": {"status": PaymentStatus.EXPIRED.value}})
+
+    _MAX_DUP_RETRIES = 2
+    for _attempt in range(_MAX_DUP_RETRIES):
+        try:
+            result = await db.payments.insert_one(doc)
+            break
+        except DuplicateKeyError:
+            if _attempt == _MAX_DUP_RETRIES - 1:
+                raise
+            # Race: the existing pending payment may have been expired
+            # by sweeper or paid by webhook between the failed insert
+            # and now. If it's gone, retry the insert.
+            existing = await db.payments.find_one({
+                "user_id": user_id,
+                "plan_name": plan_name,
+                "billing": billing,
+                "status": PaymentStatus.PENDING.value,
+            })
+            if existing:
+                logger.info(
+                    "payment_duplicate_skipped",
+                    payment_code=existing.get("payment_code"),
+                    plan_name=plan_name,
+                )
+                return PaymentInDB.from_mongo(existing)
+            # Not pending anymore — retry insert
+            continue
 
     doc["_id"] = result.inserted_id
 

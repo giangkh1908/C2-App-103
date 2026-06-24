@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/landing/Navbar";
 import { useAuth } from "@/hooks/useAuth";
 import {
+  cancelPayment,
   createCheckout,
   getPaymentStatus,
   PaymentApiError,
@@ -168,10 +169,17 @@ export default function PaymentClient({
     }
   }, [payment?.payment_code, t]);
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = useCallback(async () => {
+    try {
+      if (payment?.payment_code) {
+        await cancelPayment(apiFetch, payment.payment_code);
+      }
+    } catch {
+      // Silently ignore cancel API failure — user already navigated away
+    }
     stoppedRef.current = true;
     router.push(`/${locale}/payment/cancel`);
-  }, [locale, router]);
+  }, [apiFetch, locale, payment?.payment_code, router]);
 
   if (loading) {
     return (

@@ -371,3 +371,16 @@ async def get_payment_status(
         paid_at=payment.paid_at.isoformat() if payment.paid_at else None,
         expires_at=payment.expires_at.isoformat() if payment.expires_at else None,
     )
+
+
+@router.post("/cancel/{payment_code}")
+async def cancel_payment(
+    payment_code: str,
+    current_user: UserInDB = Depends(get_current_user),
+) -> dict:
+    """User cancels their own pending payment."""
+    result = await payment_service.cancel_payment(payment_code, current_user.id)
+    if result is None:
+        # Could be: not found, not owned, or not pending — don't leak which
+        raise HTTPException(status_code=404, detail="Payment not found")
+    return {"status": "ok", "payment_code": payment_code, "new_status": "expired"}

@@ -21,15 +21,8 @@ export default function RegisterForm() {
   const locale = useLocale();
   const { register, isAuthenticated, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace(`/${locale}`);
-    }
-  }, [isLoading, isAuthenticated, locale, router]);
-
-  if (isLoading) return null;
-  if (isAuthenticated) return null;
-
+  // Hooks phải được gọi trước mọi conditional return để tránh React error #300
+  // ("Rendered more hooks than during the previous render").
   const [form, setForm] = useState<RegisterInput>({
     name: "",
     email: "",
@@ -39,6 +32,15 @@ export default function RegisterForm() {
   const [errors, setErrors] = useState<Partial<Record<keyof RegisterInput, string>>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace(`/${locale}`);
+    }
+  }, [isLoading, isAuthenticated, locale, router]);
+
+  if (isLoading) return null;
+  if (isAuthenticated) return null;
 
   const handleChange = (field: keyof RegisterInput) => (
     e: React.ChangeEvent<HTMLInputElement>

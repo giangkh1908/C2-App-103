@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from time import perf_counter
 from uuid import uuid4
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,20 +41,8 @@ logger = get_logger(APP_LOGGER_NAME := "toan_truc_quan")
 _SCHEDULER_TIMEZONE = "Asia/Ho_Chi_Minh"
 
 
-def _run_async_job(coro) -> None:
-    """Bridge a coroutine to a BackgroundScheduler thread.
-
-    ``BackgroundScheduler`` runs jobs in a thread pool, so async
-    coroutines must be driven through a fresh event loop in that
-    thread. ``asyncio.run`` is the canonical helper for that.
-    """
-    import asyncio
-
-    asyncio.run(coro())
-
-
-def _build_scheduler() -> BackgroundScheduler:
-    """Create the BackgroundScheduler with the subscription cron jobs.
+def _build_scheduler() -> AsyncIOScheduler:
+    """Create the AsyncIOScheduler with the subscription cron jobs.
 
     Two daily jobs:
 
@@ -63,10 +51,10 @@ def _build_scheduler() -> BackgroundScheduler:
     - ``send_expiry_reminder_emails`` at 09:00 local time — emails
       users whose subscription expires in 3 days.
     """
-    scheduler = BackgroundScheduler(timezone=_SCHEDULER_TIMEZONE)
+    scheduler = AsyncIOScheduler(timezone=_SCHEDULER_TIMEZONE)
 
     scheduler.add_job(
-        lambda: _run_async_job(expire_overdue_subscriptions),
+        expire_overdue_subscriptions,
         CronTrigger(hour=0, minute=0, timezone=_SCHEDULER_TIMEZONE),
         id="expire_overdue_subscriptions",
         name="Expire overdue subscriptions",
@@ -74,7 +62,7 @@ def _build_scheduler() -> BackgroundScheduler:
     )
 
     scheduler.add_job(
-        lambda: _run_async_job(send_expiry_reminder_emails),
+        send_expiry_reminder_emails,
         CronTrigger(hour=9, minute=0, timezone=_SCHEDULER_TIMEZONE),
         id="send_expiry_reminder_emails",
         name="Send subscription expiry reminder emails",
@@ -84,7 +72,7 @@ def _build_scheduler() -> BackgroundScheduler:
     # Payment reconciliation: every 5 minutes, activate any paid
     # payments whose user was not upgraded (catches failed activations).
     scheduler.add_job(
-        lambda: _run_async_job(reconcile_paid_payments),
+        reconcile_paid_payments,
         CronTrigger(minute="*/5", timezone=_SCHEDULER_TIMEZONE),
         id="reconcile_paid_payments",
         name="Reconcile paid but unactivated payments",
@@ -94,7 +82,7 @@ def _build_scheduler() -> BackgroundScheduler:
     # Payment expiry: every hour, expire pending payment intents older
     # than 24 hours.
     scheduler.add_job(
-        lambda: _run_async_job(expire_overdue_payments),
+        expire_overdue_payments,
         CronTrigger(minute=0, timezone=_SCHEDULER_TIMEZONE),
         id="expire_overdue_payments",
         name="Expire overdue payment intents",

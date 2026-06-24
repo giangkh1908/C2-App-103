@@ -135,12 +135,6 @@ def _build_qr_url(payment_code: str, amount_vnd: int) -> str:
     """
     from urllib.parse import quote
 
-    VALID_SEPAY_BANKS = {
-        "VCB", "BIDV", "VietinBank", "Techcombank", "MB Bank", "ACB",
-        "VPBank", "TPBank", "VIB", "HDBank", "OCB", "MSB", "NamABank",
-        "Vietcombank", "VietCapitalBank",
-    }
-
     bank = settings.sepay_bank_name or ""
     acc = settings.sepay_bank_account or ""
     if not bank or not acc:
@@ -148,13 +142,6 @@ def _build_qr_url(payment_code: str, amount_vnd: int) -> str:
             "sepay_qr_missing_config",
             has_bank=bool(bank),
             has_account=bool(acc),
-        )
-        return ""
-
-    if bank not in VALID_SEPAY_BANKS:
-        logger.warning(
-            "sepay_qr_invalid_bank",
-            bank=bank,
         )
         return ""
 

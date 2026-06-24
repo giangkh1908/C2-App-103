@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -19,7 +19,16 @@ export default function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
-  const { register } = useAuth();
+  const { register, isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace(`/${locale}`);
+    }
+  }, [isLoading, isAuthenticated, locale, router]);
+
+  if (isLoading) return null;
+  if (isAuthenticated) return null;
 
   const [form, setForm] = useState<RegisterInput>({
     name: "",

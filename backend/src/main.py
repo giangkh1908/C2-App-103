@@ -150,6 +150,11 @@ if settings.app_env == "development":
     allowed_origins.append("http://localhost:3000")
     allowed_origins.append("http://127.0.0.1:3000")
 
+# Shared CORS constants — kept in sync across CORSMiddleware and
+# the manual CORS fallback in the error handler below.
+_ALLOWED_METHODS = "GET, POST, PUT, DELETE, OPTIONS"
+_ALLOWED_HEADERS = "Content-Type, Authorization, X-Request-ID"
+
 
 @app.middleware("http")
 async def request_logging_middleware(request: Request, call_next):
@@ -185,12 +190,8 @@ async def request_logging_middleware(request: Request, call_next):
         if origin and origin in allowed_origins:
             response.headers["Access-Control-Allow-Origin"] = origin
             response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = (
-                "GET, POST, PUT, DELETE, OPTIONS"
-            )
-            response.headers["Access-Control-Allow-Headers"] = (
-                "Content-Type, Authorization, X-Request-ID"
-            )
+            response.headers["Access-Control-Allow-Methods"] = _ALLOWED_METHODS
+            response.headers["Access-Control-Allow-Headers"] = _ALLOWED_HEADERS
             response.headers["Vary"] = "Origin"
         response.headers["X-Request-ID"] = request_id
         return response
@@ -215,8 +216,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
+    allow_methods=_ALLOWED_METHODS.split(", "),
+    allow_headers=_ALLOWED_HEADERS.split(", "),
 )
 
 app.include_router(api_router, prefix=settings.api_prefix)

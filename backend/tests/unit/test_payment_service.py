@@ -24,7 +24,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from bson import ObjectId
 
-from src.models.payment import PaymentStatus
+from src.models.payment import PaymentInDB, PaymentStatus
 from src.services.payment_service import (
     _generate_payment_code,
     create_payment,
@@ -128,6 +128,8 @@ class TestCreatePaymentHappy:
     @pytest.mark.asyncio
     async def test_monthly_amount_and_expiry(self, mock_db, user_id, plus_plan_doc):
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.update_many = AsyncMock()
         mock_db.payments.insert_one = AsyncMock(
             return_value=MagicMock(inserted_id=_new_payment_id())
         )
@@ -151,6 +153,8 @@ class TestCreatePaymentHappy:
     @pytest.mark.asyncio
     async def test_yearly_amount_and_expiry(self, mock_db, user_id, plus_plan_doc):
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.update_many = AsyncMock()
         mock_db.payments.insert_one = AsyncMock(
             return_value=MagicMock(inserted_id=_new_payment_id())
         )
@@ -166,6 +170,8 @@ class TestCreatePaymentHappy:
     @pytest.mark.asyncio
     async def test_premium_monthly(self, mock_db, user_id, premium_plan_doc):
         mock_db.plans.find_one = AsyncMock(return_value=premium_plan_doc)
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.update_many = AsyncMock()
         mock_db.payments.insert_one = AsyncMock(
             return_value=MagicMock(inserted_id=_new_payment_id())
         )
@@ -180,6 +186,8 @@ class TestCreatePaymentHappy:
     async def test_payment_code_format(self, mock_db, user_id, plus_plan_doc):
         """Business code format: ``TTQ{user_id_short}{timestamp}{random_hex}``."""
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.update_many = AsyncMock()
         mock_db.payments.insert_one = AsyncMock(
             return_value=MagicMock(inserted_id=_new_payment_id())
         )
@@ -207,6 +215,8 @@ class TestCreatePaymentHappy:
         """The service must call insert_one with a doc carrying the
         business fields the catalog will see."""
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.update_many = AsyncMock()
         mock_db.payments.insert_one = AsyncMock(
             return_value=MagicMock(inserted_id=_new_payment_id())
         )
@@ -224,6 +234,60 @@ class TestCreatePaymentHappy:
         assert doc["payment_code"].startswith("TTQ")
         assert doc["status"] == PaymentStatus.PENDING.value
         assert doc["gateway"] == "sepay"
+
+    @pytest.mark.asyncio
+    async def test_existing_pending_payment_returns_existing(
+        self, mock_db, user_id, plus_plan_doc, pending_payment_doc
+    ):
+        """A second ``create_payment`` call within 30 minutes with the
+        same (user_id, plan_name, billing) must return the existing
+        pending payment instead of creating a new one."""
+        mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        # find_one first returns the existing pending (duplicate check),
+        # then later would be called for the plan lookup — but we
+        # short-circuit before that.
+        mock_db.payments.find_one = AsyncMock(return_value=pending_payment_doc)
+        mock_db.payments.insert_one = AsyncMock()
+
+        with patch("src.services.payment_service.get_db", return_value=mock_db):
+            payment = await create_payment(user_id, "plus", "monthly")
+
+        # Must return the existing payment, not a new insertion.
+        assert payment.payment_code == pending_payment_doc["payment_code"]
+        assert payment.amount_vnd == pending_payment_doc["amount_vnd"]
+        assert payment.status == PaymentStatus.PENDING
+        # insert_one must NOT be called — no duplicate document.
+        mock_db.payments.insert_one.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_old_pending_payments_are_expired_on_new_checkout(
+        self, mock_db, user_id, plus_plan_doc
+    ):
+        """When creating a fresh payment, any existing pending payments
+        older than 5 minutes for the same user should be expired first."""
+        mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        # No duplicate found -> proceed to create new payment.
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.insert_one = AsyncMock(
+            return_value=MagicMock(inserted_id=_new_payment_id())
+        )
+        mock_db.payments.update_many = AsyncMock()
+
+        with patch("src.services.payment_service.get_db", return_value=mock_db):
+            payment = await create_payment(user_id, "plus", "monthly")
+
+        # A new payment was created.
+        assert payment is not None
+        assert payment.status == PaymentStatus.PENDING
+        # Cleanup was triggered for old pending payments.
+        mock_db.payments.update_many.assert_called_once()
+        call_args = mock_db.payments.update_many.call_args
+        query = call_args[0][0]
+        assert query["user_id"] == user_id
+        assert query["status"] == PaymentStatus.PENDING.value
+        assert "$lt" in query["created_at"]
+        update = call_args[0][1]
+        assert update == {"$set": {"status": PaymentStatus.EXPIRED.value}}
 
 
 class TestCreatePaymentFailures:
@@ -255,6 +319,8 @@ class TestCreatePaymentFailures:
         monthly price must NOT silently mint a 0-vnd payment."""
         plus_plan_doc["price_monthly"] = 0
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
+        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.update_many = AsyncMock()
 
         with patch("src.services.payment_service.get_db", return_value=mock_db):
             with pytest.raises(ValueError):

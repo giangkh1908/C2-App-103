@@ -34,6 +34,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel
 
 from src.core.config import settings
+from src.core.database import get_db
 from src.core.deps import get_current_user
 from src.core.logging import get_logger
 from src.models.payment import PaymentInDB, PaymentStatus
@@ -371,3 +372,25 @@ async def get_payment_status(
         paid_at=payment.paid_at.isoformat() if payment.paid_at else None,
         expires_at=payment.expires_at.isoformat() if payment.expires_at else None,
     )
+
+
+@router.post("/cancel/{payment_code}")
+async def cancel_payment(
+    payment_code: str,
+    current_user: UserInDB = Depends(get_current_user),
+) -> dict:
+    """User cancels their own pending payment."""
+    payment = await payment_service.get_payment_by_code(payment_code)
+    if not payment or payment.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    if payment.status != PaymentStatus.PENDING:
+        raise HTTPException(
+            status_code=400, detail="Only pending payments can be cancelled"
+        )
+    # Set status to expired
+    db = get_db()
+    await db.payments.update_one(
+        {"payment_code": payment_code},
+        {"$set": {"status": PaymentStatus.EXPIRED.value}},
+    )
+    return {"status": "ok", "payment_code": payment_code, "new_status": "expired"}

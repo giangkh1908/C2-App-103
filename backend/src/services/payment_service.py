@@ -168,6 +168,31 @@ async def create_payment(
     if not plan:
         raise ValueError(f"Plan '{plan_name}' not found in catalog.")
 
+    # Check for existing pending payment within last 30 minutes
+    # to prevent duplicate payment intents (e.g. double-click).
+    existing = await db.payments.find_one({
+        "user_id": user_id,
+        "plan_name": plan_name,
+        "billing": billing,
+        "status": PaymentStatus.PENDING.value,
+        "created_at": {"$gte": datetime.now(UTC) - timedelta(minutes=30)},
+    })
+    if existing:
+        logger.info(
+            "payment_duplicate_skipped",
+            payment_code=existing.get("payment_code"),
+            plan_name=plan_name,
+        )
+        return PaymentInDB.from_mongo(existing)
+
+    # Cleanup: expire old pending payments (>5 min, same user) to keep
+    # the user's pending list manageable.
+    await db.payments.update_many({
+        "user_id": user_id,
+        "status": PaymentStatus.PENDING.value,
+        "created_at": {"$lt": datetime.now(UTC) - timedelta(minutes=5)},
+    }, {"$set": {"status": PaymentStatus.EXPIRED.value}})
+
     amount_vnd = _resolve_amount(plan, billing)
     expires_at = _compute_expires_at(billing)
     payment_code = _generate_payment_code(user_id)

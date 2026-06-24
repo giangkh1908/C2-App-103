@@ -5,12 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { getPlans } from "@/lib/planApi";
-import {
-  createCheckout,
-  PaymentApiError,
-  PaymentAuthError,
-  type ApiFetch,
-} from "@/lib/paymentApi";
+import { type ApiFetch } from "@/lib/paymentApi";
 import type { Plan, User } from "@/types/auth";
 import type { PaymentBilling } from "@/types/payment";
 import Navbar from "@/components/landing/Navbar";
@@ -135,19 +130,12 @@ export default function PricingClient({ locale }: { locale: string }) {
       }
 
       // Case 4: Upgrade (target sort > current sort) → payment flow
-      await createCheckout(apiFetch, planName, billing);
       router.push(`/${locale}/payment?plan=${encodeURIComponent(planName)}&billing=${billing}`);
     } catch (err) {
-      if (err instanceof PaymentAuthError) {
-        router.push(`/${locale}/login`);
-        return;
-      }
       const message =
-        err instanceof PaymentApiError
+        err instanceof Error
           ? err.message
-          : err instanceof Error
-            ? err.message
-            : t("errorGeneric");
+          : t("errorGeneric");
       setUpgradeResult({
         success: false,
         message,

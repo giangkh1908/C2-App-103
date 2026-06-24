@@ -145,13 +145,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-allowed_origins = {
-    settings.frontend_url.rstrip("/"),
-}
+allowed_origins = list(settings.cors_origins)
 if settings.app_env == "development":
-    allowed_origins.add("http://localhost:3000")
-    allowed_origins.add("http://127.0.0.1:3000")
-
+    allowed_origins.append("http://localhost:3000")
+    allowed_origins.append("http://127.0.0.1:3000")
 
 
 @app.middleware("http")
@@ -166,6 +163,12 @@ async def request_logging_middleware(request: Request, call_next):
     except Exception as exc:
         duration_ms = round((perf_counter() - start) * 1000, 2)
         record_request_duration(duration_ms)
+        # OPTIONS preflight should never 500/502 — return 200 with CORS headers
+        if request.method == "OPTIONS":
+            response = JSONResponse(status_code=200, content={})
+            _set_cors_headers(response, request)
+            response.headers["X-Request-ID"] = request_id
+            return response
         request_logger.exception(
             "request_failed",
             method=request.method,
@@ -206,9 +209,7 @@ def _set_cors_headers(response: JSONResponse, request: Request) -> None:
     origin = request.headers.get("origin")
     if origin and origin in allowed_origins:
         response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Methods"] = (
-            "GET, POST, PUT, DELETE, OPTIONS"
-        )
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = (
             "Content-Type, Authorization, X-Request-ID"
         )
@@ -218,7 +219,7 @@ def _set_cors_headers(response: JSONResponse, request: Request) -> None:
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Request-ID"],

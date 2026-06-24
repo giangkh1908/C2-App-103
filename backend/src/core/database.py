@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import DuplicateKeyError, OperationFailure
 
 from src.core.config import settings
 from src.core.logging import get_logger
@@ -59,7 +59,25 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
                 count=len(dup_ids),
             )
 
-    # 2. Now create the unique partial index (data is clean).
+    # 2. Create other indexes — try/except for resilience against existing indexes
+    #    with different names. MongoDB's create_index raises OperationFailure
+    #    (code 85 = IndexOptionsConflict) if an index with the same keys exists
+    #    but has a different name. We just skip those — the index is already there.
+    other_indexes = [
+        ("payment_code", {"unique": True, "name": "unique_payment_code"}),
+        ("user_id", {"name": "idx_user_id"}),
+        ("status", {"name": "idx_status"}),
+    ]
+    for keys, options in other_indexes:
+        try:
+            await target_db.payments.create_index(keys, **options)
+        except OperationFailure as e:
+            if e.code == 85:  # IndexOptionsConflict
+                pass  # Index exists with different name — that's OK
+            else:
+                raise
+
+    # 3. Unique partial index for race condition prevention (data is clean).
     try:
         await target_db.payments.create_index(
             [("user_id", 1), ("plan_name", 1), ("billing", 1)],
@@ -72,11 +90,6 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
             "Could not create unique_pending_user_plan index — "
             "duplicate pending payments may still exist"
         )
-
-    # 3. Other indexes.
-    await target_db.payments.create_index("payment_code", unique=True, name="unique_payment_code")
-    await target_db.payments.create_index("user_id", name="idx_user_id")
-    await target_db.payments.create_index("status", name="idx_status")
 
 
 async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:

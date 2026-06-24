@@ -39,8 +39,8 @@ class Settings(BaseSettings):
 
     # CORS
     frontend_url: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
-    allowed_origins: list[str] = Field(
-        default_factory=lambda: [],
+    allowed_origins: str = Field(
+        default="",
         validation_alias=AliasChoices("ALLOWED_ORIGINS", "CORS_ORIGINS"),
     )
 
@@ -152,17 +152,13 @@ class Settings(BaseSettings):
             return value.strip().strip("'\"")
         return value
 
-    @field_validator("allowed_origins", mode="before")
-    @classmethod
-    def parse_origins(cls, v: object) -> object:
-        if isinstance(v, str):
-            return [o.strip() for o in v.split(",") if o.strip()]
-        return v
-
     @property
     def cors_origins(self) -> list[str]:
         origins = [self.frontend_url.rstrip("/")]
-        origins.extend(self.allowed_origins)
+        if self.allowed_origins.strip():
+            origins.extend(
+                o.strip() for o in self.allowed_origins.split(",") if o.strip()
+            )
         # dict.fromkeys preserves insertion order while deduplicating
         return list(dict.fromkeys(origins))
 

@@ -35,12 +35,14 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = Field(
         default=15, alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES"
     )
-    jwt_refresh_token_expire_days: int = Field(
-        default=7, alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS"
-    )
+    jwt_refresh_token_expire_days: int = Field(default=7, alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS")
 
     # CORS
     frontend_url: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
+    allowed_origins: list[str] = Field(
+        default_factory=lambda: [],
+        validation_alias=AliasChoices("ALLOWED_ORIGINS", "CORS_ORIGINS"),
+    )
 
     # Google OAuth
     google_client_id: str = Field(default="", alias="GOOGLE_CLIENT_ID")
@@ -72,9 +74,7 @@ class Settings(BaseSettings):
     openrouter_temperature: float = Field(
         default=0.7, ge=0.0, le=2.0, alias="OPENROUTER_TEMPERATURE"
     )
-    openrouter_max_tokens: int = Field(
-        default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS"
-    )
+    openrouter_max_tokens: int = Field(default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS")
     openrouter_base_url: str = Field(
         default="https://openrouter.ai/api/v1",
         alias="OPENROUTER_BASE_URL",
@@ -151,6 +151,19 @@ class Settings(BaseSettings):
         if isinstance(value, str):
             return value.strip().strip("'\"")
         return value
+
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def parse_origins(cls, v: object) -> object:
+        if isinstance(v, str):
+            return [o.strip() for o in v.split(",") if o.strip()]
+        return v
+
+    @property
+    def cors_origins(self) -> list[str]:
+        origins = [self.frontend_url.rstrip("/")]
+        origins.extend(self.allowed_origins)
+        return list(set(origins))
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":

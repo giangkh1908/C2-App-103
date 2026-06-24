@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import PasswordInput from "@/components/ui/PasswordInput";
@@ -15,14 +16,23 @@ export default function ResetPasswordForm({ token }: Props) {
   const t = useTranslations("auth.resetPassword");
   const tErr = useTranslations("auth.errors");
   const locale = useLocale();
-  const { resetPassword } = useAuth();
-
+  const router = useRouter();
+  const { resetPassword, isAuthenticated, isLoading } = useAuth();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace(`/${locale}`);
+    }
+  }, [isLoading, isAuthenticated, locale, router]);
+
+  if (isLoading) return null;
+  if (isAuthenticated) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

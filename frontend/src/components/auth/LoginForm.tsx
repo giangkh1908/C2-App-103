@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -19,7 +19,17 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading } = useAuth();
+
+  // Nếu đã login rồi mà vào /login → redirect về home
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace(`/${locale}`);
+    }
+  }, [isLoading, isAuthenticated, locale, router]);
+
+  if (isLoading) return null;
+  if (isAuthenticated) return null;
 
   const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
   const [remember, setRemember] = useState(false);

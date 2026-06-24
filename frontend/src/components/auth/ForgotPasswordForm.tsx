@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import Input from "@/components/ui/Input";
@@ -11,7 +12,17 @@ export default function ForgotPasswordForm() {
   const t = useTranslations("auth.forgotPassword");
   const tErr = useTranslations("auth.errors");
   const locale = useLocale();
-  const { forgotPassword } = useAuth();
+  const router = useRouter();
+  const { forgotPassword, isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace(`/${locale}`);
+    }
+  }, [isLoading, isAuthenticated, locale, router]);
+
+  if (isLoading) return null;
+  if (isAuthenticated) return null;
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);

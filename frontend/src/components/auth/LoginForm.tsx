@@ -21,6 +21,14 @@ export default function LoginForm() {
   const locale = useLocale();
   const { login, isAuthenticated, isLoading } = useAuth();
 
+  // Hooks phải được gọi trước mọi conditional return để tránh React error #300
+  // ("Rendered more hooks than during the previous render").
+  const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
+  const [remember, setRemember] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({});
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
   // Nếu đã login rồi mà vào /login → redirect về home
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -30,12 +38,6 @@ export default function LoginForm() {
 
   if (isLoading) return null;
   if (isAuthenticated) return null;
-
-  const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
-  const [remember, setRemember] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({});
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (field: keyof LoginInput) => (
     e: React.ChangeEvent<HTMLInputElement>

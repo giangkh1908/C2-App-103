@@ -1,4 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from pymongo.errors import DuplicateKeyError
 
 from src.core.config import settings
 from src.core.logging import get_logger
@@ -17,16 +18,65 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
     SePay webhook. `user_id` and `status` are queried for the
     user's payment history and for the background sweeper that
     expires stale `pending` intents.
+
+    Before creating the unique partial index on (user_id, plan_name, billing)
+    for pending payments, we clean up any existing duplicate pending payments
+    so the index creation does not fail on deploy.
     """
-    await target_db.payments.create_index("payment_code", unique=True)
-    await target_db.payments.create_index("user_id")
-    await target_db.payments.create_index("status")
-    await target_db.payments.create_index(
-        [("user_id", 1), ("plan_name", 1), ("billing", 1)],
-        unique=True,
-        partialFilterExpression={"status": "pending"},
-        name="unique_pending_user_plan",
-    )
+    # 1. Cleanup: expire duplicate pending payments before creating unique index.
+    #    Keep only the most recent pending payment per (user_id, plan_name, billing).
+    pipeline = [
+        {"$match": {"status": "pending"}},
+        {"$sort": {"created_at": -1}},
+        {
+            "$group": {
+                "_id": {"user_id": "$user_id", "plan_name": "$plan_name", "billing": "$billing"},
+                "keep_id": {"$first": "$_id"},
+                "duplicates": {"$push": "$_id"},
+            }
+        },
+        {
+            "$project": {
+                "duplicate_ids": {
+                    "$filter": {
+                        "input": "$duplicates",
+                        "as": "dup",
+                        "cond": {"$ne": ["$$dup", "$keep_id"]},
+                    }
+                }
+            }
+        },
+    ]
+    async for group in target_db.payments.aggregate(pipeline):
+        dup_ids = group.get("duplicate_ids", [])
+        if dup_ids:
+            await target_db.payments.update_many(
+                {"_id": {"$in": dup_ids}},
+                {"$set": {"status": "expired"}},
+            )
+            logger.info(
+                "expired_duplicate_pending_payments",
+                count=len(dup_ids),
+            )
+
+    # 2. Now create the unique partial index (data is clean).
+    try:
+        await target_db.payments.create_index(
+            [("user_id", 1), ("plan_name", 1), ("billing", 1)],
+            unique=True,
+            partialFilterExpression={"status": "pending"},
+            name="unique_pending_user_plan",
+        )
+    except DuplicateKeyError:
+        logger.warning(
+            "Could not create unique_pending_user_plan index — "
+            "duplicate pending payments may still exist"
+        )
+
+    # 3. Other indexes.
+    await target_db.payments.create_index("payment_code", unique=True, name="unique_payment_code")
+    await target_db.payments.create_index("user_id", name="idx_user_id")
+    await target_db.payments.create_index("status", name="idx_status")
 
 
 async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:

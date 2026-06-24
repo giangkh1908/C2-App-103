@@ -21,6 +21,12 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
     await target_db.payments.create_index("payment_code", unique=True)
     await target_db.payments.create_index("user_id")
     await target_db.payments.create_index("status")
+    await target_db.payments.create_index(
+        [("user_id", 1), ("plan_name", 1), ("billing", 1)],
+        unique=True,
+        partialFilterExpression={"status": "pending"},
+        name="unique_pending_user_plan",
+    )
 
 
 async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:

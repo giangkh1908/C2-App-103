@@ -35,6 +35,7 @@ from typing import Any, Literal
 from bson import ObjectId
 from bson.errors import InvalidId
 from pymongo import ReturnDocument
+from pymongo.errors import DuplicateKeyError
 
 from src.core.database import get_db
 from src.core.logging import get_logger
@@ -168,31 +169,6 @@ async def create_payment(
     if not plan:
         raise ValueError(f"Plan '{plan_name}' not found in catalog.")
 
-    # Check for existing pending payment within last 30 minutes
-    # to prevent duplicate payment intents (e.g. double-click).
-    existing = await db.payments.find_one({
-        "user_id": user_id,
-        "plan_name": plan_name,
-        "billing": billing,
-        "status": PaymentStatus.PENDING.value,
-        "created_at": {"$gte": datetime.now(UTC) - timedelta(minutes=30)},
-    })
-    if existing:
-        logger.info(
-            "payment_duplicate_skipped",
-            payment_code=existing.get("payment_code"),
-            plan_name=plan_name,
-        )
-        return PaymentInDB.from_mongo(existing)
-
-    # Cleanup: expire old pending payments (>5 min, same user) to keep
-    # the user's pending list manageable.
-    await db.payments.update_many({
-        "user_id": user_id,
-        "status": PaymentStatus.PENDING.value,
-        "created_at": {"$lt": datetime.now(UTC) - timedelta(minutes=5)},
-    }, {"$set": {"status": PaymentStatus.EXPIRED.value}})
-
     amount_vnd = _resolve_amount(plan, billing)
     expires_at = _compute_expires_at(billing)
     payment_code = _generate_payment_code(user_id)
@@ -207,7 +183,26 @@ async def create_payment(
         expires_at=expires_at,
     )
 
-    result = await db.payments.insert_one(doc)
+    try:
+        result = await db.payments.insert_one(doc)
+    except DuplicateKeyError:
+        # A pending payment with the same (user_id, plan_name, billing)
+        # already exists — return the existing one.
+        existing = await db.payments.find_one({
+            "user_id": user_id,
+            "plan_name": plan_name,
+            "billing": billing,
+            "status": PaymentStatus.PENDING.value,
+        })
+        if existing:
+            logger.info(
+                "payment_duplicate_skipped",
+                payment_code=existing.get("payment_code"),
+                plan_name=plan_name,
+            )
+            return PaymentInDB.from_mongo(existing)
+        raise  # Should never happen with the partial index
+
     doc["_id"] = result.inserted_id
 
     logger.info(
@@ -218,6 +213,32 @@ async def create_payment(
         amount_vnd=amount_vnd,
     )
     return PaymentInDB.from_mongo(doc)
+
+
+async def cancel_payment(payment_code: str, user_id: str) -> PaymentInDB | None:
+    """Cancel a pending payment.
+
+    Returns the updated payment with ``expired`` status, or ``None`` when
+    the code is unknown, the payment does not belong to the caller, or the
+    payment is not in ``pending`` state.
+    """
+    db = get_db()
+    payment = await get_payment_by_code(payment_code)
+    if not payment or payment.user_id != user_id or payment.status != PaymentStatus.PENDING:
+        return None
+    result = await db.payments.find_one_and_update(
+        {"payment_code": payment_code, "status": PaymentStatus.PENDING.value},
+        {"$set": {"status": PaymentStatus.EXPIRED.value}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if not result:
+        return None
+    logger.info(
+        "payment_cancelled",
+        payment_code=payment_code,
+        user_id=user_id,
+    )
+    return PaymentInDB.from_mongo(result)
 
 
 async def verify_and_mark_paid(

@@ -43,12 +43,13 @@ from bson import ObjectId
 from httpx import ASGITransport, AsyncClient
 
 from src.core.config import settings
-from src.core.security import hash_password
+from src.core.security import create_access_token, hash_password
 from src.models.payment import PaymentStatus
 
 SEPAY_WEBHOOK_PATH = "/api/v1/payment/webhook/sepay"
 SEPAY_CHECKOUT_PATH = "/api/v1/payment/checkout"
 SEPAY_STATUS_PATH = "/api/v1/payment/status/{code}"
+SEPAY_CANCEL_PATH = "/api/v1/payment/cancel/{code}"
 
 
 # ---------------------------------------------------------------------------
@@ -225,13 +226,50 @@ async def buyer_user(clean_payment_state):
             "verified": True,
             "avatar": None,
             "plan_id": "",
-            "subscription_status": "free",
+            "subscription_status": "active",
             "usage": {},
             "created_at": datetime.now(UTC),
             "updated_at": datetime.now(UTC),
         }
     )
     return user_id
+
+
+@pytest_asyncio.fixture
+async def buyer_headers(buyer_user):
+    """JWT auth headers for the buyer user."""
+    token = create_access_token(str(buyer_user), "user")
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest_asyncio.fixture
+async def other_user(clean_payment_state):
+    """A second user (not the owner) for non-owner 404 tests."""
+    user_id = ObjectId()
+    await clean_payment_state.users.insert_one(
+        {
+            "_id": user_id,
+            "name": "Other",
+            "email": "other@example.com",
+            "password_hash": hash_password("password123"),
+            "role": "user",
+            "verified": True,
+            "avatar": None,
+            "plan_id": "",
+            "subscription_status": "active",
+            "usage": {},
+            "created_at": datetime.now(UTC),
+            "updated_at": datetime.now(UTC),
+        }
+    )
+    return user_id
+
+
+@pytest_asyncio.fixture
+async def other_headers(other_user):
+    """JWT auth headers for the other user."""
+    token = create_access_token(str(other_user), "user")
+    return {"Authorization": f"Bearer {token}"}
 
 
 @pytest_asyncio.fixture
@@ -370,6 +408,90 @@ class TestSePayWebhookAuth:
 
 
 # ---------------------------------------------------------------------------
+# 5) Cancel endpoint
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+class TestPaymentCancel:
+    async def test_owner_cancels_pending_payment(
+        self,
+        client: AsyncClient,
+        clean_payment_state,
+        pending_payment,
+        buyer_headers,
+    ):
+        """The owning user cancels their pending payment → status becomes expired."""
+        response = await client.post(
+            SEPAY_CANCEL_PATH.format(code=pending_payment["payment_code"]),
+            headers=buyer_headers,
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert body["status"] == "ok"
+        assert body["payment_code"] == pending_payment["payment_code"]
+        assert body["new_status"] == "expired"
+
+        updated = await clean_payment_state.payments.find_one(
+            {"_id": pending_payment["_id"]}
+        )
+        assert updated["status"] == PaymentStatus.EXPIRED.value
+
+    async def test_non_owner_returns_404(
+        self,
+        client: AsyncClient,
+        clean_payment_state,
+        pending_payment,
+        other_headers,
+    ):
+        """A different user cannot cancel someone else's payment → 404."""
+        response = await client.post(
+            SEPAY_CANCEL_PATH.format(code=pending_payment["payment_code"]),
+            headers=other_headers,
+        )
+        assert response.status_code == 404
+        # Original payment unchanged.
+        updated = await clean_payment_state.payments.find_one(
+            {"_id": pending_payment["_id"]}
+        )
+        assert updated["status"] == PaymentStatus.PENDING.value
+
+    async def test_unknown_code_returns_404(
+        self,
+        client: AsyncClient,
+        clean_payment_state,
+        buyer_headers,
+    ):
+        """A non-existent payment_code → 404."""
+        response = await client.post(
+            SEPAY_CANCEL_PATH.format(code="TTQ_NONEXISTENT"),
+            headers=buyer_headers,
+        )
+        assert response.status_code == 404
+
+    async def test_paid_payment_cannot_be_cancelled(
+        self,
+        client: AsyncClient,
+        clean_payment_state,
+        pending_payment,
+        seeded_plan,
+        buyer_user,
+        buyer_headers,
+    ):
+        """An already-paid payment → 404 (don't leak status info)."""
+        # Flip to paid directly in DB.
+        await clean_payment_state.payments.update_one(
+            {"_id": pending_payment["_id"]},
+            {"$set": {"status": PaymentStatus.PAID.value}},
+        )
+        response = await client.post(
+            SEPAY_CANCEL_PATH.format(code=pending_payment["payment_code"]),
+            headers=buyer_headers,
+        )
+        assert response.status_code == 404
+
+
+# ---------------------------------------------------------------------------
 # 3) Duplicate webhook -> idempotent
 # ---------------------------------------------------------------------------
 
@@ -465,7 +587,7 @@ class TestSePayWebhookAmountMismatch:
         # User is NOT activated.
         user = await clean_payment_state.users.find_one({"_id": buyer_user})
         assert user["plan_id"] == ""
-        assert user["subscription_status"] == "free"
+        assert user["subscription_status"] == "active"
 
 
 # ---------------------------------------------------------------------------

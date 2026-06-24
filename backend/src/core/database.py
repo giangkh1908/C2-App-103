@@ -59,11 +59,11 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
                 count=len(dup_ids),
             )
 
-    # 2. Create indexes with default names + try/except for safety.
+    # 2. Create indexes — try/except for resilience against existing indexes with different names.
     index_specs = [
-        ([("payment_code", 1)], {"unique": True}),
-        ([("user_id", 1)], {}),
-        ([("status", 1)], {}),
+        ([("payment_code", 1)], {"unique": True, "name": "unique_payment_code"}),
+        ([("user_id", 1)], {"name": "idx_user_id"}),
+        ([("status", 1)], {"name": "idx_status"}),
     ]
     for keys, options in index_specs:
         try:
@@ -82,9 +82,13 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
             [("user_id", 1), ("plan_name", 1), ("billing", 1)],
             unique=True,
             partialFilterExpression={"status": "pending"},
+            name="unique_pending_user_plan",
         )
     except DuplicateKeyError:
-        logger.warning("Could not create unique pending index")
+        logger.warning(
+            "Could not create unique_pending_user_plan index — "
+            "duplicate pending payments may still exist"
+        )
 
 
 async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:

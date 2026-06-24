@@ -292,6 +292,273 @@ class LearningCoreService:
         await self._persist(request, result)
         return result
 
+    async def generate_stream(self, request: LearningCoreRequest):
+        """Streaming variant of generate().
+
+        Yields ("chunk", str) for each text token from the LLM, then
+        ("done", LearningCoreResult) with the fully-assembled result.
+        """
+        session_id = request.session_id or uuid4().hex
+
+        prev_turn = None
+        if session_id is not None:
+            prev_turn = await self.session_repository.get_latest_turn(
+                session_id, request.user_id
+            )
+
+        guard_result = guard_message(request.message)
+        if guard_result is not None:
+            context = build_default_context(request.selected_topic or "multiplication")
+            result = self._build_clarification_result(
+                request=request,
+                context=context,
+                assistant_message=guard_result.response,
+                session_id=session_id,
+                agent_metadata={"guardrail": guard_result.category},
+            )
+            if session_id is not None:
+                await self.memory_repository.append_turn(
+                    session_id=session_id,
+                    user_message=request.message,
+                    assistant_message=result.assistant_message,
+                )
+            await self._persist(request, result)
+            yield ("chunk", result.assistant_message)
+            yield ("done", result)
+            return
+
+        current_selected_topic = request.selected_topic
+        if not current_selected_topic and prev_turn:
+            current_selected_topic = (
+                prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
+            )
+
+        context = detect_context(request.message, current_selected_topic)
+
+        if prev_turn and any(
+            kw in request.message.lower()
+            for kw in ["ví dụ khác", "vi du khac", "ví dụ mới", "vi du moi"]
+        ):
+            if not context.topic and prev_turn.get("detected_topic"):
+                context.topic = prev_turn.get("detected_topic")
+
+            old_visual = prev_turn.get("visual_snapshot") or {}
+            old_data = old_visual.get("visual_data") or {}
+
+            if not context.tool_args or len(context.tool_args) <= 1:
+                if context.topic == "multiplication":
+                    old_g = int(old_data.get("primary_count") or 3)
+                    old_i = int(old_data.get("secondary_count") or 4)
+                    context.tool_args = {
+                        "groups": old_g + 1 if old_g < 6 else 2,
+                        "items_per_group": old_i - 1 if old_i > 2 else 5,
+                        "item_name": "cái kẹo",
+                        "group_name": "chiếc đĩa",
+                    }
+                elif context.topic == "division":
+                    context.tool_args = {
+                        "total_items": 16,
+                        "groups": 4,
+                        "item_name": "quả táo",
+                        "group_name": "bạn",
+                    }
+                elif context.topic == "fraction_basic":
+                    context.tool_args = {
+                        "numerator": 3,
+                        "denominator": 8,
+                        "whole_name": "chiếc pizza",
+                    }
+                elif context.topic == "perimeter_area_basic":
+                    context.tool_args = {
+                        "length": 6,
+                        "width": 4,
+                        "unit": "cm",
+                        "mode": "area_grid",
+                    }
+
+        history_payload = None
+        if session_id is not None:
+            history_messages = await self.memory_repository.load_messages(session_id)
+            history_payload = [
+                {"role": msg.role, "content": msg.content}
+                for msg in history_messages
+            ]
+
+        # ── Stream agent response ──────────────────────────────────────────────
+        tutor_message = build_tutor_message(
+            request.message,
+            None if context.topic is None else context.topic,
+            request.grade,
+        )
+        level = grade_to_level(request.grade)
+
+        agent_response_holder: list = []
+        async for event_type, payload in self.tutor_agent.chat_stream(
+            message=tutor_message,
+            level=level,
+            use_tools=True,
+            history=history_payload,
+        ):
+            if event_type == "chunk":
+                yield ("chunk", payload)
+            elif event_type == "done":
+                agent_response_holder.append(payload)
+
+        from src.agents.schemas import AgentResponse
+        agent_response = (
+            agent_response_holder[0]
+            if agent_response_holder
+            else AgentResponse(answer="")
+        )
+        agent_metadata = {
+            "tool_used": agent_response.tool_used,
+            "step_count": len(agent_response.steps),
+            "visual_source": None,
+        }
+        answer = normalize_answer(agent_response.answer)
+        response_source = "llm"
+
+        # ── Post-processing (mirrors generate()) ───────────────────────────────
+        if context.topic is None:
+            if is_clarification_response(answer):
+                clarification_result = self._build_clarification_result(
+                    request=request,
+                    context=context,
+                    assistant_message=answer,
+                    session_id=session_id,
+                    agent_metadata=agent_metadata,
+                )
+                if session_id is not None:
+                    await self.memory_repository.append_turn(
+                        session_id=session_id,
+                        user_message=request.message,
+                        assistant_message=clarification_result.assistant_message,
+                    )
+                await self._persist(request, clarification_result)
+                yield ("done", clarification_result)
+                return
+
+            default_topic = request.selected_topic or "multiplication"
+            context = build_default_context(default_topic)
+            if agent_response.visual_data:
+                tool_data = agent_response.visual_data
+                agent_metadata["visual_source"] = "agent"
+            else:
+                tool_data = build_default_tool_data(default_topic, context.tool_args)
+                agent_metadata["visual_source"] = "fallback"
+            result = self._build_result(
+                request=request,
+                context=context,
+                tool_data=tool_data,
+                assistant_message=answer,
+                response_source=response_source,
+                response_mode="explain_only",
+                follow_up_suggestions=[
+                    "Con muốn học phép nhân.",
+                    "Con muốn học phép chia.",
+                    "Con muốn học phân số.",
+                    "Con muốn học chu vi và diện tích.",
+                ],
+                session_id=session_id,
+                agent_metadata=agent_metadata,
+            )
+            if session_id is not None:
+                await self.memory_repository.append_turn(
+                    session_id=session_id,
+                    user_message=request.message,
+                    assistant_message=result.assistant_message,
+                )
+            await self._persist(request, result)
+            yield ("done", result)
+            return
+
+        if is_clarification_response(answer):
+            clarification_result = self._build_clarification_result(
+                request=request,
+                context=context,
+                assistant_message=answer,
+                session_id=session_id,
+                agent_metadata=agent_metadata,
+            )
+            if session_id is not None:
+                await self.memory_repository.append_turn(
+                    session_id=session_id,
+                    user_message=request.message,
+                    assistant_message=clarification_result.assistant_message,
+                )
+            await self._persist(request, clarification_result)
+            yield ("done", clarification_result)
+            return
+
+        if (
+            agent_response.visual_data
+            and isinstance(agent_response.visual_data, dict)
+            and len(agent_response.visual_data) > 0
+        ):
+            tool_data = agent_response.visual_data
+            response_source = "agent"
+            agent_metadata["visual_source"] = "agent"
+        else:
+            tool_result = await self.tool_registry.call(
+                context.tool_name or "",
+                context.tool_args,
+            )
+            if not tool_result.success:
+                tool_data = build_default_tool_data(context.topic, context.tool_args)
+                response_source = "fallback"
+                agent_metadata["visual_source"] = "fallback"
+            else:
+                tool_data = tool_result.data
+                agent_metadata["visual_source"] = "legacy"
+
+        if is_low_signal_answer(answer):
+            answer = build_contextual_explanation(context.topic, tool_data)
+            response_source = "fallback"
+
+        result = self._build_result(
+            request=request,
+            context=context,
+            tool_data=tool_data,
+            assistant_message=answer,
+            response_source=response_source,
+            response_mode="explain_with_visual_and_practice",
+            follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
+            session_id=session_id,
+            agent_metadata=agent_metadata,
+        )
+
+        try:
+            validate_learning_core_result(result)
+            lesson_resp = to_lesson_response(result)
+            if lesson_resp is not None:
+                validate_lesson_response(lesson_resp)
+        except ValueError:
+            result = self._build_result(
+                request=request,
+                context=context,
+                tool_data=tool_data,
+                assistant_message=build_contextual_explanation(context.topic, tool_data),
+                response_source="fallback",
+                response_mode="explain_with_visual_and_practice",
+                follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
+                session_id=session_id,
+                agent_metadata=agent_metadata,
+            )
+            validate_learning_core_result(result)
+            lesson_resp = to_lesson_response(result)
+            if lesson_resp is not None:
+                validate_lesson_response(lesson_resp)
+
+        if session_id is not None:
+            await self.memory_repository.append_turn(
+                session_id=session_id,
+                user_message=request.message,
+                assistant_message=result.assistant_message,
+            )
+
+        await self._persist(request, result)
+        yield ("done", result)
+
     def _build_clarification_result(
         self,
         request: LearningCoreRequest,

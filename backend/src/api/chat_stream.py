@@ -46,15 +46,16 @@ async def _stream_chat_turn(
     yield _sse("status", json.dumps({"message": "Đang phân tích câu hỏi…"}, ensure_ascii=False))
     await asyncio.sleep(0)  # yield control cho event loop
 
-    # ── Bước 2: chạy pipeline đầy đủ (guardrails → agent → visual) ────────
-    # Pipeline hiện tại không hỗ trợ streaming token từ LLM nên ta chạy
-    # toàn bộ rồi stream kết quả text theo từng word để UX mượt mà hơn.
+    # ── Bước 2+3: stream token thật từ LLM qua pipeline ──────────────────
     try:
         yield _sse("status", json.dumps({"message": "Đang tạo câu trả lời…"}, ensure_ascii=False))
         await asyncio.sleep(0)
 
         from src.services.types import LearningCoreRequest
-        result = await orchestrator.learning_core_service.generate(
+        from src.services.response_mapper import to_chat_response
+
+        chat_response = None
+        async for event_type, payload in orchestrator.learning_core_service.generate_stream(
             LearningCoreRequest(
                 user_id=user_id,
                 session_id=request.session_id,
@@ -62,10 +63,11 @@ async def _stream_chat_turn(
                 message=request.message,
                 selected_topic=request.selected_topic,
             )
-        )
-
-        from src.services.response_mapper import to_chat_response
-        chat_response = to_chat_response(result)
+        ):
+            if event_type == "chunk":
+                yield _sse("token", json.dumps({"text": payload}, ensure_ascii=False))
+            elif event_type == "done":
+                chat_response = to_chat_response(payload)
 
     except Exception:
         yield _sse(
@@ -77,17 +79,15 @@ async def _stream_chat_turn(
         )
         return
 
-    # ── Bước 3: stream từng token (word) của assistant_message ────────────
-    words = chat_response.assistant_message.split(" ")
-    # Chia thành các chunk nhỏ (3-4 words mỗi chunk) để UX tự nhiên hơn
-    chunk_size = 3
-    for i in range(0, len(words), chunk_size):
-        chunk = " ".join(words[i : i + chunk_size])
-        # Giữ space giữa các chunk
-        if i + chunk_size < len(words):
-            chunk += " "
-        yield _sse("token", json.dumps({"text": chunk}, ensure_ascii=False))
-        await asyncio.sleep(0.04)  # ~25 chunks/s — đủ mượt, không quá nhanh
+    if chat_response is None:
+        yield _sse(
+            "error",
+            json.dumps(
+                {"message": "Mình gặp lỗi khi xử lý câu hỏi. Bạn thử hỏi lại ngắn hơn nhé."},
+                ensure_ascii=False,
+            ),
+        )
+        return
 
     # ── Bước 4: done – gửi toàn bộ payload để frontend render visual/practice
     yield _sse("done", chat_response.model_dump_json())

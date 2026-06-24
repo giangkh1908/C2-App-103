@@ -320,14 +320,16 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
         )}
 
         {/* Main text bubble */}
-        <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {message.text}
-          </ReactMarkdown>
-          {/* Cursor nhấp nháy khi đang stream */}
-          {isLoading && message.text !== '' && !message.responseMode?.includes('visual') && !message.visualData && (
-            <span className="inline-block h-4 w-0.5 bg-natural-green align-middle animate-pulse ml-0.5" />
-          )}
+        <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-4 py-3 shadow-xs">
+          <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message.text}
+            </ReactMarkdown>
+            {/* Cursor nhấp nháy khi đang stream */}
+            {isLoading && message.text !== '' && !message.responseMode?.includes('visual') && !message.visualData && (
+              <span className="inline-block h-4 w-0.5 bg-natural-green align-middle animate-pulse ml-0.5" />
+            )}
+          </div>
         </div>
 
         {/* Visual panel */}
@@ -881,28 +883,20 @@ export default function AIExplanationChat() {
               <Bot className="h-4 w-4" />
             </div>
             <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-5 py-4 shadow-xs">
-              {streamStatusText ? (
-                <p className="text-xs text-gray-400 italic">{streamStatusText}</p>
-              ) : (
-                <div className="flex items-center gap-1.5">
-                  {[0, 0.15, 0.3].map((delay, i) => (
-                    <motion.div
-                      key={i}
-                      className="h-2 w-2 rounded-full bg-natural-green"
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay }}
-                    />
-                  ))}
-                </div>
-              )}
+              <div className="flex items-center gap-1.5">
+                {[0, 0.15, 0.3].map((delay, i) => (
+                  <motion.div
+                    key={i}
+                    className="h-2 w-2 rounded-full bg-natural-green"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay }}
+                  />
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
 
-        {/* Streaming status overlay khi có placeholder đang được fill */}
-        {isLoading && streamStatusText && messages.some((m) => m.role === 'ai' && m.text === '') && (
-          <div className="ml-11 -mt-1 text-[10px] text-gray-400 italic">{streamStatusText}</div>
-        )}
 
         <div ref={messagesEndRef} />
       </div>

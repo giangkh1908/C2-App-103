@@ -179,6 +179,13 @@ async def request_logging_middleware(request: Request, call_next):
                 "request_id": request_id,
             },
         )
+        # Belt+suspenders: add CORS header in case CORSMiddleware
+        # doesn't wrap this error path (ASGI edge case).
+        origin = request.headers.get("origin")
+        if origin and origin in allowed_origins:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Vary"] = "Origin"
         response.headers["X-Request-ID"] = request_id
         return response
     else:

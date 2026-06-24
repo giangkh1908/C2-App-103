@@ -478,7 +478,7 @@ class TestPaymentCancel:
         buyer_user,
         buyer_headers,
     ):
-        """An already-paid payment → 400 (only pending can be cancelled)."""
+        """An already-paid payment → 404 (don't leak status info)."""
         # Flip to paid directly in DB.
         await clean_payment_state.payments.update_one(
             {"_id": pending_payment["_id"]},
@@ -488,9 +488,7 @@ class TestPaymentCancel:
             SEPAY_CANCEL_PATH.format(code=pending_payment["payment_code"]),
             headers=buyer_headers,
         )
-        assert response.status_code == 400
-        body = response.json()
-        assert "pending" in body["detail"].lower()
+        assert response.status_code == 404
 
 
 # ---------------------------------------------------------------------------

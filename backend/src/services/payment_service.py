@@ -218,16 +218,22 @@ async def create_payment(
 async def cancel_payment(payment_code: str, user_id: str) -> PaymentInDB | None:
     """Cancel a pending payment.
 
+    Atomically checks ownership + status + update in a single
+    ``find_one_and_update`` call so there is no race between the
+    pre-read check and the actual update (e.g. a webhook marking
+    the payment as paid between step 1 and step 2).
+
     Returns the updated payment with ``expired`` status, or ``None`` when
     the code is unknown, the payment does not belong to the caller, or the
     payment is not in ``pending`` state.
     """
     db = get_db()
-    payment = await get_payment_by_code(payment_code)
-    if not payment or payment.user_id != user_id or payment.status != PaymentStatus.PENDING:
-        return None
     result = await db.payments.find_one_and_update(
-        {"payment_code": payment_code, "status": PaymentStatus.PENDING.value},
+        {
+            "payment_code": payment_code,
+            "user_id": user_id,
+            "status": PaymentStatus.PENDING.value,
+        },
         {"$set": {"status": PaymentStatus.EXPIRED.value}},
         return_document=ReturnDocument.AFTER,
     )

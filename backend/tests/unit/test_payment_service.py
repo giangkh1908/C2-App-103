@@ -25,7 +25,7 @@ import pytest
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
 
-from src.models.payment import PaymentInDB, PaymentStatus
+from src.models.payment import PaymentStatus
 from src.services.payment_service import (
     _generate_payment_code,
     cancel_payment,
@@ -618,7 +618,6 @@ class TestCancelPayment:
         self, mock_db, user_id, pending_payment_doc
     ):
         """Owner cancels their pending payment → status becomes expired."""
-        mock_db.payments.find_one = AsyncMock(return_value=pending_payment_doc)
         updated_doc = {**pending_payment_doc, "status": PaymentStatus.EXPIRED.value}
         mock_db.payments.find_one_and_update = AsyncMock(return_value=updated_doc)
 
@@ -630,15 +629,17 @@ class TestCancelPayment:
         assert result is not None
         assert result.status == PaymentStatus.EXPIRED
         assert result.payment_code == pending_payment_doc["payment_code"]
-        # find_one_and_update was called with the pending guard.
+        # find_one_and_update was called atomically with all three guards.
         mock_db.payments.find_one_and_update.assert_called_once()
         call_filter = mock_db.payments.find_one_and_update.call_args[0][0]
+        assert call_filter["payment_code"] == pending_payment_doc["payment_code"]
+        assert call_filter["user_id"] == user_id
         assert call_filter["status"] == PaymentStatus.PENDING.value
 
     @pytest.mark.asyncio
     async def test_cancel_unknown_code_returns_none(self, mock_db):
         """Unknown payment_code → None."""
-        mock_db.payments.find_one = AsyncMock(return_value=None)
+        mock_db.payments.find_one_and_update = AsyncMock(return_value=None)
 
         with patch("src.services.payment_service.get_db", return_value=mock_db):
             result = await cancel_payment("NONEXISTENT", "any_user_id")
@@ -650,7 +651,7 @@ class TestCancelPayment:
         self, mock_db, user_id, pending_payment_doc
     ):
         """Different user_id → None."""
-        mock_db.payments.find_one = AsyncMock(return_value=pending_payment_doc)
+        mock_db.payments.find_one_and_update = AsyncMock(return_value=None)
 
         with patch("src.services.payment_service.get_db", return_value=mock_db):
             result = await cancel_payment(
@@ -658,8 +659,9 @@ class TestCancelPayment:
             )
 
         assert result is None
-        # find_one_and_update must not be called (pre-check refused).
-        mock_db.payments.find_one_and_update.assert_not_called()
+        # find_one_and_update was called (atomically), but the user_id
+        # guard prevented the update.
+        mock_db.payments.find_one_and_update.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_cancel_non_pending_returns_none(
@@ -667,13 +669,16 @@ class TestCancelPayment:
     ):
         """Already paid/expired payment → None."""
         paid_doc = {**pending_payment_doc, "status": PaymentStatus.PAID.value}
-        mock_db.payments.find_one = AsyncMock(return_value=paid_doc)
+        # The atomic filter requires status=pending; it won't match.
+        mock_db.payments.find_one_and_update = AsyncMock(return_value=None)
 
         with patch("src.services.payment_service.get_db", return_value=mock_db):
             result = await cancel_payment(paid_doc["payment_code"], user_id)
 
         assert result is None
-        mock_db.payments.find_one_and_update.assert_not_called()
+        # find_one_and_update was called, but the status guard
+        # prevented the update.
+        mock_db.payments.find_one_and_update.assert_called_once()
 
 
 # ---------------------------------------------------------------------------

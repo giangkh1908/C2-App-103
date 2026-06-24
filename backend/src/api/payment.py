@@ -379,14 +379,8 @@ async def cancel_payment(
     current_user: UserInDB = Depends(get_current_user),
 ) -> dict:
     """User cancels their own pending payment."""
-    payment = await payment_service.get_payment_by_code(payment_code)
-    if not payment or payment.user_id != current_user.id:
-        raise HTTPException(status_code=404, detail="Payment not found")
-    if payment.status != PaymentStatus.PENDING:
-        raise HTTPException(
-            status_code=400, detail="Only pending payments can be cancelled"
-        )
-    updated = await payment_service.cancel_payment(payment_code, current_user.id)
-    if not updated:
+    result = await payment_service.cancel_payment(payment_code, current_user.id)
+    if result is None:
+        # Could be: not found, not owned, or not pending — don't leak which
         raise HTTPException(status_code=404, detail="Payment not found")
     return {"status": "ok", "payment_code": payment_code, "new_status": "expired"}

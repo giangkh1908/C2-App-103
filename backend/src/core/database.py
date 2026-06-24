@@ -59,6 +59,8 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
                 count=len(dup_ids),
             )
 
+<<<<<<< HEAD
+<<<<<<< HEAD
     # 2. Create indexes — try/except for resilience against existing indexes with different names.
     index_specs = [
         ([("payment_code", 1)], {"unique": True, "name": "unique_payment_code"}),
@@ -77,6 +79,26 @@ async def ensure_payment_indexes(target_db: AsyncIOMotorDatabase) -> None:
                 raise
 
     # 3. Unique partial index for race condition prevention.
+=======
+    # 2. Create other indexes — try/except for resilience against existing indexes
+    #    with different names. MongoDB's create_index raises OperationFailure
+    #    (code 85 = IndexOptionsConflict) if an index with the same keys exists
+    #    but has a different name. We just skip those — the index is already there.
+    other_indexes = [
+        ("payment_code", {"unique": True, "name": "unique_payment_code"}),
+        ("user_id", {"name": "idx_user_id"}),
+        ("status", {"name": "idx_status"}),
+    ]
+    for keys, options in other_indexes:
+        try:
+            await target_db.payments.create_index(keys, **options)
+        except OperationFailure as e:
+            if e.code == 85:  # IndexOptionsConflict
+                pass  # Index exists with different name — that's OK
+            else:
+                raise
+
+    # 3. Unique partial index for race condition prevention (data is clean).
     try:
         await target_db.payments.create_index(
             [("user_id", 1), ("plan_name", 1), ("billing", 1)],

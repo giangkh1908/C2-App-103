@@ -163,7 +163,8 @@ class Settings(BaseSettings):
     def cors_origins(self) -> list[str]:
         origins = [self.frontend_url.rstrip("/")]
         origins.extend(self.allowed_origins)
-        return list(set(origins))
+        # dict.fromkeys preserves insertion order while deduplicating
+        return list(dict.fromkeys(origins))
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":

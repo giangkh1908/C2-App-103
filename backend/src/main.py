@@ -163,12 +163,6 @@ async def request_logging_middleware(request: Request, call_next):
     except Exception as exc:
         duration_ms = round((perf_counter() - start) * 1000, 2)
         record_request_duration(duration_ms)
-        # OPTIONS preflight should never 500/502 — return 200 with CORS headers
-        if request.method == "OPTIONS":
-            response = JSONResponse(status_code=200, content={})
-            _set_cors_headers(response, request)
-            response.headers["X-Request-ID"] = request_id
-            return response
         request_logger.exception(
             "request_failed",
             method=request.method,
@@ -185,7 +179,6 @@ async def request_logging_middleware(request: Request, call_next):
                 "request_id": request_id,
             },
         )
-        _set_cors_headers(response, request)
         response.headers["X-Request-ID"] = request_id
         return response
     else:
@@ -203,18 +196,6 @@ async def request_logging_middleware(request: Request, call_next):
         return response
     finally:
         unbind_request_context("request_id")
-
-
-def _set_cors_headers(response: JSONResponse, request: Request) -> None:
-    origin = request.headers.get("origin")
-    if origin and origin in allowed_origins:
-        response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-        response.headers["Access-Control-Allow-Headers"] = (
-            "Content-Type, Authorization, X-Request-ID"
-        )
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        response.headers["Vary"] = "Origin"
 
 
 app.add_middleware(

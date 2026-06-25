@@ -106,10 +106,6 @@ class MemoryRepository:
             {"role": "assistant", "content": cleaned_assistant_message},
         ]
 
-        doc = await self._collection.find_one(
-            {"session_id": session_id}
-        )
-
         await self._collection.update_one(
             {"session_id": session_id},
             {
@@ -142,10 +138,6 @@ class MemoryRepository:
             session_id: ID của session cần trim.
             max_messages: Số message tối đa được giữ lại.
         """
-        doc = await self._collection.find_one(
-            {"session_id": session_id}
-        )
-
         await self._collection.update_one(
             {"session_id": session_id},
             {

@@ -40,11 +40,13 @@ Nếu câu hỏi có số liệu cụ thể và khớp với một tool, hãy g�
 
 
 CLARIFICATION_INSTRUCTION: str = """
-Khi câu hỏi mơ hồ hoặc không rõ, hỏi lại ĐÚNG MỘT CÂU ngắn gọn dưới dạng câu hỏi (kết thúc bằng dấu ?).
+Khi câu hỏi mơ hồ về CHỦ ĐỀ (chưa biết học phép gì), hỏi lại ĐÚNG MỘT CÂU ngắn gọn dưới dạng câu hỏi (kết thúc bằng dấu ?).
 Ví dụ:
 - "Con muốn học phép nhân hay phép chia hôm nay?"
-- "Con đang học bài toán nào vậy? Con có thể cho cô biết số cụ thể không?"
-- "Con muốn cô giải thích phép nhân bằng ví dụ hay bằng công thức?"
+- "Con muốn cô giải thích phép nhân hay phân số?"
+
+QUAN TRỌNG: KHÔNG BAO GIỜ hỏi học sinh nhập số cụ thể (ví dụ: "Con muốn học 3×4 hay 5×2?" hoặc "Con có thể cho cô biết số cụ thể không?").
+Nếu đã biết chủ đề (phép nhân, phép chia, phân số, hình học) nhưng câu hỏi không có số liệu, hãy TỰ CHỌN số ngẫu nhiên phù hợp và giải thích ngay lập tức.
 """.strip()
 
 

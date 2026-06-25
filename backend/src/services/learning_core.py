@@ -309,6 +309,10 @@ class LearningCoreService:
         ("done", LearningCoreResult) with the fully-assembled result.
         """
         pipeline_start = perf_counter()
+
+        from src.core.metrics import get_metrics
+        tokens_before = get_metrics()["llm"]["tokens_total"]
+
         agent_metadata: dict | None = None
 
         _COST_PER_1K: dict[str, float] = {
@@ -321,7 +325,8 @@ class LearningCoreService:
         def _record_stream_metrics(meta: dict | None = None) -> None:
             pipeline_ms = round((perf_counter() - pipeline_start) * 1000, 2)
             record_pipeline_latency(pipeline_ms)
-            tokens_used = (meta or {}).get("tokens_used", 0)
+            tokens_now = get_metrics()["llm"]["tokens_total"]
+            tokens_used = max(0, tokens_now - tokens_before)
             cost = (tokens_used / 1000.0) * _COST_PER_1K.get(_model_name, 0.0)
             record_cost_per_request(cost)
 

@@ -54,3 +54,21 @@ export interface UserFilter {
   page?: number;
   page_size?: number;
 }
+
+export interface UserCostEntry {
+  user_id: string;
+  email: string | null;
+  prompt_tokens: number;
+  completion_tokens: number;
+  cost_usd: number;
+}
+
+export interface AdminCostStats {
+  month: string;
+  total_cost_usd: number;
+  total_prompt_tokens: number;
+  total_completion_tokens: number;
+  total_users: number;
+  previous_month: number | null;
+  top_users: UserCostEntry[];
+}

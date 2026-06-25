@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -127,12 +127,14 @@ class UsageService:
 
         # Log usage
         plan_id = user.get("plan_id", "")
-        await self.db.usage_logs.insert_one({
-            "user_id": user_id,
-            "action": action,
-            "timestamp": now,
-            "plan_id": plan_id,
-        })
+        await self.db.usage_logs.insert_one(
+            {
+                "user_id": user_id,
+                "action": action,
+                "timestamp": now,
+                "plan_id": plan_id,
+            }
+        )
 
         remaining = max(0, limit - usage["count"])
         return (True, remaining, limit)
@@ -190,12 +192,14 @@ class UsageService:
         )
 
         plan_id = user.get("plan_id", "")
-        await self.db.usage_logs.insert_one({
-            "user_id": user_id,
-            "action": action,
-            "timestamp": now,
-            "plan_id": plan_id,
-        })
+        await self.db.usage_logs.insert_one(
+            {
+                "user_id": user_id,
+                "action": action,
+                "timestamp": now,
+                "plan_id": plan_id,
+            }
+        )
 
     async def get_user_usage(self, user_id: str) -> dict:
         oid = _safe_objectid(user_id)
@@ -239,18 +243,189 @@ class UsageService:
 
         return result
 
+    async def record_llm_cost(
+        self, user_id: str, prompt_tokens: int, completion_tokens: int, model: str
+    ) -> None:
+        """Record an LLM API call cost to cost_logs collection."""
+        oid = _safe_objectid(user_id)
+        if not oid:
+            logger.warning("record_llm_cost_invalid_id", user_id=user_id)
+            return
+
+        from src.core.config import settings
+
+        cost_usd = (
+            prompt_tokens * settings.openrouter_prompt_cost_per_1m
+            + completion_tokens * settings.openrouter_completion_cost_per_1m
+        ) / 1_000_000
+
+        now = datetime.now(UTC)
+        await self.db.cost_logs.insert_one(
+            {
+                "user_id": user_id,
+                "model": model,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "cost_usd": cost_usd,
+                "timestamp": now,
+            }
+        )
+
+        logger.info(
+            "llm_cost_recorded",
+            user_id=user_id,
+            model=model,
+            cost_usd=round(cost_usd, 6),
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+        )
+
+    async def get_cost_stats(self, month: str) -> dict:
+        """Thống kê chi phí LLM theo tháng — cho admin dashboard.
+
+        month: định dạng YYYY-MM, ví dụ "2026-06".
+        Trả về::
+            {
+                "month": str,
+                "total_cost_usd": float,
+                "total_prompt_tokens": int,
+                "total_completion_tokens": int,
+                "total_users": int,
+                "previous_month": float | None,
+                "top_users": [
+                    {
+                        "user_id": str,
+                        "email": str | None,
+                        "prompt_tokens": int,
+                        "completion_tokens": int,
+                        "cost_usd": float,
+                    },
+                    ...
+                ],
+            }
+        """
+        try:
+            year, mon = int(month[:4]), int(month[5:7])
+            start = datetime(year, mon, 1, tzinfo=UTC)
+            if mon == 12:
+                end = datetime(year + 1, 1, 1, tzinfo=UTC)
+            else:
+                end = datetime(year, mon + 1, 1, tzinfo=UTC)
+        except (ValueError, IndexError):
+            raise ValueError(f"Invalid month format: {month!r}")
+
+        # ── Current month aggregation ──
+        pipeline = [
+            {"$match": {"timestamp": {"$gte": start, "$lt": end}}},
+            {
+                "$facet": {
+                    "totals": [
+                        {
+                            "$group": {
+                                "_id": None,
+                                "total_cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
+                                "total_prompt_tokens": {"$sum": {"$ifNull": ["$prompt_tokens", 0]}},
+                                "total_completion_tokens": {
+                                    "$sum": {"$ifNull": ["$completion_tokens", 0]}
+                                },
+                                "total_users": {"$addToSet": "$user_id"},
+                            }
+                        },
+                    ],
+                    "top_users": [
+                        {
+                            "$group": {
+                                "_id": "$user_id",
+                                "cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
+                                "prompt_tokens": {"$sum": {"$ifNull": ["$prompt_tokens", 0]}},
+                                "completion_tokens": {
+                                    "$sum": {"$ifNull": ["$completion_tokens", 0]}
+                                },
+                            }
+                        },
+                        {"$sort": {"cost_usd": -1}},
+                        {"$limit": 10},
+                        {
+                            "$lookup": {
+                                "from": "users",
+                                "let": {"uid": "$_id"},
+                                "pipeline": [
+                                    {"$addFields": {"_id_str": {"$toString": "$_id"}}},
+                                    {"$match": {"$expr": {"$eq": ["$_id_str", "$$uid"]}}},
+                                ],
+                                "as": "user",
+                            }
+                        },
+                        {"$unwind": {"path": "$user", "preserveNullAndEmptyArrays": True}},
+                        {
+                            "$project": {
+                                "_id": 0,
+                                "user_id": "$_id",
+                                "email": {"$ifNull": ["$user.email", None]},
+                                "cost_usd": {"$round": ["$cost_usd", 6]},
+                                "prompt_tokens": 1,
+                                "completion_tokens": 1,
+                            }
+                        },
+                    ],
+                }
+            },
+        ]
+
+        cursor = self.db.cost_logs.aggregate(pipeline)
+        result = await cursor.to_list(length=1)
+        if not result or not result[0].get("totals"):
+            current = {
+                "month": month,
+                "total_cost_usd": 0.0,
+                "total_prompt_tokens": 0,
+                "total_completion_tokens": 0,
+                "total_users": 0,
+                "top_users": [],
+            }
+        else:
+            doc = result[0]
+            totals = doc["totals"][0]
+            current = {
+                "month": month,
+                "total_cost_usd": round(totals.get("total_cost_usd", 0.0), 6),
+                "total_prompt_tokens": totals.get("total_prompt_tokens", 0),
+                "total_completion_tokens": totals.get("total_completion_tokens", 0),
+                "total_users": len(totals.get("total_users", [])),
+                "top_users": doc.get("top_users", []),
+            }
+
+        # ── Previous month total ──
+        prev_start = start - timedelta(days=1)
+        prev_start = prev_start.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if prev_start.month == 12:
+            prev_end = datetime(prev_start.year + 1, 1, 1, tzinfo=UTC)
+        else:
+            prev_end = datetime(prev_start.year, prev_start.month + 1, 1, tzinfo=UTC)
+
+        prev_pipeline = [
+            {"$match": {"timestamp": {"$gte": prev_start, "$lt": prev_end}}},
+            {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$cost_usd", 0]}}}},
+        ]
+        prev_result = await self.db.cost_logs.aggregate(prev_pipeline).to_list(1)
+        current["previous_month"] = round(prev_result[0]["total"], 6) if prev_result else None
+
+        return current
+
     async def get_admin_overview(self) -> dict:
         total_users = await self.db.users.count_documents({})
 
         user_by_plan = []
         async for plan in self.db.plans.find({"is_active": True}).sort("sort_order", 1):
             count = await self.db.users.count_documents({"plan_id": str(plan["_id"])})
-            user_by_plan.append({
-                "planId": str(plan["_id"]),
-                "planName": plan["name"],
-                "displayName": plan["display_name"],
-                "userCount": count,
-            })
+            user_by_plan.append(
+                {
+                    "planId": str(plan["_id"]),
+                    "planName": plan["name"],
+                    "displayName": plan["display_name"],
+                    "userCount": count,
+                }
+            )
 
         now = datetime.now(UTC)
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)

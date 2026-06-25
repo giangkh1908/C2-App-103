@@ -1,6 +1,5 @@
 # Worklog — Bảng phân chia công việc và tiến độ từng thành viên
 
-*(Dựa trên codebase thực tế — không dựa trên kế hoạch cũ)*
 
 ## Chú thích
 
@@ -177,6 +176,9 @@
 | 14 | Admin layout + sidebar | FE | ✅ | `frontend/src/app/[locale]/admin/layout.tsx` |
 | 15 | adminApi lib | FE | ✅ | `frontend/src/lib/adminApi.ts` |
 | 16 | scripts/create_admin.py | BE-AI | ✅ | `scripts/create_admin.py` |
+| 17 | Admin cost API (`/admin/costs`) | BE-AI | ✅ | `backend/src/api/admin.py` — GET endpoint, auth-guarded, per-user cost breakdown |
+| 18 | Admin cost UI card ("Chi phí LLM") | FE | ✅ | `frontend/src/app/[locale]/admin/page.tsx` — card hiển thị cost/user/tháng, top 10 users |
+| 19 | Cost report smoke test | Full-stack-QA | ✅ | `scripts/smoke_cost_report.py` — verify full pipeline (admin auth → API → response shape) |
 
 ---
 
@@ -267,6 +269,7 @@
 | 6 | Error state audit — loading/error/retry | P2 | FE | ⬜ | Kiểm tra trạng thái lỗi trên tất cả pages |
 | 7 | Mobile audit — responsive tablet/phone | P2 | FE | ⬜ | Test responsive trên màn hình nhỏ |
 | 8 | Quota enforcement UX — hiển thị hết quota | P2 | FE | ⬜ | Backend có 429, frontend cần UX thân thiện |
+| 9 | Cost report — LLM cost tracking + dashboard | P1 | BE-AI/FE/QA | ✅ | Theo plan `admin-cost-report`: token capture → cost calc → admin UI |
 
 ---
 
@@ -274,10 +277,10 @@
 
 | Thành viên | Tổng features | ✅ Done | ⬜ Remaining | 🔶 Partial | Trọng tâm tiếp theo |
 |------------|--------------|---------|-------------|------------|-------------------|
-| **FE** | ~42 | ~37 | 3 | 2 | TTS trigger, UX Polish, Mobile audit |
-| **BE-AI** | ~46 | ~46 | 0 | 0 | Hỗ trợ smoke test, monitoring |
-| **Full-stack-QA** | ~18 | ~15 | 3 | 0 | Smoke test Railway, Demo script |
-| **Tổng cộng** | ~106 | ~98 | 6 | 2 | |
+| **FE** | ~43 | ~37 | 4 | 2 | TTS trigger, UX Polish, Mobile audit, Cost report UI |
+| **BE-AI** | ~47 | ~46 | 1 | 0 | Cost report API, Hỗ trợ smoke test, monitoring |
+| **Full-stack-QA** | ~19 | ~15 | 4 | 0 | Smoke test Railway, Demo script, Cost report smoke test |
+| **Tổng cộng** | ~109 | ~98 | 9 | 2 | |
 
 ---
 

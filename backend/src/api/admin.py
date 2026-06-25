@@ -5,6 +5,7 @@ Only users with ``role == "admin"`` can access these endpoints.
 All UI text is in Vietnamese (admin interface is Vietnamese-only).
 """
 
+import re
 from datetime import UTC, datetime, timedelta
 
 from bson import ObjectId
@@ -30,6 +31,7 @@ def _safe_objectid(user_id: str) -> ObjectId | None:
         return ObjectId(user_id)
     except (InvalidId, TypeError):
         return None
+
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -207,19 +209,10 @@ async def list_users(
     """Danh sách người dùng kèm thông tin đăng ký."""
     db = get_db()
     total = await db.users.count_documents({})
-    cursor = (
-        db.users.find({})
-        .sort("created_at", -1)
-        .skip((page - 1) * page_size)
-        .limit(page_size)
-    )
+    cursor = db.users.find({}).sort("created_at", -1).skip((page - 1) * page_size).limit(page_size)
     items: list[dict] = []
     async for doc in cursor:
-        items.append(
-            UserInDB.from_mongo(doc).model_dump(
-                mode="json", exclude={"password_hash"}
-            )
-        )
+        items.append(UserInDB.from_mongo(doc).model_dump(mode="json", exclude={"password_hash"}))
 
     # Enrich each user with the plan's display name
     plan_ids: set[str] = {item["plan_id"] for item in items if item.get("plan_id")}
@@ -306,9 +299,7 @@ async def change_user_plan(
     )
 
     updated_doc = await db.users.find_one({"_id": obj_id})
-    user = UserInDB.from_mongo(updated_doc).model_dump(
-        mode="json", exclude={"password_hash"}
-    )
+    user = UserInDB.from_mongo(updated_doc).model_dump(mode="json", exclude={"password_hash"})
     user["plan_name"] = plan.name
     return user
 
@@ -355,9 +346,7 @@ async def extend_subscription(
     )
 
     updated_doc = await db.users.find_one({"_id": obj_id})
-    return UserInDB.from_mongo(updated_doc).model_dump(
-        mode="json", exclude={"password_hash"}
-    )
+    return UserInDB.from_mongo(updated_doc).model_dump(mode="json", exclude={"password_hash"})
 
 
 @router.get("/stats")
@@ -367,10 +356,12 @@ async def get_stats(
     """Thống kê tổng quan cho dashboard admin."""
     db = get_db()
 
-    revenue_cursor = db.payments.aggregate([
-        {"$match": {"status": "paid"}},
-        {"$group": {"_id": None, "total": {"$sum": "$amount_vnd"}}},
-    ])
+    revenue_cursor = db.payments.aggregate(
+        [
+            {"$match": {"status": "paid"}},
+            {"$group": {"_id": None, "total": {"$sum": "$amount_vnd"}}},
+        ]
+    )
     revenue_result = await revenue_cursor.to_list(1)
     total_revenue = revenue_result[0]["total"] if revenue_result else 0
 
@@ -384,3 +375,27 @@ async def get_stats(
         "pending_payments": pending_payments,
         "active_users": active_users,
     }
+
+
+@router.get("/costs")
+async def get_cost_stats(
+    month: str = Query(..., description="Định dạng YYYY-MM, ví dụ 2026-06"),
+    admin=Depends(get_current_admin),
+):
+    """Chi phí LLM theo tháng — cho admin dashboard.
+
+    - ``month``: bắt buộc, định dạng ``YYYY-MM``.
+    - Trả về tổng chi phí, so sánh tháng trước, top 10 user theo cost.
+    """
+    if not re.match(r"^\d{4}-\d{2}$", month):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Month phải đúng định dạng YYYY-MM, nhận: {month!r}",
+        )
+
+    from src.services.usage_service import UsageService
+
+    service = UsageService()
+    result = await service.get_cost_stats(month)
+
+    return result

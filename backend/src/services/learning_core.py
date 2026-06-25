@@ -2,8 +2,10 @@ import random
 from uuid import uuid4
 
 from src.agents.guardrails import guard_message
+from src.agents.schemas import AgentResponse
 from src.agents.tutor_agent import TutorAgent
 from src.core.config import settings
+from src.core.logging import get_logger
 from src.models.chat import Topic
 from src.services.context_detector import detect_context
 from src.services.memory_repository import MemoryRepository
@@ -21,6 +23,8 @@ from src.services.validation import validate_learning_core_result, validate_less
 from src.services.visual_builder import build_visual_bundle
 from src.tools.registry import ToolRegistry
 
+logger = get_logger("toan_truc_quan.learning_core")
+
 
 class LearningCoreService:
     def __init__(
@@ -33,6 +37,36 @@ class LearningCoreService:
         self.tool_registry = tool_registry
         self.session_repository = session_repository or SessionRepository()
         self.memory_repository = MemoryRepository()
+
+    async def _record_llm_cost(self, user_id: str, agent_response: AgentResponse) -> None:
+        """Record LLM cost from agent response usage after a successful call."""
+        usage = agent_response.usage or {}
+        prompt_tokens = int(usage.get("prompt_tokens", 0) or 0)
+        completion_tokens = int(usage.get("completion_tokens", 0) or 0)
+        if prompt_tokens == 0 and completion_tokens == 0:
+            logger.info(
+                "llm_cost_skipped_zero_tokens",
+                user_id=user_id,
+            )
+            return
+
+        from src.core.database import get_db
+        from src.services.usage_service import UsageService
+
+        logger.info(
+            "recording_llm_cost",
+            user_id=user_id,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            model=settings.openrouter_model,
+        )
+        db = get_db()
+        await UsageService(db=db).record_llm_cost(
+            user_id=user_id,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            model=settings.openrouter_model,
+        )
 
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
         session_id = request.session_id or uuid4().hex
@@ -136,6 +170,7 @@ class LearningCoreService:
                 use_tools=True,
                 history=history_payload,
             )
+            await self._record_llm_cost(request.user_id, agent_response)
             agent_metadata = {
                 "tool_used": agent_response.tool_used,
                 "step_count": len(agent_response.steps),
@@ -200,6 +235,7 @@ class LearningCoreService:
             use_tools=True,
             history=history_payload,
         )
+        await self._record_llm_cost(request.user_id, agent_response)
         agent_metadata = {
             "tool_used": agent_response.tool_used,
             "step_count": len(agent_response.steps),
@@ -413,12 +449,12 @@ class LearningCoreService:
             elif event_type == "done":
                 agent_response_holder.append(payload)
 
-        from src.agents.schemas import AgentResponse
         agent_response = (
             agent_response_holder[0]
             if agent_response_holder
             else AgentResponse(answer="")
         )
+        await self._record_llm_cost(request.user_id, agent_response)
         agent_metadata = {
             "tool_used": agent_response.tool_used,
             "step_count": len(agent_response.steps),

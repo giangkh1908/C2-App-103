@@ -6,7 +6,7 @@ from typing import Any
 import httpx
 
 from src.core.logging import get_logger
-from src.core.metrics import record_llm_failure, record_llm_request
+from src.core.metrics import record_llm_failure, record_llm_request, record_ttft
 
 from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMToolCall
 
@@ -151,6 +151,7 @@ class OpenRouterClient(BaseLLMClient):
         tool_call_name: str = ""
         tool_call_args: str = ""
         is_tool_call: bool = False
+        first_token_recorded: bool = False
         tokens: int = 0
         start = perf_counter()
 
@@ -163,6 +164,7 @@ class OpenRouterClient(BaseLLMClient):
                     json=payload,
                 ) as response:
                     response.raise_for_status()
+                    stream_start = perf_counter()
                     async for line in response.aiter_lines():
                         if not line.startswith("data: "):
                             continue
@@ -187,6 +189,10 @@ class OpenRouterClient(BaseLLMClient):
                         content = delta.get("content") or ""
                         if content:
                             yield content
+                            if not first_token_recorded:
+                                ttft_ms = round((perf_counter() - stream_start) * 1000, 2)
+                                record_ttft(ttft_ms)
+                                first_token_recorded = True
 
                         for tc_delta in delta.get("tool_calls") or []:
                             is_tool_call = True

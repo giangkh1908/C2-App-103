@@ -8,6 +8,9 @@ from src.core.metrics import (
     record_request_duration,
     record_tool_call,
     reset_metrics,
+    record_ttft,
+    record_pipeline_latency,
+    record_cost_per_request
 )
 
 
@@ -87,3 +90,46 @@ class TestInMemoryMetrics:
         record_llm_request(model="unknown-model", tokens=1000, latency_ms=10.0)
         metrics = get_metrics()
         assert metrics["cost"]["total_usd"] == 0.0
+
+    def test_record_ttft(self):
+        record_ttft(150.0)
+        record_ttft(300.0)
+        metrics = get_metrics()
+        assert metrics["streaming"]["ttft_ms"]["count"] == 2
+        assert metrics["streaming"]["ttft_ms"]["avg"] == 225.0
+
+    def test_record_pipeline_latency(self):
+        record_pipeline_latency(2500.0)
+        metrics = get_metrics()
+        assert metrics["streaming"]["pipeline_ms"]["count"] == 1
+
+    def test_record_cost_per_request(self):
+        record_cost_per_request(0.000042)
+        metrics = get_metrics()
+        assert metrics["cost"]["per_request"]["avg_usd"] > 0
+
+    def test_baseline_always_present(self):
+        metrics = get_metrics()
+        assert "baseline" in metrics
+        assert "ttft_ms_p50" in metrics["baseline"]
+
+    def test_compare_endpoint_has_correct_shape(self):
+        record_ttft(400.0)
+        # Gọi trực tiếp logic trong endpoint thay vì _build_compare không tồn tại
+        data = get_metrics()
+        baseline = data["baseline"]
+        streaming = data["streaming"]
+
+        # Verify các key cần thiết để /compare hoạt động đều có mặt
+        assert "ttft_ms_p50" in baseline
+        assert "ttft_ms_p95" in baseline
+        assert "pipeline_ms_p50" in baseline
+        assert "cost_per_request_avg_usd" in baseline
+        assert "tool_call_rate" in baseline
+        assert "guardrail_block_rate" in baseline
+
+        assert "ttft_ms" in streaming
+        assert "p50" in streaming["ttft_ms"]
+        assert "p95" in streaming["ttft_ms"]
+        assert streaming["ttft_ms"]["count"] == 1
+        assert streaming["ttft_ms"]["avg"] == 400.0

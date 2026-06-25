@@ -1,7 +1,9 @@
 import random
+from time import perf_counter
 from uuid import uuid4
 
 from src.agents.guardrails import guard_message
+from src.core.metrics import record_cost_per_request, record_pipeline_latency
 from src.agents.tutor_agent import TutorAgent
 from src.core.config import settings
 from src.models.chat import Topic
@@ -306,6 +308,23 @@ class LearningCoreService:
         Yields ("chunk", str) for each text token from the LLM, then
         ("done", LearningCoreResult) with the fully-assembled result.
         """
+        pipeline_start = perf_counter()
+        agent_metadata: dict | None = None
+
+        _COST_PER_1K: dict[str, float] = {
+            "deepseek/deepseek-v4-flash": 0.00014,
+            "openai/gpt-4o-mini": 0.00060,
+            "openai/gpt-4o": 0.00500,
+        }
+        _model_name: str = settings.openrouter_model
+
+        def _record_stream_metrics(meta: dict | None = None) -> None:
+            pipeline_ms = round((perf_counter() - pipeline_start) * 1000, 2)
+            record_pipeline_latency(pipeline_ms)
+            tokens_used = (meta or {}).get("tokens_used", 0)
+            cost = (tokens_used / 1000.0) * _COST_PER_1K.get(_model_name, 0.0)
+            record_cost_per_request(cost)
+
         session_id = request.session_id or uuid4().hex
 
         prev_turn = None
@@ -338,6 +357,7 @@ class LearningCoreService:
                     assistant_message=result.assistant_message,
                 )
             await self._persist(request, result)
+            _record_stream_metrics(agent_metadata)
             yield ("chunk", result.assistant_message)
             yield ("done", result)
             return
@@ -444,6 +464,7 @@ class LearningCoreService:
                         assistant_message=clarification_result.assistant_message,
                     )
                 await self._persist(request, clarification_result)
+                _record_stream_metrics(agent_metadata)
                 yield ("done", clarification_result)
                 return
 
@@ -478,6 +499,7 @@ class LearningCoreService:
                     assistant_message=result.assistant_message,
                 )
             await self._persist(request, result)
+            _record_stream_metrics(agent_metadata)
             yield ("done", result)
             return
 
@@ -502,6 +524,7 @@ class LearningCoreService:
                     assistant_message=result.assistant_message,
                 )
             await self._persist(request, result)
+            _record_stream_metrics(agent_metadata)
             yield ("done", result)
             return
 
@@ -572,6 +595,7 @@ class LearningCoreService:
             )
 
         await self._persist(request, result)
+        _record_stream_metrics(agent_metadata)
         yield ("done", result)
 
     def _build_clarification_result(

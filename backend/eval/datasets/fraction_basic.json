@@ -1,0 +1,86 @@
+{
+  "topic": "fraction_basic",
+  "description": "Grade 3-4 basic fraction problems for evaluating fraction_pizza tool and fraction comprehension",
+  "problems": [
+    {
+      "id": "frac_001",
+      "grade": 3,
+      "question": "1/2 chiếc pizza nghĩa là gì? Giải thích cho con.",
+      "expected_answer_keywords": ["1/2", "một nửa", "hai phần", "một phần hai"],
+      "expected_tool": "fraction_pizza",
+      "level": "L3"
+    },
+    {
+      "id": "frac_002",
+      "grade": 3,
+      "question": "Con ăn 3/4 chiếc bánh. Con ăn bao nhiêu phần?",
+      "expected_answer_keywords": ["3/4", "ba phần tư", "ba", "bốn"],
+      "expected_tool": "fraction_pizza",
+      "level": "L3"
+    },
+    {
+      "id": "frac_003",
+      "grade": 3,
+      "question": "Phân số 1/3 có nghĩa là gì? Hãy giải thích bằng hình ảnh.",
+      "expected_answer_keywords": ["1/3", "một phần ba", "ba phần bằng nhau"],
+      "expected_tool": "fraction_pizza",
+      "level": "L3"
+    },
+    {
+      "id": "frac_004",
+      "grade": 4,
+      "question": "2/5 của chiếc pizza được tô màu. Bao nhiêu phần được tô?",
+      "expected_answer_keywords": ["2/5", "hai phần năm", "hai", "năm"],
+      "expected_tool": "fraction_pizza",
+      "level": "L4"
+    },
+    {
+      "id": "frac_005",
+      "grade": 3,
+      "question": "Chiếc bánh chia làm 8 phần bằng nhau, con lấy 3 phần. Phân số đó là bao nhiêu?",
+      "expected_answer_keywords": ["3/8", "ba phần tám"],
+      "expected_tool": "fraction_pizza",
+      "level": "L3"
+    },
+    {
+      "id": "frac_006",
+      "grade": 4,
+      "question": "Phân số nào lớn hơn: 1/2 hay 1/4? Tại sao?",
+      "expected_answer_keywords": ["1/2", "một phần hai", "lớn hơn"],
+      "expected_tool": "fraction_pizza",
+      "level": "L4"
+    },
+    {
+      "id": "frac_007",
+      "grade": 3,
+      "question": "Tờ giấy chia làm 6 phần, tô 2 phần. Phân số là bao nhiêu?",
+      "expected_answer_keywords": ["2/6", "1/3", "hai phần sáu", "một phần ba"],
+      "expected_tool": "fraction_pizza",
+      "level": "L3"
+    },
+    {
+      "id": "frac_008",
+      "grade": 4,
+      "question": "Con ăn 3/4 chiếc pizza, còn lại bao nhiêu phần?",
+      "expected_answer_keywords": ["1/4", "một phần tư", "còn lại"],
+      "expected_tool": "fraction_pizza",
+      "level": "L4"
+    },
+    {
+      "id": "frac_009",
+      "grade": 3,
+      "question": "Phân số 4/4 có nghĩa là gì? Đó là cả chiếc bánh hay một phần?",
+      "expected_answer_keywords": ["4/4", "cả", "toàn bộ", "một"],
+      "expected_tool": "fraction_pizza",
+      "level": "L3"
+    },
+    {
+      "id": "frac_010",
+      "grade": 4,
+      "question": "Giải thích phân số 5/8 bằng hình ảnh chiếc pizza cho con hiểu.",
+      "expected_answer_keywords": ["5/8", "năm phần tám", "tám phần", "năm phần"],
+      "expected_tool": "fraction_pizza",
+      "level": "L4"
+    }
+  ]
+}

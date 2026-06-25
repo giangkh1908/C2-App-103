@@ -18,7 +18,7 @@ from src.core.langfuse import (
 )
 from src.core.logging import get_logger
 from src.core.metrics import record_tool_call
-from src.llm.base import BaseLLMClient, LLMMessage, LLMToolCall
+from src.llm.base import BaseLLMClient, LLMMessage, LLMStreamUsage, LLMToolCall
 from src.tools.registry import ToolRegistry
 
 from .prompts import build_tutor_system_prompt
@@ -74,6 +74,8 @@ class AgentLoop:
         steps: list[AgentStep] = []
         last_observation: ToolObservation | None = None
         last_tool_name: str | None = None
+        total_prompt_tokens: int = 0
+        total_completion_tokens: int = 0
 
         # Langfuse is optional: if unavailable, trace remains None and we
         # skip all observation calls.
@@ -97,6 +99,10 @@ class AgentLoop:
                     input_messages=gen_input,
                 )
                 llm_response = await self.llm.generate(messages=messages, tools=tools)
+                if llm_response.raw:
+                    usage = llm_response.raw.get("usage") or {}
+                    total_prompt_tokens += int(usage.get("prompt_tokens", 0) or 0)
+                    total_completion_tokens += int(usage.get("completion_tokens", 0) or 0)
                 if gen is not None:
                     try:
                         model = llm_response.raw.get("model") if llm_response.raw else None
@@ -236,6 +242,10 @@ class AgentLoop:
                 steps=steps,
                 tool_used=last_tool_name,
                 visual_data=visual_data,
+                usage={
+                    "prompt_tokens": total_prompt_tokens,
+                    "completion_tokens": total_completion_tokens,
+                },
             )
 
         # --------------------------------------------------------------------
@@ -250,6 +260,10 @@ class AgentLoop:
         return AgentResponse(
             answer="Mình đã thử xử lý bài toán nhưng cần thêm thông tin để giải thích rõ hơn.",
             steps=steps,
+            usage={
+                "prompt_tokens": total_prompt_tokens,
+                "completion_tokens": total_completion_tokens,
+            },
         )
 
     async def run_stream(
@@ -285,6 +299,8 @@ class AgentLoop:
         steps: list[AgentStep] = []
         last_observation: ToolObservation | None = None
         last_tool_name: str | None = None
+        total_prompt_tokens: int = 0
+        total_completion_tokens: int = 0
 
         for _ in range(config.max_steps):
             full_content = ""
@@ -294,6 +310,9 @@ class AgentLoop:
                 async for event in self.llm.generate_stream(messages=messages, tools=tools):
                     if isinstance(event, LLMToolCall):
                         pending_tool_call = event
+                    elif isinstance(event, LLMStreamUsage):
+                        total_prompt_tokens += event.prompt_tokens
+                        total_completion_tokens += event.completion_tokens
                     else:
                         full_content += event
                         yield ("chunk", event)
@@ -368,6 +387,10 @@ class AgentLoop:
                     steps=steps,
                     tool_used=last_tool_name,
                     visual_data=visual_data,
+                    usage={
+                        "prompt_tokens": total_prompt_tokens,
+                        "completion_tokens": total_completion_tokens,
+                    },
                 ),
             )
             return
@@ -377,5 +400,9 @@ class AgentLoop:
             AgentResponse(
                 answer="Mình đã thử xử lý bài toán nhưng cần thêm thông tin để giải thích rõ hơn.",
                 steps=steps,
+                usage={
+                    "prompt_tokens": total_prompt_tokens,
+                    "completion_tokens": total_completion_tokens,
+                },
             ),
         )

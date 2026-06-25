@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
+import { getSafeRedirect } from "@/lib/redirect";
 import PasswordInput from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button";
 
@@ -17,6 +18,7 @@ export default function ResetPasswordForm({ token }: Props) {
   const tErr = useTranslations("auth.errors");
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { resetPassword, isAuthenticated, isLoading } = useAuth();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,9 +29,10 @@ export default function ResetPasswordForm({ token }: Props) {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace(`/${locale}`);
+      const redirectTo = searchParams.get("redirectTo");
+      router.replace(getSafeRedirect(redirectTo, locale));
     }
-  }, [isLoading, isAuthenticated, locale, router]);
+  }, [isLoading, isAuthenticated, locale, router, searchParams]);
 
   if (isLoading) return null;
   if (isAuthenticated) return null;

@@ -43,6 +43,13 @@ class LLMResponse(BaseModel):
     raw: dict[str, Any] | None = None
 
 
+class LLMStreamUsage(BaseModel):
+    """Usage metadata emitted at the end of a streaming LLM generation."""
+
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+
+
 # ---------------------------------------------------------------------------
 # Abstract client
 # ---------------------------------------------------------------------------
@@ -79,10 +86,11 @@ class BaseLLMClient(ABC):
         self,
         messages: list[LLMMessage],
         tools: list[dict[str, Any]] | None = None,
-    ) -> AsyncGenerator["str | LLMToolCall", None]:
+    ) -> AsyncGenerator["str | LLMToolCall | LLMStreamUsage", None]:
         """Stream tokens từ LLM.
 
         Yields:
-            ``str`` cho mỗi text chunk nhận được, hoặc :class:`LLMToolCall`
-            khi model yêu cầu gọi tool (sau khi đã tích lũy đủ arguments).
+            ``str`` cho mỗi text chunk nhận được, :class:`LLMToolCall`
+            khi model yêu cầu gọi tool (sau khi đã tích lũy đủ arguments),
+            hoặc :class:`LLMStreamUsage` ở cuối stream với thông tin token.
         """

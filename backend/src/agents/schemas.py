@@ -32,6 +32,7 @@ class AgentResponse(BaseModel):
     visual_data: dict[str, Any] | None = None
     suggestions: list[str] = Field(default_factory=list)
     steps: list[AgentStep] = Field(default_factory=list)
+    usage: dict[str, Any] | None = None
 
 
 class AgentRunConfig(BaseModel):

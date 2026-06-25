@@ -52,10 +52,11 @@ class LearningCoreService:
                 prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
             )
 
+        context = build_default_context(current_selected_topic or "multiplication")
+
         guard_result = guard_message(request.message)
 
         if guard_result is not None:
-            context = build_default_context(current_selected_topic or "multiplication")
             result = self._build_clarification_result(
                 request=request,
                 context=context,
@@ -319,9 +320,10 @@ class LearningCoreService:
                 prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
             )
 
+        context = build_default_context(current_selected_topic or "multiplication")
+
         guard_result = guard_message(request.message)
         if guard_result is not None:
-            context = build_default_context(current_selected_topic or "multiplication")
             result = self._build_clarification_result(
                 request=request,
                 context=context,
@@ -695,11 +697,12 @@ def build_random_tool_args(topic: Topic) -> dict[str, int | str]:
         numerator = random.randint(1, denominator - 1)
         whole = random.choice(["chiếc pizza", "chiếc bánh", "tờ giấy"])
         return {"numerator": numerator, "denominator": denominator, "whole_name": whole}
-    # perimeter_area_basic
-    length = random.randint(3, 8)
-    width = random.randint(2, min(length, 6))
-    mode = random.choice(["area_grid", "perimeter_path"])
-    return {"length": length, "width": width, "unit": "cm", "mode": mode}
+    if topic == "perimeter_area_basic":
+        length = random.randint(3, 8)
+        width = random.randint(2, min(length, 6))
+        mode = random.choice(["area_grid", "perimeter_path"])
+        return {"length": length, "width": width, "unit": "cm", "mode": mode}
+    return {"groups": 3, "items_per_group": 4, "item_name": "vật", "group_name": "nhóm"}
 
 
 def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> dict:

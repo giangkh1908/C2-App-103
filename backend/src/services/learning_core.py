@@ -1,3 +1,4 @@
+import random
 from uuid import uuid4
 
 from src.agents.guardrails import guard_message
@@ -44,10 +45,18 @@ class LearningCoreService:
                 request.user_id,
             )
 
+        # 2. Khôi phục Topic nếu request hiện tại gửi lên trống (do tải lại session cũ)
+        current_selected_topic = request.selected_topic
+        if not current_selected_topic and prev_turn:
+            current_selected_topic = (
+                prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
+            )
+
+        context = build_default_context(current_selected_topic or "multiplication")
+
         guard_result = guard_message(request.message)
 
         if guard_result is not None:
-            context = build_default_context(request.selected_topic or "multiplication")
             result = self._build_clarification_result(
                 request=request,
                 context=context,
@@ -63,13 +72,6 @@ class LearningCoreService:
                 )
             await self._persist(request, result)
             return result
-
-        # 2. Khôi phục Topic nếu request hiện tại gửi lên trống (do tải lại session cũ)
-        current_selected_topic = request.selected_topic
-        if not current_selected_topic and prev_turn:
-            current_selected_topic = (
-                prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
-            )
 
         context = detect_context(
             request.message,
@@ -207,10 +209,16 @@ class LearningCoreService:
         response_source = "llm"
 
         if is_clarification_response(answer):
-            clarification_result = self._build_clarification_result(
+            context.tool_args = build_random_tool_args(context.topic)
+            tool_data = build_default_tool_data(context.topic, context.tool_args)
+            result = self._build_result(
                 request=request,
                 context=context,
-                assistant_message=answer,
+                tool_data=tool_data,
+                assistant_message=build_contextual_explanation(context.topic, tool_data),
+                response_source="fallback",
+                response_mode="explain_with_visual_and_practice",
+                follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
                 session_id=session_id,
                 agent_metadata=agent_metadata,
             )
@@ -218,10 +226,10 @@ class LearningCoreService:
                 await self.memory_repository.append_turn(
                     session_id=session_id,
                     user_message=request.message,
-                    assistant_message=clarification_result.assistant_message,
+                    assistant_message=result.assistant_message,
                 )
-            await self._persist(request, clarification_result)
-            return clarification_result
+            await self._persist(request, result)
+            return result
 
         if (
             agent_response.visual_data
@@ -306,9 +314,16 @@ class LearningCoreService:
                 session_id, request.user_id
             )
 
+        current_selected_topic = request.selected_topic
+        if not current_selected_topic and prev_turn:
+            current_selected_topic = (
+                prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
+            )
+
+        context = build_default_context(current_selected_topic or "multiplication")
+
         guard_result = guard_message(request.message)
         if guard_result is not None:
-            context = build_default_context(request.selected_topic or "multiplication")
             result = self._build_clarification_result(
                 request=request,
                 context=context,
@@ -326,12 +341,6 @@ class LearningCoreService:
             yield ("chunk", result.assistant_message)
             yield ("done", result)
             return
-
-        current_selected_topic = request.selected_topic
-        if not current_selected_topic and prev_turn:
-            current_selected_topic = (
-                prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
-            )
 
         context = detect_context(request.message, current_selected_topic)
 
@@ -473,10 +482,16 @@ class LearningCoreService:
             return
 
         if is_clarification_response(answer):
-            clarification_result = self._build_clarification_result(
+            context.tool_args = build_random_tool_args(context.topic)
+            tool_data = build_default_tool_data(context.topic, context.tool_args)
+            result = self._build_result(
                 request=request,
                 context=context,
-                assistant_message=answer,
+                tool_data=tool_data,
+                assistant_message=build_contextual_explanation(context.topic, tool_data),
+                response_source="fallback",
+                response_mode="explain_with_visual_and_practice",
+                follow_up_suggestions=build_follow_up_suggestions(context.topic, context.intent),
                 session_id=session_id,
                 agent_metadata=agent_metadata,
             )
@@ -484,10 +499,10 @@ class LearningCoreService:
                 await self.memory_repository.append_turn(
                     session_id=session_id,
                     user_message=request.message,
-                    assistant_message=clarification_result.assistant_message,
+                    assistant_message=result.assistant_message,
                 )
-            await self._persist(request, clarification_result)
-            yield ("done", clarification_result)
+            await self._persist(request, result)
+            yield ("done", result)
             return
 
         if (
@@ -659,6 +674,37 @@ def build_default_context(topic: Topic) -> LearningContext:
     return detect_context("", topic)
 
 
+def build_random_tool_args(topic: Topic) -> dict[str, int | str]:
+    if topic == "multiplication":
+        groups = random.randint(2, 6)
+        items = random.randint(2, 6)
+        item = random.choice(["cái kẹo", "quả táo", "bông hoa", "chiếc bút"])
+        group = random.choice(["chiếc đĩa", "chiếc rổ", "nhóm bạn", "chiếc hộp"])
+        return {"groups": groups, "items_per_group": items, "item_name": item, "group_name": group}
+    if topic == "division":
+        groups = random.randint(2, 5)
+        items_per_group = random.randint(2, 5)
+        item = random.choice(["quả táo", "cái kẹo", "bông hoa"])
+        group = random.choice(["bạn", "nhóm", "chiếc hộp"])
+        return {
+            "total_items": groups * items_per_group,
+            "groups": groups,
+            "item_name": item,
+            "group_name": group,
+        }
+    if topic == "fraction_basic":
+        denominator = random.randint(4, 8)
+        numerator = random.randint(1, denominator - 1)
+        whole = random.choice(["chiếc pizza", "chiếc bánh", "tờ giấy"])
+        return {"numerator": numerator, "denominator": denominator, "whole_name": whole}
+    if topic == "perimeter_area_basic":
+        length = random.randint(3, 8)
+        width = random.randint(2, min(length, 6))
+        mode = random.choice(["area_grid", "perimeter_path"])
+        return {"length": length, "width": width, "unit": "cm", "mode": mode}
+    return {"groups": 3, "items_per_group": 4, "item_name": "vật", "group_name": "nhóm"}
+
+
 def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> dict:
     # Sử dụng .get() để tránh hoàn toàn lỗi KeyError khi sinh dữ liệu mặc định
     if topic == "multiplication":
@@ -710,11 +756,17 @@ def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> di
 
 def build_tutor_message(message: str, topic: Topic | None, grade: int) -> str:
     topic_hint = f" chủ đề '{topic}'" if topic else ""
+    if topic:
+        vague_hint = (
+            "nếu câu hỏi không có số liệu cụ thể, hãy tự chọn số ngẫu nhiên phù hợp và giải thích ngay"
+        )
+    else:
+        vague_hint = "nếu câu hỏi còn mơ hồ về chủ đề, hãy hỏi lại một câu ngắn gọn"
     return (
         f"Học sinh lớp {grade} đang hỏi về{topic_hint}. "
         "Hãy đọc kỹ yêu cầu và trả lời đúng theo đó: "
         "nếu câu hỏi rõ, hãy giải thích ngắn gọn, thân thiện, dễ hiểu; "
-        "nếu câu hỏi còn mơ hồ, hãy hỏi lại một câu ngắn gọn. "
+        f"{vague_hint}. "
         f"Câu hỏi: {message}"
     )
 

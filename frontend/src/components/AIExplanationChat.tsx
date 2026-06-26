@@ -8,7 +8,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import {
   Bot,
-  GraduationCap,
   History,
   Mic,
   MicOff,
@@ -36,7 +35,6 @@ import { useChatStream } from '@/lib/useChatStream';
 import InteractiveSimulation from './InteractiveSimulation';
 import type {
   ChatTurnResponse,
-  MathDomain,
   PracticeQuestion,
   ResponseMode,
   VisualData,
@@ -60,12 +58,6 @@ interface Message {
   simulationConfig?: NonNullable<ChatTurnResponse['visual_card']>['simulation_config'];
 }
 
-interface TopicOption {
-  id: MathDomain;
-  label: string;
-  emoji: string;
-}
-
 type BrowserSpeechRecognition = {
   continuous: boolean;
   lang: string;
@@ -86,14 +78,17 @@ type BrowserWindow = Window & {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const TOPIC_META: Array<{ id: MathDomain; emoji: string }> = [
-  { id: 'multiplication', emoji: '✖️' },
-  { id: 'division', emoji: '➗' },
-  { id: 'fraction_basic', emoji: '🍕' },
-  { id: 'perimeter_area_basic', emoji: '📐' },
+const G1_SUGGESTION_GROUPS = [
+  { label: 'Số và cấu tạo số', icon: '🔢', suggestions: ['Số 24 có mấy chục mấy đơn vị?', 'Biểu diễn số 36 bằng chục và đơn vị', 'Đếm 42 bằng khối chục đơn vị'] },
+  { label: 'So sánh số', icon: '⚖️', suggestions: ['So sánh 37 và 42', 'Số nào lớn hơn: 58 hay 53?', 'Đặt 19, 21, 20 theo thứ tự'] },
+  { label: 'Cộng trừ', icon: '➕', suggestions: ['Minh họa 24 + 13 bằng que tính', 'Bớt 15 từ 48', 'Giải thích 32 - 10 bằng chục đơn vị'] },
+  { label: 'Tính nhẩm', icon: '🧠', suggestions: ['Tính nhẩm 8 + 5 bằng khung 10', 'Nhanh 30 - 10', 'Dùng tia số để tính 7 + 2'] },
+  { label: 'Bài toán lời văn', icon: '📖', suggestions: ['Lan có 5 quả táo, mẹ cho thêm 3 quả', 'Bài toán bớt đi 2 con chim', 'Tóm tắt bài toán lời văn'] },
+  { label: 'Vị trí không gian', icon: '📍', suggestions: ['Quả bóng ở bên trái cái hộp', 'Chỉ vị trí ở giữa', 'Minh họa trên dưới trước sau'] },
+  { label: 'Nhận biết hình', icon: '🔷', suggestions: ['Nhận biết hình vuông và hình tròn', 'Vật nào là khối hộp chữ nhật?', 'Ghép đồ vật với hình học'] },
+  { label: 'Ghép hình', icon: '🧩', suggestions: ['Ghép các hình để tạo ngôi nhà', 'Xếp hình từ tam giác và hình vuông', 'Tạo hình mới bằng kéo thả'] },
+  { label: 'Đo độ dài / Lịch / Đồng hồ', icon: '📏', suggestions: ['So sánh bút nào dài hơn', 'Đọc giờ đúng trên đồng hồ', 'Thứ mấy đứng sau thứ ba?'] },
 ];
-
-const TOPIC_EMOJIS = new Map(TOPIC_META.map((topic) => [topic.id, topic.emoji]));
 
 function buildWelcomeMessage(tChat: (key: string) => string): Message {
   return {
@@ -103,10 +98,10 @@ function buildWelcomeMessage(tChat: (key: string) => string): Message {
   timestampLabel: tChat('ready'),
   responseMode: 'explain_only',
   followUpSuggestions: [
-    tChat('suggestions.multiply'),
-    tChat('suggestions.compareFractions'),
-    tChat('suggestions.perimeterArea'),
-    tChat('suggestions.division'),
+    'Số 24 có mấy chục mấy đơn vị?',
+    'So sánh 37 và 42',
+    'Tính nhẩm 8 + 5',
+    'Đọc giờ trên đồng hồ',
   ],
   };
 }
@@ -370,22 +365,14 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
 
 export default function AIExplanationChat() {
   const locale = useLocale();
-  const t = useTranslations('learn');
   const { apiFetch } = useAuth();
   const tChat = useTranslations('learn.chat');
   const speechLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
-  const localizeTopic = useCallback((topic: { id: MathDomain }): TopicOption => ({
-    id: topic.id,
-    label: t(`topics.${topic.id}`),
-    emoji: TOPIC_EMOJIS.get(topic.id) ?? '📚',
-  }), [t]);
   const welcomeMessage = useMemo(() => buildWelcomeMessage(tChat), [tChat]);
 
   const [messages, setMessages] = useState<Message[]>(() => [welcomeMessage]);
   const [inputText, setInputText] = useState('');
-  const [selectedGrade, setSelectedGrade] = useState(3);
-  const [topicIds, setTopicIds] = useState<MathDomain[]>(() => TOPIC_META.map((topic) => topic.id));
-  const [selectedTopic, setSelectedTopic] = useState<MathDomain | null>(null);
+  const [expandedSuggestionGroup, setExpandedSuggestionGroup] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [streamStatusText, setStreamStatusText] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -403,9 +390,7 @@ export default function AIExplanationChat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api/v1';
-  const { sendStream, abort: abortStream } = useChatStream(apiFetch);
-  const topics = useMemo(() => topicIds.map((id) => localizeTopic({ id })), [topicIds, localizeTopic]);
+  const { sendStream } = useChatStream(apiFetch);
 
   // Auto-scroll
   useEffect(() => {
@@ -460,20 +445,6 @@ export default function AIExplanationChat() {
 
     return () => { active = false; };
   }, [apiFetch]);
-
-  // Load topics from backend
-  useEffect(() => {
-    let active = true;
-    fetch(`${backendUrl}/topics`)
-      .then((r) => r.json())
-      .then((data: { topics?: Array<{ id: MathDomain; label?: string }> }) => {
-        if (active && data.topics?.length) {
-          setTopicIds(data.topics.map((topic) => topic.id));
-        }
-      })
-      .catch(() => { /* use defaults */ });
-    return () => { active = false; };
-  }, [backendUrl]);
 
   const handleSpeak = useCallback((text: string, id: string) => {
     if (!window.speechSynthesis) return;
@@ -613,9 +584,8 @@ export default function AIExplanationChat() {
       await sendStream(
         {
           session_id: currentSessionId,
-          grade: selectedGrade,
+          grade: 1,
           message: text,
-          selected_topic: selectedTopic,
         },
         {
           onStatus: (message) => {
@@ -655,6 +625,7 @@ export default function AIExplanationChat() {
                     totalCount: payload.visual_card.visual_data.total_count,
                     groupsLabel: payload.visual_card.visual_data.groups_label,
                     itemsLabel: payload.visual_card.visual_data.items_label,
+                    config: payload.visual_card.visual_data.config,
                   }
                 : undefined,
               practiceQuestion: payload.practice_question
@@ -768,28 +739,8 @@ export default function AIExplanationChat() {
           </div>
         </div>
 
-        {/* Grade selector + History button */}
-        <div className="flex w-full items-center gap-2 sm:w-auto">
-          <div className="flex flex-1 items-center justify-between gap-2 rounded-full border border-gray-200 bg-slate-50 px-2 py-1.5 text-xs font-bold sm:flex-none sm:justify-start">
-            <GraduationCap className="h-3.5 w-3.5 shrink-0 text-natural-orange" />
-            <span className="text-gray-500">{tChat('gradeLabel')}</span>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((g) => (
-                <button
-                  key={g}
-                  id={`grade-btn-${g}`}
-                  onClick={() => { setSelectedGrade(g); playSfx('sparkle'); }}
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
-                    selectedGrade === g
-                      ? 'bg-natural-green text-white shadow-md'
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  {g}
-                </button>
-              ))}
-            </div>
-          </div>
+        {/* History button */}
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setIsSidebarOpen(prev => !prev)}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-slate-50 text-gray-500 transition-colors hover:border-natural-green/30 hover:bg-natural-green-tint hover:text-natural-green"
@@ -802,33 +753,36 @@ export default function AIExplanationChat() {
         </div>
       </div>
 
-      {/* ── Topic bar ── */}
+      {/* ── G1 Quick Suggestions ── */}
       <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-gray-100 bg-[#F4F1E8] px-4 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <button
-          id="topic-btn-all"
-          onClick={() => setSelectedTopic(null)}
-          className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
-            selectedTopic === null
-              ? 'border-natural-green bg-natural-green text-white'
-              : 'border-gray-200 bg-white text-gray-600 hover:border-natural-green/30 hover:text-natural-green'
-          }`}
-        >
-          {tChat('freeTopic')}
-        </button>
-        {topics.map((topic) => (
-          <button
-            key={topic.id}
-            id={`topic-btn-${topic.id}`}
-            onClick={() => setSelectedTopic(topic.id)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
-              selectedTopic === topic.id
-                ? 'border-natural-orange bg-natural-orange text-white'
-                : 'border-gray-200 bg-white text-gray-600 hover:border-natural-orange/30 hover:text-natural-orange'
-            }`}
-          >
-            <span>{topic.emoji}</span>
-            {topic.label}
-          </button>
+        <span className="shrink-0 text-[9px] font-bold text-gray-400 uppercase mr-1">Gợi ý</span>
+        {G1_SUGGESTION_GROUPS.map((group, idx) => (
+          <div key={idx} className="relative shrink-0">
+            <button
+              onClick={() => setExpandedSuggestionGroup(expandedSuggestionGroup === idx ? null : idx)}
+              className={`flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[9px] font-bold tracking-tight transition-all ${
+                expandedSuggestionGroup === idx
+                  ? 'border-natural-green bg-natural-green text-white'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-natural-green/30 hover:text-natural-green'
+              }`}
+            >
+              <span className="text-[10px]">{group.icon}</span>
+              {group.label}
+            </button>
+            {expandedSuggestionGroup === idx && (
+              <div className="absolute top-full left-0 z-20 mt-1 flex flex-col gap-1 rounded-xl border border-gray-100 bg-white p-2 shadow-lg">
+                {group.suggestions.map((s, si) => (
+                  <button
+                    key={si}
+                    onClick={() => { handleSuggestionClick(s); setExpandedSuggestionGroup(null); }}
+                    className="whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-[10px] text-gray-700 hover:bg-natural-green/10 hover:text-natural-green"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
       </div>
 

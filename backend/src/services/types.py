@@ -21,6 +21,8 @@ class LearningCoreRequest(BaseModel):
     message: str = Field(min_length=1)
     session_id: str | None = None
     selected_topic: Topic | None = None
+    curriculum_topic_id: str | None = None
+    curriculum_visual_template: str | None = None
 
 
 class LearningContext(BaseModel):
@@ -39,6 +41,7 @@ class SessionMetadata(BaseModel):
 
 class LearningCoreResult(BaseModel):
     topic: Topic
+    curriculum_topic_id: str | None = None
     grade: int
     intent: Intent
     assistant_message: str

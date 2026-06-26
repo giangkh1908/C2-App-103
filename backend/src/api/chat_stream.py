@@ -61,6 +61,8 @@ async def _stream_chat_turn(
                 grade=request.grade,
                 message=request.message,
                 selected_topic=request.selected_topic,
+                curriculum_topic_id=request.curriculum_topic_id,
+                curriculum_visual_template=request.curriculum_visual_template,
             )
         )
 

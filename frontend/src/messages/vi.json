@@ -29,22 +29,14 @@
       "perimeter_area_basic": "Chu vi & Diện tích"
     },
     "chat": {
-      "title": "Gia sư Toán AI",
-      "subtitle": "Hỏi bất kỳ câu hỏi toán tiểu học nào",
-      "gradeLabel": "Lớp",
-      "freeTopic": "Chủ đề tự do",
-      "welcome": "Xin chào! Mình là gia sư toán AI. Bạn hỏi mình bất kỳ câu hỏi toán tiểu học nào — mình sẽ giải thích bằng ví dụ trực quan!",
+      "title": "Gia sư Toán Lớp 1",
+      "subtitle": "Hỏi tự do — mình sẽ minh họa bằng hình ảnh",
+      "welcome": "Xin chào! Mình là gia sư toán lớp 1. Bạn cứ hỏi tự do nhé — mình sẽ giải thích bằng hình ảnh trực quan!",
       "ready": "Sẵn sàng học!",
-      "suggestions": {
-        "multiply": "Giải thích phép nhân",
-        "compareFractions": "So sánh phân số",
-        "perimeterArea": "Chu vi & diện tích",
-        "division": "Giải thích phép chia"
-      },
       "connectionError": "Lỗi kết nối. Vui lòng thử lại.",
       "retrySuggestion": "Thử lại",
-      "chooseTopicSuggestion": "Chọn chủ đề khác",
-      "inputPlaceholder": "Đặt câu hỏi toán...",
+      "chooseTopicSuggestion": "Thử câu hỏi khác",
+      "inputPlaceholder": "Hỏi bất kỳ câu nào về toán lớp 1...",
       "stopRecording": "Dừng ghi âm",
       "startRecording": "Bắt đầu ghi âm",
       "footer": "Gia sư AI — Học Toán Trực Quan",

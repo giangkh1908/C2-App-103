@@ -1,4 +1,9 @@
-export type MathDomain = 'multiplication' | 'division' | 'fraction_basic' | 'perimeter_area_basic';
+export type MathDomain =
+  | 'multiplication'
+  | 'division'
+  | 'fraction_basic'
+  | 'perimeter_area_basic'
+  | 'data_representation';
 export type TutorIntent =
   | 'explain_concept'
   | 'give_example'
@@ -14,17 +19,59 @@ export type ResponseMode =
 
 export type VisualPriority = 'low' | 'medium' | 'high';
 
+// Curriculum topic types (additive, backward compatible)
+export interface CurriculumTopicItem {
+  topic_id: string;
+  topic_name: string;
+  strand: string;
+  visual_templates: string[];
+  difficulty: number;
+}
+
+export interface CurriculumTopicDetail extends CurriculumTopicItem {
+  grade: number;
+  content: string;
+  learning_outcomes: string[];
+  prompt_examples?: string[];
+}
+
+export interface CurriculumGradeSummary {
+  grade: number;
+  topic_count: number;
+  strands: string[];
+}
+
+export type VisualType =
+  | 'candy' | 'apple' | 'pizza' | 'grid'
+  | 'number_line' | 'ten_frame' | 'place_value' | 'grouping'
+  | 'counting_objects' | 'bar_model' | 'array_model' | 'comparison_visual'
+  | 'rounding_visual' | 'balance_model' | 'expression_tree' | 'parity_visual'
+  | 'mean_balance_visual' | 'area_model_distributive' | 'unit_rate_visual' | 'operation_story'
+  | 'fraction_bar' | 'fraction_circle' | 'equivalent_fraction_visual' | 'decimal_place_value'
+  | 'area_model_decimal' | 'percent_bar' | 'ratio_model'
+  | 'data_table' | 'bar_chart' | 'pie_chart' | 'picture_graph'
+  | 'probability_experiment' | 'scenario_cards'
+  | 'ruler_measurement' | 'clock_calendar' | 'money_visual' | 'thermometer_visual'
+  | 'mass_capacity_visual' | 'volume_cubes' | 'speed_distance_time_visual' | 'polyline_length_visual'
+  | 'geometry_shape' | 'spatial_position_scene' | 'shape_sorting' | 'real_object_match'
+  | 'shape_composition' | 'drag_drop_shapes' | 'angle_protractor' | 'shape_attribute_highlight'
+  | 'solid_shape' | 'parallel_perpendicular_visual' | 'net_3d_visual' | 'area_grid'
+  | 'roman_numeral_visual' | 'calculator_demo' | 'step_by_step_input';
+
+export type SimulationType = string;
+
 export interface VisualData {
-  type: 'candy' | 'apple' | 'pizza' | 'grid';
+  type: VisualType;
   primaryCount: number; // e.g., number of groups, numerator, or length
   secondaryCount: number; // e.g., size of each group, denominator, or width
   totalCount: number; // calculated total value
   groupsLabel?: string;
   itemsLabel?: string;
+  config?: Record<string, unknown>;
 }
 
 export interface SimulationConfig {
-  type: 'groups' | 'division' | 'pizza_slices' | 'rectangle_grid';
+  type: SimulationType;
   minX: number;
   maxX: number;
   minY: number;
@@ -81,15 +128,16 @@ export interface ChatTurnVisualCard {
   short_explanation: string;
   life_example: string;
   visual_data: {
-    type: 'candy' | 'apple' | 'pizza' | 'grid';
+    type: VisualType;
     primary_count: number;
     secondary_count: number;
     total_count: number;
     groups_label?: string;
     items_label?: string;
+    config?: Record<string, unknown>;
   };
   simulation_config: {
-    type: 'groups' | 'division' | 'pizza_slices' | 'rectangle_grid';
+    type: SimulationType;
     min_x: number;
     max_x: number;
     min_y: number;

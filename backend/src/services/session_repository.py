@@ -17,6 +17,8 @@ class SessionRepository:
                 "grade": payload.request.grade,
                 "message": payload.request.message,
                 "selected_topic": payload.request.selected_topic,
+                "curriculum_topic_id": payload.request.curriculum_topic_id,
+                "curriculum_visual_template": payload.request.curriculum_visual_template,
                 "detected_topic": payload.result.topic,
                 "intent": payload.result.intent,
                 "response_mode": payload.result.response_mode,

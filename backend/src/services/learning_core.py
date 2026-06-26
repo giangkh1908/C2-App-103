@@ -5,6 +5,16 @@ from src.agents.tutor_agent import TutorAgent
 from src.core.config import settings
 from src.models.chat import Topic
 from src.services.context_detector import detect_context
+from src.services.curriculum_adapter import (
+    RUNTIME_TOPIC_BY_CURRICULUM_TOPIC,
+    SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC,
+    build_curriculum_scope_redirect_message,
+    build_grade1_curriculum_result,
+    get_prompt_examples_for_curriculum_topic,
+    get_runtime_topic_for_curriculum_topic,
+    is_curriculum_topic_message_in_scope,
+    is_supported_curriculum_topic,
+)
 from src.services.memory_repository import MemoryRepository
 from src.services.practice_builder import build_practice_questions
 from src.services.response_mapper import to_chat_response, to_lesson_response
@@ -19,6 +29,76 @@ from src.services.types import (
 from src.services.validation import validate_learning_core_result, validate_lesson_response
 from src.services.visual_builder import build_visual_bundle
 from src.tools.registry import ToolRegistry
+
+import unicodedata
+
+
+def _normalize_text(text: str) -> str:
+    """Normalize Vietnamese text: lowercase, strip accents, replace đ→d."""
+    nfkd = unicodedata.normalize("NFKD", text.lower())
+    stripped = "".join(ch for ch in nfkd if unicodedata.category(ch) != "Mn")
+    return stripped.replace("đ", "d")
+
+
+def detect_grade1_curriculum_topic(message: str) -> str | None:
+    """Auto-detect which G1 curriculum topic a message belongs to.
+
+    Uses keyword matching with heuristic scoring to pick the best topic.
+    Returns a G1-* topic ID or None if no topic matches.
+    """
+    normalized = _normalize_text(message)
+    scores: dict[str, int] = {}
+
+    for topic_id, keywords in SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC.items():
+        score = sum(1 for kw in keywords if kw in normalized)
+        if score > 0:
+            scores[topic_id] = score
+
+    if not scores:
+        return None
+
+    # ── Heuristic exclusions (override when keywords overlap) ──────
+    # "tinh nham" / "nhanh" → G1-OPS-02 takes priority over G1-OPS-01
+    if "tinh nham" in normalized or "khung 10" in normalized or "nhanh" in normalized:
+        scores["G1-OPS-02"] = scores.get("G1-OPS-02", 0) + 3
+        scores["G1-OPS-01"] = max(0, scores.get("G1-OPS-01", 0) - 1)
+
+    # "so sanh" / "lon hon" / "be hon" → G1-NUM-02 takes priority
+    if "so sanh" in normalized or "lon hon" in normalized or "be hon" in normalized:
+        scores["G1-NUM-02"] = scores.get("G1-NUM-02", 0) + 3
+        scores["G1-NUM-01"] = max(0, scores.get("G1-NUM-01", 0) - 1)
+
+    # "bai toan" / "loi van" / story patterns → G1-WORD-01 priority
+    if "bai toan" in normalized or "loi van" in normalized:
+        scores["G1-WORD-01"] = scores.get("G1-WORD-01", 0) + 3
+    # Story pattern: "co ... me cho" / "co ... ban cho" / "co ... con lai"
+    if ("me cho" in normalized or "ban cho" in normalized or "con lai" in normalized
+            or "tom tat" in normalized or "so do" in normalized):
+        scores["G1-WORD-01"] = scores.get("G1-WORD-01", 0) + 2
+        scores["G1-OPS-01"] = max(0, scores.get("G1-OPS-01", 0) - 1)
+
+    # "ghep hinh" / "xep hinh" → G1-GEO-03 over G1-GEO-02
+    if "ghep" in normalized or "xep" in normalized:
+        scores["G1-GEO-03"] = scores.get("G1-GEO-03", 0) + 2
+        scores["G1-GEO-02"] = max(0, scores.get("G1-GEO-02", 0) - 1)
+
+    # "do dai" / "thuoc" / "cm" → G1-MEAS-02 over G1-MEAS-01
+    if "do dai" in normalized or "thuoc" in normalized or "cm" in normalized:
+        scores["G1-MEAS-02"] = scores.get("G1-MEAS-02", 0) + 2
+        scores["G1-MEAS-01"] = max(0, scores.get("G1-MEAS-01", 0) - 1)
+
+    # "dong ho" / "gio dung" / "thu" / "tuan" → G1-MEAS-01 (time/calendar)
+    if "dong ho" in normalized or "gio dung" in normalized or "thu " in normalized or "tuan" in normalized:
+        scores["G1-MEAS-01"] = scores.get("G1-MEAS-01", 0) + 2
+        scores["G1-MEAS-02"] = max(0, scores.get("G1-MEAS-02", 0) - 1)
+
+    # "tia so" alone → G1-NUM-02 or G1-OPS-02, not G1-NUM-01
+    if "tia so" in normalized:
+        scores["G1-NUM-02"] = scores.get("G1-NUM-02", 0) + 1
+        scores["G1-OPS-02"] = scores.get("G1-OPS-02", 0) + 1
+
+    best = max(scores, key=scores.get)
+    return best if scores[best] > 0 else None
 
 
 class LearningCoreService:
@@ -45,6 +125,62 @@ class LearningCoreService:
             )
 
         guard_result = guard_message(request.message)
+
+        # ── AUTO-DETECT G1 TOPIC ──────────────────────────────────
+        # If frontend did not send curriculum_topic_id, detect from message
+        if not request.curriculum_topic_id and request.grade == 1:
+            detected = detect_grade1_curriculum_topic(request.message)
+            if detected:
+                request.curriculum_topic_id = detected
+                request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(detected)
+
+        if is_supported_curriculum_topic(request.curriculum_topic_id):
+            assert request.curriculum_topic_id is not None
+            if not is_curriculum_topic_message_in_scope(
+                request.curriculum_topic_id,
+                request.message,
+            ):
+                redirect_result = self._build_clarification_result(
+                    request=request,
+                    context=LearningContext(
+                        topic=get_runtime_topic_for_curriculum_topic(
+                            request.curriculum_topic_id
+                        ),
+                        intent="show_visual",
+                    ),
+                    assistant_message=build_curriculum_scope_redirect_message(
+                        request.curriculum_topic_id
+                    ),
+                    session_id=session_id,
+                    agent_metadata={
+                        "adapter": "grade1_curriculum_scope_guard",
+                        "curriculum_topic_id": request.curriculum_topic_id,
+                    },
+                )
+                redirect_result.follow_up_suggestions = (
+                    get_prompt_examples_for_curriculum_topic(
+                        request.curriculum_topic_id
+                    )
+                )
+                if session_id is not None:
+                    await self.memory_repository.append_turn(
+                        session_id=session_id,
+                        user_message=request.message,
+                        assistant_message=redirect_result.assistant_message,
+                    )
+                await self._persist(request, redirect_result)
+                return redirect_result
+
+        curriculum_result = build_grade1_curriculum_result(request, session_id)
+        if curriculum_result is not None:
+            if session_id is not None:
+                await self.memory_repository.append_turn(
+                    session_id=session_id,
+                    user_message=request.message,
+                    assistant_message=curriculum_result.assistant_message,
+                )
+            await self._persist(request, curriculum_result)
+            return curriculum_result
 
         if guard_result is not None:
             context = build_default_context(request.selected_topic or "multiplication")
@@ -264,7 +400,7 @@ class LearningCoreService:
             validate_learning_core_result(result)
             lesson_resp = to_lesson_response(result)
             if lesson_resp is not None:
-                validate_lesson_response(lesson_resp)
+                validate_lesson_response(lesson_resp, result.curriculum_topic_id)
         except ValueError:
             result = self._build_result(
                 request=request,
@@ -280,7 +416,7 @@ class LearningCoreService:
             validate_learning_core_result(result)
             lesson_resp = to_lesson_response(result)
             if lesson_resp is not None:
-                validate_lesson_response(lesson_resp)
+                validate_lesson_response(lesson_resp, result.curriculum_topic_id)
 
         if session_id is not None:
             await self.memory_repository.append_turn(
@@ -299,10 +435,12 @@ class LearningCoreService:
         assistant_message: str,
         session_id: str,
         agent_metadata: dict | None = None,
+        follow_up_suggestions: list[str] | None = None,
     ) -> LearningCoreResult:
         topic = context.topic or "multiplication"
         return LearningCoreResult(
             topic=topic,
+            curriculum_topic_id=request.curriculum_topic_id,
             grade=request.grade,
             intent=context.intent,
             assistant_message=assistant_message,
@@ -348,6 +486,7 @@ class LearningCoreService:
             assistant_message=assistant_message,
             tool_data=tool_data,
             context=context,
+            curriculum_visual_template=getattr(request, 'curriculum_visual_template', None),
         )
         practice_question_spec, practice_question_chat = build_practice_questions(topic, tool_data)
         return LearningCoreResult(
@@ -376,11 +515,12 @@ class LearningCoreService:
 
     async def _persist(self, request: LearningCoreRequest, result: LearningCoreResult) -> None:
         try:
+            lesson_response = to_lesson_response(result)
             await self.session_repository.save(
                 LearningPersistencePayload(
                     request=request,
                     result=result,
-                    lesson_snapshot=to_lesson_response(result).model_dump(),
+                    lesson_snapshot=lesson_response.model_dump() if lesson_response is not None else {},
                     chat_snapshot=to_chat_response(result),
                 )
             )
@@ -427,6 +567,22 @@ def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> di
             "denominator": denominator,
             "whole_name": tool_args.get("whole_name") or "chiếc pizza",
             "fraction_text": f"{numerator}/{denominator}",
+        }
+    if topic == "data_representation":
+        labels_csv = str(tool_args.get("labels_csv") or "To 1|To 2|To 3")
+        values_csv = str(tool_args.get("values_csv") or "6|9|7")
+        labels = [label.strip() for label in labels_csv.split("|") if label.strip()]
+        values = [int(value.strip()) for value in values_csv.split("|") if value.strip()]
+        if not labels or len(labels) != len(values):
+            labels = ["To 1", "To 2", "To 3"]
+            values = [6, 9, 7]
+        return {
+            "type": "bar_chart",
+            "labels": labels,
+            "values": values,
+            "bar_count": len(values),
+            "max_value": max(values),
+            "total_value": sum(values),
         }
     length = int(tool_args.get("length") or 5)
     width = int(tool_args.get("width") or 3)
@@ -510,6 +666,14 @@ def build_contextual_explanation(topic: Topic, tool_data: dict) -> str:
             f"{tool_data.get('numerator', 1)} phần "
             f"trong tổng {tool_data.get('denominator', 4)} phần bằng nhau."
         )
+    if topic == "data_representation":
+        labels = tool_data.get("labels", ["To 1", "To 2", "To 3"])
+        values = tool_data.get("values", [6, 9, 7])
+        pairs = ", ".join(f"{label}: {value}" for label, value in zip(labels, values))
+        return (
+            f"Biểu đồ cột giúp so sánh dữ liệu nhanh hơn. Ở đây ta có {pairs}. "
+            "Cột cao hơn nghĩa là số lượng lớn hơn."
+        )
     return (
         f"Hình chữ nhật dài {tool_data.get('length', 5)} và rộng {tool_data.get('width', 3)}. "
         f"Diện tích là {tool_data.get('area', 15)} ô vuông, còn chu vi là "
@@ -535,6 +699,12 @@ def build_follow_up_suggestions(topic: Topic, intent: str) -> list[str]:
             "Phân biệt chu vi và diện tích.",
             "Cho con hình minh họa khác.",
             "Vì sao phải nhân chiều dài với chiều rộng?",
+        ]
+    if topic == "data_representation":
+        return [
+            "To nao dong nhat?",
+            "To nao it hoc sinh nhat?",
+            "Cho con mot bieu do tranh tuong tu.",
         ]
     if topic == "multiplication":
         return [

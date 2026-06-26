@@ -1,0 +1,6 @@
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:01:24.008694+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:01:32.623826+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:01:45.781926+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:07:11.320597+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:07:20.149097+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:07:26.552249+00:00"}

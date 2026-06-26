@@ -26,6 +26,7 @@ from src.services.payment_service import (
 )
 from src.services.plan_service import seed_default_plans
 from src.services.practice_dataset import load_exam_catalog_from_db
+from src.services.curriculum_service import load_curriculum_from_db
 from src.services.subscription_service import (
     expire_overdue_subscriptions,
     send_expiry_reminder_emails,
@@ -121,6 +122,9 @@ async def lifespan(app: FastAPI):
     logger.info("plans_seeded")
     catalog = await load_exam_catalog_from_db(db_module.db)
     logger.info("practice_catalog_loaded", exam_count=len(catalog.exams_by_id))
+
+    await load_curriculum_from_db(db_module.db)
+    logger.info("curriculum_loaded")
 
     scheduler = _build_scheduler()
     scheduler.start()

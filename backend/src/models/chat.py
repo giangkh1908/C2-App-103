@@ -1,8 +1,14 @@
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-Topic = Literal["multiplication", "division", "fraction_basic", "perimeter_area_basic"]
+Topic = Literal[
+    "multiplication",
+    "division",
+    "fraction_basic",
+    "perimeter_area_basic",
+    "data_representation",
+]
 Intent = Literal[
     "explain_concept",
     "give_example",
@@ -25,19 +31,22 @@ class ChatTurnRequest(BaseModel):
     grade: int = Field(ge=1, le=5)
     message: str = Field(min_length=1)
     selected_topic: Topic | None = None
+    curriculum_topic_id: str | None = None
+    curriculum_visual_template: str | None = None
 
 
 class VisualData(BaseModel):
-    type: Literal["candy", "apple", "pizza", "grid"]
+    type: str = "candy"
     primary_count: int = Field(ge=0)
     secondary_count: int = Field(ge=0)
     total_count: float = Field(ge=0)
     groups_label: str
     items_label: str
+    config: dict[str, Any] | None = None
 
 
 class SimulationConfig(BaseModel):
-    type: Literal["groups", "division", "pizza_slices", "rectangle_grid"]
+    type: str
     min_x: int
     max_x: int
     min_y: int

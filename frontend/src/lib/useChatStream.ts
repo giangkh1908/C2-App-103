@@ -30,7 +30,6 @@ export interface StreamRequest {
   session_id: string | null;
   grade: number;
   message: string;
-  selected_topic: string | null;
 }
 
 // ─── SSE parser ───────────────────────────────────────────────────────────────

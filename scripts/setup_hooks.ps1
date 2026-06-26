@@ -46,11 +46,13 @@ $CodexHookBody = @'
 }
 '@
 
-Set-Content -Path $HookFile -Value $HookBody -Encoding UTF8 -NoNewline
+# Write UTF-8 without BOM so Git Bash can execute the hook on Windows.
+$Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText((Join-Path (Get-Location) $HookFile), $HookBody, $Utf8NoBom)
 Write-Host "[ai-log] Git pre-push hook installed."
 
 if (-not (Test-Path .codex)) { New-Item -ItemType Directory -Path .codex | Out-Null }
-Set-Content -Path $CodexHookFile -Value $CodexHookBody -Encoding UTF8 -NoNewline
+[System.IO.File]::WriteAllText((Join-Path (Get-Location) $CodexHookFile), $CodexHookBody, $Utf8NoBom)
 Write-Host "[ai-log] Codex hooks installed."
 
 if (-not (Test-Path .ai-log)) { New-Item -ItemType Directory -Path .ai-log | Out-Null }

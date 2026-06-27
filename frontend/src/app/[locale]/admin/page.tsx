@@ -1,0 +1,202 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { fetchCostStats, fetchStats } from "@/lib/adminApi";
+import type { AdminCostStats, AdminStats } from "@/types/admin";
+
+export default function AdminDashboard() {
+  const { apiFetch } = useAuth();
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [costStats, setCostStats] = useState<AdminCostStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [costLoading, setCostLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [costError, setCostError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+    (async () => {
+      try {
+        const [statsData, costData] = await Promise.all([
+          fetchStats(apiFetch),
+          fetchCostStats(apiFetch, currentMonth),
+        ]);
+        if (!cancelled) {
+          setStats(statsData);
+          setCostStats(costData);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Không thể tải dữ liệu",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          setCostLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiFetch]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-natural-green border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+        <p className="text-sm font-bold text-red-700">{error}</p>
+      </div>
+    );
+  }
+
+  const cards = [
+    {
+      label: "Tổng doanh thu",
+      value: stats
+        ? `${stats.total_revenue.toLocaleString("vi-VN")}₫`
+        : "—",
+    },
+    {
+      label: "Gói đã bán",
+      value: stats?.total_subscriptions.toLocaleString("vi-VN") ?? "—",
+    },
+    {
+      label: "Đang chờ xử lý",
+      value: stats?.pending_payments.toLocaleString("vi-VN") ?? "—",
+    },
+    {
+      label: "Người dùng hoạt động",
+      value: stats?.active_users.toLocaleString("vi-VN") ?? "—",
+    },
+    {
+      label: "Chi phí LLM (tháng)",
+      value: costStats?.total_cost_usd != null
+        ? `$${costStats.total_cost_usd.toFixed(4)}`
+        : "—",
+    },
+  ];
+
+  return (
+    <div>
+      <h1 className="mb-6 text-2xl font-bold text-natural-charcoal">
+        Tổng quan
+      </h1>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map((card) => (
+          <div
+            key={card.label}
+            className="rounded-xl border border-natural-border bg-white p-6 shadow-sm"
+          >
+            <p className="text-sm font-medium text-natural-charcoal/60">
+              {card.label}
+            </p>
+            <p className="mt-2 text-2xl font-bold text-natural-charcoal">
+              {card.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Chi phí LLM chi tiết ── */}
+      {costStats && (
+        <div className="mt-6 rounded-xl border border-natural-border bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-bold text-natural-charcoal">
+            Chi tiết chi phí LLM
+          </h2>
+
+          <div className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Tổng chi phí tháng */}
+            <div>
+              <p className="text-sm font-medium text-natural-charcoal/60">
+                Tổng chi phí (tháng {costStats.month})
+              </p>
+              <p className="mt-1 text-2xl font-bold text-natural-charcoal">
+                ${costStats.total_cost_usd.toFixed(4)}
+              </p>
+            </div>
+
+            {/* So sánh với tháng trước */}
+            <div>
+              <p className="text-sm font-medium text-natural-charcoal/60">
+                So với tháng trước
+              </p>
+              <p className="mt-1 text-2xl font-bold text-natural-charcoal">
+                {costStats.previous_month != null
+                  ? (() => {
+                      const diff =
+                        costStats.total_cost_usd - costStats.previous_month!;
+                      const pct =
+                        costStats.previous_month! > 0
+                          ? ((diff / costStats.previous_month!) * 100).toFixed(
+                              1,
+                            )
+                          : "—";
+                      if (diff > 0)
+                        return `↑ +${pct}%`;
+                      if (diff < 0) return `↓ ${pct}%`;
+                      return "—";
+                    })()
+                  : "—"}
+              </p>
+            </div>
+
+            {/* Tổng số người dùng */}
+            <div>
+              <p className="text-sm font-medium text-natural-charcoal/60">
+                Số người dùng có chi phí
+              </p>
+              <p className="mt-1 text-2xl font-bold text-natural-charcoal">
+                {costStats.total_users.toLocaleString("vi-VN")}
+              </p>
+            </div>
+          </div>
+
+          {/* Top 3 người dùng */}
+          {costStats.top_users.length > 0 && (
+            <div>
+              <h3 className="mb-2 text-sm font-bold text-natural-charcoal/80">
+                Top người dùng chi tiêu nhiều nhất
+              </h3>
+              <div className="space-y-2">
+                {costStats.top_users.slice(0, 3).map((user, i) => (
+                  <div
+                    key={user.user_id}
+                    className="flex items-center justify-between rounded-lg border border-natural-border/50 px-4 py-2.5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-natural-charcoal/40">
+                        #{i + 1}
+                      </span>
+                      <span className="text-sm font-medium text-natural-charcoal">
+                        {user.email ?? "—"}
+                      </span>
+                    </div>
+                    <span className="text-sm font-semibold text-natural-charcoal">
+                      ${user.cost_usd.toFixed(4)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

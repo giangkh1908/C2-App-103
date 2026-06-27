@@ -43,6 +43,9 @@ class VisualData(BaseModel):
     groups_label: str
     items_label: str
     config: dict[str, Any] | None = None
+    concept_type: str | None = None
+    polypad_enabled: bool | None = None
+    polypad_mode: str | None = None
 
 
 class SimulationConfig(BaseModel):

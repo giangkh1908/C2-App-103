@@ -1,80 +1,46 @@
-'use client';
+﻿'use client';
 
-import { VisualProps } from './shared';
+import React from 'react';
 
-export default function MassCapacityVisual({ primaryCount, secondaryCount, totalCount, groupsLabel, itemsLabel }: VisualProps) {
-  const width = 400;
-  const height = 250;
-  const cx = width / 2;
-  const beamY = 100;
-  const beamLength = 160;
+import { getConfigNumber, getConfigString, VisualProps } from './shared';
 
-  const primaryWeight = primaryCount;
-  const secondaryWeight = secondaryCount;
-  const maxWeight = Math.max(primaryWeight, secondaryWeight, 1);
-
-  const tiltAngle = Math.min(Math.max((secondaryWeight - primaryWeight) / maxWeight * 15, -15), 15);
+export default function MassCapacityVisual({ primaryCount, secondaryCount, config }: VisualProps) {
+  const leftLabel = getConfigString(config, 'left_label') ?? 'Vật A';
+  const rightLabel = getConfigString(config, 'right_label') ?? 'Vật B';
+  const unit = getConfigString(config, 'unit') ?? 'kg';
+  const leftValue = getConfigNumber(config, 'left_value') ?? primaryCount;
+  const rightValue = getConfigNumber(config, 'right_value') ?? secondaryCount;
+  const maxValue = Math.max(leftValue, rightValue, 1);
+  const tiltAngle = Math.min(Math.max(((rightValue - leftValue) / maxValue) * 15, -15), 15);
+  const verdict = leftValue > rightValue ? `${leftLabel} nặng hơn` : leftValue < rightValue ? `${rightLabel} nặng hơn` : 'Cân bằng';
 
   return (
-    <div className="flex flex-col items-center">
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        {/* Stand */}
-        <polygon
-          points={`${cx - 30},${height - 20} ${cx + 30},${height - 20} ${cx + 10},${beamY + 10} ${cx - 10},${beamY + 10}`}
-          fill="#8b4513"
-          stroke="#5d3a1a"
-          strokeWidth={2}
-        />
-        <rect x={cx - 15} y={beamY - 5} width={30} height={15} fill="#a0522d" rx={3} />
-
-        {/* Beam */}
-        <g transform={`rotate(${tiltAngle}, ${cx}, ${beamY})`}>
-          <rect x={cx - beamLength} y={beamY - 5} width={beamLength * 2} height={10} fill="#daa520" stroke="#b8860b" strokeWidth={2} rx={3} />
-
-          {/* Left pan */}
-          <line x1={cx - beamLength} y1={beamY} x2={cx - beamLength - 30} y2={beamY + 40} stroke="#666" strokeWidth={2} />
-          <line x1={cx - beamLength} y1={beamY} x2={cx - beamLength + 30} y2={beamY + 40} stroke="#666" strokeWidth={2} />
-          <ellipse cx={cx - beamLength} cy={beamY + 45} rx={40} ry={8} fill="#ddd" stroke="#999" strokeWidth={2} />
-
-          {/* Right pan */}
-          <line x1={cx + beamLength} y1={beamY} x2={cx + beamLength - 30} y2={beamY + 40} stroke="#666" strokeWidth={2} />
-          <line x1={cx + beamLength} y1={beamY} x2={cx + beamLength + 30} y2={beamY + 40} stroke="#666" strokeWidth={2} />
-          <ellipse cx={cx + beamLength} cy={beamY + 45} rx={40} ry={8} fill="#ddd" stroke="#999" strokeWidth={2} />
-
-          {/* Left weight */}
-          <rect x={cx - beamLength - 20} y={beamY + 10} width={40} height={30} fill="#3498db" rx={3} />
-          <text x={cx - beamLength} y={beamY + 30} textAnchor="middle" fill="white" fontSize={12} fontWeight="bold">
-            {primaryWeight}kg
-          </text>
-
-          {/* Right weight */}
-          <rect x={cx + beamLength - 20} y={beamY + 10} width={40} height={30} fill="#e74c3c" rx={3} />
-          <text x={cx + beamLength} y={beamY + 30} textAnchor="middle" fill="white" fontSize={12} fontWeight="bold">
-            {secondaryWeight}kg
-          </text>
+    <div className="flex w-full max-w-2xl flex-col items-center gap-4">
+      <span className="rounded-full border-2 border-amber-200 bg-amber-50 px-4 py-1.5 text-sm font-bold text-amber-700">
+        So sánh khối lượng và dung tích
+      </span>
+      <svg width="360" height="250" viewBox="0 0 360 250" className="rounded-3xl border-2 border-amber-200 bg-white p-2 shadow-sm">
+        <polygon points="155,220 205,220 188,118 172,118" fill="#b45309" />
+        <rect x="165" y="102" width="30" height="18" rx="5" fill="#92400e" />
+        <g transform={`rotate(${tiltAngle}, 180, 110)`}>
+          <rect x="60" y="104" width="240" height="12" rx="6" fill="#f59e0b" />
+          <line x1="80" y1="110" x2="60" y2="152" stroke="#64748b" strokeWidth="3" />
+          <line x1="80" y1="110" x2="100" y2="152" stroke="#64748b" strokeWidth="3" />
+          <ellipse cx="80" cy="160" rx="48" ry="10" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
+          <line x1="280" y1="110" x2="260" y2="152" stroke="#64748b" strokeWidth="3" />
+          <line x1="280" y1="110" x2="300" y2="152" stroke="#64748b" strokeWidth="3" />
+          <ellipse cx="280" cy="160" rx="48" ry="10" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
+          <rect x="52" y="124" width="56" height="28" rx="8" fill="#38bdf8" />
+          <text x="80" y="142" textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700">{leftValue}{unit}</text>
+          <rect x="252" y="124" width="56" height="28" rx="8" fill="#f472b6" />
+          <text x="280" y="142" textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700">{rightValue}{unit}</text>
         </g>
-
-        {/* Labels */}
-        <text x={cx - beamLength} y={height - 5} textAnchor="middle" fontSize={12} fill="#333">
-          {itemsLabel || 'Vật 1'}
-        </text>
-        <text x={cx + beamLength} y={height - 5} textAnchor="middle" fontSize={12} fill="#333">
-          {itemsLabel || 'Vật 2'}
-        </text>
+        <text x="80" y="240" textAnchor="middle" fill="#0f172a" fontSize="14" fontWeight="700">{leftLabel}</text>
+        <text x="280" y="240" textAnchor="middle" fill="#0f172a" fontSize="14" fontWeight="700">{rightLabel}</text>
       </svg>
-
-      <div className="mt-2 text-center">
-        <div className="text-lg font-bold text-purple-700">
-          {primaryWeight > secondaryWeight
-            ? `${itemsLabel || 'Vật 1'} nặng hơn`
-            : primaryWeight < secondaryWeight
-            ? `${itemsLabel || 'Vật 2'} nặng hơn`
-            : 'Cân bằng'}
-        </div>
-        <div className="text-sm text-gray-600">
-          {groupsLabel ? `${groupsLabel}: ` : ''}
-          {primaryWeight}kg vs {secondaryWeight}kg
-        </div>
+      <div className="rounded-2xl border-2 border-purple-200 bg-purple-50 px-4 py-3 text-center shadow-sm">
+        <div className="text-lg font-black text-purple-700">{verdict}</div>
+        <div className="text-sm font-medium text-slate-600">{leftValue}{unit} và {rightValue}{unit}</div>
       </div>
     </div>
   );

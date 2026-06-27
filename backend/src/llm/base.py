@@ -6,6 +6,7 @@ concrete client phải tuân theo.
 """
 
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -42,6 +43,13 @@ class LLMResponse(BaseModel):
     raw: dict[str, Any] | None = None
 
 
+class LLMStreamUsage(BaseModel):
+    """Usage metadata emitted at the end of a streaming LLM generation."""
+
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+
+
 # ---------------------------------------------------------------------------
 # Abstract client
 # ---------------------------------------------------------------------------
@@ -71,4 +79,18 @@ class BaseLLMClient(ABC):
         Returns:
             :class:`LLMResponse` chứa text content *hoặc* thông tin
             tool call mà model yêu cầu thực thi.
+        """
+
+    @abstractmethod
+    async def generate_stream(
+        self,
+        messages: list[LLMMessage],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> AsyncGenerator["str | LLMToolCall | LLMStreamUsage", None]:
+        """Stream tokens từ LLM.
+
+        Yields:
+            ``str`` cho mỗi text chunk nhận được, :class:`LLMToolCall`
+            khi model yêu cầu gọi tool (sau khi đã tích lũy đủ arguments),
+            hoặc :class:`LLMStreamUsage` ở cuối stream với thông tin token.
         """

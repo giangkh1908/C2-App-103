@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -19,13 +19,31 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading, user } = useAuth();
 
+  // Hooks phải được gọi trước mọi conditional return để tránh React error #300
+  // ("Rendered more hooks than during the previous render").
   const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
   const [remember, setRemember] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Nếu đã login rồi mà vào /login → respect redirectTo; nếu admin không có redirectTo → /admin
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      const redirectTo = searchParams.get("redirectTo");
+      const safeRedirect = getSafeRedirect(redirectTo, locale);
+      const finalRedirect =
+        !redirectTo && user?.role === "admin"
+          ? `/${locale}/admin`
+          : safeRedirect;
+      router.replace(finalRedirect);
+    }
+  }, [isLoading, isAuthenticated, locale, router, searchParams, user]);
+
+  if (isLoading) return null;
+  if (isAuthenticated) return null;
 
   const handleChange = (field: keyof LoginInput) => (
     e: React.ChangeEvent<HTMLInputElement>
@@ -57,7 +75,13 @@ export default function LoginForm() {
       setServerError(error);
     } else {
       const redirectTo = searchParams.get("redirectTo");
-      router.replace(getSafeRedirect(redirectTo, locale));
+      // Nếu không có redirectTo nhưng user là admin → vào thẳng admin dashboard
+      const safeRedirect = getSafeRedirect(redirectTo, locale);
+      const finalRedirect =
+        !redirectTo && user?.role === "admin"
+          ? `/${locale}/admin`
+          : safeRedirect;
+      router.replace(finalRedirect);
       router.refresh();
     }
     setLoading(false);

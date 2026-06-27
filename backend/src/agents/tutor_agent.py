@@ -4,6 +4,9 @@ tutor_agent.py – Lớp điều phối cấp cao cho agent dạy toán.
 Được dùng bởi API layer; không chứa logic endpoint hay test.
 """
 
+from collections.abc import AsyncGenerator
+from typing import Any
+
 from pydantic import ValidationError
 
 from src.llm.base import BaseLLMClient
@@ -57,4 +60,32 @@ class TutorAgent:
         except Exception:
             return AgentResponse(
                 answer="Mình gặp lỗi khi xử lý câu hỏi. Bạn thử hỏi lại ngắn hơn nhé."
+            )
+
+    async def chat_stream(
+        self,
+        message: str,
+        level: str = "L3",
+        use_tools: bool = True,
+        history: list[dict[str, str]] | None = None,
+    ) -> AsyncGenerator[tuple[str, Any], None]:
+        """Streaming variant of chat(). Yields ("chunk", str) then ("done", AgentResponse)."""
+        if not message.strip():
+            yield ("done", AgentResponse(answer="Bạn hãy nhập một câu hỏi toán học để mình giúp nhé."))
+            return
+
+        try:
+            config = AgentRunConfig(level=level, use_tools=use_tools)
+        except ValidationError:
+            config = AgentRunConfig(level=_FALLBACK_LEVEL, use_tools=use_tools)
+
+        try:
+            async for event in self.agent_loop.run_stream(
+                user_message=message, config=config, history=history
+            ):
+                yield event
+        except Exception:
+            yield (
+                "done",
+                AgentResponse(answer="Mình gặp lỗi khi xử lý câu hỏi. Bạn thử hỏi lại ngắn hơn nhé."),
             )

@@ -31,8 +31,16 @@ import {
   createSession,
   type ChatSessionSummary,
 } from '@/lib/chatHistoryApi';
+import { buildStreamRequest, getExactSuggestionMatch } from '@/lib/chatRouting';
 import { useChatStream } from '@/lib/useChatStream';
 import InteractiveSimulation from './InteractiveSimulation';
+import PolypadLauncher from './visualization/PolypadLauncher';
+import {
+  buildDefaultSuggestionsForGrade,
+  findSuggestionByText,
+  getSuggestionGroupsForGrade,
+  type ChatSuggestion,
+} from './chatSuggestions';
 import type {
   ChatTurnResponse,
   PracticeQuestion,
@@ -58,6 +66,10 @@ interface Message {
   simulationConfig?: NonNullable<ChatTurnResponse['visual_card']>['simulation_config'];
 }
 
+interface AIExplanationChatProps {
+  initialGrade?: number;
+}
+
 type BrowserSpeechRecognition = {
   continuous: boolean;
   lang: string;
@@ -78,7 +90,7 @@ type BrowserWindow = Window & {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const G1_SUGGESTION_GROUPS = [
+const LEGACY_GRADE1_GROUPS_UNUSED = [
   { label: 'Số và cấu tạo số', icon: '🔢', suggestions: ['Số 24 có mấy chục mấy đơn vị?', 'Biểu diễn số 36 bằng chục và đơn vị', 'Đếm 42 bằng khối chục đơn vị'] },
   { label: 'So sánh số', icon: '⚖️', suggestions: ['So sánh 37 và 42', 'Số nào lớn hơn: 58 hay 53?', 'Đặt 19, 21, 20 theo thứ tự'] },
   { label: 'Cộng trừ', icon: '➕', suggestions: ['Minh họa 24 + 13 bằng que tính', 'Bớt 15 từ 48', 'Giải thích 32 - 10 bằng chục đơn vị'] },
@@ -90,7 +102,7 @@ const G1_SUGGESTION_GROUPS = [
   { label: 'Đo độ dài / Lịch / Đồng hồ', icon: '📏', suggestions: ['So sánh bút nào dài hơn', 'Đọc giờ đúng trên đồng hồ', 'Thứ mấy đứng sau thứ ba?'] },
 ];
 
-function buildWelcomeMessage(tChat: (key: string) => string): Message {
+function buildLegacyWelcomeMessageUnused(tChat: (key: string) => string): Message {
   return {
   id: 'welcome_1',
   role: 'ai',
@@ -103,6 +115,17 @@ function buildWelcomeMessage(tChat: (key: string) => string): Message {
     'Tính nhẩm 8 + 5',
     'Đọc giờ trên đồng hồ',
   ],
+  };
+}
+
+function buildGradeWelcomeMessage(tChat: (key: string) => string, grade: number): Message {
+  return {
+    id: 'welcome_1',
+    role: 'ai',
+    text: tChat('welcome'),
+    timestampLabel: tChat('ready'),
+    responseMode: 'explain_only',
+    followUpSuggestions: buildDefaultSuggestionsForGrade(grade).map((item) => item.text),
   };
 }
 
@@ -209,6 +232,7 @@ function VisualPanel({ message, onAnswerChoice }: {
       {visualData && (
         <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-sm">
           <InteractiveSimulation visualData={visualData} />
+          <PolypadLauncher visualData={visualData} />
         </div>
       )}
 
@@ -315,14 +339,16 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
         )}
 
         {/* Main text bubble */}
-        <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {message.text}
-          </ReactMarkdown>
-          {/* Cursor nhấp nháy khi đang stream */}
-          {isLoading && message.text !== '' && !message.responseMode?.includes('visual') && !message.visualData && (
-            <span className="inline-block h-4 w-0.5 bg-natural-green align-middle animate-pulse ml-0.5" />
-          )}
+        <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-4 py-3 shadow-xs">
+          <div className="prose prose-sm max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-strong:text-gray-900">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message.text}
+            </ReactMarkdown>
+            {/* Cursor nhấp nháy khi đang stream */}
+            {isLoading && message.text !== '' && !message.responseMode?.includes('visual') && !message.visualData && (
+              <span className="inline-block h-4 w-0.5 bg-natural-green align-middle animate-pulse ml-0.5" />
+            )}
+          </div>
         </div>
 
         {/* Visual panel */}
@@ -363,15 +389,18 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function AIExplanationChat() {
+export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationChatProps) {
   const locale = useLocale();
   const { apiFetch } = useAuth();
   const tChat = useTranslations('learn.chat');
   const speechLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
-  const welcomeMessage = useMemo(() => buildWelcomeMessage(tChat), [tChat]);
+  const [selectedGrade, setSelectedGrade] = useState(initialGrade);
+  const welcomeMessage = useMemo(() => buildGradeWelcomeMessage(tChat, selectedGrade), [selectedGrade, tChat]);
+  const suggestionGroups = useMemo(() => getSuggestionGroupsForGrade(selectedGrade), [selectedGrade]);
 
   const [messages, setMessages] = useState<Message[]>(() => [welcomeMessage]);
   const [inputText, setInputText] = useState('');
+  const [pendingSuggestion, setPendingSuggestion] = useState<ChatSuggestion | null>(null);
   const [expandedSuggestionGroup, setExpandedSuggestionGroup] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [streamStatusText, setStreamStatusText] = useState<string | null>(null);
@@ -446,6 +475,14 @@ export default function AIExplanationChat() {
     return () => { active = false; };
   }, [apiFetch]);
 
+  useEffect(() => {
+    if (messages.length === 1 && messages[0]?.id === 'welcome_1') {
+      setMessages([buildGradeWelcomeMessage(tChat, selectedGrade)]);
+    }
+    setPendingSuggestion(null);
+    setExpandedSuggestionGroup(null);
+  }, [selectedGrade, tChat]);
+
   const handleSpeak = useCallback((text: string, id: string) => {
     if (!window.speechSynthesis) return;
     if (speakingMsgId === id) {
@@ -465,10 +502,17 @@ export default function AIExplanationChat() {
     window.speechSynthesis.speak(utter);
   }, [speakingMsgId, speechLocale]);
 
-  const handleSuggestionClick = useCallback((text: string) => {
-    setInputText(text);
+  const handleSuggestionClick = useCallback((suggestion: string | ChatSuggestion) => {
+    const nextSuggestion =
+      typeof suggestion === 'string'
+        ? findSuggestionByText(suggestion, selectedGrade)
+        : suggestion;
+    const nextText = typeof suggestion === 'string' ? suggestion : suggestion.text;
+
+    setInputText(nextText);
+    setPendingSuggestion(nextSuggestion);
     inputRef.current?.focus();
-  }, []);
+  }, [selectedGrade]);
 
   const toggleRecording = () => {
     if (!recognitionRef.current) return;
@@ -497,13 +541,14 @@ export default function AIExplanationChat() {
         setActiveSessionId(result.session_id);
         setSessionId(result.session_id);
       }
-      setMessages([]);
+      setMessages([buildGradeWelcomeMessage(tChat, selectedGrade)]);
+      setPendingSuggestion(null);
       await loadHistory();
       setIsSidebarOpen(false);
     } catch (error) {
       console.error('Failed to create session', error);
     }
-  }, [apiFetch, loadHistory]);
+  }, [apiFetch, loadHistory, selectedGrade, tChat]);
 
   const handleSelectSession = useCallback(async (selectedSessionId: string) => {
     try {
@@ -528,15 +573,16 @@ export default function AIExplanationChat() {
     try {
       await deleteSession(apiFetch, selectedSessionId);
       if (activeSessionId === selectedSessionId) {
-        setMessages([]);
+        setMessages([buildGradeWelcomeMessage(tChat, selectedGrade)]);
         setActiveSessionId(null);
         setSessionId(null);
+        setPendingSuggestion(null);
       }
       await loadHistory();
     } catch (error) {
       console.error('Failed to delete session', error);
     }
-  }, [activeSessionId, apiFetch, loadHistory]);
+  }, [activeSessionId, apiFetch, loadHistory, selectedGrade, tChat]);
 
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -582,11 +628,12 @@ export default function AIExplanationChat() {
 
     try {
       await sendStream(
-        {
-          session_id: currentSessionId,
-          grade: 1,
+        buildStreamRequest({
+          sessionId: currentSessionId,
+          grade: selectedGrade,
           message: text,
-        },
+          pendingSuggestion: getExactSuggestionMatch(text, pendingSuggestion),
+        }),
         {
           onStatus: (message) => {
             setStreamStatusText(message);
@@ -626,6 +673,9 @@ export default function AIExplanationChat() {
                     groupsLabel: payload.visual_card.visual_data.groups_label,
                     itemsLabel: payload.visual_card.visual_data.items_label,
                     config: payload.visual_card.visual_data.config,
+                    conceptType: payload.visual_card.visual_data.concept_type,
+                    polypadEnabled: payload.visual_card.visual_data.polypad_enabled,
+                    polypadMode: payload.visual_card.visual_data.polypad_mode,
                   }
                 : undefined,
               practiceQuestion: payload.practice_question
@@ -695,6 +745,7 @@ export default function AIExplanationChat() {
       );
       playSfx('error');
     } finally {
+      setPendingSuggestion(null);
       setIsLoading(false);
       setStreamStatusText(null);
     }
@@ -741,6 +792,22 @@ export default function AIExplanationChat() {
 
         {/* History button */}
         <div className="flex items-center gap-2">
+          <div className="flex items-center rounded-full border border-gray-200 bg-slate-50 p-1">
+            {[1, 2].map((grade) => (
+              <button
+                key={grade}
+                type="button"
+                onClick={() => setSelectedGrade(grade)}
+                className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
+                  selectedGrade === grade
+                    ? 'bg-natural-green text-white'
+                    : 'text-gray-500 hover:text-natural-green'
+                }`}
+              >
+                {`Lớp ${grade}`}
+              </button>
+            ))}
+          </div>
           <button
             onClick={() => setIsSidebarOpen(prev => !prev)}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-slate-50 text-gray-500 transition-colors hover:border-natural-green/30 hover:bg-natural-green-tint hover:text-natural-green"
@@ -756,7 +823,7 @@ export default function AIExplanationChat() {
       {/* ── G1 Quick Suggestions ── */}
       <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-gray-100 bg-[#F4F1E8] px-4 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <span className="shrink-0 text-[9px] font-bold text-gray-400 uppercase mr-1">Gợi ý</span>
-        {G1_SUGGESTION_GROUPS.map((group, idx) => (
+        {suggestionGroups.map((group, idx) => (
           <div key={idx} className="relative shrink-0">
             <button
               onClick={() => setExpandedSuggestionGroup(expandedSuggestionGroup === idx ? null : idx)}
@@ -777,7 +844,7 @@ export default function AIExplanationChat() {
                     onClick={() => { handleSuggestionClick(s); setExpandedSuggestionGroup(null); }}
                     className="whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-[10px] text-gray-700 hover:bg-natural-green/10 hover:text-natural-green"
                   >
-                    {s}
+                    {s.text}
                   </button>
                 ))}
               </div>
@@ -835,28 +902,20 @@ export default function AIExplanationChat() {
               <Bot className="h-4 w-4" />
             </div>
             <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-5 py-4 shadow-xs">
-              {streamStatusText ? (
-                <p className="text-xs text-gray-400 italic">{streamStatusText}</p>
-              ) : (
-                <div className="flex items-center gap-1.5">
-                  {[0, 0.15, 0.3].map((delay, i) => (
-                    <motion.div
-                      key={i}
-                      className="h-2 w-2 rounded-full bg-natural-green"
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay }}
-                    />
-                  ))}
-                </div>
-              )}
+              <div className="flex items-center gap-1.5">
+                {[0, 0.15, 0.3].map((delay, i) => (
+                  <motion.div
+                    key={i}
+                    className="h-2 w-2 rounded-full bg-natural-green"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay }}
+                  />
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
 
-        {/* Streaming status overlay khi có placeholder đang được fill */}
-        {isLoading && streamStatusText && messages.some((m) => m.role === 'ai' && m.text === '') && (
-          <div className="ml-11 -mt-1 text-[10px] text-gray-400 italic">{streamStatusText}</div>
-        )}
 
         <div ref={messagesEndRef} />
       </div>
@@ -869,7 +928,13 @@ export default function AIExplanationChat() {
               ref={inputRef}
               id="chat-input"
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={(e) => {
+                const nextValue = e.target.value;
+                setInputText(nextValue);
+                if (!getExactSuggestionMatch(nextValue, pendingSuggestion)) {
+                  setPendingSuggestion(null);
+                }
+              }}
               onKeyDown={handleKeyDown}
               placeholder={tChat('inputPlaceholder')}
               rows={1}

@@ -7,6 +7,7 @@ Không chứa rule-based parsing, không gọi API endpoint trực tiếp.
 from __future__ import annotations
 
 import json
+from collections.abc import AsyncGenerator
 from typing import Any
 
 from src.core.config import settings as app_settings
@@ -17,7 +18,7 @@ from src.core.langfuse import (
 )
 from src.core.logging import get_logger
 from src.core.metrics import record_tool_call
-from src.llm.base import BaseLLMClient, LLMMessage
+from src.llm.base import BaseLLMClient, LLMMessage, LLMStreamUsage, LLMToolCall
 from src.tools.registry import ToolRegistry
 
 from .prompts import build_tutor_system_prompt
@@ -73,6 +74,8 @@ class AgentLoop:
         steps: list[AgentStep] = []
         last_observation: ToolObservation | None = None
         last_tool_name: str | None = None
+        total_prompt_tokens: int = 0
+        total_completion_tokens: int = 0
 
         # Langfuse is optional: if unavailable, trace remains None and we
         # skip all observation calls.
@@ -96,6 +99,10 @@ class AgentLoop:
                     input_messages=gen_input,
                 )
                 llm_response = await self.llm.generate(messages=messages, tools=tools)
+                if llm_response.raw:
+                    usage = llm_response.raw.get("usage") or {}
+                    total_prompt_tokens += int(usage.get("prompt_tokens", 0) or 0)
+                    total_completion_tokens += int(usage.get("completion_tokens", 0) or 0)
                 if gen is not None:
                     try:
                         model = llm_response.raw.get("model") if llm_response.raw else None
@@ -235,6 +242,10 @@ class AgentLoop:
                 steps=steps,
                 tool_used=last_tool_name,
                 visual_data=visual_data,
+                usage={
+                    "prompt_tokens": total_prompt_tokens,
+                    "completion_tokens": total_completion_tokens,
+                },
             )
 
         # --------------------------------------------------------------------
@@ -249,4 +260,149 @@ class AgentLoop:
         return AgentResponse(
             answer="Mình đã thử xử lý bài toán nhưng cần thêm thông tin để giải thích rõ hơn.",
             steps=steps,
+            usage={
+                "prompt_tokens": total_prompt_tokens,
+                "completion_tokens": total_completion_tokens,
+            },
+        )
+
+    async def run_stream(
+        self,
+        user_message: str,
+        config: AgentRunConfig | None = None,
+        history: list[dict[str, str]] | None = None,
+    ) -> AsyncGenerator[tuple[str, Any], None]:
+        """Like run() but streams the final LLM answer token-by-token.
+
+        Yields:
+            ``("chunk", str)`` for each text token from the final LLM call.
+            ``("done", AgentResponse)`` once the full response is assembled.
+        """
+        if config is None:
+            config = AgentRunConfig()
+
+        history_messages: list[LLMMessage] = []
+        if history:
+            for msg in history:
+                history_messages.append(LLMMessage(role=msg["role"], content=msg["content"]))
+
+        messages: list[LLMMessage] = [
+            LLMMessage(role="system", content=build_tutor_system_prompt(config.level)),
+            *history_messages,
+            LLMMessage(role="user", content=user_message),
+        ]
+
+        tools: list[dict[str, Any]] | None = (
+            self.tool_registry.list_tool_schemas() if config.use_tools else None
+        )
+
+        steps: list[AgentStep] = []
+        last_observation: ToolObservation | None = None
+        last_tool_name: str | None = None
+        total_prompt_tokens: int = 0
+        total_completion_tokens: int = 0
+
+        for _ in range(config.max_steps):
+            full_content = ""
+            pending_tool_call: LLMToolCall | None = None
+
+            try:
+                async for event in self.llm.generate_stream(messages=messages, tools=tools):
+                    if isinstance(event, LLMToolCall):
+                        pending_tool_call = event
+                    elif isinstance(event, LLMStreamUsage):
+                        total_prompt_tokens += event.prompt_tokens
+                        total_completion_tokens += event.completion_tokens
+                    else:
+                        full_content += event
+                        yield ("chunk", event)
+            except Exception:
+                logger.exception("agent_loop_stream_failed", step=len(steps) + 1)
+                yield (
+                    "done",
+                    AgentResponse(
+                        answer=(
+                            "Hiện tại mình chưa xử lý được câu hỏi này. "
+                            "Bạn thử hỏi lại ngắn hơn nhé."
+                        ),
+                        steps=steps,
+                    ),
+                )
+                return
+
+            if pending_tool_call is not None:
+                tool_call = ToolCall(
+                    name=pending_tool_call.name,
+                    arguments=pending_tool_call.arguments,
+                )
+                tool_result = await self.tool_registry.call(tool_call.name, tool_call.arguments)
+                record_tool_call(tool_result.success)
+
+                observation = ToolObservation(
+                    tool_name=tool_call.name,
+                    success=tool_result.success,
+                    data=tool_result.data,
+                    message=tool_result.message,
+                    error=tool_result.error,
+                )
+                steps.append(
+                    AgentStep(step_index=len(steps) + 1, tool_call=tool_call, observation=observation)
+                )
+                last_observation = observation
+                last_tool_name = tool_call.name
+
+                messages.append(
+                    LLMMessage(
+                        role="assistant",
+                        content=(
+                            f"Mình sẽ dùng công cụ «{tool_call.name}» với tham số: "
+                            f"{json.dumps(tool_call.arguments, ensure_ascii=False)}."
+                        ),
+                    )
+                )
+                messages.append(
+                    LLMMessage(
+                        role="user",
+                        content=(
+                            f"Kết quả từ công cụ {tool_call.name}: "
+                            f"{json.dumps(observation.data, ensure_ascii=False)}"
+                        ),
+                    )
+                )
+                continue
+
+            # Final answer — text was already yielded chunk-by-chunk above
+            visual_data: dict[str, Any] | None = None
+            if (
+                last_observation is not None
+                and isinstance(last_observation.data, dict)
+                and last_observation.data.get("type")
+            ):
+                visual_data = last_observation.data
+
+            yield (
+                "done",
+                AgentResponse(
+                    answer=full_content,
+                    steps=steps,
+                    tool_used=last_tool_name,
+                    visual_data=visual_data,
+                    usage={
+                        "prompt_tokens": total_prompt_tokens,
+                        "completion_tokens": total_completion_tokens,
+                    },
+                ),
+            )
+            return
+
+        yield (
+            "done",
+            AgentResponse(
+                answer="Mình đã thử xử lý bài toán nhưng cần thêm thông tin để giải thích rõ hơn.",
+                steps=steps,
+                usage={
+                    "prompt_tokens": total_prompt_tokens,
+                    "completion_tokens": total_completion_tokens,
+                },
+            ),
         )

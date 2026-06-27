@@ -7,9 +7,12 @@ from dataclasses import dataclass
 from src.core.config import settings
 from src.models.chat import PracticeQuestion, SimulationConfig, VisualCard, VisualData
 from src.models.lesson import LessonPracticeQuestion, LessonSimulation, LessonVisual
+from src.services.visualization_generator import VisualizationPlan, resolve_visualization_plan
+from src.services.visualization_validator import validate_visual_payload
 from src.services.types import LearningCoreRequest, LearningCoreResult, SessionMetadata
 
 RUNTIME_TOPIC_BY_CURRICULUM_TOPIC = {
+    # Grade 1
     "G1-NUM-01": "multiplication",
     "G1-NUM-02": "multiplication",
     "G1-OPS-01": "multiplication",
@@ -20,9 +23,24 @@ RUNTIME_TOPIC_BY_CURRICULUM_TOPIC = {
     "G1-GEO-03": "perimeter_area_basic",
     "G1-MEAS-01": "perimeter_area_basic",
     "G1-MEAS-02": "perimeter_area_basic",
+    # Grade 2
+    "G2-NUM-01": "multiplication",
+    "G2-NUM-02": "multiplication",
+    "G2-NUM-03": "multiplication",
+    "G2-OPS-01": "multiplication",
+    "G2-OPS-02": "multiplication",
+    "G2-OPS-03": "multiplication",
+    "G2-WORD-01": "multiplication",
+    "G2-GEO-01": "perimeter_area_basic",
+    "G2-GEO-02": "perimeter_area_basic",
+    "G2-MEAS-01": "perimeter_area_basic",
+    "G2-MEAS-02": "perimeter_area_basic",
+    "G2-STAT-01": "data_representation",
+    "G2-PROB-01": "data_representation",
 }
 
 DEFAULT_VISUAL_BY_CURRICULUM_TOPIC = {
+    # Grade 1
     "G1-NUM-01": "place_value_blocks",
     "G1-NUM-02": "comparison_visual",
     "G1-OPS-01": "operation_story",
@@ -33,9 +51,24 @@ DEFAULT_VISUAL_BY_CURRICULUM_TOPIC = {
     "G1-GEO-03": "shape_composition",
     "G1-MEAS-01": "comparison_visual",
     "G1-MEAS-02": "ruler_measurement",
+    # Grade 2
+    "G2-NUM-01": "place_value_blocks",
+    "G2-NUM-02": "comparison_visual",
+    "G2-NUM-03": "grouping_model",
+    "G2-OPS-01": "place_value_blocks",
+    "G2-OPS-02": "array_model",
+    "G2-OPS-03": "ten_frame",
+    "G2-WORD-01": "operation_story",
+    "G2-GEO-01": "geometry_shape",
+    "G2-GEO-02": "shape_composition",
+    "G2-MEAS-01": "clock_calendar",
+    "G2-MEAS-02": "ruler_measurement",
+    "G2-STAT-01": "picture_graph",
+    "G2-PROB-01": "probability_experiment",
 }
 
 ALLOWED_VISUALS_BY_CURRICULUM_TOPIC = {
+    # Grade 1
     "G1-NUM-01": ("place_value_blocks", "counting_objects", "number_line"),
     "G1-NUM-02": ("comparison_visual", "number_line"),
     "G1-OPS-01": ("operation_story", "counting_objects", "place_value_blocks", "stick_bundles"),
@@ -46,6 +79,20 @@ ALLOWED_VISUALS_BY_CURRICULUM_TOPIC = {
     "G1-GEO-03": ("shape_composition", "drag_drop_shapes"),
     "G1-MEAS-01": ("comparison_visual", "clock_calendar", "ruler_measurement"),
     "G1-MEAS-02": ("ruler_measurement", "clock_calendar"),
+    # Grade 2
+    "G2-NUM-01": ("place_value_blocks", "number_line", "counting_objects"),
+    "G2-NUM-02": ("comparison_visual", "number_line", "place_value_blocks"),
+    "G2-NUM-03": ("grouping_model", "counting_objects"),
+    "G2-OPS-01": ("place_value_blocks", "number_line", "operation_story"),
+    "G2-OPS-02": ("array_model", "grouping_model", "counting_objects"),
+    "G2-OPS-03": ("ten_frame", "number_line", "place_value_blocks"),
+    "G2-WORD-01": ("operation_story", "bar_model", "counting_objects", "array_model"),
+    "G2-GEO-01": ("geometry_shape", "shape_sorting", "real_object_match"),
+    "G2-GEO-02": ("ruler_measurement", "shape_composition", "drag_drop_shapes"),
+    "G2-MEAS-01": ("mass_capacity_visual", "clock_calendar", "money_visual", "ruler_measurement"),
+    "G2-MEAS-02": ("ruler_measurement", "clock_calendar", "mass_capacity_visual", "polyline_length_visual"),
+    "G2-STAT-01": ("picture_graph", "data_table", "counting_objects"),
+    "G2-PROB-01": ("probability_experiment", "scenario_cards"),
 }
 
 PROMPT_EXAMPLES_BY_CURRICULUM_TOPIC = {
@@ -99,10 +146,77 @@ PROMPT_EXAMPLES_BY_CURRICULUM_TOPIC = {
         "Xem lịch hôm nay là thứ mấy",
         "Thực hành đọc 7 giờ đúng",
     ],
+    # Grade 2
+    "G2-NUM-01": [
+        "Số 234 gồm mấy trăm mấy chục mấy đơn vị?",
+        "Biểu diễn số 150 bằng trăm chục đơn vị",
+        "Đọc số 708 trên tia số",
+    ],
+    "G2-NUM-02": [
+        "So sánh 342 và 324",
+        "Số nào lớn nhất: 150, 510, 105?",
+        "Sắp xếp 231, 312, 213 theo thứ tự tăng dần",
+    ],
+    "G2-NUM-03": [
+        "Ước lượng 47 bằng cách nhóm theo chục",
+        "Xếp 35 que tính thành từng nhóm 10",
+        "Ước lượng nhanh 63 bằng mắt",
+    ],
+    "G2-OPS-01": [
+        "Minh họa 245 + 132 bằng khối trăm chục đơn vị",
+        "Tính 500 - 234 bằng hình",
+        "Giải thích phép cộng có nhớ 157 + 46",
+    ],
+    "G2-OPS-02": [
+        "Minh họa 3 × 5 bằng mảng ô vuông",
+        "Chia đều 20 kẹo cho 5 bạn",
+        "Bảng nhân 2: minh họa 2 × 4",
+    ],
+    "G2-OPS-03": [
+        "Tính nhẩm 70 + 80 bằng tia số",
+        "Nhẩm nhanh 200 - 100",
+        "Dùng khung 10 tính 15 + 7",
+    ],
+    "G2-WORD-01": [
+        "An có 12 quyển sách, mua thêm 8 quyển. Tất cả có mấy quyển?",
+        "Vẽ sơ đồ bài toán: 24 bạn chia thành 4 nhóm đều nhau",
+        "Hộp kẹo có 30 cái, ăn 15 cái, còn lại bao nhiêu?",
+    ],
+    "G2-GEO-01": [
+        "Nhận biết đoạn thẳng và đường cong",
+        "Tìm hình tứ giác trong các vật xung quanh",
+        "Nhận biết khối trụ và khối cầu",
+    ],
+    "G2-GEO-02": [
+        "Vẽ đoạn thẳng dài 6 cm bằng thước",
+        "Ghép hình chữ nhật từ hai hình vuông",
+        "Kéo thả hình tam giác để tạo hình ngôi nhà",
+    ],
+    "G2-MEAS-01": [
+        "Nhận biết kg và đọc số đo khối lượng",
+        "Đồng hồ chỉ 8 giờ 30 phút đọc thế nào?",
+        "Xem lịch: tháng 3 có bao nhiêu ngày?",
+    ],
+    "G2-MEAS-02": [
+        "Tính độ dài đường gấp khúc có 3 đoạn: 4cm, 3cm, 5cm",
+        "Đổi 2 kg = bao nhiêu gram?",
+        "Đọc giờ khi kim phút chỉ số 6",
+    ],
+    "G2-STAT-01": [
+        "Đọc biểu đồ tranh: mỗi hình sao = 2 bạn",
+        "Lập bảng số liệu màu sắc yêu thích của lớp",
+        "Nhận xét từ biểu đồ tranh về số lượng",
+    ],
+    "G2-PROB-01": [
+        "Sự kiện nào chắc chắn xảy ra: mặt trời mọc ở đông?",
+        "Lấy bóng từ hộp có 3 bóng đỏ 2 bóng xanh: màu nào dễ ra hơn?",
+        "Tung đồng xu: kết quả có thể là gì?",
+    ],
 }
 
 SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC = {
-    "G1-NUM-01": ("chuc", "don vi", "cau tao so", "tach so", "que tinh", "so "),
+    # Grade 1
+    "G1-NUM-01": ("chuc", "don vi", "cau tao so", "tach so", "que tinh", "may chuc", "may don vi", "gom may"),
     "G1-NUM-02": ("so sanh", "lon hon", "be hon", "thu tu", "tia so", "xep"),
     "G1-OPS-01": ("cong", "tru", "them", "bot", "lay di", "que tinh"),
     "G1-OPS-02": ("tinh nham", "khung 10", "nham", "nhanh", "tia so"),
@@ -112,9 +226,24 @@ SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC = {
     "G1-GEO-03": ("ghep hinh", "xep hinh", "manh ghep", "keo tha", "ngoi nha"),
     "G1-MEAS-01": ("dai hon", "ngan hon", "dong ho", "lich", "thu", "ngay", "tuan"),
     "G1-MEAS-02": ("do dai", "thuoc", "cm", "doc gio", "gio dung"),
+    # Grade 2
+    "G2-NUM-01": ("tram", "nghin", "cau tao so", "so tron tram", "tia so", "bien dien", "may tram", "may chuc", "may don vi", "gom may"),
+    "G2-NUM-02": ("so sanh", "lon nhat", "be nhat", "sap xep", "tang dan", "giam dan"),
+    "G2-NUM-03": ("uoc luong", "nhom chuc", "uoc tinh", "bao nhieu"),
+    "G2-OPS-01": ("cong co nho", "tru co muon", "ket qua", "cot doc", "dat tinh"),
+    "G2-OPS-02": ("nhan", "chia", "bang nhan 2", "bang nhan 5", "bang chia", "deu"),
+    "G2-OPS-03": ("nham", "tron chuc", "tron tram", "nhanh", "nham nhanh", "tia so", "tinh"),
+    "G2-WORD-01": ("bai toan", "loi van", "mot buoc", "tat ca", "con lai", "nhieu hon", "it hon"),
+    "G2-GEO-01": ("diem", "doan thang", "duong cong", "duong thang", "duong gap khuc", "tu giac", "khoi tru", "khoi cau"),
+    "G2-GEO-02": ("ve doan thang", "gep cat", "ghep hinh", "do dai cho truoc"),
+    "G2-MEAS-01": ("kg", "khoi luong", "lit", "dung tich", "dm", "km", "gio phut", "tien", "ngay thang"),
+    "G2-MEAS-02": ("chuyen doi", "do gap khuc", "kim phut", "uoc luong do luong"),
+    "G2-STAT-01": ("bieu do tranh", "phan loai", "kiem dem", "bang so lieu", "nhan xet"),
+    "G2-PROB-01": ("co the", "chac chan", "khong the", "xac suat", "ngau nhien"),
 }
 
 TOPIC_LABEL_BY_CURRICULUM_TOPIC = {
+    # Grade 1
     "G1-NUM-01": "Cấu tạo số",
     "G1-NUM-02": "So sánh số",
     "G1-OPS-01": "Cộng trừ có minh họa",
@@ -125,6 +254,20 @@ TOPIC_LABEL_BY_CURRICULUM_TOPIC = {
     "G1-GEO-03": "Ghép hình",
     "G1-MEAS-01": "So sánh và đọc thời gian",
     "G1-MEAS-02": "Đo độ dài và đọc giờ",
+    # Grade 2
+    "G2-NUM-01": "Số và cấu tạo thập phân trong phạm vi 1000",
+    "G2-NUM-02": "So sánh và sắp xếp số trong phạm vi 1000",
+    "G2-NUM-03": "Ước lượng số đồ vật theo nhóm chục",
+    "G2-OPS-01": "Cộng và trừ trong phạm vi 1000",
+    "G2-OPS-02": "Phép nhân và phép chia bảng 2 và 5",
+    "G2-OPS-03": "Tính nhẩm cộng trừ",
+    "G2-WORD-01": "Bài toán một bước tính",
+    "G2-GEO-01": "Nhận biết điểm đoạn thẳng và hình",
+    "G2-GEO-02": "Vẽ và ghép hình",
+    "G2-MEAS-01": "Các đại lượng đo lường lớp 2",
+    "G2-MEAS-02": "Thực hành đo và chuyển đổi",
+    "G2-STAT-01": "Biểu đồ tranh và bảng số liệu",
+    "G2-PROB-01": "Khả năng xảy ra của sự kiện",
 }
 
 EXPECTED_CONFIG_KEYS_BY_VISUAL = {
@@ -148,7 +291,13 @@ EXPECTED_CONFIG_KEYS_BY_VISUAL = {
     "geometry_shape": ("shape_name",),
     "shape_composition": ("target_shape", "parts"),
     "clock_calendar": ("mode",),
-    "ruler_measurement": ("object_name",),
+    "ruler_measurement": ("object_name", "length_cm"),
+    "money_visual": ("denominations", "total_value", "currency"),
+    "mass_capacity_visual": ("left_label", "right_label", "unit", "left_value", "right_value"),
+    "picture_graph": ("labels", "values", "unit_value", "icon_emoji"),
+    "data_table": ("labels", "values"),
+    "probability_experiment": ("outcomes", "favorable_count", "experiment_label"),
+    "polyline_length_visual": ("segments",),
 }
 
 
@@ -226,11 +375,38 @@ def build_grade1_curriculum_result(
         return None
 
     assert curriculum_topic_id is not None
+    plan = _get_visualization_plan(
+        curriculum_topic_id=curriculum_topic_id,
+        message=request.message,
+        requested_visual=request.curriculum_visual_template,
+    )
     payload = _build_payload(
         curriculum_topic_id=curriculum_topic_id,
         message=request.message,
         requested_visual=request.curriculum_visual_template,
     )
+    if plan is not None:
+        validation_result = validate_visual_payload(
+            concept_type=plan.concept_type,
+            template=payload.visual_type,
+            grade=request.grade,
+            primary_count=payload.primary_count,
+            secondary_count=payload.secondary_count,
+            total_count=payload.total_count,
+            config=payload.config,
+        )
+        if not validation_result.is_valid:
+            fallback_plan = VisualizationPlan(
+                concept_type=plan.concept_type,
+                template=DEFAULT_VISUAL_BY_CURRICULUM_TOPIC[curriculum_topic_id],
+                requested_template_accepted=False,
+            )
+            fallback_payload = _build_payload(
+                curriculum_topic_id=curriculum_topic_id,
+                message=request.message,
+                requested_visual=fallback_plan.template,
+            )
+            payload = fallback_payload
     runtime_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC[curriculum_topic_id]
 
     visual_card = VisualCard(
@@ -246,6 +422,9 @@ def build_grade1_curriculum_result(
             groups_label=payload.groups_label,
             items_label=payload.items_label,
             config=payload.config,
+            concept_type=plan.concept_type if plan is not None else None,
+            polypad_enabled=plan.polypad_enabled if plan is not None else None,
+            polypad_mode=plan.polypad_mode if plan is not None else None,
         ),
         simulation_config=SimulationConfig(
             type=f"{payload.visual_type}_interactive",
@@ -347,7 +526,13 @@ def _build_payload(
         return _build_geo_03_payload(visual_type, normalized)
     if curriculum_topic_id == "G1-MEAS-01":
         return _build_meas_01_payload(visual_type, normalized, numbers)
-    return _build_meas_02_payload(visual_type, normalized, numbers)
+    if curriculum_topic_id == "G1-MEAS-02":
+        return _build_meas_02_payload(visual_type, normalized, numbers)
+    if curriculum_topic_id.startswith("G2-"):
+        from src.services.curriculum_adapter_g2_clean import build_g2_payload
+
+        return build_g2_payload(curriculum_topic_id, visual_type, normalized, numbers)
+    raise KeyError(f"Unsupported curriculum topic: {curriculum_topic_id}")
 
 
 def _build_num_01_payload(visual_type: str, numbers: list[int]) -> CurriculumVisualPayload:
@@ -398,8 +583,8 @@ def _build_num_02_payload(visual_type: str, numbers: list[int]) -> CurriculumVis
     explanation = f"Khi so sánh {a} và {b}, con nhìn vào visual sẽ thấy {a} {symbol} {b}."
     life_example = f"Số lớn hơn là {bigger}, còn số bé hơn là {smaller}."
     config = {"a_label": str(a), "b_label": str(b)}
-    options = [str(a), str(b), str(abs(a - b)), "Bằng nhau"]
-    correct_answer = str(bigger) if a != b else "Bằng nhau"
+    options = [str(a), str(b), str(abs(a - b)), "B?ng nhau"]
+    correct_answer = str(bigger) if a != b else "B?ng nhau"
     return CurriculumVisualPayload(
         topic="G1-NUM-02",
         visual_type=visual_type,
@@ -789,7 +974,12 @@ def _build_meas_01_payload(visual_type: str, normalized: str, numbers: list[int]
     explanation = f"Visual giúp con thấy {longer_label.lower()} {'dài hơn' if a >= b else 'ngắn hơn'} {shorter_label.lower()}."
     life_example = "So sánh độ dài để biết vật nào dài hơn và vật nào ngắn hơn."
     config = {"a_label": longer_label, "b_label": shorter_label}
-    correct = longer_label if a >= b else shorter_label
+    if a > b:
+        correct = longer_label
+    elif a < b:
+        correct = shorter_label
+    else:
+        correct = "Bằng nhau"
     options = [longer_label, shorter_label, "Bằng nhau", "Không biết"]
     return CurriculumVisualPayload(
         topic="G1-MEAS-01",
@@ -900,48 +1090,48 @@ def _pick_visual(
     numbers: list[int],
 ) -> str:
     allowed = ALLOWED_VISUALS_BY_CURRICULUM_TOPIC[curriculum_topic_id]
+    plan = resolve_visualization_plan(
+        curriculum_topic_id=curriculum_topic_id,
+        normalized_message=normalized,
+        requested_template=requested_visual,
+        allowed_templates=allowed,
+    )
+    if plan is not None and plan.template in allowed:
+        return plan.template
+
     if requested_visual in allowed:
         return requested_visual
-
-    if curriculum_topic_id == "G1-NUM-01":
-        if "tia so" in normalized:
-            return "number_line"
-        if "dem" in normalized and numbers and numbers[0] <= 10:
-            return "counting_objects"
-    elif curriculum_topic_id == "G1-NUM-02":
-        if any(token in normalized for token in ("tia so", "thu tu", "xep")):
-            return "number_line"
-    elif curriculum_topic_id == "G1-OPS-01":
-        if "que tinh" in normalized or "hinh" in normalized:
-            return "stick_bundles" if "que tinh" in normalized else "counting_objects"
-        if "chuc" in normalized and "don vi" in normalized:
-            return "place_value_blocks"
-    elif curriculum_topic_id == "G1-OPS-02":
-        if "tia so" in normalized:
-            return "number_line"
-    elif curriculum_topic_id == "G1-WORD-01":
-        if "bar model" not in normalized and "so do" not in normalized and "tom tat" not in normalized:
-            return "operation_story"
-    elif curriculum_topic_id == "G1-GEO-02":
-        if any(token in normalized for token in ("vat nao", "do vat", "dong ho", "sach", "hop")):
-            return "real_object_match"
-    elif curriculum_topic_id == "G1-GEO-03":
-        if "keo tha" in normalized:
-            return "drag_drop_shapes"
-    elif curriculum_topic_id == "G1-MEAS-01":
-        if any(token in normalized for token in ("gio", "dong ho", "thu", "ngay", "tuan", "lich")):
-            return "clock_calendar"
-        if any(token in normalized for token in ("cm", "do", "thuoc")):
-            return "ruler_measurement"
-    elif curriculum_topic_id == "G1-MEAS-02":
-        if any(token in normalized for token in ("gio", "dong ho", "thu", "ngay", "lich")):
-            return "clock_calendar"
 
     return DEFAULT_VISUAL_BY_CURRICULUM_TOPIC[curriculum_topic_id]
 
 
+def _get_visualization_plan(
+    curriculum_topic_id: str,
+    message: str,
+    requested_visual: str | None,
+) -> VisualizationPlan | None:
+    normalized = _normalize(message)
+    return resolve_visualization_plan(
+        curriculum_topic_id=curriculum_topic_id,
+        normalized_message=normalized,
+        requested_template=requested_visual,
+        allowed_templates=ALLOWED_VISUALS_BY_CURRICULUM_TOPIC[curriculum_topic_id],
+    )
+
+
+
+
 def _normalize(text: str) -> str:
+    text = text.replace("\u0111", "d").replace("\u0110", "d")
     nfkd = unicodedata.normalize("NFKD", text.lower())
+    stripped = "".join(ch for ch in nfkd if unicodedata.category(ch) != "Mn")
+    stripped = stripped.replace("đ", "d")
+    return stripped.replace("đ", "d")
+
+
+def _normalize_legacy_v0(text: str) -> str:
+    lowered = text.lower().replace("đ", "d").replace("Đ", "d")
+    nfkd = unicodedata.normalize("NFKD", lowered)
     stripped = "".join(ch for ch in nfkd if unicodedata.category(ch) != "Mn")
     return stripped.replace("đ", "d")
 

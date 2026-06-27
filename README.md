@@ -66,6 +66,7 @@ Sau đó chạy từ root repo:
 docker compose --env-file .env.docker up --build -d
 ```
 
+
 ### Chạy Docker nhanh sau lần build đầu
 
 Không cần dùng `--build` mỗi lần mở app. `--build` sẽ chạy lại build pipeline, frontend phải `next build` nên có thể rất lâu.

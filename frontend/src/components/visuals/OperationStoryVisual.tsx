@@ -1,8 +1,10 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
+import { motion } from 'motion/react';
 
-import { type VisualProps } from './shared';
+import { getConfigNumber, getConfigString, VisualProps } from './shared';
+import { getItemEmoji } from './kidThemeSafe';
 
 export default function OperationStoryVisual({
   primaryCount,
@@ -10,103 +12,79 @@ export default function OperationStoryVisual({
   totalCount,
   groupsLabel = 'đồ vật',
   itemsLabel = 'bài toán',
+  config,
 }: VisualProps) {
-  const before = primaryCount;
-  const change = secondaryCount;
-  const after = totalCount;
-  const isAddition = after >= before;
-  const operation = isAddition ? '+' : '−';
-  const emoji = isAddition ? '🟢' : '🔴';
+  const before = getConfigNumber(config, 'before') ?? primaryCount;
+  const change = getConfigNumber(config, 'change') ?? secondaryCount;
+  const after = getConfigNumber(config, 'result') ?? totalCount;
+  const operation = getConfigString(config, 'operation') ?? (after >= before ? '+' : '−');
+  const storyContext = getConfigString(config, 'story_context') ?? groupsLabel;
+  const isAddition = operation !== '-' && operation !== '−';
+  const emoji = getItemEmoji(storyContext, 0);
 
-  const objectColors = [
-    'bg-amber-400 border-amber-600',
-    'bg-sky-400 border-sky-600',
-    'bg-emerald-400 border-emerald-600',
-    'bg-rose-400 border-rose-600',
-    'bg-violet-400 border-violet-600',
-    'bg-teal-400 border-teal-600',
-    'bg-pink-400 border-pink-600',
-    'bg-indigo-400 border-indigo-600',
-  ];
-
-  const renderObjects = (count: number, label: string, maxShow: number) => {
+  const renderObjects = (count: number, label: string, colorClass: string, maxShow = 8) => {
     const shown = Math.min(count, maxShow);
     const extra = count - shown;
     return (
-      <div className="flex flex-col items-center gap-1">
-        <span className="text-[9px] font-bold text-slate-400 uppercase">{label}</span>
-        <div className="flex flex-wrap justify-center gap-1 max-w-[120px] min-h-[32px]">
-          {Array.from({ length: shown }, (_, i) => (
-            <div
-              key={i}
-              className={`w-6 h-6 rounded-full border-2 ${objectColors[i % objectColors.length]} flex items-center justify-center text-[8px] font-bold text-white`}
+      <div className="flex flex-col items-center gap-2">
+        <span className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</span>
+        <div className="flex min-h-[44px] max-w-[168px] flex-wrap justify-center gap-1">
+          {Array.from({ length: shown }, (_, index) => (
+            <motion.span
+              key={`${label}-${index}`}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.04, type: 'spring', stiffness: 300 }}
+              className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-lg ${colorClass}`}
             >
-              ●
-            </div>
+              {emoji}
+            </motion.span>
           ))}
           {extra > 0 && (
-            <div className="w-6 h-6 rounded-full border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-[8px] font-bold text-slate-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-dashed border-slate-300 bg-slate-50 text-xs font-bold text-slate-500">
               +{extra}
             </div>
           )}
         </div>
-        <span className="text-[10px] font-bold text-slate-600">{count}</span>
+        <span className="text-base font-black text-slate-700">{count}</span>
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <span className="text-[11px] font-bold text-violet-600 bg-violet-50 px-3 py-1 rounded-full border border-violet-200">
+    <div className="flex w-full flex-col items-center gap-4">
+      <span className="rounded-full border-2 border-fuchsia-200 bg-fuchsia-50 px-4 py-1.5 text-sm font-bold text-fuchsia-700">
         Bài toán lời văn
       </span>
 
-      <div className="flex items-center justify-center gap-3 w-full">
-        {/* Before state */}
-        <div className="flex flex-col items-center">
-          {renderObjects(before, 'Trước', 6)}
-        </div>
+      <div className="flex w-full flex-wrap items-center justify-center gap-4 rounded-3xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+        {renderObjects(before, 'Trước', 'border-amber-300 bg-amber-50')}
 
-        {/* Arrow with operation */}
-        <div className="flex flex-col items-center gap-1">
-          <svg viewBox="0 0 60 30" className="w-16 h-8">
-            <line x1="5" y1="15" x2="45" y2="15" stroke="#94a3b8" strokeWidth="2" />
-            <polygon points="45,15 38,10 38,20" fill="#94a380" />
-          </svg>
-          <div
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-              isAddition
-                ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
-                : 'bg-rose-50 text-rose-600 border-rose-200'
-            }`}
-          >
-            <span>{emoji}</span>
-            <span>
-              {operation} {change}
-            </span>
+        <div className="flex flex-col items-center gap-2">
+          <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-4xl font-black text-slate-400">
+            →
+          </motion.div>
+          <div className={`rounded-full border-2 px-3 py-1 text-sm font-bold ${isAddition ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'}`}>
+            {operation} {change}
           </div>
         </div>
 
-        {/* After state */}
-        <div className="flex flex-col items-center">
-          {renderObjects(after, 'Sau', 6)}
-        </div>
+        {renderObjects(after, 'Sau', 'border-sky-300 bg-sky-50')}
       </div>
 
-      <div className="flex flex-col items-center gap-1">
-        <div className="text-sm font-bold text-slate-700">
+      <div className="rounded-2xl border-2 border-violet-200 bg-violet-50 px-4 py-3 text-center shadow-sm">
+        <div className="text-lg font-black text-violet-700">
           <span className="text-amber-600">{before}</span>
-          <span className="text-slate-400 mx-1.5">{operation}</span>
+          <span className="mx-2 text-slate-400">{operation}</span>
           <span className={isAddition ? 'text-emerald-600' : 'text-rose-600'}>{change}</span>
-          <span className="text-slate-400 mx-1.5">=</span>
-          <span className="text-violet-700">{after}</span>
+          <span className="mx-2 text-slate-400">=</span>
+          <span>{after}</span>
         </div>
-
-        <div className="text-[10px] text-slate-500 italic text-center max-w-[240px]">
+        <p className="mt-2 text-sm font-medium text-slate-600">
           {isAddition
-            ? `Có ${before} ${groupsLabel}, thêm ${change} ${groupsLabel} nữa, giờ có ${after} ${groupsLabel}`
-            : `Có ${before} ${groupsLabel}, lấy đi ${change} ${groupsLabel}, còn lại ${after} ${groupsLabel}`}
-        </div>
+            ? `Có ${before} ${storyContext}, thêm ${change} ${storyContext}, nên có ${after} ${storyContext}.`
+            : `Có ${before} ${storyContext}, bớt ${change} ${storyContext}, còn lại ${after} ${storyContext}.`}
+        </p>
       </div>
     </div>
   );

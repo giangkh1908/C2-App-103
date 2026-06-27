@@ -67,6 +67,30 @@ def _restore_pending(pending: Path) -> None:
         pending.rename(LOG_FILE)
 
 
+def _safe_unlink(path: Path) -> None:
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        return
+    except OSError:
+        return
+
+
+def _snapshot_when_rename_blocked(pending: Path) -> bool:
+    """Fallback for Windows editors/processes that deny renaming the live file.
+
+    We copy the current session file into a pending snapshot instead of moving it.
+    This is slightly less atomic than rename, but allows manual submit and pre-push
+    hooks to work when an IDE keeps the file open without rename sharing.
+    """
+    try:
+        with open(LOG_FILE, "rb") as src, open(pending, "wb") as dst:
+            shutil.copyfileobj(src, dst)
+        return pending.exists() and pending.stat().st_size >= 0
+    except OSError:
+        return False
+
+
 def main():
     if not SERVER_URL:
         print("[ai-log] AI_LOG_SERVER not set — skipping submission.", file=sys.stderr)
@@ -79,11 +103,20 @@ def main():
     # Atomic rename closes the race window: hook writes that arrive after this
     # land in a fresh LOG_FILE, not in the batch we're about to POST.
     pending = LOG_FILE.with_name(f"session.pending.{int(time.time())}.jsonl")
+    snapshot_mode = False
     try:
         LOG_FILE.rename(pending)
     except FileNotFoundError:
         print("[ai-log] No logs to submit.", file=sys.stderr)
         sys.exit(0)
+    except PermissionError:
+        if not _snapshot_when_rename_blocked(pending):
+            print(
+                "[ai-log] Session log is locked by another process, and snapshot fallback failed.",
+                file=sys.stderr,
+            )
+            sys.exit(0)
+        snapshot_mode = True
 
     entries = []
     leftover_lines = []
@@ -123,13 +156,16 @@ def main():
             print(f"[ai-log] Submitted {len(entries)} entries → {resp.status}", file=sys.stderr)
     except urllib.error.URLError as e:
         # Failure: restore the whole pending (including leftover) for next push.
-        _restore_pending(pending)
+        if not snapshot_mode:
+            _restore_pending(pending)
+        elif pending.exists():
+            _safe_unlink(pending)
         print(f"[ai-log] Submit failed: {e} — logs kept locally.", file=sys.stderr)
         sys.exit(0)  # Don't block push on server error
 
     # Success: archive the submitted batch, then handle any leftover.
     _archive(pending)
-    pending.unlink()
+    _safe_unlink(pending)
 
     if leftover_lines:
         # More than BATCH_LIMIT entries existed; put the rest back so the
@@ -140,6 +176,18 @@ def main():
             f"[ai-log] {len(leftover_lines)} entries deferred to next push.",
             file=sys.stderr,
         )
+    elif snapshot_mode:
+        # Best effort cleanup for the common Windows case where the file was open
+        # in an editor but still writable: clear the live file after a successful
+        # submit so Phoenix doesn't receive duplicates on the next push.
+        try:
+            with open(LOG_FILE, "w", encoding="utf-8") as f:
+                f.write("")
+        except OSError:
+            print(
+                "[ai-log] Submitted successfully, but could not clear the live session log.",
+                file=sys.stderr,
+            )
 
 
 if __name__ == "__main__":

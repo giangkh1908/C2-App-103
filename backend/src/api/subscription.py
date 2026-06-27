@@ -17,24 +17,27 @@ async def upgrade_plan(
     body: dict,
     current_user: UserInDB = Depends(get_current_user),
 ):
-    """Upgrade or activate a plan for the current user.
+    """Activate the free plan for the current user.
 
-    Free plans are activated immediately via this endpoint.
-    Paid plans should be purchased via ``/payment/checkout`` + SePay webhook.
+    Paid plans must be purchased via ``/payment/checkout`` + SePay webhook.
+    This endpoint ONLY accepts "free" — any attempt to assign a paid plan
+    via this endpoint is rejected to prevent privilege escalation.
     """
     plan_name = body.get("plan_name")
-    if plan_name not in ("plus", "premium", "free"):
+
+    if plan_name != "free":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid plan name. Must be 'free', 'plus', or 'premium'.",
+            detail="Self-service upgrade is only available for the free plan. "
+            "Paid plans must be purchased via checkout.",
         )
 
     db = get_db()
-    plan = await plan_service.get_plan_by_name(plan_name)
+    plan = await plan_service.get_plan_by_name("free")
     if not plan:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Plan '{plan_name}' not found.",
+            detail="Free plan not found in catalog.",
         )
 
     await db.users.update_one(
@@ -50,12 +53,14 @@ async def change_plan_or_billing(
     body: dict,
     current_user: UserInDB = Depends(get_current_user),
 ):
-    """Change billing cycle (monthly<->yearly) for the current plan,
-    or switch to a different plan.
+    """
+    Downgrade or maintain tier within paid plans.
+    Upgrades must go through payment checkout.
 
-    Does NOT require payment — used when:
-    1. User is on same plan, wants to switch billing cycle
-    2. User is downgrading (after confirmation on frontend)
+    Rules:
+    - sort_order(target) <= sort_order(current) -> allowed (same-tier or downgrade)
+    - sort_order(target) > sort_order(current) -> reject (must use checkout)
+    - Same-tier (Plus->Plus or Premium->Premium) -> not supported, contact support
     """
     plan_name = body.get("plan_name")
     billing = body.get("billing")  # "monthly" or "yearly"
@@ -66,11 +71,35 @@ async def change_plan_or_billing(
         raise HTTPException(status_code=400, detail="Invalid billing cycle")
 
     db = get_db()
-    plan = await plan_service.get_plan_by_name(plan_name)
-    if not plan:
+
+    # Get target plan
+    target_plan = await plan_service.get_plan_by_name(plan_name)
+    if not target_plan:
         raise HTTPException(status_code=404, detail=f"Plan '{plan_name}' not found")
 
-    # Compute new expiry based on billing cycle
+    # Get current user's plan to determine sort_order
+    current_plan = None
+    if current_user.plan_id:
+        current_plan = await db.plans.find_one({"_id": ObjectId(current_user.plan_id)})
+
+    current_sort = current_plan.get("sort_order", 0) if current_plan else 0
+    target_sort = target_plan.sort_order
+
+    # Upgrade not allowed via this endpoint
+    if target_sort > current_sort:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Upgrades must be purchased via checkout.",
+        )
+
+    # Same-tier billing switch not supported via this endpoint
+    if target_sort == current_sort:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Billing cycle changes must be purchased via checkout.",
+        )
+
+    # Downgrade: compute new expiry
     now = datetime.now(UTC)
     if billing == "monthly":
         expires_at = now + timedelta(days=30)
@@ -80,12 +109,16 @@ async def change_plan_or_billing(
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
         {"$set": {
-            "plan_id": str(plan.id),
+            "plan_id": str(target_plan.id),
             "subscription_status": "active",
             "subscription_expires_at": expires_at,
-            "usage": {},  # reset quota on plan change
+            "usage": {},
             "updated_at": now,
         }}
     )
 
-    return {"status": "ok", "plan": plan_to_response(plan), "expires_at": expires_at.isoformat()}
+    return {
+        "status": "ok",
+        "plan": plan_to_response(target_plan),
+        "expires_at": expires_at.isoformat(),
+    }

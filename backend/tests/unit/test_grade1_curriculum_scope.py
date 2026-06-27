@@ -85,3 +85,37 @@ async def test_learning_core_redirects_when_question_out_of_selected_grade1_less
     assert result.practice_question_chat is None
     assert result.assistant_message == build_curriculum_scope_redirect_message("G1-GEO-02")
     assert result.follow_up_suggestions == get_prompt_examples_for_curriculum_topic("G1-GEO-02")
+
+
+@pytest.mark.asyncio
+async def test_learning_core_stream_uses_curriculum_path_for_grade1_comparison() -> None:
+    with patch("src.services.learning_core.MemoryRepository") as memory_repository_cls:
+        memory_repository_cls.return_value.append_turn = AsyncMock()
+        service = LearningCoreService(
+            tutor_agent=SimpleNamespace(chat_stream=AsyncMock()),
+            tool_registry=SimpleNamespace(),
+        )
+
+    service.memory_repository.append_turn = AsyncMock()
+    service.session_repository.get_latest_turn = AsyncMock(return_value=None)
+    service.session_repository.save = AsyncMock()
+
+    request = LearningCoreRequest(
+        user_id="user-1",
+        session_id="session-1",
+        grade=1,
+        message="So sánh 37 và 42",
+    )
+
+    events = []
+    async for event in service.generate_stream(request):
+        events.append(event)
+
+    assert len(events) == 1
+    event_type, result = events[0]
+    assert event_type == "done"
+    assert result.curriculum_topic_id == "G1-NUM-02"
+    assert result.visual_card is not None
+    assert result.visual_card.visual_data.type == "comparison_visual"
+    assert result.visual_card.visual_data.primary_count == 37
+    assert result.visual_card.visual_data.secondary_count == 42

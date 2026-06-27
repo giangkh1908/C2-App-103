@@ -35,12 +35,14 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = Field(
         default=15, alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES"
     )
-    jwt_refresh_token_expire_days: int = Field(
-        default=7, alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS"
-    )
+    jwt_refresh_token_expire_days: int = Field(default=7, alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS")
 
     # CORS
     frontend_url: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
+    allowed_origins: str = Field(
+        default="",
+        validation_alias=AliasChoices("ALLOWED_ORIGINS", "CORS_ORIGINS"),
+    )
 
     # Google OAuth
     google_client_id: str = Field(default="", alias="GOOGLE_CLIENT_ID")
@@ -72,15 +74,21 @@ class Settings(BaseSettings):
     openrouter_temperature: float = Field(
         default=0.7, ge=0.0, le=2.0, alias="OPENROUTER_TEMPERATURE"
     )
-    openrouter_max_tokens: int = Field(
-        default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS"
-    )
+    openrouter_max_tokens: int = Field(default=2048, ge=1, le=128000, alias="OPENROUTER_MAX_TOKENS")
     openrouter_base_url: str = Field(
         default="https://openrouter.ai/api/v1",
         alias="OPENROUTER_BASE_URL",
     )
     openrouter_site_url: str = Field(default="http://localhost:3000", alias="OPENROUTER_SITE_URL")
     openrouter_app_name: str = Field(default="mathbuddy-ai-backend", alias="OPENROUTER_APP_NAME")
+    # Cost per 1M prompt tokens for the selected OpenRouter model (USD)
+    openrouter_prompt_cost_per_1m: float = Field(
+        default=0.09, alias="OPENROUTER_PROMPT_COST_PER_1M_TOKENS"
+    )
+    # Cost per 1M completion tokens for the selected OpenRouter model (USD)
+    openrouter_completion_cost_per_1m: float = Field(
+        default=0.18, alias="OPENROUTER_COMPLETION_COST_PER_1M_TOKENS"
+    )
 
     # SePay webhook (Vietnam payment gateway)
     sepay_webhook_api_key: str = Field(default="", alias="SEPAY_WEBHOOK_API_KEY")
@@ -132,6 +140,8 @@ class Settings(BaseSettings):
         "openrouter_base_url",
         "openrouter_site_url",
         "openrouter_app_name",
+        "openrouter_prompt_cost_per_1m",
+        "openrouter_completion_cost_per_1m",
         "jwt_secret_key",
         "jwt_algorithm",
         "mongodb_uri",
@@ -151,6 +161,16 @@ class Settings(BaseSettings):
         if isinstance(value, str):
             return value.strip().strip("'\"")
         return value
+
+    @property
+    def cors_origins(self) -> list[str]:
+        origins = [self.frontend_url.rstrip("/")]
+        if self.allowed_origins.strip():
+            origins.extend(
+                o.strip() for o in self.allowed_origins.split(",") if o.strip()
+            )
+        # dict.fromkeys preserves insertion order while deduplicating
+        return list(dict.fromkeys(origins))
 
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":

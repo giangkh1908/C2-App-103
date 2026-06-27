@@ -1,102 +1,48 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
-import { VisualProps } from './shared';
 
-const CATEGORY_LABELS = [
-  'Táo', 'Cam', 'Chuối', 'Nho', 'Xoài', 'Dưa hấu',
-  'Dâu', 'Kiwi', 'Bơ', 'Măng cụt', 'Thanh long', 'Sầu riêng',
-];
+import { getConfigStringArray, VisualProps } from './shared';
 
-const ROW_COLORS = ['bg-blue-50', 'bg-sky-50'];
+const DEFAULT_LABELS = ['Táo', 'Cam', 'Chuối', 'Nho'];
 
-export default function DataTableVisual({
-  primaryCount,
-  secondaryCount,
-  totalCount,
-  groupsLabel = 'Loại trái cây',
-  itemsLabel = 'số lượng',
-}: VisualProps) {
-  const rows = primaryCount;
-  const cols = secondaryCount;
-
-  const data: number[][] = [];
-  let remaining = totalCount;
-  for (let r = 0; r < rows; r++) {
-    const rowData: number[] = [];
-    for (let c = 0; c < cols; c++) {
-      const val = Math.max(1, Math.round(remaining / (rows - r)));
-      rowData.push(val);
-      remaining -= val;
-      if (remaining < 0) remaining = 0;
-    }
-    data.push(rowData);
-  }
-
-  const allValues = data.flat();
-  const maxVal = Math.max(...allValues);
-  const minVal = Math.min(...allValues);
+export default function DataTableVisual({ groupsLabel = 'Loại', itemsLabel = 'Số lượng', config }: VisualProps) {
+  const labels = getConfigStringArray(config, 'labels') ?? DEFAULT_LABELS;
+  const rawValues = Array.isArray(config?.values) ? config.values.map((value) => Number(value)).filter(Number.isFinite) : undefined;
+  const values = labels.map((_, index) => rawValues?.[index] ?? index + 2);
+  const maxValue = Math.max(...values);
+  const minValue = Math.min(...values);
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
-        Bảng dữ liệu: {rows} dòng × {cols} cột
+    <div className="flex w-full max-w-xl flex-col items-center gap-4">
+      <span className="rounded-full border-2 border-sky-200 bg-sky-50 px-4 py-1.5 text-sm font-bold text-sky-700">
+        Bảng số liệu
       </span>
-
-      <div className="w-full max-w-md overflow-x-auto">
-        <table className="w-full text-xs border-collapse">
+      <div className="w-full overflow-hidden rounded-3xl border-2 border-sky-200 bg-white shadow-sm">
+        <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-blue-100 border-b-2 border-blue-300">
-              <th className="px-3 py-2 text-left font-bold text-blue-700">{groupsLabel}</th>
-              {Array.from({ length: cols }, (_, c) => (
-                <th key={c} className="px-3 py-2 text-center font-bold text-blue-700">
-                  {itemsLabel} {c + 1}
-                </th>
-              ))}
+            <tr className="bg-sky-100 text-sky-800">
+              <th className="px-4 py-3 text-left font-bold">{groupsLabel}</th>
+              <th className="px-4 py-3 text-center font-bold">{itemsLabel}</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((row, rIdx) => (
-              <tr
-                key={rIdx}
-                className={`${ROW_COLORS[rIdx % 2]} border-b border-blue-100`}
-              >
-                <td className="px-3 py-2 font-semibold text-blue-700">
-                  {CATEGORY_LABELS[rIdx % CATEGORY_LABELS.length]}
-                </td>
-                {row.map((val, cIdx) => {
-                  const isMax = val === maxVal;
-                  const isMin = val === minVal;
-                  return (
-                    <td
-                      key={cIdx}
-                      className={`px-3 py-2 text-center font-medium ${
-                        isMax
-                          ? 'bg-green-200 text-green-800 font-bold rounded'
-                          : isMin
-                          ? 'bg-red-200 text-red-800 font-bold rounded'
-                          : 'text-slate-700'
-                      }`}
-                    >
-                      {val}
-                      {isMax && ' ↑'}
-                      {isMin && ' ↓'}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+            {labels.map((label, index) => {
+              const value = values[index];
+              const highlightClass = value === maxValue ? 'bg-emerald-50 text-emerald-700' : value === minValue ? 'bg-rose-50 text-rose-700' : 'text-slate-700';
+              return (
+                <tr key={label} className="border-t border-sky-100 even:bg-sky-50/40">
+                  <td className="px-4 py-3 font-semibold text-slate-700">{label}</td>
+                  <td className={`px-4 py-3 text-center font-black ${highlightClass}`}>{value}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-
-      <div className="flex gap-3 text-[10px] font-semibold">
-        <span className="text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200">
-          ↑ Largest: {maxVal}
-        </span>
-        <span className="text-red-600 bg-red-50 px-2 py-1 rounded border border-red-200">
-          ↓ Smallest: {minVal}
-        </span>
+      <div className="flex flex-wrap gap-2 text-xs font-bold">
+        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">Lớn nhất: {maxValue}</span>
+        <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-rose-700">Nhỏ nhất: {minValue}</span>
       </div>
     </div>
   );

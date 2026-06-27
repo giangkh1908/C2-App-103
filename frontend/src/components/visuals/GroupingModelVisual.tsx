@@ -1,68 +1,67 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
+import { motion } from 'motion/react';
 
-interface GroupingModelProps {
-  primaryCount: number;
-  secondaryCount: number;
-  totalCount: number;
-  groupsLabel?: string;
-  itemsLabel?: string;
-}
+import { VisualProps } from './shared';
+import { getKidColor, getItemEmoji } from './kidThemeSafe';
 
 export default function GroupingModelVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
   groupsLabel = 'nhóm',
   itemsLabel = 'vật',
-}: GroupingModelProps) {
-  const groups = primaryCount;
-  const itemsPerGroup = secondaryCount;
+}: VisualProps) {
+  const groups = Math.max(1, primaryCount);
+  const itemsPerGroup = Math.max(1, secondaryCount);
   const total = groups * itemsPerGroup;
 
-  const groupColors = [
-    'bg-rose-100 border-rose-300 text-rose-600',
-    'bg-sky-100 border-sky-300 text-sky-600',
-    'bg-emerald-100 border-emerald-300 text-emerald-600',
-    'bg-amber-100 border-amber-300 text-amber-600',
-    'bg-violet-100 border-violet-300 text-violet-600',
-    'bg-teal-100 border-teal-300 text-teal-600',
-    'bg-pink-100 border-pink-300 text-pink-600',
-    'bg-indigo-100 border-indigo-300 text-indigo-600',
-  ];
-
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
-        {groups} {groupsLabel} × {itemsPerGroup} {itemsLabel} = {total}
-      </span>
+    <div className="flex w-full flex-col items-center gap-4">
+      <motion.div
+        initial={{ scale: 0.88, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="rounded-full border-2 px-4 py-2 text-sm font-bold"
+        style={{ background: '#F3F0FF', borderColor: '#9775FA', color: '#6741D9' }}
+      >
+        {groups} {groupsLabel} × {itemsPerGroup} {itemsLabel} = <span className="text-base text-rose-600">{total}</span>
+      </motion.div>
 
       <div className="flex flex-wrap justify-center gap-3">
-        {Array.from({ length: groups }, (_, groupIdx) => (
-          <div
-            key={groupIdx}
-            className={`flex flex-col items-center gap-1 rounded-xl border-2 p-2 ${
-              groupColors[groupIdx % groupColors.length]
-            }`}
-          >
-            <span className="text-[9px] font-bold uppercase opacity-70">
-              {groupsLabel} {groupIdx + 1}
-            </span>
-            <div className="flex flex-wrap justify-center gap-1 max-w-[80px]">
-              {Array.from({ length: itemsPerGroup }, (_, itemIdx) => (
-                <div
-                  key={itemIdx}
-                  className="w-5 h-5 rounded-full bg-current opacity-30"
-                />
-              ))}
-            </div>
-            <span className="text-[10px] font-bold">{itemsPerGroup}</span>
-          </div>
-        ))}
+        {Array.from({ length: groups }, (_, groupIndex) => {
+          const color = getKidColor(groupIndex);
+          return (
+            <motion.div
+              key={groupIndex}
+              initial={{ y: 12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: groupIndex * 0.08 }}
+              className="flex flex-col items-center gap-2 rounded-3xl border-2 p-3 shadow-sm"
+              style={{ background: color.bg, borderColor: color.border }}
+            >
+              <span className="text-xs font-bold uppercase tracking-wide" style={{ color: color.text }}>
+                {groupsLabel} {groupIndex + 1}
+              </span>
+              <div className="flex max-w-[112px] flex-wrap justify-center gap-1">
+                {Array.from({ length: itemsPerGroup }, (_, itemIndex) => (
+                  <motion.span
+                    key={itemIndex}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: groupIndex * 0.08 + itemIndex * 0.04, type: 'spring', stiffness: 300 }}
+                    className="text-2xl leading-none"
+                  >
+                    {getItemEmoji(itemsLabel, groupIndex + itemIndex)}
+                  </motion.span>
+                ))}
+              </div>
+              <span className="text-lg font-black" style={{ color: color.text }}>{itemsPerGroup}</span>
+            </motion.div>
+          );
+        })}
       </div>
 
-      <div className="text-xs font-semibold text-slate-600">
+      <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700 shadow-sm">
         {Array.from({ length: groups }, () => itemsPerGroup).join(' + ')} = {total}
       </div>
     </div>

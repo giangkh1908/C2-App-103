@@ -161,3 +161,24 @@ export async function getPaymentStatus(
   const data: PaymentStatusResponse = await res.json();
   return paymentFromStatus(data);
 }
+
+/**
+ * POST /api/v1/payment/cancel/{paymentCode} — mark a payment intent
+ * as expired / cancelled server-side so the polling loop stops and
+ * the user sees the expected terminal state immediately.
+ */
+export async function cancelPayment(
+  apiFetch: ApiFetch,
+  paymentCode: string,
+): Promise<void> {
+  const res = await apiFetch(
+    `/payment/cancel/${encodeURIComponent(paymentCode)}`,
+    { method: "POST" },
+  );
+  if (!res.ok) {
+    const detail = (await res.json().catch(() => null))?.detail as
+      | string
+      | undefined;
+    throw new PaymentApiError(detail ?? "Failed to cancel payment", res.status);
+  }
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -19,8 +19,10 @@ export default function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
-  const { register } = useAuth();
+  const { register, isAuthenticated, isLoading } = useAuth();
 
+  // Hooks phải được gọi trước mọi conditional return để tránh React error #300
+  // ("Rendered more hooks than during the previous render").
   const [form, setForm] = useState<RegisterInput>({
     name: "",
     email: "",
@@ -30,6 +32,16 @@ export default function RegisterForm() {
   const [errors, setErrors] = useState<Partial<Record<keyof RegisterInput, string>>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      const redirectTo = searchParams.get("redirectTo");
+      router.replace(getSafeRedirect(redirectTo, locale));
+    }
+  }, [isLoading, isAuthenticated, locale, router, searchParams]);
+
+  if (isLoading) return null;
+  if (isAuthenticated) return null;
 
   const handleChange = (field: keyof RegisterInput) => (
     e: React.ChangeEvent<HTMLInputElement>

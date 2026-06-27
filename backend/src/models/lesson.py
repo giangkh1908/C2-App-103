@@ -26,6 +26,16 @@ VisualType = Literal[
     "drag_drop_shapes",
     "ruler_measurement",
     "clock_calendar",
+    "array_model",
+    "grouping_model",
+    "money_visual",
+    "mass_capacity_visual",
+    "picture_graph",
+    "data_table",
+    "probability_experiment",
+    "polyline_length_visual",
+    "shape_sorting",
+    "scenario_cards",
 ]
 
 

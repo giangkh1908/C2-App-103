@@ -1,73 +1,56 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
+import { motion } from 'motion/react';
 
-interface TenFrameProps {
-  primaryCount: number;
-  secondaryCount: number;
-  totalCount: number;
-  groupsLabel?: string;
-  itemsLabel?: string;
-}
+import { VisualProps } from './shared';
+import { getItemEmoji } from './kidThemeSafe';
 
-function TenFrame({ filled, label }: { filled: number; label?: string }) {
-  const cells = Array.from({ length: 10 }, (_, i) => i < filled);
+function TenFrame({ filled, itemsLabel }: { filled: number; itemsLabel: string }) {
   return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="grid grid-cols-5 gap-1 border-2 border-amber-400 rounded-lg p-1.5 bg-amber-50">
-        {cells.map((isFilled, i) => (
-          <div
-            key={i}
-            className={`w-7 h-7 rounded-md flex items-center justify-center text-sm font-bold transition-all ${
-              isFilled
-                ? 'bg-amber-400 text-white shadow-sm'
-                : 'bg-white border border-dashed border-amber-200 text-transparent'
-            }`}
+    <div className="grid grid-cols-5 gap-1.5 rounded-3xl border-2 border-yellow-300 bg-yellow-50 p-3 shadow-sm">
+      {Array.from({ length: 10 }, (_, index) => {
+        const isFilled = index < filled;
+        return (
+          <motion.div
+            key={index}
+            initial={isFilled ? { scale: 0 } : undefined}
+            animate={isFilled ? { scale: 1 } : undefined}
+            transition={{ delay: index * 0.04, type: 'spring', stiffness: 320 }}
+            className={`flex h-9 w-9 items-center justify-center rounded-xl border-2 ${isFilled ? 'border-yellow-400 bg-white text-xl' : 'border-dashed border-yellow-300 bg-white/70'}`}
           >
-            {isFilled ? '●' : '○'}
-          </div>
-        ))}
-      </div>
-      {label && (
-        <span className="text-[10px] font-bold text-amber-600">{label}</span>
-      )}
+            {isFilled ? getItemEmoji(itemsLabel, index) : null}
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
 
-export default function TenFrameVisual({
-  primaryCount,
-  secondaryCount,
-  totalCount,
-  groupsLabel,
-}: TenFrameProps) {
-  const fullFrames = Math.floor(totalCount / 10);
-  const remainder = totalCount % 10;
-  const frames: number[] = [];
-  for (let i = 0; i < fullFrames; i++) frames.push(10);
-  if (remainder > 0) frames.push(remainder);
-
-  if (frames.length === 0) frames.push(0);
+export default function TenFrameVisual({ totalCount, primaryCount, secondaryCount, itemsLabel = 'vật', groupsLabel }: VisualProps) {
+  const total = totalCount || primaryCount + secondaryCount;
+  const fullFrames = Math.floor(total / 10);
+  const remainder = total % 10;
+  const frames = Array.from({ length: fullFrames }, () => 10);
+  if (remainder > 0 || frames.length === 0) {
+    frames.push(remainder);
+  }
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-        Khung 10 — Tổng: {totalCount}
-      </span>
-
-      <div className="flex flex-wrap justify-center gap-3">
-        {frames.map((filled, idx) => (
-          <TenFrame
-            key={idx}
-            filled={filled}
-            label={idx < fullFrames ? '10' : `+${remainder}`}
-          />
+    <div className="flex w-full flex-col items-center gap-4">
+      <motion.div initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="rounded-full border-2 border-orange-200 bg-orange-50 px-4 py-2 text-sm font-bold text-orange-700">
+        Khung 10 - Tổng: {total}
+      </motion.div>
+      <div className="flex flex-wrap justify-center gap-4">
+        {frames.map((filled, index) => (
+          <div key={index} className="flex flex-col items-center gap-2">
+            <TenFrame filled={filled} itemsLabel={itemsLabel} />
+            <span className="text-sm font-black text-orange-700">{filled}</span>
+          </div>
         ))}
       </div>
-
-      <div className="text-xs font-semibold text-slate-600">
-        {groupsLabel && <span>{groupsLabel}: </span>}
-        {primaryCount} + {secondaryCount} = {totalCount}
+      <div className="rounded-2xl border-2 border-violet-200 bg-violet-50 px-4 py-2 text-base font-black text-violet-700 shadow-sm">
+        {groupsLabel ? `${groupsLabel}: ` : ''}{primaryCount} + {secondaryCount} = {total}
       </div>
     </div>
   );

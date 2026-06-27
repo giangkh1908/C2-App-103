@@ -1,89 +1,62 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
-import { VisualProps } from './shared';
+import { motion } from 'motion/react';
 
-const OUTCOME_LABELS = [
-  'Màu đỏ', 'Màu xanh', 'Màu vàng', 'Màu tím',
-  'Màu cam', 'Màu hồng', 'Màu xanh lá', 'Màu nâu',
-];
+import { getConfigNumber, getConfigString, getConfigStringArray, VisualProps } from './shared';
 
-const OUTCOME_ICONS = ['🔴', '🔵', '🟡', '🟣', '🟠', '🩷', '🟢', '🟤'];
+const DEFAULT_OUTCOMES = ['Đỏ', 'Xanh', 'Vàng', 'Tím', 'Cam'];
+const OUTCOME_ICONS = ['🔴', '🔵', '🟡', '🟣', '🟠', '🟢'];
 
-export default function ProbabilityExperimentVisual({
-  primaryCount,
-  secondaryCount,
-  totalCount,
-  groupsLabel = 'Kết quả có lợi',
-  itemsLabel = 'kết quả',
-}: VisualProps) {
-  const totalOutcomes = totalCount || primaryCount;
-  const favorable = secondaryCount;
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
 
-  const outcomes = Array.from({ length: totalOutcomes }, (_, i) => ({
-    label: OUTCOME_LABELS[i % OUTCOME_LABELS.length],
-    icon: OUTCOME_ICONS[i % OUTCOME_ICONS.length],
-    isFavorable: i < favorable,
-  }));
-
-  const probability = totalOutcomes > 0 ? favorable / totalOutcomes : 0;
-  const percentage = Math.round(probability * 100);
-
-  // Simplify fraction
-  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
-  const g = gcd(favorable, totalOutcomes);
-  const simplifiedNum = favorable / g;
-  const simplifiedDen = totalOutcomes / g;
+export default function ProbabilityExperimentVisual({ totalCount, secondaryCount, config }: VisualProps) {
+  const outcomes = getConfigStringArray(config, 'outcomes') ?? DEFAULT_OUTCOMES.slice(0, Math.max(2, totalCount || 4));
+  const favorableCount = Math.max(0, getConfigNumber(config, 'favorable_count') ?? secondaryCount);
+  const experimentLabel = getConfigString(config, 'experiment_label') ?? 'Kết quả có thể xảy ra';
+  const total = Math.max(1, outcomes.length);
+  const favorable = Math.min(total, favorableCount || Math.ceil(total / 2));
+  const divisor = gcd(favorable, total);
+  const numerator = favorable / divisor;
+  const denominator = total / divisor;
+  const percentage = Math.round((favorable / total) * 100);
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-        Thí nghiệm xác suất: {totalOutcomes} {itemsLabel}
+    <div className="flex w-full max-w-2xl flex-col items-center gap-4">
+      <span className="rounded-full border-2 border-emerald-200 bg-emerald-50 px-4 py-1.5 text-sm font-bold text-emerald-700">
+        Xác suất cơ bản
       </span>
-
-      {/* Outcomes grid */}
-      <div className="flex flex-wrap justify-center gap-2">
-        {outcomes.map((outcome, i) => (
-          <div
-            key={i}
-            className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border-2 transition-all ${
-              outcome.isFavorable
-                ? 'border-green-400 bg-green-100 shadow-sm shadow-green-200'
-                : 'border-slate-200 bg-slate-50'
-            }`}
-          >
-            <span className="text-xl">{outcome.icon}</span>
-            <span className={`text-[9px] font-semibold ${outcome.isFavorable ? 'text-green-700' : 'text-slate-500'}`}>
-              {outcome.label}
-            </span>
-            {outcome.isFavorable && (
-              <span className="text-[8px] font-bold text-green-600 bg-green-200 px-1.5 py-0.5 rounded-full">
-                Có lợi
-              </span>
-            )}
-          </div>
-        ))}
+      <div className="flex flex-wrap justify-center gap-2 rounded-3xl border-2 border-emerald-200 bg-white p-4 shadow-sm">
+        {outcomes.map((outcome, index) => {
+          const favorableOutcome = index < favorable;
+          return (
+            <motion.div
+              key={outcome}
+              initial={{ scale: 0.88, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: index * 0.05 }}
+              className={`flex min-w-[88px] flex-col items-center gap-1 rounded-2xl border-2 px-3 py-3 ${favorableOutcome ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-slate-50'}`}
+            >
+              <span className="text-2xl">{OUTCOME_ICONS[index % OUTCOME_ICONS.length]}</span>
+              <span className={`text-xs font-bold ${favorableOutcome ? 'text-emerald-700' : 'text-slate-500'}`}>{outcome}</span>
+            </motion.div>
+          );
+        })}
       </div>
-
-      {/* Probability display */}
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col items-center bg-white rounded-xl border-2 border-emerald-300 px-4 py-2 shadow-sm">
-          <span className="text-[9px] font-bold text-emerald-600 uppercase">Xác suất</span>
-          <div className="flex items-center gap-1">
-            <span className="text-2xl font-bold text-emerald-700">{simplifiedNum}</span>
-            <span className="text-xl text-slate-400">/</span>
-            <span className="text-2xl font-bold text-emerald-700">{simplifiedDen}</span>
-          </div>
+      <div className="grid w-full gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 px-4 py-3 text-center shadow-sm">
+          <div className="text-xs font-bold uppercase tracking-wide text-emerald-700">Xác suất</div>
+          <div className="text-3xl font-black text-emerald-700">{numerator}/{denominator}</div>
         </div>
-
-        <div className="flex flex-col items-center bg-white rounded-xl border-2 border-blue-300 px-4 py-2 shadow-sm">
-          <span className="text-[9px] font-bold text-blue-600 uppercase">Phần trăm</span>
-          <span className="text-2xl font-bold text-blue-700">{percentage}%</span>
+        <div className="rounded-2xl border-2 border-sky-200 bg-sky-50 px-4 py-3 text-center shadow-sm">
+          <div className="text-xs font-bold uppercase tracking-wide text-sky-700">Phần trăm</div>
+          <div className="text-3xl font-black text-sky-700">{percentage}%</div>
         </div>
       </div>
-
-      <div className="text-[10px] font-semibold text-slate-600 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200">
-        {groupsLabel}: {favorable} / {totalOutcomes} {itemsLabel}
+      <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 px-4 py-2 text-sm font-bold text-slate-700 shadow-sm">
+        {experimentLabel}: {favorable} / {total}
       </div>
     </div>
   );

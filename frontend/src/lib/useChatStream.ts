@@ -30,6 +30,8 @@ export interface StreamRequest {
   session_id: string | null;
   grade: number;
   message: string;
+  curriculum_topic_id?: string;
+  curriculum_visual_template?: string;
 }
 
 // ─── SSE parser ───────────────────────────────────────────────────────────────

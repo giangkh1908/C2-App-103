@@ -81,3 +81,44 @@ Planning hiện tại hạn chế tối đa `P2` để tránh feature creep.
 - Dùng `XL` nhưng không tách task
 - Ước lượng task chưa có done criteria
 - Ưu tiên feature mới trong Sprint 3 thay vì hardening và deploy
+
+---
+
+## Thực tế triển khai
+
+### P0 — Kết quả
+Tất cả P0 đã hoàn thành ✅:
+- auth cơ bản: ✅ register, login, JWT, Google OAuth, refresh token, forgot/reset, email verification
+- topic list: ✅ 4 topics
+- `/lessons/generate`: ✅ với guardrails và fallback
+- visual rendering: ✅ Visual Card + 5 simulation types
+- `/practice/submit`: ✅ với scoring và retry hint
+- progress persistence: ✅ topics_learned, correct/incorrect
+- deploy: ✅ Railway (thay vì Vercel/VPS như kế hoạch)
+
+### P1 — Kết quả
+- TTS trigger: ⬜ chưa implement
+- retry-safe AI flow: ✅ đã làm (fallback + error handling)
+- progress view: ✅ PracticeResultView hiển thị
+- demo readiness: ⬜ chưa có script
+
+### P2 — Thực tế
+Không có P2 nào được làm trong MVP. P2 hiện tại bao gồm:
+- Error state audit: ⬜ cần làm
+- Mobile responsiveness audit: 🔶 cơ bản có, chưa tối ưu
+
+### XL task — Thực tế
+`BL-303 Domain simulations` và `BL-202 /lessons/generate` không còn XL nữa — cả hai đều đã hoàn thành trong Sprint 2.
+
+### Estimate — Thực tế
+Ước lượng trong backlog khớp với thực tế:
+- S/M task: đúng sizing
+- L task (AI adapter, `/lessons/generate`): đúng phức tạp
+- Không có task nào vượt XL trong thực tế
+
+### Số lượng task thực tế
+| Sprint | Kế hoạch | Thực tế |
+|--------|---------|---------|
+| Sprint 1 | 13 | 13 ✅ |
+| Sprint 2 | 14 | 14 ✅ |
+| Sprint 3 | 12 | 9 ✅ + 3 ⬜ |

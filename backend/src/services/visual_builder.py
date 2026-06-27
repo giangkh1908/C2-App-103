@@ -9,7 +9,7 @@ _LEGACY_TEMPLATE_MAP = {
     "apple": "apple",
     "pizza": "pizza",
     "grid": "grid",
-    # Legacy topic names → visual types
+    # Legacy topic names -> visual types
     "counting_objects": "candy",
     "grouping_model": "apple",
     "fraction_circle": "pizza",
@@ -42,7 +42,6 @@ def build_visual_bundle(
     ``VisualData.type`` so the new visual components are actually used.
     """
 
-    # Determine the visual type to emit
     visual_type = _resolve_visual_type(topic, curriculum_visual_template, context)
 
     if topic == "multiplication":
@@ -62,12 +61,9 @@ def _resolve_visual_type(
     context: LearningContext,
 ) -> str:
     """Pick the best visual type string to send to the frontend."""
-    # If a curriculum template is explicitly provided, prefer it
     if curriculum_visual_template:
-        # Direct match (e.g. "fraction_bar", "number_line", "bar_chart")
         return curriculum_visual_template
 
-    # Fallback to the default visual type for each supported topic.
     return _DEFAULT_TOPIC_VISUAL_TYPES.get(topic, "grid")
 
 
@@ -85,20 +81,20 @@ def _build_multiplication_bundle(
         ),
         LessonSimulation(
             simulation_type="equal_groups_builder",
-            prompt="Con thá»­ Äáº¿m tá»«ng nhÃ³m rá»i tÃ­nh tá»ng sá» váº­t nhÃ©.",
+            prompt="Con th\u1eed \u0111\u1ebfm t\u1eebng nh\u00f3m r\u1ed3i t\u00ednh t\u1ed5ng s\u1ed1 v\u1eadt nh\u00e9.",
         ),
         VisualCard(
             topic="multiplication",
-            title=f"PhÃ©p nhÃ¢n {tool_data['groups']} x {tool_data['items_per_group']} báº±ng nhÃ³m Äá»u",
+            title=f"Ph\u00e9p nh\u00e2n {tool_data['groups']} x {tool_data['items_per_group']} b\u1eb1ng nh\u00f3m \u0111\u1ec1u",
             short_explanation=assistant_message,
-            life_example=f"CÃ³ {tool_data['groups']} ÄÄ©a, má»i ÄÄ©a cÃ³ {tool_data['items_per_group']} káº¹o.",
+            life_example=f"C\u00f3 {tool_data['groups']} \u0111\u0129a, m\u1ed7i \u0111\u0129a c\u00f3 {tool_data['items_per_group']} k\u1eb9o.",
             visual_data=VisualData(
                 type=visual_type,
                 primary_count=tool_data["groups"],
                 secondary_count=tool_data["items_per_group"],
                 total_count=float(tool_data["total"]),
-                groups_label="Sá» nhÃ³m",
-                items_label="Sá» váº­t má»i nhÃ³m",
+                groups_label="S\u1ed1 nh\u00f3m",
+                items_label="S\u1ed1 v\u1eadt m\u1ed7i nh\u00f3m",
             ),
             simulation_config=SimulationConfig(
                 type="groups",
@@ -108,8 +104,8 @@ def _build_multiplication_bundle(
                 max_y=20,
                 default_x=tool_data["groups"],
                 default_y=tool_data["items_per_group"],
-                label_x="Sá» nhÃ³m",
-                label_y="Sá» váº­t má»i nhÃ³m",
+                label_x="S\u1ed1 nh\u00f3m",
+                label_y="S\u1ed1 v\u1eadt m\u1ed7i nh\u00f3m",
             ),
         ),
     )
@@ -129,20 +125,20 @@ def _build_division_bundle(
         ),
         LessonSimulation(
             simulation_type="sharing_builder",
-            prompt="Con thá»­ chia Äá»u tá»«ng váº­t vÃ o má»i nhÃ³m nhÃ©.",
+            prompt="Con th\u1eed chia \u0111\u1ec1u t\u1eebng v\u1eadt v\u00e0o m\u1ed7i nh\u00f3m nh\u00e9.",
         ),
         VisualCard(
             topic="division",
-            title=f"PhÃ©p chia {tool_data['total_items']} cho {tool_data['groups']}",
+            title=f"Ph\u00e9p chia {tool_data['total_items']} cho {tool_data['groups']}",
             short_explanation=assistant_message,
-            life_example=f"CÃ³ {tool_data['total_items']} quáº£ tÃ¡o chia Äá»u cho {tool_data['groups']} báº¡n.",
+            life_example=f"C\u00f3 {tool_data['total_items']} qu\u1ea3 t\u00e1o chia \u0111\u1ec1u cho {tool_data['groups']} b\u1ea1n.",
             visual_data=VisualData(
                 type=visual_type,
                 primary_count=tool_data["total_items"],
                 secondary_count=tool_data["groups"],
                 total_count=float(tool_data["items_per_group"]),
-                groups_label="Tá»ng sá» tÃ¡o",
-                items_label="Sá» báº¡n",
+                groups_label="T\u1ed5ng s\u1ed1 t\u00e1o",
+                items_label="S\u1ed1 b\u1ea1n",
             ),
             simulation_config=SimulationConfig(
                 type="division",
@@ -152,8 +148,8 @@ def _build_division_bundle(
                 max_y=10,
                 default_x=tool_data["total_items"],
                 default_y=tool_data["groups"],
-                label_x="Tá»ng sá» tÃ¡o",
-                label_y="Sá» báº¡n",
+                label_x="T\u1ed5ng s\u1ed1 t\u00e1o",
+                label_y="S\u1ed1 b\u1ea1n",
             ),
         ),
     )
@@ -173,23 +169,23 @@ def _build_fraction_bundle(
         ),
         LessonSimulation(
             simulation_type="fraction_pizza_fill",
-            prompt="Con thá»­ tÃ´ mÃ u sá» pháº§n ÄÃ£ láº¥y trÃªn chiáº¿c pizza nhÃ©.",
+            prompt="Con th\u1eed t\u00f4 m\u00e0u s\u1ed1 ph\u1ea7n \u0111\u00e3 l\u1ea5y tr\u00ean chi\u1ebfc pizza nh\u00e9.",
         ),
         VisualCard(
             topic="fraction_basic",
-            title=f"Pháº§n sá» {tool_data['fraction_text']} báº±ng pizza",
+            title=f"Ph\u1ea7n s\u1ed1 {tool_data['fraction_text']} b\u1eb1ng pizza",
             short_explanation=assistant_message,
             life_example=(
-                f"Pizza ÄÆ°á»£c chia thÃ nh {tool_data['denominator']} pháº§n, "
-                f"mÃ¬nh láº¥y {tool_data['numerator']} phan."
+                f"Pizza \u0111\u01b0\u1ee3c chia th\u00e0nh {tool_data['denominator']} ph\u1ea7n, "
+                f"m\u00ecnh l\u1ea5y {tool_data['numerator']} ph\u1ea7n."
             ),
             visual_data=VisualData(
                 type=visual_type,
                 primary_count=tool_data["numerator"],
                 secondary_count=tool_data["denominator"],
                 total_count=tool_data["numerator"] / tool_data["denominator"],
-                groups_label="Sá» pháº§n ÄÃ£ láº¥y",
-                items_label="Tá»ng sá» pháº§n",
+                groups_label="S\u1ed1 ph\u1ea7n \u0111\u00e3 l\u1ea5y",
+                items_label="T\u1ed5ng s\u1ed1 ph\u1ea7n",
             ),
             simulation_config=SimulationConfig(
                 type="pizza_slices",
@@ -199,8 +195,8 @@ def _build_fraction_bundle(
                 max_y=12,
                 default_x=tool_data["numerator"],
                 default_y=tool_data["denominator"],
-                label_x="Sá» miáº¿ng ÄÆ°á»£c tÃ´",
-                label_y="Tá»ng sá» miáº¿ng",
+                label_x="S\u1ed1 mi\u1ebfng \u0111\u01b0\u1ee3c t\u00f4",
+                label_y="T\u1ed5ng s\u1ed1 mi\u1ebfng",
             ),
         ),
     )
@@ -212,7 +208,7 @@ def _build_rectangle_bundle(
     context: LearningContext,
     visual_type: str = "grid",
 ) -> tuple[LessonVisual, LessonSimulation, VisualCard]:
-    mode_label = "chu vi" if context.visual_type == "perimeter_path" else "diá»n tÃ­ch"
+    mode_label = "chu vi" if context.visual_type == "perimeter_path" else "di\u1ec7n t\u00edch"
     return (
         LessonVisual(
             visual_type="perimeter_path" if context.visual_type == "perimeter_path" else "area_grid",
@@ -224,16 +220,16 @@ def _build_rectangle_bundle(
         LessonSimulation(
             simulation_type="perimeter_path_counter" if context.visual_type == "perimeter_path" else "area_grid_counter",
             prompt=(
-                "Con thá»­ cháº¡m theo ÄÆ°á»ng bao quanh Äá» Äáº¿m chu vi nhÃ©."
+                "Con th\u1eed ch\u1ea1m theo \u0111\u01b0\u1eddng bao quanh \u0111\u1ec3 \u0111\u1ebfm chu vi nh\u00e9."
                 if context.visual_type == "perimeter_path"
-                else "Con thu dem cac o vuong ben trong hinh de tinh diá»n tÃ­ch nhe."
+                else "Con th\u1eed \u0111\u1ebfm c\u00e1c \u00f4 vu\u00f4ng b\u00ean trong h\u00ecnh \u0111\u1ec3 t\u00ednh di\u1ec7n t\u00edch nh\u00e9."
             ),
         ),
         VisualCard(
             topic="perimeter_area_basic",
-            title=f"HÃ¬nh chá»¯ nháº­t {tool_data['length']} x {tool_data['width']}",
+            title=f"H\u00ecnh ch\u1eef nh\u1eadt {tool_data['length']} x {tool_data['width']}",
             short_explanation=assistant_message,
-            life_example=f"MÃ¬nh nhÃ¬n hÃ¬nh chá»¯ nháº­t Äá» hiá»u {mode_label} báº±ng Ã´ vuÃ´ng.",
+            life_example=f"M\u00ecnh nh\u00ecn h\u00ecnh ch\u1eef nh\u1eadt \u0111\u1ec3 hi\u1ec3u {mode_label} b\u1eb1ng \u00f4 vu\u00f4ng.",
             visual_data=VisualData(
                 type=visual_type,
                 primary_count=tool_data["length"],
@@ -241,8 +237,8 @@ def _build_rectangle_bundle(
                 total_count=float(
                     tool_data["perimeter"] if context.visual_type == "perimeter_path" else tool_data["area"]
                 ),
-                groups_label="Chiá»u dÃ i",
-                items_label="Chiá»u rá»ng",
+                groups_label="Chi\u1ec1u d\u00e0i",
+                items_label="Chi\u1ec1u r\u1ed9ng",
             ),
             simulation_config=SimulationConfig(
                 type="rectangle_grid",
@@ -252,8 +248,8 @@ def _build_rectangle_bundle(
                 max_y=20,
                 default_x=tool_data["length"],
                 default_y=tool_data["width"],
-                label_x="Chiá»u dÃ i",
-                label_y="Chiá»u rá»ng",
+                label_x="Chi\u1ec1u d\u00e0i",
+                label_y="Chi\u1ec1u r\u1ed9ng",
             ),
         ),
     )
@@ -264,7 +260,7 @@ def _build_bar_chart_bundle(
     tool_data: dict,
     visual_type: str = "bar_chart",
 ) -> tuple[LessonVisual, LessonSimulation, VisualCard]:
-    labels = tool_data.get("labels") or ["Tá» 1", "Tá» 2", "Tá» 3"]
+    labels = tool_data.get("labels") or ["T\u1ed5 1", "T\u1ed5 2", "T\u1ed5 3"]
     values = tool_data.get("values") or [6, 9, 7]
     max_value = max(values) if values else 0
     total_value = sum(values)
@@ -280,20 +276,20 @@ def _build_bar_chart_bundle(
         ),
         LessonSimulation(
             simulation_type="bar_chart_reader",
-            prompt="Con thá»­ nhÃ¬n cá»t cao nháº¥t vÃ  cá»t tháº¥p nháº¥t Äá» so sÃ¡nh sá» liá»u nhÃ©.",
+            prompt="Con th\u1eed nh\u00ecn c\u1ed9t cao nh\u1ea5t v\u00e0 c\u1ed9t th\u1ea5p nh\u1ea5t \u0111\u1ec3 so s\u00e1nh s\u1ed1 li\u1ec7u nh\u00e9.",
         ),
         VisualCard(
             topic="data_representation",
-            title="Biá»u Äá» cá»t so sÃ¡nh dá»¯ liá»u",
+            title="Bi\u1ec3u \u0111\u1ed3 c\u1ed9t so s\u00e1nh d\u1eef li\u1ec7u",
             short_explanation=assistant_message,
-            life_example="Má»i cá»t biá»u diá»n sá» há»c sinh cá»§a má»t tá».",
+            life_example="M\u1ed7i c\u1ed9t bi\u1ec3u di\u1ec5n s\u1ed1 h\u1ecdc sinh c\u1ee7a m\u1ed9t t\u1ed5.",
             visual_data=VisualData(
                 type=visual_type,
                 primary_count=len(values),
                 secondary_count=max_value,
                 total_count=float(total_value),
-                groups_label="Tá»",
-                items_label="Sá» báº¡n",
+                groups_label="T\u1ed5",
+                items_label="S\u1ed1 b\u1ea1n",
                 config={
                     "labels": labels,
                     "values": values,
@@ -307,8 +303,8 @@ def _build_bar_chart_bundle(
                 max_y=max(1, max_value),
                 default_x=len(values),
                 default_y=max_value,
-                label_x="Sá» cá»t",
-                label_y="GiÃ¡ trá» lá»n nháº¥t",
+                label_x="S\u1ed1 c\u1ed9t",
+                label_y="Gi\u00e1 tr\u1ecb l\u1edbn nh\u1ea5t",
             ),
         ),
     )

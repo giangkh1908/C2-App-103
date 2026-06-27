@@ -35,6 +35,7 @@ from typing import Any, Literal
 from bson import ObjectId
 from bson.errors import InvalidId
 from pymongo import ReturnDocument
+from pymongo.errors import DuplicateKeyError
 
 from src.core.database import get_db
 from src.core.logging import get_logger
@@ -182,7 +183,41 @@ async def create_payment(
         expires_at=expires_at,
     )
 
-    result = await db.payments.insert_one(doc)
+    # Cleanup: expire stale pending payments for this user so the
+    # payment list stays clean.
+    await db.payments.update_many({
+        "user_id": user_id,
+        "status": PaymentStatus.PENDING.value,
+        "created_at": {"$lt": datetime.now(UTC) - timedelta(minutes=5)},
+    }, {"$set": {"status": PaymentStatus.EXPIRED.value}})
+
+    _MAX_DUP_RETRIES = 2
+    for _attempt in range(_MAX_DUP_RETRIES):
+        try:
+            result = await db.payments.insert_one(doc)
+            break
+        except DuplicateKeyError:
+            if _attempt == _MAX_DUP_RETRIES - 1:
+                raise
+            # Race: the existing pending payment may have been expired
+            # by sweeper or paid by webhook between the failed insert
+            # and now. If it's gone, retry the insert.
+            existing = await db.payments.find_one({
+                "user_id": user_id,
+                "plan_name": plan_name,
+                "billing": billing,
+                "status": PaymentStatus.PENDING.value,
+            })
+            if existing:
+                logger.info(
+                    "payment_duplicate_skipped",
+                    payment_code=existing.get("payment_code"),
+                    plan_name=plan_name,
+                )
+                return PaymentInDB.from_mongo(existing)
+            # Not pending anymore — retry insert
+            continue
+
     doc["_id"] = result.inserted_id
 
     logger.info(
@@ -193,6 +228,38 @@ async def create_payment(
         amount_vnd=amount_vnd,
     )
     return PaymentInDB.from_mongo(doc)
+
+
+async def cancel_payment(payment_code: str, user_id: str) -> PaymentInDB | None:
+    """Cancel a pending payment.
+
+    Atomically checks ownership + status + update in a single
+    ``find_one_and_update`` call so there is no race between the
+    pre-read check and the actual update (e.g. a webhook marking
+    the payment as paid between step 1 and step 2).
+
+    Returns the updated payment with ``expired`` status, or ``None`` when
+    the code is unknown, the payment does not belong to the caller, or the
+    payment is not in ``pending`` state.
+    """
+    db = get_db()
+    result = await db.payments.find_one_and_update(
+        {
+            "payment_code": payment_code,
+            "user_id": user_id,
+            "status": PaymentStatus.PENDING.value,
+        },
+        {"$set": {"status": PaymentStatus.EXPIRED.value}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if not result:
+        return None
+    logger.info(
+        "payment_cancelled",
+        payment_code=payment_code,
+        user_id=user_id,
+    )
+    return PaymentInDB.from_mongo(result)
 
 
 async def verify_and_mark_paid(

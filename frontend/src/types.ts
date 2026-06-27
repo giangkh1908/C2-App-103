@@ -43,8 +43,8 @@ export interface CurriculumGradeSummary {
 
 export type VisualType =
   | 'candy' | 'apple' | 'pizza' | 'grid'
-  | 'number_line' | 'ten_frame' | 'place_value' | 'grouping'
-  | 'counting_objects' | 'bar_model' | 'array_model' | 'comparison_visual'
+  | 'number_line' | 'ten_frame' | 'place_value' | 'place_value_blocks' | 'grouping' | 'grouping_model'
+  | 'counting_objects' | 'stick_bundles' | 'bar_model' | 'array_model' | 'comparison_visual'
   | 'rounding_visual' | 'balance_model' | 'expression_tree' | 'parity_visual'
   | 'mean_balance_visual' | 'area_model_distributive' | 'unit_rate_visual' | 'operation_story'
   | 'fraction_bar' | 'fraction_circle' | 'equivalent_fraction_visual' | 'decimal_place_value'
@@ -68,6 +68,9 @@ export interface VisualData {
   groupsLabel?: string;
   itemsLabel?: string;
   config?: Record<string, unknown>;
+  conceptType?: string;
+  polypadEnabled?: boolean;
+  polypadMode?: string;
 }
 
 export interface SimulationConfig {
@@ -135,6 +138,9 @@ export interface ChatTurnVisualCard {
     groups_label?: string;
     items_label?: string;
     config?: Record<string, unknown>;
+    concept_type?: string;
+    polypad_enabled?: boolean;
+    polypad_mode?: string;
   };
   simulation_config: {
     type: SimulationType;

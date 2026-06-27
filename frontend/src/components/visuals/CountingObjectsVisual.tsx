@@ -1,16 +1,10 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
-import { VisualProps } from './shared';
+import { motion } from 'motion/react';
 
-const GROUP_COLORS = [
-  'border-blue-300 bg-blue-50',
-  'border-sky-300 bg-sky-50',
-  'border-indigo-300 bg-indigo-50',
-  'border-cyan-300 bg-cyan-50',
-  'border-blue-200 bg-blue-100',
-  'border-sky-200 bg-sky-100',
-];
+import { VisualProps } from './shared';
+import { getKidColor, getItemEmoji } from './kidThemeSafe';
 
 export default function CountingObjectsVisual({
   primaryCount,
@@ -19,46 +13,65 @@ export default function CountingObjectsVisual({
   groupsLabel = 'nhóm',
   itemsLabel = 'vật',
 }: VisualProps) {
-  const groups = primaryCount;
-  const itemsPerGroup = secondaryCount;
+  const groups = Math.max(1, primaryCount);
+  const itemsPerGroup = Math.max(1, secondaryCount);
+  const total = totalCount || groups * itemsPerGroup;
 
   const allGroups: number[][] = [];
-  let remaining = totalCount;
-  for (let g = 0; g < groups; g++) {
+  let remaining = total;
+  for (let g = 0; g < groups; g += 1) {
     const count = Math.min(itemsPerGroup, remaining);
-    allGroups.push(Array.from({ length: count }, (_, i) => g * itemsPerGroup + i));
+    allGroups.push(Array.from({ length: count }, (_, i) => i));
     remaining -= count;
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
-        {groups} {groupsLabel} × {itemsPerGroup} {itemsLabel} = {totalCount}
-      </span>
+    <div className="flex w-full flex-col items-center gap-4">
+      <motion.div
+        initial={{ scale: 0.88, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="rounded-full border-2 px-4 py-2 text-sm font-bold"
+        style={{ background: '#FFF9DB', borderColor: '#FFD43B', color: '#E67700' }}
+      >
+        {groups} {groupsLabel} × {itemsPerGroup} {itemsLabel} = <span className="text-base text-rose-600">{total}</span>
+      </motion.div>
 
       <div className="flex flex-wrap justify-center gap-3">
-        {allGroups.map((group, gIdx) => (
-          <div
-            key={gIdx}
-            className={`flex flex-col items-center gap-1 rounded-xl border-2 p-2 ${GROUP_COLORS[gIdx % GROUP_COLORS.length]}`}
-          >
-            <span className="text-[9px] font-bold uppercase opacity-60 text-blue-700">
-              {groupsLabel} {gIdx + 1}
-            </span>
-            <div className="flex flex-wrap justify-center gap-1 max-w-[90px]">
-              {group.map((itemIdx) => (
-                <span key={itemIdx} className="text-blue-500 text-lg leading-none">
-                  ●
-                </span>
-              ))}
-            </div>
-            <span className="text-[10px] font-bold text-blue-700">{group.length}</span>
-          </div>
-        ))}
+        {allGroups.map((group, groupIndex) => {
+          const color = getKidColor(groupIndex);
+          return (
+            <motion.div
+              key={groupIndex}
+              initial={{ y: 12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: groupIndex * 0.08 }}
+              className="flex flex-col items-center gap-2 rounded-3xl border-2 p-3 shadow-sm"
+              style={{ background: color.bg, borderColor: color.border }}
+            >
+              <span className="text-xs font-bold uppercase tracking-wide" style={{ color: color.text }}>
+                {groupsLabel} {groupIndex + 1}
+              </span>
+              <div className="flex max-w-[112px] flex-wrap justify-center gap-1">
+                {group.map((itemIndex) => (
+                  <motion.span
+                    key={itemIndex}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: groupIndex * 0.08 + itemIndex * 0.04, type: 'spring', stiffness: 300 }}
+                    className="text-2xl leading-none"
+                  >
+                    {getItemEmoji(itemsLabel, groupIndex + itemIndex)}
+                  </motion.span>
+                ))}
+              </div>
+              <span className="text-lg font-black" style={{ color: color.text }}>{group.length}</span>
+            </motion.div>
+          );
+        })}
       </div>
 
-      <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
-        Tổng cộng: {totalCount} {itemsLabel}
+      <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700 shadow-sm">
+        Tổng cộng: {total} {itemsLabel}
       </div>
     </div>
   );

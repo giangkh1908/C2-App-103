@@ -1,75 +1,52 @@
-'use client';
+﻿'use client';
 
-import { VisualProps } from './shared';
+import React from 'react';
+import { motion } from 'motion/react';
 
-export default function PolylineLengthVisual({ primaryCount, secondaryCount, totalCount, groupsLabel, itemsLabel }: VisualProps) {
-  const width = 400;
-  const height = 200;
-  const startX = 30;
-  const startY = 100;
+import { getConfigNumberArray, VisualProps } from './shared';
 
-  const segmentCount = Math.max(primaryCount, 1);
-  const segmentLengths: number[] = [];
+export default function PolylineLengthVisual({ primaryCount, totalCount, config }: VisualProps) {
+  const segments = getConfigNumberArray(config, 'segments') ?? Array.from({ length: Math.max(primaryCount, 3) }, (_, index) => [4, 3, 5, 2][index % 4]);
+  const total = totalCount || segments.reduce((sum, value) => sum + value, 0);
+  const width = 340;
+  const height = 180;
+  const points = [{ x: 28, y: 116 }];
 
-  for (let i = 0; i < segmentCount; i++) {
-    segmentLengths.push(20 + Math.sin(i * 1.5) * 15 + Math.cos(i * 0.8) * 10);
-  }
+  segments.forEach((segment, index) => {
+    const prev = points[points.length - 1];
+    points.push({
+      x: prev.x + 40,
+      y: prev.y + (index % 2 === 0 ? -segment * 10 : segment * 8),
+    });
+  });
 
-  const points: { x: number; y: number }[] = [{ x: startX, y: startY }];
-  let currentX = startX;
-  let currentY = startY;
-
-  for (let i = 0; i < segmentCount; i++) {
-    const angle = (Math.PI / 6) * (i % 2 === 0 ? 1 : -1) + (i * Math.PI) / (segmentCount * 2);
-    currentX += segmentLengths[i] * Math.cos(angle);
-    currentY += segmentLengths[i] * Math.sin(angle);
-    points.push({ x: currentX, y: currentY });
-  }
-
-  const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
-
-  const totalLength = segmentLengths.reduce((sum, len) => sum + len, 0);
+  const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
 
   return (
-    <div className="flex flex-col items-center">
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        {/* Polyline */}
-        <path d={pathD} fill="none" stroke="#3498db" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
-
-        {/* Points */}
-        {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r={4} fill={i === 0 ? '#2ecc71' : i === points.length - 1 ? '#e74c3c' : '#f39c12'} stroke="#fff" strokeWidth={2} />
+    <div className="flex w-full max-w-2xl flex-col items-center gap-4">
+      <span className="rounded-full border-2 border-cyan-200 bg-cyan-50 px-4 py-1.5 text-sm font-bold text-cyan-700">
+        Độ dài đường gấp khúc
+      </span>
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="rounded-3xl border-2 border-cyan-200 bg-white p-3 shadow-sm">
+        <motion.path d={path} fill="none" stroke="#06b6d4" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.7 }} />
+        {points.map((point, index) => (
+          <g key={index}>
+            <circle cx={point.x} cy={point.y} r="5" fill={index === 0 ? '#22c55e' : index === points.length - 1 ? '#ef4444' : '#0ea5e9'} />
+            <text x={point.x} y={point.y + 20} textAnchor="middle" fontSize="11" fontWeight="700" fill="#334155">{String.fromCharCode(65 + index)}</text>
+          </g>
         ))}
-
-        {/* Segment labels */}
-        {points.slice(0, -1).map((p, i) => {
-          const next = points[i + 1];
-          const midX = (p.x + next.x) / 2;
-          const midY = (p.y + next.y) / 2 - 10;
+        {segments.map((segment, index) => {
+          const current = points[index];
+          const next = points[index + 1];
           return (
-            <text key={i} x={midX} y={midY} textAnchor="middle" fontSize={10} fill="#333" fontWeight="bold">
-              {segmentLengths[i].toFixed(0)}
+            <text key={index} x={(current.x + next.x) / 2} y={(current.y + next.y) / 2 - 8} textAnchor="middle" fontSize="11" fontWeight="800" fill="#0f766e">
+              {segment} cm
             </text>
           );
         })}
-
-        {/* Start/End labels */}
-        <text x={startX - 5} y={startY + 20} textAnchor="middle" fontSize={10} fill="#2ecc71">
-          A
-        </text>
-        <text x={points[points.length - 1].x + 5} y={points[points.length - 1].y + 20} textAnchor="middle" fontSize={10} fill="#e74c3c">
-          B
-        </text>
       </svg>
-
-      <div className="mt-2 text-center">
-        <div className="text-lg font-bold text-purple-700">
-          Tổng độ dài = {totalLength.toFixed(0)} đơn vị
-        </div>
-        <div className="text-sm text-gray-600">
-          {groupsLabel ? `${groupsLabel}: ` : ''}
-          {segmentCount} đoạn thẳng
-        </div>
+      <div className="rounded-2xl border-2 border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-bold text-cyan-700 shadow-sm">
+        Tổng độ dài: {total} cm
       </div>
     </div>
   );

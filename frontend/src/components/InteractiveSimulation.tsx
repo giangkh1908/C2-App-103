@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { Trophy, RotateCcw } from 'lucide-react';
-import { VISUAL_REGISTRY } from './visuals';
+import VisualRenderer from './visualization/VisualRenderer';
 
 interface VisualDataProps {
   type: string;
@@ -19,6 +19,12 @@ interface VisualDataProps {
 type BrowserWindow = Window & {
   webkitAudioContext?: typeof AudioContext;
 };
+
+function normalizeCount(value: unknown, fallback: number, min = 0): number {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric)) return fallback;
+  return Math.max(min, numeric);
+}
 
 function buildInitialCandyCounts(primary: number, secondary: number): number[] {
   return Array(primary).fill(secondary);
@@ -39,9 +45,13 @@ function buildInitialPizzaShares(primary: number, secondary: number): boolean[] 
 
 export default function InteractiveSimulation({ visualData }: { visualData: VisualDataProps }) {
   const t = useTranslations('simulation');
-  // Safe default bounds
-  const safePrimary = Math.max(1, Math.min(visualData.primaryCount || 3, 12));
-  const safeSecondary = Math.max(1, Math.min(visualData.secondaryCount || 4, 12));
+  const rawPrimary = normalizeCount(visualData.primaryCount, 3);
+  const rawSecondary = normalizeCount(visualData.secondaryCount, 4);
+  const rawTotal = normalizeCount(visualData.totalCount, rawPrimary);
+
+  // Safe default bounds for legacy interactive mini-games only
+  const safePrimary = Math.max(1, Math.min(rawPrimary || 3, 12));
+  const safeSecondary = Math.max(1, Math.min(rawSecondary || 4, 12));
   const initialAppleState = buildInitialAppleState(safePrimary, safeSecondary);
 
   // Dynamic sandbox state specific to simulation types
@@ -379,25 +389,24 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
 
       <div className="flex items-center justify-center min-h-[180px] py-1">
         {(() => {
-          const RegistryComponent = VISUAL_REGISTRY[visualData.type];
-          if (RegistryComponent) {
-            return (
-              <RegistryComponent
-                primaryCount={safePrimary}
-                secondaryCount={safeSecondary}
-                totalCount={visualData.totalCount}
-                groupsLabel={visualData.groupsLabel}
-                itemsLabel={visualData.itemsLabel}
-                config={visualData.config}
-              />
-            );
-          }
           // Fallback for legacy types
           if (visualData.type === 'candy') return renderCandySimulation();
           if (visualData.type === 'apple') return renderAppleSimulation();
           if (visualData.type === 'pizza') return renderPizzaSimulation();
           if (visualData.type === 'grid') return renderGridSimulation();
-          return <div className="text-gray-400 text-sm">Visual not available</div>;
+          return (
+            <VisualRenderer
+              visualData={{
+                type: visualData.type,
+                primaryCount: rawPrimary,
+                secondaryCount: rawSecondary,
+                totalCount: rawTotal,
+                groupsLabel: visualData.groupsLabel,
+                itemsLabel: visualData.itemsLabel,
+                config: visualData.config,
+              }}
+            />
+          );
         })()}
       </div>
     </div>

@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "JOURNAL.md"
+      - "WORKLOG.md"
+      - "README.md"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (ruff + pytest + docker)
+    runs-on: self-hosted
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      MONGO_CONTAINER: ci-mongo-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+
+      - name: Ensure mongo:7 image cached
+        run: docker image inspect mongo:7 >/dev/null 2>&1 || docker pull mongo:7
+
+      - name: Start MongoDB
+        run: |
+          docker rm -f ${{ env.MONGO_CONTAINER }} 2>/dev/null || true
+          docker run -d --name ${{ env.MONGO_CONTAINER }} -P mongo:7
+          MONGO_PORT=$(docker inspect ${{ env.MONGO_CONTAINER }} \
+            --format='{{(index (index .NetworkSettings.Ports "27017/tcp") 0).HostPort}}')
+          echo "MongoDB started on port $MONGO_PORT"
+          echo "MONGO_PORT=$MONGO_PORT" >> $GITHUB_ENV
+          for i in $(seq 1 30); do
+            if docker exec ${{ env.MONGO_CONTAINER }} mongosh --quiet \
+              --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+              echo "MongoDB ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::MongoDB not ready after 30s"
+          exit 1
+
+      - name: Install deps
+        run: pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Format check (ruff)
+        run: ruff format --check .
+
+      - name: Tests (pytest)
+        env:
+          PRACTICE_TEST_MONGODB_URI: mongodb://127.0.0.1:${{ env.MONGO_PORT }}
+        run: pytest --cov=src --cov-report=term-missing -v
+
+      - name: Docker build check
+        run: docker build -t backend-test-${{ github.run_id }} .
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm -f ${{ env.MONGO_CONTAINER }} 2>/dev/null || true
+          docker rmi backend-test-${{ github.run_id }} 2>/dev/null || true
+
+  frontend:
+    name: Frontend (eslint + vitest + next build + docker)
+    runs-on: self-hosted
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Lint (eslint)
+        run: npm run lint
+
+      - name: Tests (vitest)
+        run: npm run test -- --run
+
+      - name: Next.js build
+        run: npm run build
+
+      - name: Docker build check
+        run: docker build -t frontend-test-${{ github.run_id }} .
+
+      - name: Cleanup
+        if: always()
+        run: docker rmi frontend-test-${{ github.run_id }} 2>/dev/null || true

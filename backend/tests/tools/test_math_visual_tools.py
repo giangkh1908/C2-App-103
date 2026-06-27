@@ -70,10 +70,7 @@ async def test_fraction_pizza_tool_returns_valid_fraction_data() -> None:
     assert result.data["filled_slices"] == 3
     assert result.data["empty_slices"] == 2
     assert len(result.data["visual_slices"]) == 5
-    assert (
-        sum(1 for visual_slice in result.data["visual_slices"] if visual_slice["filled"])
-        == 3
-    )
+    assert sum(1 for visual_slice in result.data["visual_slices"] if visual_slice["filled"]) == 3
 
 
 @pytest.mark.asyncio

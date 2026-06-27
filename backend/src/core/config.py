@@ -166,9 +166,7 @@ class Settings(BaseSettings):
     def cors_origins(self) -> list[str]:
         origins = [self.frontend_url.rstrip("/")]
         if self.allowed_origins.strip():
-            origins.extend(
-                o.strip() for o in self.allowed_origins.split(",") if o.strip()
-            )
+            origins.extend(o.strip() for o in self.allowed_origins.split(",") if o.strip())
         # dict.fromkeys preserves insertion order while deduplicating
         return list(dict.fromkeys(origins))
 

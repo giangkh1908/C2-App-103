@@ -336,8 +336,6 @@ class TestEnsurePaymentIndexes:
             import asyncio
 
             asyncio.run(db_mod.ensure_indexes(_AnyAttrsDB()))
-            assert called["flag"] is True, (
-                "ensure_indexes() did not call ensure_payment_indexes()"
-            )
+            assert called["flag"] is True, "ensure_indexes() did not call ensure_payment_indexes()"
         finally:
             db_mod.ensure_payment_indexes = original  # type: ignore[assignment]

@@ -14,7 +14,9 @@ from src.core.config import settings  # noqa: E402
 from src.core.database import ensure_indexes  # noqa: E402
 
 
-DEFAULT_ACCEPTANCE_DB_NAME = os.getenv("PRACTICE_ACCEPTANCE_MONGODB_DB_NAME", "toan_truc_quan_practice_acceptance")
+DEFAULT_ACCEPTANCE_DB_NAME = os.getenv(
+    "PRACTICE_ACCEPTANCE_MONGODB_DB_NAME", "toan_truc_quan_practice_acceptance"
+)
 
 
 async def copy_collection(
@@ -28,7 +30,9 @@ async def copy_collection(
     copied = 0
     cursor = source_db[collection_name].find(filter_query or {})
     async for document in cursor:
-        await target_db[collection_name].replace_one({key_field: document[key_field]}, document, upsert=True)
+        await target_db[collection_name].replace_one(
+            {key_field: document[key_field]}, document, upsert=True
+        )
         copied += 1
     return copied
 
@@ -38,16 +42,22 @@ async def main() -> None:
         description="Bootstrap a dedicated Mongo acceptance database for /practice without touching shared dev data"
     )
     parser.add_argument("--source-uri", default=settings.mongodb_uri, help="Source MongoDB URI")
-    parser.add_argument("--source-db", default=settings.mongodb_db_name, help="Source MongoDB database name")
+    parser.add_argument(
+        "--source-db", default=settings.mongodb_db_name, help="Source MongoDB database name"
+    )
     parser.add_argument("--target-uri", default=settings.mongodb_uri, help="Target MongoDB URI")
-    parser.add_argument("--target-db", default=DEFAULT_ACCEPTANCE_DB_NAME, help="Target acceptance database name")
+    parser.add_argument(
+        "--target-db", default=DEFAULT_ACCEPTANCE_DB_NAME, help="Target acceptance database name"
+    )
     parser.add_argument(
         "--user-email",
         action="append",
         default=[],
         help="Optional user email to scope copied users; repeat to include multiple users",
     )
-    parser.add_argument("--skip-users", action="store_true", help="Do not copy users into the acceptance database")
+    parser.add_argument(
+        "--skip-users", action="store_true", help="Do not copy users into the acceptance database"
+    )
     parser.add_argument(
         "--copy-attempts",
         action="store_true",
@@ -69,7 +79,9 @@ async def main() -> None:
         allowed_user_ids: list[str] | None = None
 
         if args.user_email:
-            normalized_emails = [email.strip().lower() for email in args.user_email if email.strip()]
+            normalized_emails = [
+                email.strip().lower() for email in args.user_email if email.strip()
+            ]
             if normalized_emails:
                 user_filter = {"email": {"$in": normalized_emails}}
 

@@ -34,9 +34,15 @@ class GuardrailResult:
 # ---------------------------------------------------------------------------
 
 _RESPONSE_PROMPT_INJECTION: Final[str] = "Cô chỉ hỗ trợ học toán trực quan cho học sinh thôi nhé."
-_RESPONSE_GREETING: Final[str] = "Chào con 👋 Con muốn học phép nhân, phép chia, phân số hay hình học hôm nay?"
-_RESPONSE_GIBBERISH: Final[str] = "Cô chưa hiểu câu hỏi của con. Con hãy nhập một bài toán hoặc nội dung toán học cụ thể nhé."
-_RESPONSE_NON_MATH: Final[str] = "Cô chuyên hỗ trợ học toán trực quan thôi nhé. Con hãy hỏi một bài toán hoặc khái niệm toán học."
+_RESPONSE_GREETING: Final[str] = (
+    "Chào con 👋 Con muốn học phép nhân, phép chia, phân số hay hình học hôm nay?"
+)
+_RESPONSE_GIBBERISH: Final[str] = (
+    "Cô chưa hiểu câu hỏi của con. Con hãy nhập một bài toán hoặc nội dung toán học cụ thể nhé."
+)
+_RESPONSE_NON_MATH: Final[str] = (
+    "Cô chuyên hỗ trợ học toán trực quan thôi nhé. Con hãy hỏi một bài toán hoặc khái niệm toán học."
+)
 
 
 # ---------------------------------------------------------------------------
@@ -77,7 +83,6 @@ _PROMPT_INJECTION_PHRASES: tuple[str, ...] = (
     "disregard previous",
     "override instructions",
     "jailbreak",
-
     # Vietnamese
     "huong dan truoc",
     "bo qua huong dan truoc",
@@ -135,19 +140,14 @@ _FILLER_CHARS: frozenset[str] = frozenset(".?!@#$%^&*_-~`")
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def remove_accents(text: str) -> str:
     normalized = unicodedata.normalize("NFD", text)
 
-    text = "".join(
-        ch
-        for ch in normalized
-        if unicodedata.category(ch) != "Mn"
-    )
+    text = "".join(ch for ch in normalized if unicodedata.category(ch) != "Mn")
 
-    return (
-        text.replace("đ", "d")
-            .replace("Đ", "D")
-    )
+    return text.replace("đ", "d").replace("Đ", "D")
+
 
 def normalize_text(text: str) -> str:
     """Lowercase and normalize whitespace. Return empty string for blank input."""
@@ -164,12 +164,10 @@ def is_greeting(text: str) -> bool:
     tokens = normalized.split()
 
     if len(tokens) <= 4:
-        return any(
-            normalized.startswith(keyword)
-            for keyword in _GREETING_KEYWORDS
-        )
+        return any(normalized.startswith(keyword) for keyword in _GREETING_KEYWORDS)
 
     return False
+
 
 def is_gibberish(text: str) -> bool:
     """Detect meaningless inputs (asdfasdf, ?????, ……, 123123123, …).
@@ -197,7 +195,6 @@ def is_gibberish(text: str) -> bool:
                 return True
             if len(token) >= 5 and not has_vowel:
                 return True
-
 
     return False
 

@@ -218,17 +218,19 @@ class TestCreatePlan:
 
         mock_db.plans.insert_one = AsyncMock()
         mock_db.plans.insert_one.return_value.inserted_id = ObjectId()
-        mock_db.plans.find_one = AsyncMock(return_value={
-            "_id": mock_db.plans.insert_one.return_value.inserted_id,
-            "name": "test",
-            "display_name": {"vi": "Test", "en": "Test"},
-            "price_monthly": 0,
-            "price_yearly": 0,
-            "quotas": {"chat_turns": 10},
-            "features": {"topics": ["*"]},
-            "is_active": True,
-            "sort_order": 0,
-        })
+        mock_db.plans.find_one = AsyncMock(
+            return_value={
+                "_id": mock_db.plans.insert_one.return_value.inserted_id,
+                "name": "test",
+                "display_name": {"vi": "Test", "en": "Test"},
+                "price_monthly": 0,
+                "price_yearly": 0,
+                "quotas": {"chat_turns": 10},
+                "features": {"topics": ["*"]},
+                "is_active": True,
+                "sort_order": 0,
+            }
+        )
 
         plan_create = PlanCreate(
             name="test",

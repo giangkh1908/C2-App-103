@@ -7,11 +7,14 @@ from httpx import AsyncClient
 @pytest.mark.asyncio
 class TestRegister:
     async def test_register_success(self, client: AsyncClient):
-        response = await client.post("/api/v1/auth/register", json={
-            "name": "New User",
-            "email": "new@example.com",
-            "password": "password123",
-        })
+        response = await client.post(
+            "/api/v1/auth/register",
+            json={
+                "name": "New User",
+                "email": "new@example.com",
+                "password": "password123",
+            },
+        )
         assert response.status_code == 201
         data = response.json()
         assert data["user"]["email"] == "new@example.com"
@@ -21,28 +24,37 @@ class TestRegister:
         assert "refresh_token" in response.cookies
 
     async def test_register_duplicate_email(self, client: AsyncClient, test_user):
-        response = await client.post("/api/v1/auth/register", json={
-            "name": "Duplicate",
-            "email": "test@example.com",
-            "password": "password123",
-        })
+        response = await client.post(
+            "/api/v1/auth/register",
+            json={
+                "name": "Duplicate",
+                "email": "test@example.com",
+                "password": "password123",
+            },
+        )
         assert response.status_code == 409
         assert "already registered" in response.json()["detail"]
 
     async def test_register_missing_fields(self, client: AsyncClient):
-        response = await client.post("/api/v1/auth/register", json={
-            "email": "test@example.com",
-        })
+        response = await client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "test@example.com",
+            },
+        )
         assert response.status_code == 422
 
 
 @pytest.mark.asyncio
 class TestLogin:
     async def test_login_success(self, client: AsyncClient, test_user):
-        response = await client.post("/api/v1/auth/login", json={
-            "email": "test@example.com",
-            "password": "password123",
-        })
+        response = await client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": "test@example.com",
+                "password": "password123",
+            },
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["user"]["email"] == "test@example.com"
@@ -51,17 +63,23 @@ class TestLogin:
         assert "refresh_token" in response.cookies
 
     async def test_login_wrong_password(self, client: AsyncClient, test_user):
-        response = await client.post("/api/v1/auth/login", json={
-            "email": "test@example.com",
-            "password": "wrongpassword",
-        })
+        response = await client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": "test@example.com",
+                "password": "wrongpassword",
+            },
+        )
         assert response.status_code == 401
 
     async def test_login_nonexistent_email(self, client: AsyncClient):
-        response = await client.post("/api/v1/auth/login", json={
-            "email": "nonexistent@example.com",
-            "password": "password123",
-        })
+        response = await client.post(
+            "/api/v1/auth/login",
+            json={
+                "email": "nonexistent@example.com",
+                "password": "password123",
+            },
+        )
         assert response.status_code == 401
 
 
@@ -145,16 +163,22 @@ class TestGetMe:
 @pytest.mark.asyncio
 class TestForgotPassword:
     async def test_forgot_password_existing_email(self, client: AsyncClient, test_user):
-        response = await client.post("/api/v1/auth/forgot-password", json={
-            "email": "test@example.com",
-        })
+        response = await client.post(
+            "/api/v1/auth/forgot-password",
+            json={
+                "email": "test@example.com",
+            },
+        )
         assert response.status_code == 200
         assert "reset link" in response.json()["detail"].lower()
 
     async def test_forgot_password_nonexistent_email(self, client: AsyncClient):
-        response = await client.post("/api/v1/auth/forgot-password", json={
-            "email": "nonexistent@example.com",
-        })
+        response = await client.post(
+            "/api/v1/auth/forgot-password",
+            json={
+                "email": "nonexistent@example.com",
+            },
+        )
         assert response.status_code == 200
         assert "reset link" in response.json()["detail"].lower()
 
@@ -168,24 +192,32 @@ class TestResetPassword:
         token = secrets.token_urlsafe(32)
         await mock_db.users.update_one(
             {"_id": test_user["_id"]},
-            {"$set": {
-                "reset_token": token,
-                "reset_token_expires": datetime.now(timezone.utc) + timedelta(hours=1),
-            }},
+            {
+                "$set": {
+                    "reset_token": token,
+                    "reset_token_expires": datetime.now(timezone.utc) + timedelta(hours=1),
+                }
+            },
         )
 
-        response = await client.post("/api/v1/auth/reset-password", json={
-            "token": token,
-            "newPassword": "newpassword123",
-        })
+        response = await client.post(
+            "/api/v1/auth/reset-password",
+            json={
+                "token": token,
+                "newPassword": "newpassword123",
+            },
+        )
         assert response.status_code == 200
         assert "reset successfully" in response.json()["detail"].lower()
 
     async def test_reset_password_invalid_token(self, client: AsyncClient):
-        response = await client.post("/api/v1/auth/reset-password", json={
-            "token": "invalidtoken",
-            "newPassword": "newpassword123",
-        })
+        response = await client.post(
+            "/api/v1/auth/reset-password",
+            json={
+                "token": "invalidtoken",
+                "newPassword": "newpassword123",
+            },
+        )
         assert response.status_code == 400
 
     async def test_reset_password_expired_token(self, client: AsyncClient, test_user, mock_db):
@@ -195,16 +227,21 @@ class TestResetPassword:
         token = secrets.token_urlsafe(32)
         await mock_db.users.update_one(
             {"_id": test_user["_id"]},
-            {"$set": {
-                "reset_token": token,
-                "reset_token_expires": datetime.now(timezone.utc) - timedelta(hours=1),
-            }},
+            {
+                "$set": {
+                    "reset_token": token,
+                    "reset_token_expires": datetime.now(timezone.utc) - timedelta(hours=1),
+                }
+            },
         )
 
-        response = await client.post("/api/v1/auth/reset-password", json={
-            "token": token,
-            "newPassword": "newpassword123",
-        })
+        response = await client.post(
+            "/api/v1/auth/reset-password",
+            json={
+                "token": token,
+                "newPassword": "newpassword123",
+            },
+        )
         assert response.status_code == 400
 
 
@@ -215,7 +252,9 @@ class TestVerifyEmail:
         assert response.status_code == 200
         assert "sent" in response.json()["detail"].lower()
 
-    async def test_verify_email_already_verified(self, client: AsyncClient, auth_headers, test_user, mock_db):
+    async def test_verify_email_already_verified(
+        self, client: AsyncClient, auth_headers, test_user, mock_db
+    ):
         await mock_db.users.update_one(
             {"_id": test_user["_id"]},
             {"$set": {"verified": True}},
@@ -231,10 +270,12 @@ class TestVerifyEmail:
         token = secrets.token_urlsafe(32)
         await mock_db.users.update_one(
             {"_id": test_user["_id"]},
-            {"$set": {
-                "verify_token": token,
-                "verify_token_expires": datetime.now(timezone.utc) + timedelta(hours=24),
-            }},
+            {
+                "$set": {
+                    "verify_token": token,
+                    "verify_token_expires": datetime.now(timezone.utc) + timedelta(hours=24),
+                }
+            },
         )
 
         response = await client.get(f"/api/v1/auth/verify-email/confirm?token={token}")
@@ -250,17 +291,25 @@ class TestVerifyEmail:
 class TestGoogleLogin:
     async def test_google_login_not_configured(self, client: AsyncClient):
         with patch("src.api.auth.settings.google_client_id", ""):
-            response = await client.post("/api/v1/auth/google", json={
-                "credential": "sometoken",
-            })
+            response = await client.post(
+                "/api/v1/auth/google",
+                json={
+                    "credential": "sometoken",
+                },
+            )
             assert response.status_code == 503
 
     async def test_google_login_invalid_token(self, client: AsyncClient):
         with patch("src.api.auth.settings.google_client_id", "fake-client-id"):
-            with patch("google.oauth2.id_token.verify_oauth2_token", side_effect=ValueError("Invalid")):
-                response = await client.post("/api/v1/auth/google", json={
-                    "credential": "invalidtoken",
-                })
+            with patch(
+                "google.oauth2.id_token.verify_oauth2_token", side_effect=ValueError("Invalid")
+            ):
+                response = await client.post(
+                    "/api/v1/auth/google",
+                    json={
+                        "credential": "invalidtoken",
+                    },
+                )
                 assert response.status_code == 401
 
     async def test_google_login_verification_unavailable(self, client: AsyncClient):

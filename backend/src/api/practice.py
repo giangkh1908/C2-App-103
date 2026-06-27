@@ -49,16 +49,24 @@ async def get_practice_exam(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
 
 
-@router.post("/attempts", response_model=PracticeAttemptCreateResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/attempts", response_model=PracticeAttemptCreateResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_practice_attempt(
     request: PracticeAttemptCreateRequest,
     current_user: UserInDB = Depends(get_current_user),
 ) -> PracticeAttemptCreateResponse:
     try:
-        return await practice_service.create_attempt(current_user.id, request.exam_id, request.start_mode)
+        return await practice_service.create_attempt(
+            current_user.id, request.exam_id, request.start_mode
+        )
     except ValueError as exc:
         detail = str(exc)
-        status_code = status.HTTP_404_NOT_FOUND if "not found" in detail.lower() else status.HTTP_400_BAD_REQUEST
+        status_code = (
+            status.HTTP_404_NOT_FOUND
+            if "not found" in detail.lower()
+            else status.HTTP_400_BAD_REQUEST
+        )
         raise HTTPException(status_code=status_code, detail=detail)
 
 
@@ -81,7 +89,11 @@ async def save_practice_attempt_draft(
         return await practice_service.save_draft(current_user.id, attempt_id, request.answers)
     except ValueError as exc:
         detail = str(exc)
-        status_code = status.HTTP_404_NOT_FOUND if "not found" in detail.lower() else status.HTTP_400_BAD_REQUEST
+        status_code = (
+            status.HTTP_404_NOT_FOUND
+            if "not found" in detail.lower()
+            else status.HTTP_400_BAD_REQUEST
+        )
         raise HTTPException(status_code=status_code, detail=detail)
 
 
@@ -95,7 +107,11 @@ async def submit_practice_attempt(
         return await practice_service.submit_attempt(current_user.id, attempt_id, request.answers)
     except ValueError as exc:
         detail = str(exc)
-        status_code = status.HTTP_404_NOT_FOUND if "not found" in detail.lower() else status.HTTP_400_BAD_REQUEST
+        status_code = (
+            status.HTTP_404_NOT_FOUND
+            if "not found" in detail.lower()
+            else status.HTTP_400_BAD_REQUEST
+        )
         raise HTTPException(status_code=status_code, detail=detail)
 
 

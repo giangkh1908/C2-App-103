@@ -41,34 +41,20 @@ REQUEST_LOGGER_NAME = f"{APP_LOGGER_NAME}.request"
 # PII scrubbing helpers
 # ---------------------------------------------------------------------------
 
-_EMAIL_RE = re.compile(
-    r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
-)
-_PHONE_RE = re.compile(
-    r"(?:\+?84|0)(?:\d{9}|\d{10})\b"
-)
-_JWT_RE = re.compile(
-    r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
-)
+_EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
+_PHONE_RE = re.compile(r"(?:\+?84|0)(?:\d{9}|\d{10})\b")
+_JWT_RE = re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}")
 _PASSWORD_JSON_RE = re.compile(
     r'"password"\s*:\s*"[^"]*"',
     flags=re.IGNORECASE,
 )
-_USER_ID_LIKE_RE = re.compile(
-    r"\buser_[a-f0-9]{24,}\b"
-)
+_USER_ID_LIKE_RE = re.compile(r"\buser_[a-f0-9]{24,}\b")
 # API keys / tokens (common prefixes)
-_API_KEY_RE = re.compile(
-    r"\b(?:sk|pk|rk|ghp|gho|ghu|ghs|ghr|AKIA|eyJ)[A-Za-z0-9_-]{8,63}\b"
-)
+_API_KEY_RE = re.compile(r"\b(?:sk|pk|rk|ghp|gho|ghu|ghs|ghr|AKIA|eyJ)[A-Za-z0-9_-]{8,63}\b")
 # Bearer tokens in headers
-_BEARER_RE = re.compile(
-    r"(?:bearer|Bearer)\s+[A-Za-z0-9._-]{8,512}"
-)
+_BEARER_RE = re.compile(r"(?:bearer|Bearer)\s+[A-Za-z0-9._-]{8,512}")
 # Opaque looks-like-secret: long hex or base64-like strings (32+ chars)
-_LONG_OPAQUE_RE = re.compile(
-    r"\b[A-Fa-f0-9]{32,}\b"
-)
+_LONG_OPAQUE_RE = re.compile(r"\b[A-Fa-f0-9]{32,}\b")
 
 
 def hash_user_id(user_id: str) -> str:
@@ -96,9 +82,16 @@ def _scrub_string(value: str) -> str:
 # Uses suffix matching for compound keys and exact matching for simple keys
 # to avoid over-redacting observability fields like tokens_used, tool_arg_keys.
 _SENSITIVE_KEY_SUFFIXES = frozenset({"_key", "_token", "_secret"})
-_SENSITIVE_EXACT_KEYS = frozenset({
-    "password", "secret", "authorization", "cookie", "jwt", "credential",
-})
+_SENSITIVE_EXACT_KEYS = frozenset(
+    {
+        "password",
+        "secret",
+        "authorization",
+        "cookie",
+        "jwt",
+        "credential",
+    }
+)
 
 
 def _scrub_value(value: Any) -> Any:
@@ -131,6 +124,7 @@ def _is_sensitive_key(key: str) -> bool:
 # Custom structlog processors
 # ---------------------------------------------------------------------------
 
+
 def add_timestamp(
     logger: WrappedLogger,
     method_name: str,
@@ -159,6 +153,7 @@ def scrub_pii(
 # Public API
 # ---------------------------------------------------------------------------
 
+
 def configure_logging(log_level: str | None = None) -> None:
     """Configure structlog for JSONL stdout and rotating file output.
 
@@ -170,9 +165,7 @@ def configure_logging(log_level: str | None = None) -> None:
 
     level_name = (log_level or settings.log_level).upper()
     level = getattr(stdlib_logging, level_name, stdlib_logging.INFO)
-    file_level = getattr(
-        stdlib_logging, settings.log_file_level.upper(), stdlib_logging.DEBUG
-    )
+    file_level = getattr(stdlib_logging, settings.log_file_level.upper(), stdlib_logging.DEBUG)
     console_level = stdlib_logging.INFO
 
     # Processors applied to structlog events. The final processor hands the

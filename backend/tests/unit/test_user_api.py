@@ -13,6 +13,7 @@ from src.core.security import create_access_token, hash_password
 @pytest.fixture
 def app():
     from src.main import app
+
     return app
 
 
@@ -102,20 +103,22 @@ class TestGetMyUsage:
     async def test_get_usage_auto_assigns_plan(self, app, mock_db, auth_headers, mock_plan):
         # User with no plan_id
         user_id = ObjectId()
-        mock_db.users.find_one = AsyncMock(side_effect=[
-            {
-                "_id": user_id,
-                "name": "Test User",
-                "email": "test@example.com",
-                "password_hash": hash_password("password123"),
-                "role": "user",
-                "verified": True,
-                "plan_id": "",
-                "subscription_status": "active",
-                "usage": {},
-            },
-            mock_plan,
-        ])
+        mock_db.users.find_one = AsyncMock(
+            side_effect=[
+                {
+                    "_id": user_id,
+                    "name": "Test User",
+                    "email": "test@example.com",
+                    "password_hash": hash_password("password123"),
+                    "role": "user",
+                    "verified": True,
+                    "plan_id": "",
+                    "subscription_status": "active",
+                    "usage": {},
+                },
+                mock_plan,
+            ]
+        )
         mock_db.users.update_one = AsyncMock()
         mock_db.plans.find_one = AsyncMock(return_value=mock_plan)
 

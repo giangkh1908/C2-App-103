@@ -46,9 +46,7 @@ class TutorAgent:
             :class:`AgentResponse` chứa câu trả lời và các bước trung gian.
         """
         if not message.strip():
-            return AgentResponse(
-                answer="Bạn hãy nhập một câu hỏi toán học để mình giúp nhé."
-            )
+            return AgentResponse(answer="Bạn hãy nhập một câu hỏi toán học để mình giúp nhé.")
 
         try:
             config = AgentRunConfig(level=level, use_tools=use_tools)
@@ -71,7 +69,10 @@ class TutorAgent:
     ) -> AsyncGenerator[tuple[str, Any], None]:
         """Streaming variant of chat(). Yields ("chunk", str) then ("done", AgentResponse)."""
         if not message.strip():
-            yield ("done", AgentResponse(answer="Bạn hãy nhập một câu hỏi toán học để mình giúp nhé."))
+            yield (
+                "done",
+                AgentResponse(answer="Bạn hãy nhập một câu hỏi toán học để mình giúp nhé."),
+            )
             return
 
         try:
@@ -87,5 +88,7 @@ class TutorAgent:
         except Exception:
             yield (
                 "done",
-                AgentResponse(answer="Mình gặp lỗi khi xử lý câu hỏi. Bạn thử hỏi lại ngắn hơn nhé."),
+                AgentResponse(
+                    answer="Mình gặp lỗi khi xử lý câu hỏi. Bạn thử hỏi lại ngắn hơn nhé."
+                ),
             )

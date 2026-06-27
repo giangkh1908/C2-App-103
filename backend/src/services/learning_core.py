@@ -82,8 +82,8 @@ class LearningCoreService:
         # 2. Khôi phục Topic nếu request hiện tại gửi lên trống (do tải lại session cũ)
         current_selected_topic = request.selected_topic
         if not current_selected_topic and prev_turn:
-            current_selected_topic = (
-                prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
+            current_selected_topic = prev_turn.get("detected_topic") or prev_turn.get(
+                "selected_topic"
             )
 
         context = build_default_context(current_selected_topic or "multiplication")
@@ -119,10 +119,10 @@ class LearningCoreService:
         ):
             if not context.topic and prev_turn.get("detected_topic"):
                 context.topic = prev_turn.get("detected_topic")
-            
+
             old_visual = prev_turn.get("visual_snapshot") or {}
             old_data = old_visual.get("visual_data") or {}
-            
+
             # Nếu AI hoặc Detector chưa tự tạo bộ số mới, ta chủ động gán bộ số mới khác số cũ
             if not context.tool_args or len(context.tool_args) <= 1:
                 if context.topic == "multiplication":
@@ -132,7 +132,7 @@ class LearningCoreService:
                         "groups": old_g + 1 if old_g < 6 else 2,
                         "items_per_group": old_i - 1 if old_i > 2 else 5,
                         "item_name": "cái kẹo",
-                        "group_name": "chiếc đĩa"
+                        "group_name": "chiếc đĩa",
                     }
                 elif context.topic == "division":
                     context.tool_args = {
@@ -159,8 +159,7 @@ class LearningCoreService:
         if session_id is not None:
             history_messages = await self.memory_repository.load_messages(session_id)
             history_payload = [
-                {"role": msg.role, "content": msg.content}
-                for msg in history_messages
+                {"role": msg.role, "content": msg.content} for msg in history_messages
             ]
 
         if context.topic is None:
@@ -218,7 +217,7 @@ class LearningCoreService:
                         "Con muốn học chu vi và diện tích.",
                     ],
                     session_id=session_id,
-                    agent_metadata=agent_metadata
+                    agent_metadata=agent_metadata,
                 )
                 if session_id is not None:
                     await self.memory_repository.append_turn(
@@ -346,14 +345,12 @@ class LearningCoreService:
 
         prev_turn = None
         if session_id is not None:
-            prev_turn = await self.session_repository.get_latest_turn(
-                session_id, request.user_id
-            )
+            prev_turn = await self.session_repository.get_latest_turn(session_id, request.user_id)
 
         current_selected_topic = request.selected_topic
         if not current_selected_topic and prev_turn:
-            current_selected_topic = (
-                prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
+            current_selected_topic = prev_turn.get("detected_topic") or prev_turn.get(
+                "selected_topic"
             )
 
         context = build_default_context(current_selected_topic or "multiplication")
@@ -425,8 +422,7 @@ class LearningCoreService:
         if session_id is not None:
             history_messages = await self.memory_repository.load_messages(session_id)
             history_payload = [
-                {"role": msg.role, "content": msg.content}
-                for msg in history_messages
+                {"role": msg.role, "content": msg.content} for msg in history_messages
             ]
 
         # ── Stream agent response ──────────────────────────────────────────────
@@ -450,9 +446,7 @@ class LearningCoreService:
                 agent_response_holder.append(payload)
 
         agent_response = (
-            agent_response_holder[0]
-            if agent_response_holder
-            else AgentResponse(answer="")
+            agent_response_holder[0] if agent_response_holder else AgentResponse(answer="")
         )
         await self._record_llm_cost(request.user_id, agent_response)
         agent_metadata = {
@@ -658,7 +652,7 @@ class LearningCoreService:
         response_mode: str,
         follow_up_suggestions: list[str],
         session_id: str,
-        agent_metadata: dict | None = None
+        agent_metadata: dict | None = None,
     ) -> LearningCoreResult:
         topic = context.topic or "multiplication"
         visual_spec, simulation_spec, visual_card = build_visual_bundle(
@@ -793,9 +787,7 @@ def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> di
 def build_tutor_message(message: str, topic: Topic | None, grade: int) -> str:
     topic_hint = f" chủ đề '{topic}'" if topic else ""
     if topic:
-        vague_hint = (
-            "nếu câu hỏi không có số liệu cụ thể, hãy tự chọn số ngẫu nhiên phù hợp và giải thích ngay"
-        )
+        vague_hint = "nếu câu hỏi không có số liệu cụ thể, hãy tự chọn số ngẫu nhiên phù hợp và giải thích ngay"
     else:
         vague_hint = "nếu câu hỏi còn mơ hồ về chủ đề, hãy hỏi lại một câu ngắn gọn"
     return (
@@ -853,11 +845,7 @@ def build_contextual_explanation(topic: Topic, tool_data: dict) -> str:
             f"Con lấy {tool_data.get('total_items', 12)} vật chia đều cho "
             f"{tool_data.get('groups', 3)} nhóm. "
             f"Mỗi nhóm nhận {tool_data.get('items_per_group', 4)} vật"
-            + (
-                f" và còn dư {tool_data['remainder']} vật."
-                if tool_data.get("remainder")
-                else "."
-            )
+            + (f" và còn dư {tool_data['remainder']} vật." if tool_data.get("remainder") else ".")
         )
     if topic == "fraction_basic":
         return (

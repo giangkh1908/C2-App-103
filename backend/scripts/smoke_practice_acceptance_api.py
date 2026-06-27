@@ -33,10 +33,18 @@ def require_ok(response: requests.Response, action: str) -> dict[str, Any]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Smoke test the /practice API against an acceptance backend")
-    parser.add_argument("--base-url", default="http://127.0.0.1:8000/api/v1", help="Backend API base URL")
-    parser.add_argument("--email", required=True, help="Existing user email in the acceptance database")
-    parser.add_argument("--password", required=True, help="Existing user password in the acceptance database")
+    parser = argparse.ArgumentParser(
+        description="Smoke test the /practice API against an acceptance backend"
+    )
+    parser.add_argument(
+        "--base-url", default="http://127.0.0.1:8000/api/v1", help="Backend API base URL"
+    )
+    parser.add_argument(
+        "--email", required=True, help="Existing user email in the acceptance database"
+    )
+    parser.add_argument(
+        "--password", required=True, help="Existing user password in the acceptance database"
+    )
     args = parser.parse_args()
 
     session = requests.Session()
@@ -75,7 +83,12 @@ def main() -> None:
         exam_counts[grade] = exam_count
 
         exams_data = require_ok(
-            session.get(f"{args.base_url}/practice/exams", headers=headers, params={"grade": grade}, timeout=30),
+            session.get(
+                f"{args.base_url}/practice/exams",
+                headers=headers,
+                params={"grade": grade},
+                timeout=30,
+            ),
             f"list exams grade {grade}",
         )
         exams = exams_data.get("exams", [])

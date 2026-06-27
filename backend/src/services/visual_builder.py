@@ -166,7 +166,9 @@ def _build_rectangle_bundle(
             unit=str(tool_data["unit"]),
         ),
         LessonSimulation(
-            simulation_type="perimeter_path_counter" if visual_type == "perimeter_path" else "area_grid_counter",
+            simulation_type="perimeter_path_counter"
+            if visual_type == "perimeter_path"
+            else "area_grid_counter",
             prompt=(
                 "Con thu cham theo duong bao quanh de dem chu vi nhe."
                 if visual_type == "perimeter_path"

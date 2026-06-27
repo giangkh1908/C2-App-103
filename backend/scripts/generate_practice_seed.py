@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 
 
-OUTPUT_PATH = Path(__file__).resolve().parents[1] / "data" / "practice" / "vi_grade_school_math_mcq_seed.json"
+OUTPUT_PATH = (
+    Path(__file__).resolve().parents[1] / "data" / "practice" / "vi_grade_school_math_mcq_seed.json"
+)
 
 
 def option_block(correct_value: str, distractors: list[str], correct_letter: str) -> list[str]:
@@ -17,7 +19,9 @@ def option_block(correct_value: str, distractors: list[str], correct_letter: str
     return [f"{letter}. {value}" for letter, value in zip(["A", "B", "C", "D"], values)]
 
 
-def mcq(question: str, correct_value: str, distractors: list[str], correct_letter: str, explanation: str) -> dict:
+def mcq(
+    question: str, correct_value: str, distractors: list[str], correct_letter: str, explanation: str
+) -> dict:
     return {
         "question": question,
         "choices": option_block(correct_value, distractors, correct_letter),
@@ -203,14 +207,22 @@ def generate_grade_4_exam(index: int) -> list[dict]:
         mcq(
             f"Câu 2: Hình chữ nhật dài {length} cm, rộng {width} cm có diện tích là bao nhiêu?",
             f"{length * width} cm2",
-            [f"{length + width} cm2", f"{(length + width) * 2} cm2", f"{length * width + width} cm2"],
+            [
+                f"{length + width} cm2",
+                f"{(length + width) * 2} cm2",
+                f"{length * width + width} cm2",
+            ],
             "A",
             f"Diện tích hình chữ nhật bằng {length} nhân {width}, được {length * width} cm2.",
         ),
         mcq(
             f"Câu 3: Phân số nào bằng 1/2?",
             f"{numerator}/{denominator}",
-            [f"{numerator}/{denominator + 1}", f"{numerator + 1}/{denominator}", f"{numerator + 2}/{denominator + 2}"],
+            [
+                f"{numerator}/{denominator + 1}",
+                f"{numerator + 1}/{denominator}",
+                f"{numerator + 2}/{denominator + 2}",
+            ],
             "D",
             f"{numerator}/{denominator} rút gọn được 1/2.",
         ),
@@ -283,7 +295,12 @@ def main() -> None:
     with open(OUTPUT_PATH, "w", encoding="utf-8") as file:
         json.dump(build_rows(), file, ensure_ascii=False, indent=2)
         file.write("\n")
-    print({"output_path": str(OUTPUT_PATH).encode("ascii", "ignore").decode("ascii"), "exam_count": 50})
+    print(
+        {
+            "output_path": str(OUTPUT_PATH).encode("ascii", "ignore").decode("ascii"),
+            "exam_count": 50,
+        }
+    )
 
 
 if __name__ == "__main__":

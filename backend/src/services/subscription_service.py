@@ -151,9 +151,7 @@ async def send_expiry_reminder_emails() -> int:
         try:
             await send_email(email, subject, html)
         except Exception:
-            logger.exception(
-                "subscription_reminder_send_exception", email_to=email
-            )
+            logger.exception("subscription_reminder_send_exception", email_to=email)
             continue
         dispatched += 1
         logger.info("subscription_reminder_sent", email_to=email)

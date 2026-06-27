@@ -206,8 +206,7 @@ class TestSendExpiryReminderEmails:
         user = _make_user(
             email="renew@example.com",
             subscription_status="active",
-            subscription_expires_at=datetime.now(UTC)
-            + timedelta(days=_REMINDER_DAYS, hours=2),
+            subscription_expires_at=datetime.now(UTC) + timedelta(days=_REMINDER_DAYS, hours=2),
         )
         mock_db.users.find = MagicMock(return_value=_FakeAsyncCursor([user]))
 
@@ -291,8 +290,7 @@ class TestSendExpiryReminderEmails:
         user = _make_user(
             email="flaky@example.com",
             subscription_status="active",
-            subscription_expires_at=datetime.now(UTC)
-            + timedelta(days=_REMINDER_DAYS, hours=1),
+            subscription_expires_at=datetime.now(UTC) + timedelta(days=_REMINDER_DAYS, hours=1),
         )
         mock_db.users.find = MagicMock(return_value=_FakeAsyncCursor([user]))
 

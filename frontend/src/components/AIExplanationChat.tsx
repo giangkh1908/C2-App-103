@@ -8,7 +8,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import {
   Bot,
-  GraduationCap,
   History,
   Mic,
   MicOff,
@@ -25,6 +24,8 @@ import {
 import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
 import UsageCounter from '@/components/UsageCounter';
 import UpgradeModal from '@/components/UpgradeModal';
+import { useSpeechToText } from '@/hooks/useSpeechToText';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import {
   getHistory,
   getSession,
@@ -32,15 +33,23 @@ import {
   createSession,
   type ChatSessionSummary,
 } from '@/lib/chatHistoryApi';
+import { buildStreamRequest, getExactSuggestionMatch } from '@/lib/chatRouting';
 import { useChatStream } from '@/lib/useChatStream';
 import InteractiveSimulation from './InteractiveSimulation';
+import PolypadLauncher from './visualization/PolypadLauncher';
+import {
+  buildDefaultSuggestionsForGrade,
+  findSuggestionByText,
+  getSuggestionGroupsForGrade,
+  type ChatSuggestion,
+} from './chatSuggestions';
 import type {
   ChatTurnResponse,
-  MathDomain,
   PracticeQuestion,
   ResponseMode,
   VisualData,
 } from '../types';
+import { DEFAULT_TTS_LOCALE, sanitizeSpeechText } from '@/lib/speech';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -60,42 +69,29 @@ interface Message {
   simulationConfig?: NonNullable<ChatTurnResponse['visual_card']>['simulation_config'];
 }
 
-interface TopicOption {
-  id: MathDomain;
-  label: string;
-  emoji: string;
+interface AIExplanationChatProps {
+  initialGrade?: number;
 }
 
-type BrowserSpeechRecognition = {
-  continuous: boolean;
-  lang: string;
-  interimResults: boolean;
-  onstart: (() => void) | null;
-  onend: (() => void) | null;
-  onerror: (() => void) | null;
-  onresult: ((event: { results?: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  start: () => void;
-  stop: () => void;
-};
-type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
 type BrowserWindow = Window & {
-  SpeechRecognition?: SpeechRecognitionConstructor;
-  webkitSpeechRecognition?: SpeechRecognitionConstructor;
   webkitAudioContext?: typeof AudioContext;
 };
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const TOPIC_META: Array<{ id: MathDomain; emoji: string }> = [
-  { id: 'multiplication', emoji: '✖️' },
-  { id: 'division', emoji: '➗' },
-  { id: 'fraction_basic', emoji: '🍕' },
-  { id: 'perimeter_area_basic', emoji: '📐' },
+const LEGACY_GRADE1_GROUPS_UNUSED = [
+  { label: 'Số và cấu tạo số', icon: '🔢', suggestions: ['Số 24 có mấy chục mấy đơn vị?', 'Biểu diễn số 36 bằng chục và đơn vị', 'Đếm 42 bằng khối chục đơn vị'] },
+  { label: 'So sánh số', icon: '⚖️', suggestions: ['So sánh 37 và 42', 'Số nào lớn hơn: 58 hay 53?', 'Đặt 19, 21, 20 theo thứ tự'] },
+  { label: 'Cộng trừ', icon: '➕', suggestions: ['Minh họa 24 + 13 bằng que tính', 'Bớt 15 từ 48', 'Giải thích 32 - 10 bằng chục đơn vị'] },
+  { label: 'Tính nhẩm', icon: '🧠', suggestions: ['Tính nhẩm 8 + 5 bằng khung 10', 'Nhanh 30 - 10', 'Dùng tia số để tính 7 + 2'] },
+  { label: 'Bài toán lời văn', icon: '📖', suggestions: ['Lan có 5 quả táo, mẹ cho thêm 3 quả', 'Bài toán bớt đi 2 con chim', 'Tóm tắt bài toán lời văn'] },
+  { label: 'Vị trí không gian', icon: '📍', suggestions: ['Quả bóng ở bên trái cái hộp', 'Chỉ vị trí ở giữa', 'Minh họa trên dưới trước sau'] },
+  { label: 'Nhận biết hình', icon: '🔷', suggestions: ['Nhận biết hình vuông và hình tròn', 'Vật nào là khối hộp chữ nhật?', 'Ghép đồ vật với hình học'] },
+  { label: 'Ghép hình', icon: '🧩', suggestions: ['Ghép các hình để tạo ngôi nhà', 'Xếp hình từ tam giác và hình vuông', 'Tạo hình mới bằng kéo thả'] },
+  { label: 'Đo độ dài / Lịch / Đồng hồ', icon: '📏', suggestions: ['So sánh bút nào dài hơn', 'Đọc giờ đúng trên đồng hồ', 'Thứ mấy đứng sau thứ ba?'] },
 ];
 
-const TOPIC_EMOJIS = new Map(TOPIC_META.map((topic) => [topic.id, topic.emoji]));
-
-function buildWelcomeMessage(tChat: (key: string) => string): Message {
+function buildLegacyWelcomeMessageUnused(tChat: (key: string) => string): Message {
   return {
   id: 'welcome_1',
   role: 'ai',
@@ -103,11 +99,22 @@ function buildWelcomeMessage(tChat: (key: string) => string): Message {
   timestampLabel: tChat('ready'),
   responseMode: 'explain_only',
   followUpSuggestions: [
-    tChat('suggestions.multiply'),
-    tChat('suggestions.compareFractions'),
-    tChat('suggestions.perimeterArea'),
-    tChat('suggestions.division'),
+    'Số 24 có mấy chục mấy đơn vị?',
+    'So sánh 37 và 42',
+    'Tính nhẩm 8 + 5',
+    'Đọc giờ trên đồng hồ',
   ],
+  };
+}
+
+function buildGradeWelcomeMessage(tChat: (key: string) => string, grade: number): Message {
+  return {
+    id: 'welcome_1',
+    role: 'ai',
+    text: tChat('welcome'),
+    timestampLabel: tChat('ready'),
+    responseMode: 'explain_only',
+    followUpSuggestions: buildDefaultSuggestionsForGrade(grade).map((item) => item.text),
   };
 }
 
@@ -119,6 +126,26 @@ function createTimestamp(locale: string): string {
     minute: '2-digit',
     hour12: false,
   }).format(new Date());
+}
+
+function getSpeechUiCopy(locale: string) {
+  if (locale === 'vi') {
+    return {
+      unsupported: 'Thiết bị này chưa hỗ trợ nói hoặc nghe bằng giọng.',
+      sttError: 'Mình chưa nghe rõ. Con thử nói chậm và ngắn hơn nhé.',
+      ttsError: 'Hiện chưa nghe được lời giải. Con thử lại sau nhé.',
+      slowRead: 'Đọc chậm',
+      speaking: 'Đang đọc...',
+    };
+  }
+
+  return {
+    unsupported: 'This device does not support voice input or read-aloud.',
+    sttError: 'I could not hear that clearly. Please try again slowly.',
+    ttsError: 'The explanation cannot be read aloud right now. Please try again later.',
+    slowRead: 'Slow',
+    speaking: 'Reading...',
+  };
 }
 
 function playSfx(type: 'bell' | 'error' | 'sparkle'): void {
@@ -214,6 +241,7 @@ function VisualPanel({ message, onAnswerChoice }: {
       {visualData && (
         <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-sm">
           <InteractiveSimulation visualData={visualData} />
+          <PolypadLauncher visualData={visualData} />
         </div>
       )}
 
@@ -276,13 +304,16 @@ function VisualPanel({ message, onAnswerChoice }: {
 }
 
 
-function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpeaking, isLoading}: {
+function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, onSpeakSlow, isSpeaking, isLoading, slowReadLabel, speakingLabel }: {
   message: Message;
   onSuggestionClick: (text: string) => void;
   onAnswerChoice: (msgId: string, optIdx: number, correctIdx: number) => void;
   onSpeak: (text: string, id: string) => void;
+  onSpeakSlow: (text: string, id: string) => void;
   isSpeaking: boolean;
   isLoading: boolean;
+  slowReadLabel: string;
+  speakingLabel: string;
 }) {
   const t = useTranslations('learn.chat');
   const isClarification = message.responseMode === 'clarification_needed';
@@ -347,6 +378,13 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
           >
             {isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
           </button>
+          <button
+            onClick={() => onSpeakSlow(message.text, message.id)}
+            className="rounded-full border border-gray-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-gray-500 transition-colors hover:border-natural-green/40 hover:text-natural-green"
+            title={slowReadLabel}
+          >
+            {isSpeaking ? speakingLabel : slowReadLabel}
+          </button>
         </div>
 
         {/* Follow-up suggestions (non-clarification) */}
@@ -370,28 +408,23 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function AIExplanationChat() {
+export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationChatProps) {
   const locale = useLocale();
-  const t = useTranslations('learn');
   const { apiFetch } = useAuth();
   const tChat = useTranslations('learn.chat');
   const speechLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
-  const localizeTopic = useCallback((topic: { id: MathDomain }): TopicOption => ({
-    id: topic.id,
-    label: t(`topics.${topic.id}`),
-    emoji: TOPIC_EMOJIS.get(topic.id) ?? '📚',
-  }), [t]);
-  const welcomeMessage = useMemo(() => buildWelcomeMessage(tChat), [tChat]);
+  const speechCopy = useMemo(() => getSpeechUiCopy(locale), [locale]);
+  const [selectedGrade, setSelectedGrade] = useState(initialGrade);
+  const welcomeMessage = useMemo(() => buildGradeWelcomeMessage(tChat, selectedGrade), [selectedGrade, tChat]);
+  const suggestionGroups = useMemo(() => getSuggestionGroupsForGrade(selectedGrade), [selectedGrade]);
 
   const [messages, setMessages] = useState<Message[]>(() => [welcomeMessage]);
   const [inputText, setInputText] = useState('');
-  const [selectedGrade, setSelectedGrade] = useState(3);
-  const [topicIds, setTopicIds] = useState<MathDomain[]>(() => TOPIC_META.map((topic) => topic.id));
-  const [selectedTopic, setSelectedTopic] = useState<MathDomain | null>(null);
+  const [pendingSuggestion, setPendingSuggestion] = useState<ChatSuggestion | null>(null);
+  const [expandedSuggestionGroup, setExpandedSuggestionGroup] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [, setStreamStatusText] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [speechNotice, setSpeechNotice] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [chatTurnCount, setChatTurnCount] = useState(0);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -403,41 +436,43 @@ export default function AIExplanationChat() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api/v1';
   const { sendStream } = useChatStream(apiFetch);
-  const topics = useMemo(() => topicIds.map((id) => localizeTopic({ id })), [topicIds, localizeTopic]);
+  const {
+    isSupported: isSpeechToTextSupported,
+    isRecording,
+    error: speechToTextError,
+    transcribe,
+    stop: stopTranscription,
+    clearError: clearSpeechToTextError,
+  } = useSpeechToText(speechLocale);
+  const {
+    isSupported: isTextToSpeechSupported,
+    isSpeaking,
+    error: textToSpeechError,
+    speak,
+    stop: stopSpeaking,
+    clearError: clearTextToSpeechError,
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
 
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Speech recognition setup
-  useEffect(() => {
-    const win = window as BrowserWindow;
-    const SR = win.SpeechRecognition || win.webkitSpeechRecognition;
-    if (!SR) return;
-    const rec = new SR();
-    rec.continuous = false;
-    rec.lang = speechLocale;
-    rec.interimResults = false;
-    rec.onstart = () => setIsRecording(true);
-    rec.onend = () => setIsRecording(false);
-    rec.onerror = () => setIsRecording(false);
-    rec.onresult = (e) => {
-      const t = e.results?.[0]?.[0]?.transcript;
-      if (t) setInputText((prev) => (prev ? `${prev} ${t}` : t));
-    };
-    recognitionRef.current = rec;
-    return () => { recognitionRef.current?.stop(); recognitionRef.current = null; };
-  }, [speechLocale]);
-
-  // TTS cleanup
-  useEffect(() => {
-    return () => { if (typeof window !== 'undefined') window.speechSynthesis?.cancel(); };
-  }, []);
+  const derivedSpeechNotice = useMemo(() => {
+    if (speechToTextError === 'speech_not_supported' || textToSpeechError === 'speech_not_supported') {
+      return speechCopy.unsupported;
+    }
+    if (speechToTextError) {
+      return speechCopy.sttError;
+    }
+    if (textToSpeechError) {
+      return speechCopy.ttsError;
+    }
+    return null;
+  }, [speechCopy, speechToTextError, textToSpeechError]);
+  const visibleSpeechNotice = speechNotice ?? derivedSpeechNotice;
 
   // ── Session history ──
   const loadHistory = useCallback(async () => {
@@ -463,52 +498,67 @@ export default function AIExplanationChat() {
     return () => { active = false; };
   }, [apiFetch]);
 
-  // Load topics from backend
-  useEffect(() => {
-    let active = true;
-    fetch(`${backendUrl}/topics`)
-      .then((r) => r.json())
-      .then((data: { topics?: Array<{ id: MathDomain; label?: string }> }) => {
-        if (active && data.topics?.length) {
-          setTopicIds(data.topics.map((topic) => topic.id));
-        }
-      })
-      .catch(() => { /* use defaults */ });
-    return () => { active = false; };
-  }, [backendUrl]);
+  const handleSpeak = useCallback(async (text: string, id: string, slow = false) => {
+    if (!isTextToSpeechSupported) {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
+    }
 
-  const handleSpeak = useCallback((text: string, id: string) => {
-    if (!window.speechSynthesis) return;
-    if (speakingMsgId === id) {
-      window.speechSynthesis.cancel();
+    if (speakingMsgId === id && isSpeaking) {
+      stopSpeaking();
       setSpeakingMsgId(null);
       return;
     }
-    window.speechSynthesis.cancel();
-    const plainText = text
-      .replace(/[#>*`_-]/g, '')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '$1');
 
-    const utter = new SpeechSynthesisUtterance(plainText);    utter.lang = speechLocale;
-    utter.rate = 0.95;
-    utter.onend = () => setSpeakingMsgId(null);
+    setSpeechNotice(null);
+    clearTextToSpeechError();
     setSpeakingMsgId(id);
-    window.speechSynthesis.speak(utter);
-  }, [speakingMsgId, speechLocale]);
+    await speak(sanitizeSpeechText(text), { slow });
+    setSpeakingMsgId(null);
+  }, [clearTextToSpeechError, isSpeaking, isTextToSpeechSupported, speak, speakingMsgId, speechCopy.unsupported, stopSpeaking]);
 
-  const handleSuggestionClick = useCallback((text: string) => {
-    setInputText(text);
+  const handleSuggestionClick = useCallback((suggestion: string | ChatSuggestion) => {
+    const nextSuggestion =
+      typeof suggestion === 'string'
+        ? findSuggestionByText(suggestion, selectedGrade)
+        : suggestion;
+    const nextText = typeof suggestion === 'string' ? suggestion : suggestion.text;
+
+    setInputText(nextText);
+    setPendingSuggestion(nextSuggestion);
     inputRef.current?.focus();
-  }, []);
+  }, [selectedGrade]);
 
-  const toggleRecording = () => {
-    if (!recognitionRef.current) return;
-    if (isRecording) {
-      recognitionRef.current.stop();
-    } else {
-      recognitionRef.current.start();
+  const handleGradeSelect = useCallback((grade: number) => {
+    setSelectedGrade(grade);
+    setMessages((prev) =>
+      prev.length === 1 && prev[0]?.id === 'welcome_1'
+        ? [buildGradeWelcomeMessage(tChat, grade)]
+        : prev,
+    );
+    setPendingSuggestion(null);
+    setExpandedSuggestionGroup(null);
+    setSpeechNotice(null);
+  }, [tChat]);
+
+  const toggleRecording = useCallback(async () => {
+    if (!isSpeechToTextSupported) {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
     }
-  };
+
+    if (isRecording) {
+      stopTranscription();
+      return;
+    }
+
+    setSpeechNotice(null);
+    clearSpeechToTextError();
+    const result = await transcribe();
+    if (result?.transcript) {
+      setInputText((prev) => (prev ? `${prev} ${result.transcript}` : result.transcript));
+    }
+  }, [clearSpeechToTextError, isRecording, isSpeechToTextSupported, speechCopy.unsupported, stopTranscription, transcribe]);
 
   const handleAnswerChoice = useCallback((msgId: string, optIdx: number, correctIdx: number) => {
     setMessages((prev) =>
@@ -528,13 +578,14 @@ export default function AIExplanationChat() {
         setActiveSessionId(result.session_id);
         setSessionId(result.session_id);
       }
-      setMessages([]);
+      setMessages([buildGradeWelcomeMessage(tChat, selectedGrade)]);
+      setPendingSuggestion(null);
       await loadHistory();
       setIsSidebarOpen(false);
     } catch (error) {
       console.error('Failed to create session', error);
     }
-  }, [apiFetch, loadHistory]);
+  }, [apiFetch, loadHistory, selectedGrade, tChat]);
 
   const handleSelectSession = useCallback(async (selectedSessionId: string) => {
     try {
@@ -559,15 +610,16 @@ export default function AIExplanationChat() {
     try {
       await deleteSession(apiFetch, selectedSessionId);
       if (activeSessionId === selectedSessionId) {
-        setMessages([]);
+        setMessages([buildGradeWelcomeMessage(tChat, selectedGrade)]);
         setActiveSessionId(null);
         setSessionId(null);
+        setPendingSuggestion(null);
       }
       await loadHistory();
     } catch (error) {
       console.error('Failed to delete session', error);
     }
-  }, [activeSessionId, apiFetch, loadHistory]);
+  }, [activeSessionId, apiFetch, loadHistory, selectedGrade, tChat]);
 
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -596,7 +648,6 @@ export default function AIExplanationChat() {
       },
     ]);
     setIsLoading(true);
-    setStreamStatusText(null);
 
     // Tạo placeholder message cho AI – sẽ được update từng chunk
     const aiMsgId = `ai_${Date.now()}`;
@@ -613,16 +664,14 @@ export default function AIExplanationChat() {
 
     try {
       await sendStream(
-        {
-          session_id: currentSessionId,
+        buildStreamRequest({
+          sessionId: currentSessionId,
           grade: selectedGrade,
           message: text,
-          selected_topic: selectedTopic,
-        },
+          pendingSuggestion: getExactSuggestionMatch(text, pendingSuggestion),
+        }),
         {
-          onStatus: (message) => {
-            setStreamStatusText(message);
-          },
+          onStatus: () => {},
 
           onToken: (chunk) => {
             // Append chunk vào text của AI message placeholder
@@ -634,7 +683,6 @@ export default function AIExplanationChat() {
           },
 
           onDone: (payload) => {
-            setStreamStatusText(null);
             setSessionId(payload.session_id);
             setActiveSessionId(payload.session_id);
             setChatTurnCount((c) => c + 1);
@@ -657,6 +705,10 @@ export default function AIExplanationChat() {
                     totalCount: payload.visual_card.visual_data.total_count,
                     groupsLabel: payload.visual_card.visual_data.groups_label,
                     itemsLabel: payload.visual_card.visual_data.items_label,
+                    config: payload.visual_card.visual_data.config,
+                    conceptType: payload.visual_card.visual_data.concept_type,
+                    polypadEnabled: payload.visual_card.visual_data.polypad_enabled,
+                    polypadMode: payload.visual_card.visual_data.polypad_mode,
                   }
                 : undefined,
               practiceQuestion: payload.practice_question
@@ -681,7 +733,6 @@ export default function AIExplanationChat() {
           },
 
           onError: (message) => {
-            setStreamStatusText(null);
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === aiMsgId
@@ -699,8 +750,6 @@ export default function AIExplanationChat() {
         },
       );
     } catch (err) {
-      setStreamStatusText(null);
-      
       // Check if it's a 429 quota error
       const isQuotaError = err instanceof Error && err.message.includes('429');
       
@@ -726,8 +775,8 @@ export default function AIExplanationChat() {
       );
       playSfx('error');
     } finally {
+      setPendingSuggestion(null);
       setIsLoading(false);
-      setStreamStatusText(null);
     }
   };
 
@@ -770,27 +819,23 @@ export default function AIExplanationChat() {
           </div>
         </div>
 
-        {/* Grade selector + History button */}
-        <div className="flex w-full items-center gap-2 sm:w-auto">
-          <div className="flex flex-1 items-center justify-between gap-2 rounded-full border border-gray-200 bg-slate-50 px-2 py-1.5 text-xs font-bold sm:flex-none sm:justify-start">
-            <GraduationCap className="h-3.5 w-3.5 shrink-0 text-natural-orange" />
-            <span className="text-gray-500">{tChat('gradeLabel')}</span>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((g) => (
-                <button
-                  key={g}
-                  id={`grade-btn-${g}`}
-                  onClick={() => { setSelectedGrade(g); playSfx('sparkle'); }}
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
-                    selectedGrade === g
-                      ? 'bg-natural-green text-white shadow-md'
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  {g}
-                </button>
-              ))}
-            </div>
+        {/* History button */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center rounded-full border border-gray-200 bg-slate-50 p-1">
+            {[1, 2].map((grade) => (
+              <button
+                key={grade}
+                type="button"
+                onClick={() => handleGradeSelect(grade)}
+                className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
+                  selectedGrade === grade
+                    ? 'bg-natural-green text-white'
+                    : 'text-gray-500 hover:text-natural-green'
+                }`}
+              >
+                {`Lớp ${grade}`}
+              </button>
+            ))}
           </div>
           <button
             onClick={() => setIsSidebarOpen(prev => !prev)}
@@ -804,33 +849,36 @@ export default function AIExplanationChat() {
         </div>
       </div>
 
-      {/* ── Topic bar ── */}
+      {/* ── G1 Quick Suggestions ── */}
       <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-gray-100 bg-[#F4F1E8] px-4 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <button
-          id="topic-btn-all"
-          onClick={() => setSelectedTopic(null)}
-          className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
-            selectedTopic === null
-              ? 'border-natural-green bg-natural-green text-white'
-              : 'border-gray-200 bg-white text-gray-600 hover:border-natural-green/30 hover:text-natural-green'
-          }`}
-        >
-          {tChat('freeTopic')}
-        </button>
-        {topics.map((topic) => (
-          <button
-            key={topic.id}
-            id={`topic-btn-${topic.id}`}
-            onClick={() => setSelectedTopic(topic.id)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-tight transition-all ${
-              selectedTopic === topic.id
-                ? 'border-natural-orange bg-natural-orange text-white'
-                : 'border-gray-200 bg-white text-gray-600 hover:border-natural-orange/30 hover:text-natural-orange'
-            }`}
-          >
-            <span>{topic.emoji}</span>
-            {topic.label}
-          </button>
+        <span className="shrink-0 text-[9px] font-bold text-gray-400 uppercase mr-1">Gợi ý</span>
+        {suggestionGroups.map((group, idx) => (
+          <div key={idx} className="relative shrink-0">
+            <button
+              onClick={() => setExpandedSuggestionGroup(expandedSuggestionGroup === idx ? null : idx)}
+              className={`flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[9px] font-bold tracking-tight transition-all ${
+                expandedSuggestionGroup === idx
+                  ? 'border-natural-green bg-natural-green text-white'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-natural-green/30 hover:text-natural-green'
+              }`}
+            >
+              <span className="text-[10px]">{group.icon}</span>
+              {group.label}
+            </button>
+            {expandedSuggestionGroup === idx && (
+              <div className="absolute top-full left-0 z-20 mt-1 flex flex-col gap-1 rounded-xl border border-gray-100 bg-white p-2 shadow-lg">
+                {group.suggestions.map((s, si) => (
+                  <button
+                    key={si}
+                    onClick={() => { handleSuggestionClick(s); setExpandedSuggestionGroup(null); }}
+                    className="whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-[10px] text-gray-700 hover:bg-natural-green/10 hover:text-natural-green"
+                  >
+                    {s.text}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
@@ -864,9 +912,12 @@ export default function AIExplanationChat() {
                 message={msg}
                 onSuggestionClick={handleSuggestionClick}
                 onAnswerChoice={handleAnswerChoice}
-                onSpeak={handleSpeak}
-                isSpeaking={speakingMsgId === msg.id}
+                onSpeak={(text, id) => void handleSpeak(text, id, false)}
+                onSpeakSlow={(text, id) => void handleSpeak(text, id, true)}
+                isSpeaking={speakingMsgId === msg.id && isSpeaking}
                 isLoading={isLoading}
+                slowReadLabel={speechCopy.slowRead}
+                speakingLabel={speechCopy.speaking}
               />
             );
           })}
@@ -909,7 +960,13 @@ export default function AIExplanationChat() {
               ref={inputRef}
               id="chat-input"
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={(e) => {
+                const nextValue = e.target.value;
+                setInputText(nextValue);
+                if (!getExactSuggestionMatch(nextValue, pendingSuggestion)) {
+                  setPendingSuggestion(null);
+                }
+              }}
               onKeyDown={handleKeyDown}
               placeholder={tChat('inputPlaceholder')}
               rows={1}
@@ -923,10 +980,11 @@ export default function AIExplanationChat() {
             type="button"
             id="mic-btn"
             onClick={toggleRecording}
+            disabled={!isSpeechToTextSupported && !isRecording}
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition-all ${
               isRecording
                 ? 'border-red-300 bg-red-50 text-red-500 shadow-md animate-pulse'
-                : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100'
+                : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
             }`}
             title={isRecording ? tChat('stopRecording') : tChat('startRecording')}
           >
@@ -943,6 +1001,9 @@ export default function AIExplanationChat() {
             <Send className="h-4 w-4" />
           </button>
         </form>
+        {visibleSpeechNotice ? (
+          <p className="mt-2 text-center text-[10px] text-amber-600">{visibleSpeechNotice}</p>
+        ) : null}
         <p className="mt-2 text-center text-[10px] text-gray-400">
           {tChat('footer')}
         </p>

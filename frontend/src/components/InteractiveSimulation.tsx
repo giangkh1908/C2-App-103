@@ -4,19 +4,27 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { Trophy, RotateCcw } from 'lucide-react';
+import VisualRenderer from './visualization/VisualRenderer';
 
 interface VisualDataProps {
-  type: 'candy' | 'apple' | 'pizza' | 'grid';
+  type: string;
   primaryCount: number;
   secondaryCount: number;
   totalCount: number;
   groupsLabel?: string;
   itemsLabel?: string;
+  config?: Record<string, unknown>;
 }
 
 type BrowserWindow = Window & {
   webkitAudioContext?: typeof AudioContext;
 };
+
+function normalizeCount(value: unknown, fallback: number, min = 0): number {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric)) return fallback;
+  return Math.max(min, numeric);
+}
 
 function buildInitialCandyCounts(primary: number, secondary: number): number[] {
   return Array(primary).fill(secondary);
@@ -35,15 +43,15 @@ function buildInitialPizzaShares(primary: number, secondary: number): boolean[] 
   return Array.from({ length: secondary }, (_, index) => index < primary);
 }
 
-function buildInitialGardenTiles(primary: number, secondary: number): boolean[] {
-  return Array(primary * secondary).fill(true);
-}
-
 export default function InteractiveSimulation({ visualData }: { visualData: VisualDataProps }) {
   const t = useTranslations('simulation');
-  // Safe default bounds
-  const safePrimary = Math.max(1, Math.min(visualData.primaryCount || 3, 12));
-  const safeSecondary = Math.max(1, Math.min(visualData.secondaryCount || 4, 12));
+  const rawPrimary = normalizeCount(visualData.primaryCount, 3);
+  const rawSecondary = normalizeCount(visualData.secondaryCount, 4);
+  const rawTotal = normalizeCount(visualData.totalCount, rawPrimary);
+
+  // Safe default bounds for legacy interactive mini-games only
+  const safePrimary = Math.max(1, Math.min(rawPrimary || 3, 12));
+  const safeSecondary = Math.max(1, Math.min(rawSecondary || 4, 12));
   const initialAppleState = buildInitialAppleState(safePrimary, safeSecondary);
 
   // Dynamic sandbox state specific to simulation types
@@ -51,7 +59,6 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
   const [appleBasket, setAppleBasket] = useState<number>(() => initialAppleState.basket);
   const [applesPerDoll, setApplesPerDoll] = useState<number[]>(() => initialAppleState.applesPerDoll);
   const [pizzaShares, setPizzaShares] = useState<boolean[]>(() => buildInitialPizzaShares(safePrimary, safeSecondary));
-  const [gardenTiles, setGardenTiles] = useState<boolean[]>(() => buildInitialGardenTiles(safePrimary, safeSecondary));
 
   // Audio synthethizer feedback logic
   const playSoundEffect = (soundType: 'pop' | 'crunch' | 'synth') => {
@@ -103,9 +110,8 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
       setAppleBasket(resetState.basket);
     } else if (visualData.type === 'pizza') {
       setPizzaShares(buildInitialPizzaShares(safePrimary, safeSecondary));
-    } else if (visualData.type === 'grid') {
-      setGardenTiles(buildInitialGardenTiles(safePrimary, safeSecondary));
     }
+    // number_line, ten_frame, place_value, grouping are stateless — no reset needed
   };
 
   // 1. CANDY COMPONENT
@@ -326,17 +332,9 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
   const renderGridSimulation = () => {
     const width = safePrimary;
     const height = safeSecondary;
-    const activeSprouts = gardenTiles.filter(Boolean).length;
+    const area = width * height;
     const perimeter = (width + height) * 2;
-
-    const toggleSprout = (idx: number) => {
-      playSoundEffect('pop');
-      setGardenTiles((prev) => {
-        const updated = [...prev];
-        updated[idx] = !updated[idx];
-        return updated;
-      });
-    };
+    const isActive = true;
 
     return (
       <div className="flex flex-col items-center gap-3 w-full text-center">
@@ -349,16 +347,11 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
             className="grid gap-1"
             style={{ gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))` }}
           >
-            {gardenTiles.map((isActive, idx) => (
+            {Array.from({ length: area }, (_, idx) => (
               <motion.div
                 key={idx}
                 whileHover={{ scale: 1.05 }}
-                onClick={() => toggleSprout(idx)}
-                className={`h-9 w-9 rounded-md border flex items-center justify-center text-xs font-bold cursor-pointer select-none transition-all ${
-                  isActive 
-                    ? 'bg-[#E9F0E6] border-[#4A6741]/40 text-[#4A6741]' 
-                    : 'bg-white border-gray-200 text-gray-300'
-                }`}
+                className="h-9 w-9 rounded-md border border-[#4A6741]/40 bg-[#E9F0E6] text-[#4A6741] flex items-center justify-center text-xs font-bold select-none transition-all"
               >
                 {isActive ? '🌱' : idx + 1}
               </motion.div>
@@ -368,7 +361,7 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
 
         <div className="flex flex-wrap justify-center gap-2">
           <span className="bg-[#E9F0E6] text-[#4A6741] text-[10px] font-bold px-2.5 py-1 rounded-full">
-            {t('gridArea', { n: activeSprouts })}
+            {t('gridArea', { n: area })}
           </span>
           <span className="bg-gray-100 text-gray-800 text-[10px] font-bold px-2.5 py-1 rounded-full">
             {t('gridPerimeter', { n: perimeter })}
@@ -395,10 +388,26 @@ export default function InteractiveSimulation({ visualData }: { visualData: Visu
       </div>
 
       <div className="flex items-center justify-center min-h-[180px] py-1">
-        {visualData.type === 'candy' && renderCandySimulation()}
-        {visualData.type === 'apple' && renderAppleSimulation()}
-        {visualData.type === 'pizza' && renderPizzaSimulation()}
-        {visualData.type === 'grid' && renderGridSimulation()}
+        {(() => {
+          // Fallback for legacy types
+          if (visualData.type === 'candy') return renderCandySimulation();
+          if (visualData.type === 'apple') return renderAppleSimulation();
+          if (visualData.type === 'pizza') return renderPizzaSimulation();
+          if (visualData.type === 'grid') return renderGridSimulation();
+          return (
+            <VisualRenderer
+              visualData={{
+                type: visualData.type,
+                primaryCount: rawPrimary,
+                secondaryCount: rawSecondary,
+                totalCount: rawTotal,
+                groupsLabel: visualData.groupsLabel,
+                itemsLabel: visualData.itemsLabel,
+                config: visualData.config,
+              }}
+            />
+          );
+        })()}
       </div>
     </div>
   );

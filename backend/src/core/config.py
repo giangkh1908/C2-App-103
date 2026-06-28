@@ -90,6 +90,22 @@ class Settings(BaseSettings):
         default=0.18, alias="OPENROUTER_COMPLETION_COST_PER_1M_TOKENS"
     )
 
+    # TTS
+    tts_provider_mode: Literal["edge_tts_only"] = Field(
+        default="edge_tts_only",
+        alias="TTS_PROVIDER_MODE",
+    )
+    tts_provider: Literal["edge_tts"] = Field(
+        default="edge_tts",
+        alias="TTS_PROVIDER",
+    )
+    tts_model: str = Field(default="edge-tts", alias="TTS_MODEL")
+    tts_voice: str = Field(default="vi-VN-HoaiMyNeural", alias="TTS_VOICE")
+    tts_response_format: str = Field(default="mp3", alias="TTS_RESPONSE_FORMAT")
+    tts_speed_normal: float = Field(default=0.0, ge=-100.0, le=100.0, alias="TTS_SPEED_NORMAL")
+    tts_speed_slow: float = Field(default=-15.0, ge=-100.0, le=100.0, alias="TTS_SPEED_SLOW")
+    tts_max_chars: int = Field(default=1200, ge=50, le=10000, alias="TTS_MAX_CHARS")
+
     # SePay webhook (Vietnam payment gateway)
     sepay_webhook_api_key: str = Field(default="", alias="SEPAY_WEBHOOK_API_KEY")
     sepay_bank_account: str = Field(
@@ -142,6 +158,9 @@ class Settings(BaseSettings):
         "openrouter_app_name",
         "openrouter_prompt_cost_per_1m",
         "openrouter_completion_cost_per_1m",
+        "tts_model",
+        "tts_voice",
+        "tts_response_format",
         "jwt_secret_key",
         "jwt_algorithm",
         "mongodb_uri",

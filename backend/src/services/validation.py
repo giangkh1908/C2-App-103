@@ -1,5 +1,8 @@
+from dataclasses import dataclass
+
 from src.models.chat import Topic
 from src.models.lesson import LessonResponse
+from src.services.curriculum_adapter import get_expected_curriculum_visuals
 from src.services.types import LearningCoreResult
 
 EXPECTED_VISUAL_TYPES: dict[Topic, set[str]] = {
@@ -7,6 +10,7 @@ EXPECTED_VISUAL_TYPES: dict[Topic, set[str]] = {
     "division": {"sharing"},
     "fraction_basic": {"fraction_pizza"},
     "perimeter_area_basic": {"perimeter_path", "area_grid"},
+    "data_representation": {"bar_chart"},
 }
 
 EXPECTED_CHAT_VISUAL_TYPES: dict[Topic, str] = {
@@ -14,6 +18,7 @@ EXPECTED_CHAT_VISUAL_TYPES: dict[Topic, str] = {
     "division": "apple",
     "fraction_basic": "pizza",
     "perimeter_area_basic": "grid",
+    "data_representation": "bar_chart",
 }
 
 EXPECTED_SIMULATION_TYPES: dict[str, str] = {
@@ -22,7 +27,29 @@ EXPECTED_SIMULATION_TYPES: dict[str, str] = {
     "fraction_pizza": "fraction_pizza_fill",
     "perimeter_path": "perimeter_path_counter",
     "area_grid": "area_grid_counter",
+    "bar_chart": "bar_chart_reader",
 }
+
+
+@dataclass(slots=True)
+class FinalResponseValidationResult:
+    is_valid: bool
+    errors: list[str]
+
+
+def _validate_follow_up_suggestions(suggestions: list[str]) -> list[str]:
+    errors: list[str] = []
+    if len(suggestions) > 8:
+        errors.append("follow_up_suggestions must not exceed 8 items")
+    for suggestion in suggestions:
+        if not isinstance(suggestion, str):
+            errors.append("follow_up_suggestions must contain only strings")
+            continue
+        if not suggestion.strip():
+            errors.append("follow_up_suggestions must not contain blank strings")
+        if len(suggestion.strip()) > 160:
+            errors.append("follow_up_suggestions must stay concise")
+    return errors
 
 
 def validate_learning_core_result(result: LearningCoreResult) -> None:
@@ -36,19 +63,28 @@ def validate_learning_core_result(result: LearningCoreResult) -> None:
         raise ValueError("visual_spec must not be None for non-clarification responses")
 
     visual_type = result.visual_spec.visual_type
-    if visual_type not in EXPECTED_VISUAL_TYPES[result.topic]:
+    if result.curriculum_topic_id is not None:
+        if visual_type not in get_expected_curriculum_visuals(result.curriculum_topic_id):
+            raise ValueError("Curriculum visual type does not match curriculum topic")
+    elif visual_type not in EXPECTED_VISUAL_TYPES[result.topic]:
         raise ValueError(f"Visual type '{visual_type}' does not match topic '{result.topic}'")
 
-    if (
-        result.visual_card is None
-        or result.visual_card.visual_data.type != EXPECTED_CHAT_VISUAL_TYPES[result.topic]
-    ):
+    if result.visual_card is None:
+        raise ValueError("visual_card must not be None for non-clarification responses")
+
+    if result.curriculum_topic_id is not None:
+        if result.visual_card.visual_data.type != visual_type:
+            raise ValueError("Curriculum runtime visual payload does not match lesson visual type")
+    elif result.visual_card.visual_data.type != EXPECTED_CHAT_VISUAL_TYPES[result.topic]:
         raise ValueError("Runtime visual payload does not match topic")
 
     if result.simulation_spec is None:
         raise ValueError("simulation_spec must not be None for non-clarification responses")
 
-    if result.simulation_spec.simulation_type != EXPECTED_SIMULATION_TYPES[visual_type]:
+    if (
+        result.curriculum_topic_id is None
+        and result.simulation_spec.simulation_type != EXPECTED_SIMULATION_TYPES[visual_type]
+    ):
         raise ValueError("Simulation type does not match visual type")
 
     if not result.tts_text.strip():
@@ -64,12 +100,18 @@ def validate_learning_core_result(result: LearningCoreResult) -> None:
         raise ValueError("Practice question correct_answer must exist in options")
 
 
-def validate_lesson_response(response: LessonResponse) -> None:
-    if response.visual.visual_type not in EXPECTED_VISUAL_TYPES[response.topic]:
+def validate_lesson_response(
+    response: LessonResponse, curriculum_topic_id: str | None = None
+) -> None:
+    if curriculum_topic_id is not None:
+        if response.visual.visual_type not in get_expected_curriculum_visuals(curriculum_topic_id):
+            raise ValueError("Curriculum lesson visual_type does not match curriculum topic")
+    elif response.visual.visual_type not in EXPECTED_VISUAL_TYPES[response.topic]:
         raise ValueError("Lesson visual_type does not match topic")
 
     if (
-        response.simulation.simulation_type
+        curriculum_topic_id is None
+        and response.simulation.simulation_type
         != EXPECTED_SIMULATION_TYPES[response.visual.visual_type]
     ):
         raise ValueError("Lesson simulation_type does not match visual_type")
@@ -79,3 +121,29 @@ def validate_lesson_response(response: LessonResponse) -> None:
 
     if not response.tts_text.strip():
         raise ValueError("Lesson tts_text must not be empty")
+
+
+def check_final_response_contract(result: LearningCoreResult) -> FinalResponseValidationResult:
+    errors = _validate_follow_up_suggestions(result.follow_up_suggestions)
+
+    if not result.assistant_message.strip():
+        errors.append("assistant_message must not be empty")
+
+    if result.response_mode not in {
+        "explain_only",
+        "explain_with_visual",
+        "explain_with_visual_and_practice",
+        "clarification_needed",
+    }:
+        errors.append("response_mode must be a supported value")
+
+    return FinalResponseValidationResult(
+        is_valid=len(errors) == 0,
+        errors=errors,
+    )
+
+
+def validate_final_response_contract(result: LearningCoreResult) -> None:
+    contract = check_final_response_contract(result)
+    if not contract.is_valid:
+        raise ValueError("; ".join(contract.errors))

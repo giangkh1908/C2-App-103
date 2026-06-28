@@ -10,6 +10,32 @@ VisualType = Literal[
     "fraction_pizza",
     "perimeter_path",
     "area_grid",
+    "bar_chart",
+    "stick_bundles",
+    "place_value_blocks",
+    "counting_objects",
+    "comparison_visual",
+    "number_line",
+    "operation_story",
+    "ten_frame",
+    "bar_model",
+    "spatial_position_scene",
+    "geometry_shape",
+    "real_object_match",
+    "shape_composition",
+    "drag_drop_shapes",
+    "ruler_measurement",
+    "clock_calendar",
+    "array_model",
+    "grouping_model",
+    "money_visual",
+    "mass_capacity_visual",
+    "picture_graph",
+    "data_table",
+    "probability_experiment",
+    "polyline_length_visual",
+    "shape_sorting",
+    "scenario_cards",
 ]
 
 
@@ -31,6 +57,8 @@ class LessonVisual(BaseModel):
     length: int | None = None
     width: int | None = None
     unit: str | None = None
+    chart_labels: list[str] | None = None
+    chart_values: list[int] | None = None
 
 
 class LessonSimulation(BaseModel):

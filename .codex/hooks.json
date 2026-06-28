@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py -3 scripts/log_hook.py --tool=codex",
+            "command": "scripts\\_pyrun.cmd scripts\\log_hook.py --tool=codex",
             "timeout": 10,
             "statusMessage": "Logging Codex prompt"
           }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py -3 scripts/log_hook.py --tool=codex",
+            "command": "scripts\\_pyrun.cmd scripts\\log_hook.py --tool=codex",
             "timeout": 10,
             "statusMessage": "Logging Codex turn"
           }

@@ -28,6 +28,11 @@ DEFAULT_TOOL_ARGS: dict[Topic, dict[str, int | str]] = {
         "unit": "o",
         "mode": "area",
     },
+    "data_representation": {
+        "bar_count": 3,
+        "max_value": 9,
+        "total_value": 22,
+    },
 }
 
 
@@ -83,10 +88,34 @@ def detect_context(message: str, selected_topic: Topic | None) -> LearningContex
             visual_type=("perimeter_path" if tool_args.get("mode") == "perimeter" else "area_grid"),
         )
 
+    if topic == "data_representation":
+        tool_args = parse_bar_chart_operands(normalized) or DEFAULT_TOOL_ARGS[topic]
+        return LearningContext(
+            topic=topic,
+            intent="show_visual" if intent == "explain_concept" else intent,
+            tool_name=None,
+            tool_args=tool_args,
+            visual_type="bar_chart",
+        )
+
     return LearningContext(topic=None, intent=intent)
 
 
 def infer_topic(normalized: str) -> Topic | None:
+    if any(
+        token in normalized
+        for token in [
+            "bar chart",
+            "bieu do cot",
+            "bieu do tranh",
+            "bieu do",
+            "so sanh",
+            "to 1",
+            "to 2",
+            "to 3",
+        ]
+    ):
+        return "data_representation"
     if any(token in normalized for token in ["phan so", "pizza", "/"]):
         return "fraction_basic"
     if any(token in normalized for token in ["chu vi", "dien tich", "hinh chu nhat", "o vuong"]):
@@ -189,3 +218,22 @@ def parse_rectangle_operands(normalized: str) -> dict[str, int | str] | None:
             "mode": mode,
         }
     return None
+
+
+def parse_bar_chart_operands(normalized: str) -> dict[str, int | str] | None:
+    matches = re.findall(r"to\s*(\d+)\s*co\s*(\d+)", normalized)
+    if not matches:
+        return None
+
+    labels = [f"To {group_id}" for group_id, _ in matches]
+    values = [int(value) for _, value in matches]
+    if not values:
+        return None
+
+    return {
+        "bar_count": len(values),
+        "max_value": max(values),
+        "total_value": sum(values),
+        "labels_csv": "|".join(labels),
+        "values_csv": "|".join(str(value) for value in values),
+    }

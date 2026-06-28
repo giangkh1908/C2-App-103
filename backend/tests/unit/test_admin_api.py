@@ -204,59 +204,39 @@ class TestAuthorization:
     async def test_non_admin_gets_403_on_payments(self, app, mock_db, auth_headers):
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/payments", headers=auth_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/payments", headers=auth_headers)
         assert response.status_code == 403
 
     @pytest.mark.asyncio
     async def test_non_admin_gets_403_on_users(self, app, mock_db, auth_headers):
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/users", headers=auth_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/users", headers=auth_headers)
         assert response.status_code == 403
 
     @pytest.mark.asyncio
     async def test_non_admin_gets_403_on_stats(self, app, mock_db, auth_headers):
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/stats", headers=auth_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/stats", headers=auth_headers)
         assert response.status_code == 403
 
     @pytest.mark.asyncio
     async def test_non_admin_gets_403_on_plans(self, app, mock_db, auth_headers):
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/plans", headers=auth_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/plans", headers=auth_headers)
         assert response.status_code == 403
 
     @pytest.mark.asyncio
-    async def test_non_admin_gets_403_on_change_plan(
-        self, app, mock_db, auth_headers
-    ):
+    async def test_non_admin_gets_403_on_change_plan(self, app, mock_db, auth_headers):
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     "/api/v1/admin/users/000000000000000000000000/change-plan",
                     headers=auth_headers,
@@ -274,12 +254,8 @@ class TestListPayments:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/payments", headers=admin_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/payments", headers=admin_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -296,9 +272,7 @@ class TestListPayments:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.get(
                     "/api/v1/admin/payments",
                     headers=admin_headers,
@@ -318,9 +292,7 @@ class TestListPayments:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.get(
                     "/api/v1/admin/payments",
                     headers=admin_headers,
@@ -332,8 +304,7 @@ class TestListPayments:
         count_call = mock_db.payments.count_documents.call_args[0][0]
         assert "$or" in count_call
         assert any(
-            expr.get("payment_code", {}).get("$regex") == "TEST"
-            for expr in count_call["$or"]
+            expr.get("payment_code", {}).get("$regex") == "TEST" for expr in count_call["$or"]
         )
 
 
@@ -346,9 +317,7 @@ class TestGetPayment:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.get(
                     f"/api/v1/admin/payments/{payment_id}",
                     headers=admin_headers,
@@ -365,9 +334,7 @@ class TestGetPayment:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.get(
                     "/api/v1/admin/payments/000000000000000000000000",
                     headers=admin_headers,
@@ -379,9 +346,7 @@ class TestGetPayment:
     async def test_invalid_id_returns_404(self, app, mock_db, admin_headers):
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.get(
                     "/api/v1/admin/payments/invalid-id",
                     headers=admin_headers,
@@ -408,9 +373,7 @@ class TestActivatePayment:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     f"/api/v1/admin/payments/{payment_id}/activate",
                     headers=admin_headers,
@@ -440,9 +403,7 @@ class TestActivatePayment:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     f"/api/v1/admin/payments/{payment_id}/activate",
                     headers=admin_headers,
@@ -459,9 +420,7 @@ class TestActivatePayment:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     "/api/v1/admin/payments/000000000000000000000000/activate",
                     headers=admin_headers,
@@ -495,12 +454,8 @@ class TestListUsers:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/users", headers=admin_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/users", headers=admin_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -533,12 +488,8 @@ class TestListUsers:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/users", headers=admin_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/users", headers=admin_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -546,9 +497,7 @@ class TestListUsers:
         assert "plan_name" in data["items"][0]
 
     @pytest.mark.asyncio
-    async def test_includes_plan_name_when_plan_id_set(
-        self, app, mock_db, admin_headers
-    ):
+    async def test_includes_plan_name_when_plan_id_set(self, app, mock_db, admin_headers):
         plan_doc = _make_plan_doc(name="premium", price_monthly=99000)
         plan_id_str = str(plan_doc["_id"])
         user_docs = [
@@ -573,12 +522,8 @@ class TestListUsers:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/users", headers=admin_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/users", headers=admin_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -615,9 +560,7 @@ class TestExtendSubscription:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     f"/api/v1/admin/users/{user_id}/extend",
                     headers=admin_headers,
@@ -659,9 +602,7 @@ class TestExtendSubscription:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     f"/api/v1/admin/users/{user_id}/extend",
                     headers=admin_headers,
@@ -680,9 +621,7 @@ class TestExtendSubscription:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     "/api/v1/admin/users/000000000000000000000000/extend",
                     headers=admin_headers,
@@ -690,11 +629,8 @@ class TestExtendSubscription:
 
         assert response.status_code == 404
 
-
     @pytest.mark.asyncio
-    async def test_zero_revenue_when_no_paid_payments(
-        self, app, mock_db, admin_headers
-    ):
+    async def test_zero_revenue_when_no_paid_payments(self, app, mock_db, admin_headers):
         mock_aggregate_cursor = AsyncMock()
         mock_aggregate_cursor.to_list = AsyncMock(return_value=[])
         mock_db.payments.aggregate = MagicMock(return_value=mock_aggregate_cursor)
@@ -703,12 +639,8 @@ class TestExtendSubscription:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/stats", headers=admin_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/stats", headers=admin_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -721,9 +653,7 @@ class TestExtendSubscription:
 class TestListPlans:
     @pytest.mark.asyncio
     @patch("src.api.admin.get_all_plans")
-    async def test_returns_plan_list(
-        self, mock_get_all_plans, app, mock_db, admin_headers
-    ):
+    async def test_returns_plan_list(self, mock_get_all_plans, app, mock_db, admin_headers):
         from src.models.plan import PlanInDB
 
         plan_docs = [
@@ -740,12 +670,8 @@ class TestListPlans:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
-                response = await client.get(
-                    "/api/v1/admin/plans", headers=admin_headers
-                )
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/plans", headers=admin_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -787,16 +713,12 @@ class TestChangePlan:
         mock_get_plan_by_name.return_value = plan
 
         # auth lookup -> find target user -> find updated user
-        mock_db.users.find_one = AsyncMock(
-            side_effect=[admin_user, user_doc, updated_doc]
-        )
+        mock_db.users.find_one = AsyncMock(side_effect=[admin_user, user_doc, updated_doc])
         mock_db.users.update_one = AsyncMock()
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     f"/api/v1/admin/users/{user_id}/change-plan",
                     headers=admin_headers,
@@ -841,9 +763,7 @@ class TestChangePlan:
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     f"/api/v1/admin/users/{user_id}/change-plan",
                     headers=admin_headers,
@@ -858,16 +778,12 @@ class TestChangePlan:
         mock_db.users.update_one.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_change_plan_user_not_found(
-        self, app, mock_db, admin_headers, admin_user
-    ):
+    async def test_change_plan_user_not_found(self, app, mock_db, admin_headers, admin_user):
         mock_db.users.find_one = AsyncMock(side_effect=[admin_user, None])
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)
-            async with AsyncClient(
-                transport=transport, base_url="http://test"
-            ) as client:
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
                 response = await client.post(
                     "/api/v1/admin/users/000000000000000000000000/change-plan",
                     headers=admin_headers,

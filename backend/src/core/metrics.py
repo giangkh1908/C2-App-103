@@ -116,9 +116,7 @@ def get_metrics() -> dict[str, Any]:
     llm_failure = counters.get("llm_requests_failure", 0)
     # Collect failure breakdown by error type.
     failure_types = {
-        k.split(":", 1)[1]: v
-        for k, v in counters.items()
-        if k.startswith("llm_requests_failure:")
+        k.split(":", 1)[1]: v for k, v in counters.items() if k.startswith("llm_requests_failure:")
     }
 
     tool_calls_total = counters.get("tool_calls_total", 0)

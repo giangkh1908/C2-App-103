@@ -56,6 +56,7 @@ class LearningCoreResult(BaseModel):
     session_metadata: SessionMetadata
     agent_metadata: dict | None = None
 
+
 class LearningPersistencePayload(BaseModel):
     request: LearningCoreRequest
     result: LearningCoreResult

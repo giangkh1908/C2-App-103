@@ -9,13 +9,17 @@ from typing import Any
 import requests
 
 ROWS_API_URL = "https://datasets-server.huggingface.co/rows"
-DEFAULT_OUTPUT_PATH = Path(__file__).resolve().parents[1] / "data" / "practice" / "vi_grade_school_math_mcq_full.json"
+DEFAULT_OUTPUT_PATH = (
+    Path(__file__).resolve().parents[1] / "data" / "practice" / "vi_grade_school_math_mcq_full.json"
+)
 DEFAULT_DATASET = "hllj/vi_grade_school_math_mcq"
 DEFAULT_CONFIG = "default"
 DEFAULT_SPLIT = "train"
 
 
-def fetch_page(dataset: str, config: str, split: str, offset: int, length: int, timeout: float) -> dict[str, Any]:
+def fetch_page(
+    dataset: str, config: str, split: str, offset: int, length: int, timeout: float
+) -> dict[str, Any]:
     response = requests.get(
         ROWS_API_URL,
         params={
@@ -43,7 +47,9 @@ def extract_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
     return normalized_rows
 
 
-def fetch_all_rows(dataset: str, config: str, split: str, page_size: int, timeout: float, pause_ms: int) -> list[dict[str, Any]]:
+def fetch_all_rows(
+    dataset: str, config: str, split: str, page_size: int, timeout: float, pause_ms: int
+) -> list[dict[str, Any]]:
     offset = 0
     all_rows: list[dict[str, Any]] = []
 
@@ -68,14 +74,20 @@ def fetch_all_rows(dataset: str, config: str, split: str, page_size: int, timeou
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Fetch the full practice dataset snapshot from Hugging Face")
+    parser = argparse.ArgumentParser(
+        description="Fetch the full practice dataset snapshot from Hugging Face"
+    )
     parser.add_argument("--dataset", default=DEFAULT_DATASET, help="Hugging Face dataset repo id")
     parser.add_argument("--config", default=DEFAULT_CONFIG, help="Dataset config name")
     parser.add_argument("--split", default=DEFAULT_SPLIT, help="Dataset split name")
     parser.add_argument("--page-size", type=int, default=100, help="Rows API page size")
     parser.add_argument("--timeout", type=float, default=30.0, help="HTTP timeout in seconds")
-    parser.add_argument("--pause-ms", type=int, default=150, help="Pause between page requests in milliseconds")
-    parser.add_argument("--output-path", type=Path, default=DEFAULT_OUTPUT_PATH, help="Output JSON file path")
+    parser.add_argument(
+        "--pause-ms", type=int, default=150, help="Pause between page requests in milliseconds"
+    )
+    parser.add_argument(
+        "--output-path", type=Path, default=DEFAULT_OUTPUT_PATH, help="Output JSON file path"
+    )
     args = parser.parse_args()
 
     rows = fetch_all_rows(

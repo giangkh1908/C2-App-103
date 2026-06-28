@@ -19,7 +19,7 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
-  const { login, isAuthenticated, isLoading } = useAuth();
+  const { login, isAuthenticated, isLoading, user } = useAuth();
 
   // Hooks phải được gọi trước mọi conditional return để tránh React error #300
   // ("Rendered more hooks than during the previous render").
@@ -29,12 +29,18 @@ export default function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Nếu đã login rồi mà vào /login → redirect về home
+  // Nếu đã login rồi mà vào /login → respect redirectTo; nếu admin không có redirectTo → /admin
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace(`/${locale}`);
+      const redirectTo = searchParams.get("redirectTo");
+      const safeRedirect = getSafeRedirect(redirectTo, locale);
+      const finalRedirect =
+        !redirectTo && user?.role === "admin"
+          ? `/${locale}/admin`
+          : safeRedirect;
+      router.replace(finalRedirect);
     }
-  }, [isLoading, isAuthenticated, locale, router]);
+  }, [isLoading, isAuthenticated, locale, router, searchParams, user]);
 
   if (isLoading) return null;
   if (isAuthenticated) return null;
@@ -69,7 +75,13 @@ export default function LoginForm() {
       setServerError(error);
     } else {
       const redirectTo = searchParams.get("redirectTo");
-      router.replace(getSafeRedirect(redirectTo, locale));
+      // Nếu không có redirectTo nhưng user là admin → vào thẳng admin dashboard
+      const safeRedirect = getSafeRedirect(redirectTo, locale);
+      const finalRedirect =
+        !redirectTo && user?.role === "admin"
+          ? `/${locale}/admin`
+          : safeRedirect;
+      router.replace(finalRedirect);
       router.refresh();
     }
     setLoading(false);

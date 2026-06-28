@@ -42,10 +42,18 @@ class PracticeService:
             {"_id": 0},
         )
 
-    def _build_attempt_result(self, row: dict[str, Any], exam: PracticeExamDetail) -> PracticeAttemptResult:
+    def _build_attempt_result(
+        self, row: dict[str, Any], exam: PracticeExamDetail
+    ) -> PracticeAttemptResult:
         answer_docs = row.get("answers", [])
-        answer_map = {answer["question_id"]: answer.get("selected_choice_index") for answer in answer_docs}
-        result_summary = PracticeAttemptResultSummary(**row["result_summary"]) if row.get("result_summary") else None
+        answer_map = {
+            answer["question_id"]: answer.get("selected_choice_index") for answer in answer_docs
+        }
+        result_summary = (
+            PracticeAttemptResultSummary(**row["result_summary"])
+            if row.get("result_summary")
+            else None
+        )
         return PracticeAttemptResult(
             attempt_id=row["attempt_id"],
             exam_id=row["exam_id"],
@@ -64,7 +72,8 @@ class PracticeService:
                     choices=question.choices,
                     selected_choice_index=answer_map.get(question.question_id),
                     correct_choice_index=question.correct_choice_index,
-                    is_correct=answer_map.get(question.question_id) == question.correct_choice_index,
+                    is_correct=answer_map.get(question.question_id)
+                    == question.correct_choice_index,
                     explanation=question.explanation
                     or build_fallback_explanation(question.choices[question.correct_choice_index]),
                 )
@@ -94,10 +103,14 @@ class PracticeService:
                 {"user_id": user_id, "grade": grade, "status": "in_progress"},
                 {"_id": 0, "exam_id": 1},
             ).to_list(length=ACTIVE_EXAMS_PER_GRADE)
-            recent_submitted = await db.practice_attempts.find(
-                {"user_id": user_id, "grade": grade, "status": "submitted"},
-                {"_id": 0, "exam_id": 1},
-            ).sort("submitted_at", -1).to_list(length=ACTIVE_EXAMS_PER_GRADE)
+            recent_submitted = (
+                await db.practice_attempts.find(
+                    {"user_id": user_id, "grade": grade, "status": "submitted"},
+                    {"_id": 0, "exam_id": 1},
+                )
+                .sort("submitted_at", -1)
+                .to_list(length=ACTIVE_EXAMS_PER_GRADE)
+            )
             in_progress_ids = {row["exam_id"] for row in in_progress}
             submitted_ids = {row["exam_id"] for row in recent_submitted}
             for row in rows:
@@ -116,7 +129,9 @@ class PracticeService:
     async def get_exam_detail_for_attempt(self, exam_id: str) -> PracticeExamDetail:
         return PracticeExamDetail(**(await self._get_exam_row(exam_id, active_only=False)))
 
-    async def get_in_progress_attempt(self, user_id: str, exam_id: str) -> PracticeAttemptResult | None:
+    async def get_in_progress_attempt(
+        self, user_id: str, exam_id: str
+    ) -> PracticeAttemptResult | None:
         row = await self._find_in_progress_attempt(user_id, exam_id)
         if not row:
             return None
@@ -188,7 +203,9 @@ class PracticeService:
         answers: list[PracticeAnswerSubmission],
     ) -> PracticeAttemptResult:
         db = get_db()
-        attempt = await db.practice_attempts.find_one({"attempt_id": attempt_id, "user_id": user_id})
+        attempt = await db.practice_attempts.find_one(
+            {"attempt_id": attempt_id, "user_id": user_id}
+        )
         if not attempt:
             raise ValueError("Attempt not found")
         if attempt["status"] != "in_progress":
@@ -200,7 +217,9 @@ class PracticeService:
             question = question_map.get(answer.question_id)
             if question is None:
                 raise ValueError("Submitted question does not belong to this exam")
-            if answer.selected_choice_index is not None and answer.selected_choice_index >= len(question.choices):
+            if answer.selected_choice_index is not None and answer.selected_choice_index >= len(
+                question.choices
+            ):
                 raise ValueError("Selected choice index is out of range")
 
         updated_at = datetime.now(timezone.utc)
@@ -209,7 +228,9 @@ class PracticeService:
             {"attempt_id": attempt_id, "user_id": user_id},
             {"$set": {"answers": answer_docs, "updated_at": updated_at}},
         )
-        refreshed = await db.practice_attempts.find_one({"attempt_id": attempt_id, "user_id": user_id}, {"_id": 0})
+        refreshed = await db.practice_attempts.find_one(
+            {"attempt_id": attempt_id, "user_id": user_id}, {"_id": 0}
+        )
         if refreshed is None:
             raise ValueError("Attempt not found")
         return self._build_attempt_result(refreshed, exam)
@@ -221,7 +242,9 @@ class PracticeService:
         answers: list[PracticeAnswerSubmission],
     ) -> PracticeAttemptResult:
         db = get_db()
-        attempt = await db.practice_attempts.find_one({"attempt_id": attempt_id, "user_id": user_id})
+        attempt = await db.practice_attempts.find_one(
+            {"attempt_id": attempt_id, "user_id": user_id}
+        )
         if not attempt:
             raise ValueError("Attempt not found")
         if attempt["status"] == "submitted":
@@ -235,7 +258,9 @@ class PracticeService:
             question = question_map.get(answer.question_id)
             if question is None:
                 raise ValueError("Submitted question does not belong to this exam")
-            if answer.selected_choice_index is not None and answer.selected_choice_index >= len(question.choices):
+            if answer.selected_choice_index is not None and answer.selected_choice_index >= len(
+                question.choices
+            ):
                 raise ValueError("Selected choice index is out of range")
 
         answer_map = {answer.question_id: answer.selected_choice_index for answer in answers}
@@ -247,7 +272,9 @@ class PracticeService:
             is_correct = selected_index == question.correct_choice_index
             if is_correct:
                 correct_count += 1
-            explanation = question.explanation or build_fallback_explanation(question.choices[question.correct_choice_index])
+            explanation = question.explanation or build_fallback_explanation(
+                question.choices[question.correct_choice_index]
+            )
             results.append(
                 PracticeAttemptQuestionResult(
                     question_id=question.question_id,
@@ -309,7 +336,11 @@ class PracticeService:
 
     async def list_attempts(self, user_id: str) -> list[PracticeAttemptHistoryItem]:
         db = get_db()
-        rows = await db.practice_attempts.find({"user_id": user_id}, {"_id": 0}).sort("updated_at", -1).to_list(length=100)
+        rows = (
+            await db.practice_attempts.find({"user_id": user_id}, {"_id": 0})
+            .sort("updated_at", -1)
+            .to_list(length=100)
+        )
         history: list[PracticeAttemptHistoryItem] = []
         for row in rows:
             summary = row.get("result_summary") or {}
@@ -332,7 +363,9 @@ class PracticeService:
 
     async def get_attempt_detail(self, user_id: str, attempt_id: str) -> PracticeAttemptResult:
         db = get_db()
-        row = await db.practice_attempts.find_one({"attempt_id": attempt_id, "user_id": user_id}, {"_id": 0})
+        row = await db.practice_attempts.find_one(
+            {"attempt_id": attempt_id, "user_id": user_id}, {"_id": 0}
+        )
         if not row:
             raise ValueError("Attempt not found")
         exam = await self.get_exam_detail_for_attempt(row["exam_id"])

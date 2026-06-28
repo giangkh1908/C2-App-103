@@ -40,7 +40,10 @@ def validate_learning_core_result(result: LearningCoreResult) -> None:
     if visual_type not in EXPECTED_VISUAL_TYPES[result.topic]:
         raise ValueError(f"Visual type '{visual_type}' does not match topic '{result.topic}'")
 
-    if result.visual_card is None or result.visual_card.visual_data.type != EXPECTED_CHAT_VISUAL_TYPES[result.topic]:
+    if (
+        result.visual_card is None
+        or result.visual_card.visual_data.type != EXPECTED_CHAT_VISUAL_TYPES[result.topic]
+    ):
         raise ValueError("Runtime visual payload does not match topic")
 
     if result.simulation_spec is None:
@@ -62,13 +65,14 @@ def validate_learning_core_result(result: LearningCoreResult) -> None:
         raise ValueError("Practice question correct_answer must exist in options")
 
 
-
-
 def validate_lesson_response(response: LessonResponse) -> None:
     if response.visual.visual_type not in EXPECTED_VISUAL_TYPES[response.topic]:
         raise ValueError("Lesson visual_type does not match topic")
 
-    if response.simulation.simulation_type != EXPECTED_SIMULATION_TYPES[response.visual.visual_type]:
+    if (
+        response.simulation.simulation_type
+        != EXPECTED_SIMULATION_TYPES[response.visual.visual_type]
+    ):
         raise ValueError("Lesson simulation_type does not match visual_type")
 
     if response.practice_question.correct_answer not in response.practice_question.options:

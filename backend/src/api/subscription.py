@@ -108,13 +108,15 @@ async def change_plan_or_billing(
 
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
-        {"$set": {
-            "plan_id": str(target_plan.id),
-            "subscription_status": "active",
-            "subscription_expires_at": expires_at,
-            "usage": {},
-            "updated_at": now,
-        }}
+        {
+            "$set": {
+                "plan_id": str(target_plan.id),
+                "subscription_status": "active",
+                "subscription_expires_at": expires_at,
+                "usage": {},
+                "updated_at": now,
+            }
+        },
     )
 
     return {

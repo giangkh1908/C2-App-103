@@ -35,9 +35,10 @@ export default function RegisterForm() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace(`/${locale}`);
+      const redirectTo = searchParams.get("redirectTo");
+      router.replace(getSafeRedirect(redirectTo, locale));
     }
-  }, [isLoading, isAuthenticated, locale, router]);
+  }, [isLoading, isAuthenticated, locale, router, searchParams]);
 
   if (isLoading) return null;
   if (isAuthenticated) return null;

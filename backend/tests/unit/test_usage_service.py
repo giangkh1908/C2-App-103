@@ -104,12 +104,16 @@ class TestCheckQuota:
         assert has_quota is True
 
     @pytest.mark.asyncio
-    async def test_unlimited_plan_always_has_quota(self, usage_service, mock_db, plus_plan_doc, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": plus_plan_doc["_id"],
-            "usage": {"chat_turns": {"count": 9999, "first_used_at": datetime.now(UTC)}},
-        })
+    async def test_unlimited_plan_always_has_quota(
+        self, usage_service, mock_db, plus_plan_doc, user_oid
+    ):
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": plus_plan_doc["_id"],
+                "usage": {"chat_turns": {"count": 9999, "first_used_at": datetime.now(UTC)}},
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
 
         has_quota, remaining, limit = await usage_service.check_quota(user_oid, "chat_turns")
@@ -118,12 +122,16 @@ class TestCheckQuota:
         assert limit == -1
 
     @pytest.mark.asyncio
-    async def test_free_plan_has_quota_when_under_limit(self, usage_service, mock_db, free_plan_doc, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": free_plan_doc["_id"],
-            "usage": {"chat_turns": {"count": 5, "first_used_at": datetime.now(UTC)}},
-        })
+    async def test_free_plan_has_quota_when_under_limit(
+        self, usage_service, mock_db, free_plan_doc, user_oid
+    ):
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": free_plan_doc["_id"],
+                "usage": {"chat_turns": {"count": 5, "first_used_at": datetime.now(UTC)}},
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=free_plan_doc)
 
         has_quota, remaining, limit = await usage_service.check_quota(user_oid, "chat_turns")
@@ -132,12 +140,16 @@ class TestCheckQuota:
         assert limit == 10
 
     @pytest.mark.asyncio
-    async def test_free_plan_blocked_when_at_limit(self, usage_service, mock_db, free_plan_doc, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": free_plan_doc["_id"],
-            "usage": {"chat_turns": {"count": 10, "first_used_at": datetime.now(UTC)}},
-        })
+    async def test_free_plan_blocked_when_at_limit(
+        self, usage_service, mock_db, free_plan_doc, user_oid
+    ):
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": free_plan_doc["_id"],
+                "usage": {"chat_turns": {"count": 10, "first_used_at": datetime.now(UTC)}},
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=free_plan_doc)
 
         has_quota, remaining, limit = await usage_service.check_quota(user_oid, "chat_turns")
@@ -148,11 +160,13 @@ class TestCheckQuota:
     @pytest.mark.asyncio
     async def test_rolling_24h_reset(self, usage_service, mock_db, free_plan_doc, user_oid):
         expired_time = datetime.now(UTC) - timedelta(hours=25)
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": free_plan_doc["_id"],
-            "usage": {"chat_turns": {"count": 10, "first_used_at": expired_time}},
-        })
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": free_plan_doc["_id"],
+                "usage": {"chat_turns": {"count": 10, "first_used_at": expired_time}},
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=free_plan_doc)
 
         has_quota, remaining, limit = await usage_service.check_quota(user_oid, "chat_turns")
@@ -161,12 +175,16 @@ class TestCheckQuota:
         assert limit == 10
 
     @pytest.mark.asyncio
-    async def test_no_usage_yet_returns_full_quota(self, usage_service, mock_db, free_plan_doc, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": free_plan_doc["_id"],
-            "usage": {},
-        })
+    async def test_no_usage_yet_returns_full_quota(
+        self, usage_service, mock_db, free_plan_doc, user_oid
+    ):
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": free_plan_doc["_id"],
+                "usage": {},
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=free_plan_doc)
 
         has_quota, remaining, limit = await usage_service.check_quota(user_oid, "chat_turns")
@@ -175,12 +193,16 @@ class TestCheckQuota:
         assert limit == 10
 
     @pytest.mark.asyncio
-    async def test_unknown_action_returns_unlimited(self, usage_service, mock_db, free_plan_doc, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": free_plan_doc["_id"],
-            "usage": {},
-        })
+    async def test_unknown_action_returns_unlimited(
+        self, usage_service, mock_db, free_plan_doc, user_oid
+    ):
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": free_plan_doc["_id"],
+                "usage": {},
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=free_plan_doc)
 
         has_quota, remaining, limit = await usage_service.check_quota(user_oid, "unknown_action")
@@ -192,11 +214,13 @@ class TestCheckQuota:
 class TestRecordUsage:
     @pytest.mark.asyncio
     async def test_first_usage_sets_timestamp_and_count(self, usage_service, mock_db, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": "plan_free_id",
-            "usage": {},
-        })
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": "plan_free_id",
+                "usage": {},
+            }
+        )
         mock_db.users.update_one = AsyncMock()
         mock_db.usage_logs.insert_one = AsyncMock()
 
@@ -211,11 +235,13 @@ class TestRecordUsage:
     @pytest.mark.asyncio
     async def test_subsequent_usage_increments_count(self, usage_service, mock_db, user_oid):
         now = datetime.now(UTC)
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": "plan_free_id",
-            "usage": {"chat_turns": {"count": 5, "first_used_at": now}},
-        })
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": "plan_free_id",
+                "usage": {"chat_turns": {"count": 5, "first_used_at": now}},
+            }
+        )
         mock_db.users.update_one = AsyncMock()
         mock_db.usage_logs.insert_one = AsyncMock()
 
@@ -228,11 +254,13 @@ class TestRecordUsage:
     @pytest.mark.asyncio
     async def test_expired_usage_resets_before_increment(self, usage_service, mock_db, user_oid):
         expired_time = datetime.now(UTC) - timedelta(hours=25)
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": "plan_free_id",
-            "usage": {"chat_turns": {"count": 10, "first_used_at": expired_time}},
-        })
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": "plan_free_id",
+                "usage": {"chat_turns": {"count": 10, "first_used_at": expired_time}},
+            }
+        )
         mock_db.users.update_one = AsyncMock()
         mock_db.usage_logs.insert_one = AsyncMock()
 
@@ -244,11 +272,13 @@ class TestRecordUsage:
 
     @pytest.mark.asyncio
     async def test_records_audit_log(self, usage_service, mock_db, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": "plan_free_id",
-            "usage": {},
-        })
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": "plan_free_id",
+                "usage": {},
+            }
+        )
         mock_db.users.update_one = AsyncMock()
         mock_db.usage_logs.insert_one = AsyncMock()
 
@@ -279,16 +309,20 @@ class TestRecordUsage:
 
 class TestGetUserUsage:
     @pytest.mark.asyncio
-    async def test_returns_usage_for_all_actions(self, usage_service, mock_db, free_plan_doc, user_oid):
+    async def test_returns_usage_for_all_actions(
+        self, usage_service, mock_db, free_plan_doc, user_oid
+    ):
         now = datetime.now(UTC)
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": free_plan_doc["_id"],
-            "usage": {
-                "chat_turns": {"count": 3, "first_used_at": now},
-                "tts_requests": {"count": 1, "first_used_at": now},
-            },
-        })
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": free_plan_doc["_id"],
+                "usage": {
+                    "chat_turns": {"count": 3, "first_used_at": now},
+                    "tts_requests": {"count": 1, "first_used_at": now},
+                },
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=free_plan_doc)
 
         result = await usage_service.get_user_usage(user_oid)
@@ -303,12 +337,16 @@ class TestGetUserUsage:
         assert result["chatTurns"]["unlimited"] is False
 
     @pytest.mark.asyncio
-    async def test_unlimited_plan_shows_minus_one(self, usage_service, mock_db, plus_plan_doc, user_oid):
-        mock_db.users.find_one = AsyncMock(return_value={
-            "_id": user_oid,
-            "plan_id": plus_plan_doc["_id"],
-            "usage": {},
-        })
+    async def test_unlimited_plan_shows_minus_one(
+        self, usage_service, mock_db, plus_plan_doc, user_oid
+    ):
+        mock_db.users.find_one = AsyncMock(
+            return_value={
+                "_id": user_oid,
+                "plan_id": plus_plan_doc["_id"],
+                "usage": {},
+            }
+        )
         mock_db.plans.find_one = AsyncMock(return_value=plus_plan_doc)
 
         result = await usage_service.get_user_usage(user_oid)

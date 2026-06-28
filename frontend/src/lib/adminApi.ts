@@ -1,4 +1,5 @@
 import type {
+  AdminCostStats,
   AdminPayment,
   AdminStats,
   AdminUser,
@@ -238,4 +239,23 @@ export async function changeUserPlan(
   }
 
   return res.json() as Promise<AdminUser>;
+}
+
+/**
+ * GET /admin/costs?month=YYYY-MM — fetch LLM cost statistics for admin dashboard.
+ *
+ * Throws `AdminAuthError` on 401/403, `AdminApiError` on other errors.
+ */
+export async function fetchCostStats(
+  apiFetch: ApiFetch,
+  month: string,
+): Promise<AdminCostStats> {
+  const qs = `?${new URLSearchParams({ month })}`;
+  const res = await apiFetch(`/admin/costs${qs}`);
+
+  if (!res.ok) {
+    await throwAdminError(res);
+  }
+
+  return res.json() as Promise<AdminCostStats>;
 }

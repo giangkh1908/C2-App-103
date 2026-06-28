@@ -160,9 +160,7 @@ async def create_payment(
             already guarantee this).
     """
     if plan_name == "free":
-        raise ValueError(
-            "Cannot create payment for 'free' plan — no checkout required."
-        )
+        raise ValueError("Cannot create payment for 'free' plan — no checkout required.")
 
     db = get_db()
     plan = await db.plans.find_one({"name": plan_name})
@@ -185,11 +183,14 @@ async def create_payment(
 
     # Cleanup: expire stale pending payments for this user so the
     # payment list stays clean.
-    await db.payments.update_many({
-        "user_id": user_id,
-        "status": PaymentStatus.PENDING.value,
-        "created_at": {"$lt": datetime.now(UTC) - timedelta(minutes=5)},
-    }, {"$set": {"status": PaymentStatus.EXPIRED.value}})
+    await db.payments.update_many(
+        {
+            "user_id": user_id,
+            "status": PaymentStatus.PENDING.value,
+            "created_at": {"$lt": datetime.now(UTC) - timedelta(minutes=5)},
+        },
+        {"$set": {"status": PaymentStatus.EXPIRED.value}},
+    )
 
     _MAX_DUP_RETRIES = 2
     for _attempt in range(_MAX_DUP_RETRIES):
@@ -202,12 +203,14 @@ async def create_payment(
             # Race: the existing pending payment may have been expired
             # by sweeper or paid by webhook between the failed insert
             # and now. If it's gone, retry the insert.
-            existing = await db.payments.find_one({
-                "user_id": user_id,
-                "plan_name": plan_name,
-                "billing": billing,
-                "status": PaymentStatus.PENDING.value,
-            })
+            existing = await db.payments.find_one(
+                {
+                    "user_id": user_id,
+                    "plan_name": plan_name,
+                    "billing": billing,
+                    "status": PaymentStatus.PENDING.value,
+                }
+            )
             if existing:
                 logger.info(
                     "payment_duplicate_skipped",
@@ -416,7 +419,7 @@ async def _activate_user(
             )
             return True
         except Exception:
-            delay = _ACTIVATE_RETRY_DELAY * (2 ** attempt)
+            delay = _ACTIVATE_RETRY_DELAY * (2**attempt)
             logger.warning(
                 "payment_activation_retry",
                 attempt=attempt + 1,
@@ -468,9 +471,9 @@ async def reconcile_paid_payments() -> int:
     # Find paid payments. We look for payments where the user's
     # current plan doesn't match the payment's plan_id, meaning
     # the user paid but was never upgraded.
-    paid_payments = await db.payments.find(
-        {"status": PaymentStatus.PAID.value}
-    ).to_list(length=100)  # cap at 100 per sweep cycle
+    paid_payments = await db.payments.find({"status": PaymentStatus.PAID.value}).to_list(
+        length=100
+    )  # cap at 100 per sweep cycle
 
     for doc in paid_payments:
         user_oid = _safe_objectid(doc.get("user_id", ""))

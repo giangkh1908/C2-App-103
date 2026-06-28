@@ -2,7 +2,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from src.models.chat import ChatTurnResponse, PracticeQuestion, SimulationConfig, VisualCard, VisualData
+from src.models.chat import (
+    ChatTurnResponse,
+    PracticeQuestion,
+    SimulationConfig,
+    VisualCard,
+    VisualData,
+)
 from src.models.lesson import LessonPracticeQuestion, LessonSimulation, LessonVisual
 from src.services.types import LearningCoreResult, SessionMetadata
 

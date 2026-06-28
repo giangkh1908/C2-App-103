@@ -19,9 +19,7 @@ class CandyMultiplicationInput(ToolInput):
 
 class CandyMultiplicationTool(BaseTool):
     name = "candy_multiplication"
-    description = (
-        "Tạo mô phỏng phép nhân bằng các nhóm đồ vật như đĩa kẹo hoặc túi bánh."
-    )
+    description = "Tạo mô phỏng phép nhân bằng các nhóm đồ vật như đĩa kẹo hoặc túi bánh."
     input_schema = CandyMultiplicationInput
 
     async def run(self, **kwargs: Any) -> ToolResult:
@@ -43,8 +41,7 @@ class CandyMultiplicationTool(BaseTool):
         repeated_addition = " + ".join(str(items_per_group) for _ in range(groups))
         expression = f"{groups} × {items_per_group} = {total}"
         visual_groups = [
-            {"group_id": group_id, "count": items_per_group}
-            for group_id in range(1, groups + 1)
+            {"group_id": group_id, "count": items_per_group} for group_id in range(1, groups + 1)
         ]
 
         return ToolResult(
@@ -105,8 +102,7 @@ class EqualDivisionTool(BaseTool):
         is_evenly_divisible = remainder == 0
         expression = f"{total_items} ÷ {groups} = {items_per_group}"
         visual_groups = [
-            {"group_id": group_id, "count": items_per_group}
-            for group_id in range(1, groups + 1)
+            {"group_id": group_id, "count": items_per_group} for group_id in range(1, groups + 1)
         ]
 
         if is_evenly_divisible:
@@ -171,9 +167,7 @@ class FractionPizzaTool(BaseTool):
             return ToolResult(
                 success=False,
                 error="UNSUPPORTED_IMPROPER_FRACTION",
-                message=(
-                    "Hiện tại học cụ này chỉ hỗ trợ phân số nhỏ hơn hoặc bằng 1."
-                ),
+                message=("Hiện tại học cụ này chỉ hỗ trợ phân số nhỏ hơn hoặc bằng 1."),
             )
 
         fraction_text = f"{numerator}/{denominator}"

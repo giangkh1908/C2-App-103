@@ -27,9 +27,7 @@ class ChatMessage(BaseModel):
         ..., description="Vai trò của người gửi: học sinh hoặc trợ lý."
     )
     content: str = Field(..., description="Nội dung tin nhắn.")
-    created_at: datetime | None = Field(
-        default=None, description="Thời điểm tin nhắn được tạo."
-    )
+    created_at: datetime | None = Field(default=None, description="Thời điểm tin nhắn được tạo.")
 
 
 class ChatSessionDetail(BaseModel):

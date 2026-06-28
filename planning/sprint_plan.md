@@ -79,7 +79,7 @@ Nhóm có thể demo full flow:
 
 ### Goal
 
-Ổn định hệ thống để usable và demo-ready, đồng thời đưa FE/BE lên môi trường deploy thật theo ADR đã chốt.
+Ổn định hệ thống để usable và demo-ready. FE + BE đã deploy trên Railway. Còn lại: smoke test, TTS trigger, demo script.
 
 ### Scope
 
@@ -87,18 +87,18 @@ Nhóm có thể demo full flow:
 - UX polish cho flow học sinh
 - TTS output integration
 - error states / retry states
-- FE deploy lên Vercel
-- BE deploy lên VPS
+- FE deploy lên Railway ✅
+- BE deploy lên Railway ✅
 - smoke test và demo prep
 
 ### Deliverables
 
 - guardrail theo `grade` và `topic` được kiểm tra kỹ hơn
 - UI có state rõ cho loading, error, retry
-- TTS trigger hoạt động với `tts_text`
-- FE chạy trên Vercel
-- BE chạy trên VPS có reverse proxy, SSL, restart policy cơ bản
-- smoke test checklist pass
+- TTS trigger ⬜ (backend đã trả `tts_text`, frontend chưa trigger)
+- FE chạy trên Railway ✅
+- BE chạy trên Railway ✅
+- smoke test ⬜ (chưa có script)
 
 ### Demo outcome
 
@@ -109,3 +109,19 @@ Nhóm có thể demo bản MVP online với luồng hoàn chỉnh, có phương 
 - Sprint 1 không nên cố xây simulation trước khi shared contracts ổn định.
 - Sprint 2 chỉ nên mở đúng 4 domain MVP, không mở thêm cộng/trừ/word problem.
 - Sprint 3 không dùng để thêm parent/teacher/admin, voice input hay gamification.
+
+### Thực tế sau khi triển khai
+
+- Sprint 1 ✅ hoàn thành: monorepo, auth, MongoDB, topics
+- Sprint 2 ✅ hoàn thành: AI lesson, visual, practice, progress
+- Sprint 3 🔶 gần hoàn thành: deploy Railway ✅, smoke test ⬜, demo script ⬜, TTS ⬜
+
+### Tính năng ngoài MVP được build thêm
+Nhiều tính năng không có trong kế hoạch ban đầu đã được triển khai:
+- Payment SePay (thanh toán thực tế)
+- Admin Dashboard (quản trị user/payment)
+- Google OAuth (đăng nhập xã hội)
+- Landing page đầy đủ (marketing)
+- Email verification + Forgot/Reset password
+- Streaming chat + ChatHistorySidebar
+- UsageCounter + UpgradeModal

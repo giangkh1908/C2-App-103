@@ -8,7 +8,7 @@ import httpx
 from src.core.logging import get_logger
 from src.core.metrics import record_llm_failure, record_llm_request, record_ttft
 
-from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMToolCall
+from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMStreamUsage, LLMToolCall
 
 logger = get_logger("toan_truc_quan.llm.openrouter")
 
@@ -17,7 +17,7 @@ class OpenRouterClient(BaseLLMClient):
     def __init__(
         self,
         api_key: str,
-        model: str = "openai/gpt-4o-mini",
+        model: str = "deepseek/deepseek-v4-flash",
         base_url: str = "https://openrouter.ai/api/v1",
         site_url: str = "http://localhost:3000",
         app_name: str = "mathbuddy-ai-backend",
@@ -40,8 +40,7 @@ class OpenRouterClient(BaseLLMClient):
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [
-                {"role": message.role, "content": message.content}
-                for message in messages
+                {"role": message.role, "content": message.content} for message in messages
             ],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
@@ -82,6 +81,8 @@ class OpenRouterClient(BaseLLMClient):
         tool_calls = message.get("tool_calls") or []
         usage = data.get("usage") or {}
         tokens = usage.get("total_tokens", 0)
+        prompt_tokens = usage.get("prompt_tokens", 0)
+        completion_tokens = usage.get("completion_tokens", 0)
 
         record_llm_request(model=self.model, tokens=tokens, latency_ms=latency_ms)
 
@@ -89,6 +90,8 @@ class OpenRouterClient(BaseLLMClient):
             "openrouter_response_received",
             model=self.model,
             tokens_used=tokens,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
             latency_ms=latency_ms,
             has_tool_call=bool(tool_calls),
         )
@@ -121,7 +124,7 @@ class OpenRouterClient(BaseLLMClient):
         self,
         messages: list[LLMMessage],
         tools: list[dict[str, Any]] | None = None,
-    ) -> AsyncGenerator[str | LLMToolCall, None]:
+    ) -> AsyncGenerator[str | LLMToolCall | LLMStreamUsage, None]:
         """Stream tokens from OpenRouter using SSE.
 
         Yields str text chunks as they arrive, or a single LLMToolCall
@@ -129,10 +132,7 @@ class OpenRouterClient(BaseLLMClient):
         """
         payload: dict[str, Any] = {
             "model": self.model,
-            "messages": [
-                {"role": m.role, "content": m.content}
-                for m in messages
-            ],
+            "messages": [{"role": m.role, "content": m.content} for m in messages],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
             "stream": True,
@@ -153,6 +153,8 @@ class OpenRouterClient(BaseLLMClient):
         is_tool_call: bool = False
         first_token_recorded: bool = False
         tokens: int = 0
+        prompt_tokens: int = 0
+        completion_tokens: int = 0
         start = perf_counter()
 
         try:
@@ -178,6 +180,8 @@ class OpenRouterClient(BaseLLMClient):
 
                         if "usage" in data and data["usage"]:
                             tokens = data["usage"].get("total_tokens", 0)
+                            prompt_tokens = data["usage"].get("prompt_tokens", 0)
+                            completion_tokens = data["usage"].get("completion_tokens", 0)
 
                         choices = data.get("choices") or []
                         if not choices:
@@ -211,6 +215,11 @@ class OpenRouterClient(BaseLLMClient):
                                 arguments = {}
                             yield LLMToolCall(name=tool_call_name, arguments=arguments)
 
+            yield LLMStreamUsage(
+                prompt_tokens=prompt_tokens,
+                completion_tokens=completion_tokens,
+            )
+
         except Exception as exc:
             logger.exception(
                 "openrouter_stream_failed",
@@ -226,6 +235,8 @@ class OpenRouterClient(BaseLLMClient):
                 "openrouter_stream_done",
                 model=self.model,
                 tokens_used=tokens,
+                prompt_tokens=prompt_tokens,
+                completion_tokens=completion_tokens,
                 latency_ms=latency_ms,
                 is_tool_call=is_tool_call,
             )

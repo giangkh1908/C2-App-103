@@ -20,7 +20,11 @@ def to_lesson_response(result: LearningCoreResult) -> LessonResponse | None:
     # Clarification responses không có visual/practice data — skip lesson response
     if result.response_mode == "clarification_needed":
         return None
-    if result.visual_spec is None or result.simulation_spec is None or result.practice_question_spec is None:
+    if (
+        result.visual_spec is None
+        or result.simulation_spec is None
+        or result.practice_question_spec is None
+    ):
         return None
     return LessonResponse(
         topic=result.topic,
@@ -33,4 +37,3 @@ def to_lesson_response(result: LearningCoreResult) -> LessonResponse | None:
         practice_question=result.practice_question_spec,
         tts_text=result.tts_text,
     )
-

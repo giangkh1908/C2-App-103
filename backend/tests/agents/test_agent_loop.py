@@ -155,9 +155,7 @@ class MissingToolThenFinalLLM(BaseLLMClient):
         self.call_count += 1
 
         if self.call_count == 1:
-            return LLMResponse(
-                tool_call=LLMToolCall(name="unknown_tool", arguments={})
-            )
+            return LLMResponse(tool_call=LLMToolCall(name="unknown_tool", arguments={}))
 
         return LLMResponse(content=_MISSING_TOOL_ANSWER)
 

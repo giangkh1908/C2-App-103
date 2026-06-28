@@ -2,7 +2,6 @@
 test_guardrails.py – Unit tests for src.agents.guardrails.
 """
 
-
 from src.agents.guardrails import (
     guard_message,
     is_gibberish,
@@ -74,13 +73,9 @@ def test_is_greeting_math_question() -> None:
 def test_is_greeting_division_question() -> None:
     assert is_greeting("chia đều 12 cho 3") is False
 
+
 def test_greeting_with_math_question_not_blocked() -> None:
-    assert (
-        guard_message(
-            "Chào cô giải giúp em 3 x 4 bằng bao nhiêu"
-        )
-        is None
-    )
+    assert guard_message("Chào cô giải giúp em 3 x 4 bằng bao nhiêu") is None
 
 
 # ---------------------------------------------------------------------------

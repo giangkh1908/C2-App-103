@@ -48,7 +48,7 @@ def set_refresh_cookie(response: Response, refresh_token: str) -> None:
         path=refresh_cookie_path(),
         httponly=True,
         secure=settings.app_env != "development",
-        samesite="none",
+        samesite="none" if settings.app_env != "development" else "lax",
     )
 
 
@@ -58,7 +58,7 @@ def clear_refresh_cookie(response: Response) -> None:
         path=refresh_cookie_path(),
         httponly=True,
         secure=settings.app_env != "development",
-        samesite="none",
+        samesite="none" if settings.app_env != "development" else "lax",
     )
 
 
@@ -66,10 +66,12 @@ async def _store_refresh_token(db, user_id: str, refresh_token: str) -> None:
     expires = datetime.now(UTC) + timedelta(days=settings.jwt_refresh_token_expire_days)
     await db.users.update_one(
         {"_id": ObjectId(user_id)},
-        {"$set": {
-            "refresh_token": refresh_token,
-            "refresh_token_expires": expires,
-        }}
+        {
+            "$set": {
+                "refresh_token": refresh_token,
+                "refresh_token_expires": expires,
+            }
+        },
     )
 
 
@@ -254,10 +256,12 @@ async def refresh(
         # Clear all sessions for this user.
         await db.users.update_one(
             {"_id": ObjectId(user_id)},
-            {"$set": {
-                "refresh_token": None,
-                "refresh_token_expires": None,
-            }}
+            {
+                "$set": {
+                    "refresh_token": None,
+                    "refresh_token_expires": None,
+                }
+            },
         )
         clear_refresh_cookie(response)
         raise HTTPException(
@@ -286,10 +290,12 @@ async def logout(response: Response, current_user: UserInDB = Depends(get_curren
     db = get_db()
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
-        {"$set": {
-            "refresh_token": None,
-            "refresh_token_expires": None,
-        }},
+        {
+            "$set": {
+                "refresh_token": None,
+                "refresh_token_expires": None,
+            }
+        },
     )
     clear_refresh_cookie(response)
     return MessageResponse(detail="Logged out successfully")
@@ -309,10 +315,12 @@ async def forgot_password(req: ForgotPasswordRequest):
 
     await db.users.update_one(
         {"_id": user_doc["_id"]},
-        {"$set": {
-            "reset_token": reset_token,
-            "reset_token_expires": reset_expires,
-        }},
+        {
+            "$set": {
+                "reset_token": reset_token,
+                "reset_token_expires": reset_expires,
+            }
+        },
     )
 
     await send_reset_password_email(email, reset_token)
@@ -324,10 +332,12 @@ async def forgot_password(req: ForgotPasswordRequest):
 async def reset_password(req: ResetPasswordRequest):
     db = get_db()
 
-    user_doc = await db.users.find_one({
-        "reset_token": req.token,
-        "reset_token_expires": {"$gt": datetime.now(UTC)},
-    })
+    user_doc = await db.users.find_one(
+        {
+            "reset_token": req.token,
+            "reset_token_expires": {"$gt": datetime.now(UTC)},
+        }
+    )
 
     if not user_doc:
         raise HTTPException(
@@ -337,11 +347,13 @@ async def reset_password(req: ResetPasswordRequest):
 
     await db.users.update_one(
         {"_id": user_doc["_id"]},
-        {"$set": {
-            "password_hash": hash_password(req.newPassword),
-            "reset_token": None,
-            "reset_token_expires": None,
-        }},
+        {
+            "$set": {
+                "password_hash": hash_password(req.newPassword),
+                "reset_token": None,
+                "reset_token_expires": None,
+            }
+        },
     )
 
     return MessageResponse(detail="Password has been reset successfully")
@@ -361,10 +373,12 @@ async def request_email_verification(
 
     await db.users.update_one(
         {"_id": ObjectId(current_user.id)},
-        {"$set": {
-            "verify_token": verify_token,
-            "verify_token_expires": verify_expires,
-        }},
+        {
+            "$set": {
+                "verify_token": verify_token,
+                "verify_token_expires": verify_expires,
+            }
+        },
     )
 
     await send_verify_email(current_user.email, verify_token)
@@ -376,10 +390,12 @@ async def request_email_verification(
 async def confirm_email_verification(token: str):
     db = get_db()
 
-    user_doc = await db.users.find_one({
-        "verify_token": token,
-        "verify_token_expires": {"$gt": datetime.now(UTC)},
-    })
+    user_doc = await db.users.find_one(
+        {
+            "verify_token": token,
+            "verify_token_expires": {"$gt": datetime.now(UTC)},
+        }
+    )
 
     if not user_doc:
         raise HTTPException(
@@ -389,11 +405,13 @@ async def confirm_email_verification(token: str):
 
     await db.users.update_one(
         {"_id": user_doc["_id"]},
-        {"$set": {
-            "verified": True,
-            "verify_token": None,
-            "verify_token_expires": None,
-        }},
+        {
+            "$set": {
+                "verified": True,
+                "verify_token": None,
+                "verify_token_expires": None,
+            }
+        },
     )
 
     return MessageResponse(detail="Email verified successfully")

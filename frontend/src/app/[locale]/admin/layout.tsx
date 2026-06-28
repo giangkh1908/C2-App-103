@@ -18,11 +18,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const params = useParams<{ locale: string }>();
   const locale = params.locale ?? "vi";
 
-  // Route guard: redirect non-admin users to home (inside useEffect to avoid
-  // React warning "Cannot update a component while rendering a different component")
+  // Route guard: redirect non-admin users
+  // - Not authenticated → /login?redirectTo=/admin (để login xong quay lại)
+  // - Authenticated but not admin → home (không cho xem admin)
+  // Inside useEffect to avoid React warning "Cannot update a component while
+  // rendering a different component".
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || !isAdmin)) {
-      router.push(`/${locale}`);
+    if (isLoading) return;
+    if (!isAuthenticated) {
+      router.replace(
+        `/${locale}/login?redirectTo=${encodeURIComponent(`/${locale}/admin`)}`,
+      );
+      return;
+    }
+    if (!isAdmin) {
+      router.replace(`/${locale}`);
     }
   }, [isLoading, isAuthenticated, isAdmin, locale, router]);
 

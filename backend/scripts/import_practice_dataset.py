@@ -34,7 +34,9 @@ def _auto_generate_manifest(rows: list) -> dict[int, list[str]]:
 
 
 async def main() -> None:
-    parser = argparse.ArgumentParser(description="Import practice exams from a local dataset export")
+    parser = argparse.ArgumentParser(
+        description="Import practice exams from a local dataset export"
+    )
     parser.add_argument(
         "dataset_path",
         nargs="?",
@@ -42,7 +44,9 @@ async def main() -> None:
         default=DEFAULT_FULL_DATASET_PATH,
         help="Path to the exported dataset JSON file",
     )
-    parser.add_argument("--replace", action="store_true", help="Replace existing practice exams before import")
+    parser.add_argument(
+        "--replace", action="store_true", help="Replace existing practice exams before import"
+    )
     parser.add_argument(
         "--deactivate-existing",
         action="store_true",

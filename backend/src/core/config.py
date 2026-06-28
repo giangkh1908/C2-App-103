@@ -81,6 +81,14 @@ class Settings(BaseSettings):
     )
     openrouter_site_url: str = Field(default="http://localhost:3000", alias="OPENROUTER_SITE_URL")
     openrouter_app_name: str = Field(default="mathbuddy-ai-backend", alias="OPENROUTER_APP_NAME")
+    # Cost per 1M prompt tokens for the selected OpenRouter model (USD)
+    openrouter_prompt_cost_per_1m: float = Field(
+        default=0.09, alias="OPENROUTER_PROMPT_COST_PER_1M_TOKENS"
+    )
+    # Cost per 1M completion tokens for the selected OpenRouter model (USD)
+    openrouter_completion_cost_per_1m: float = Field(
+        default=0.18, alias="OPENROUTER_COMPLETION_COST_PER_1M_TOKENS"
+    )
 
     # SePay webhook (Vietnam payment gateway)
     sepay_webhook_api_key: str = Field(default="", alias="SEPAY_WEBHOOK_API_KEY")
@@ -132,6 +140,8 @@ class Settings(BaseSettings):
         "openrouter_base_url",
         "openrouter_site_url",
         "openrouter_app_name",
+        "openrouter_prompt_cost_per_1m",
+        "openrouter_completion_cost_per_1m",
         "jwt_secret_key",
         "jwt_algorithm",
         "mongodb_uri",
@@ -156,9 +166,7 @@ class Settings(BaseSettings):
     def cors_origins(self) -> list[str]:
         origins = [self.frontend_url.rstrip("/")]
         if self.allowed_origins.strip():
-            origins.extend(
-                o.strip() for o in self.allowed_origins.split(",") if o.strip()
-            )
+            origins.extend(o.strip() for o in self.allowed_origins.split(",") if o.strip())
         # dict.fromkeys preserves insertion order while deduplicating
         return list(dict.fromkeys(origins))
 

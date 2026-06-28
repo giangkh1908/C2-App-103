@@ -23,7 +23,9 @@ def contains_mojibake(text: str) -> bool:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Validate practice dataset snapshot and curated manifest before import")
+    parser = argparse.ArgumentParser(
+        description="Validate practice dataset snapshot and curated manifest before import"
+    )
     parser.add_argument(
         "--input-path",
         type=Path,
@@ -52,9 +54,13 @@ def main() -> None:
             mojibake_findings.append({"exam_id": exam["exam_id"], "field": "preview_text"})
         for question in exam["questions"]:
             if contains_mojibake(question["question_text"]):
-                mojibake_findings.append({"exam_id": exam["exam_id"], "field": f"question:{question['question_id']}"})
+                mojibake_findings.append(
+                    {"exam_id": exam["exam_id"], "field": f"question:{question['question_id']}"}
+                )
             if contains_mojibake(question["explanation"]):
-                mojibake_findings.append({"exam_id": exam["exam_id"], "field": f"explanation:{question['question_id']}"})
+                mojibake_findings.append(
+                    {"exam_id": exam["exam_id"], "field": f"explanation:{question['question_id']}"}
+                )
 
     summary = {
         "input_path": str(args.input_path).encode("ascii", "ignore").decode("ascii"),

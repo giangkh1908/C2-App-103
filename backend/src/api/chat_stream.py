@@ -105,9 +105,7 @@ async def chat_stream(
     usage_service = UsageService(db=db)
 
     # Pre-deduct quota atomically
-    has_quota, remaining, limit = await usage_service.check_and_record_usage(
-        user_id, "chat_turns"
-    )
+    has_quota, remaining, limit = await usage_service.check_and_record_usage(user_id, "chat_turns")
     if not has_quota:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,

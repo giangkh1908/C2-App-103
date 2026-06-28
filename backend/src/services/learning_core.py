@@ -346,6 +346,7 @@ class LearningCoreService:
         pipeline_start = perf_counter()
 
         from src.core.metrics import get_metrics
+
         tokens_before = get_metrics()["llm"]["tokens_total"]
 
         agent_metadata: dict | None = None

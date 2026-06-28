@@ -220,8 +220,12 @@ async def run_evaluation(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run AI tutor agent evaluation")
     parser.add_argument("--dataset", required=True, help="Path to dataset JSON file")
-    parser.add_argument("--model", default="deepseek/deepseek-v4-flash", help="LLM model name (informational)")
-    parser.add_argument("--base-url", default="http://localhost:8000", help="Base URL of the backend API")
+    parser.add_argument(
+        "--model", default="deepseek/deepseek-v4-flash", help="LLM model name (informational)"
+    )
+    parser.add_argument(
+        "--base-url", default="http://localhost:8000", help="Base URL of the backend API"
+    )
     parser.add_argument("--token", default=None, help="Bearer token for authentication")
     parser.add_argument("--concurrency", type=int, default=1, help="Max concurrent requests (1–5)")
     parser.add_argument("--verbose", action="store_true", help="Print per-problem results")

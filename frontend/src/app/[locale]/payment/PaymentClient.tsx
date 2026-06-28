@@ -72,6 +72,7 @@ export default function PaymentClient({
 
   // 1. Create checkout intent on mount.
   useEffect(() => {
+    if (!planName || !billing) return;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login`);
       return;

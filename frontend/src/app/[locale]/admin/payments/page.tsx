@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -76,30 +76,36 @@ export default function AdminPaymentsPage() {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchPayments(apiFetch, {
-        page,
-        page_size: PAGE_SIZE,
-        search: search || undefined,
-        status: statusFilter || undefined,
-      });
-      setPayments(result.items);
-      setTotal(result.total);
-    } catch (err) {
-      if (err instanceof AdminAuthError) {
-        router.push(`/${locale}/login`);
-        return;
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [apiFetch, page, search, statusFilter, locale, router]);
-
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const result = await fetchPayments(apiFetch, {
+          page,
+          page_size: PAGE_SIZE,
+          search: search || undefined,
+          status: statusFilter || undefined,
+        });
+        if (!cancelled) {
+          setPayments(result.items);
+          setTotal(result.total);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof AdminAuthError) {
+          router.push(`/${locale}/login`);
+          return;
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiFetch, page, search, statusFilter, locale, router]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 

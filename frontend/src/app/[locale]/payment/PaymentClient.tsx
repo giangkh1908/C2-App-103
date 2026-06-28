@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Copy, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
@@ -72,11 +72,7 @@ export default function PaymentClient({
 
   // 1. Create checkout intent on mount.
   useEffect(() => {
-    if (!planName || !billing) {
-      setError(t("errors.missingPlan"));
-      setLoading(false);
-      return;
-    }
+    if (!planName || !billing) return;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login`);
       return;
@@ -167,7 +163,7 @@ export default function PaymentClient({
     } catch {
       toast.error(t("errors.copy"));
     }
-  }, [payment?.payment_code, t]);
+  }, [payment, t]);
 
   const handleCancel = useCallback(async () => {
     try {
@@ -179,7 +175,32 @@ export default function PaymentClient({
     }
     stoppedRef.current = true;
     router.push(`/${locale}/payment/cancel`);
-  }, [apiFetch, locale, payment?.payment_code, router]);
+  }, [apiFetch, locale, payment, router]);
+
+  if (!planName || !billing) {
+    return (
+      <main className="min-h-screen bg-natural-bg">
+        <Navbar />
+        <div className="mx-auto flex max-w-md flex-col items-center px-4 py-24 text-center">
+          <div className="rounded-full bg-red-50 p-3 text-red-600">
+            <X className="h-6 w-6" />
+          </div>
+          <h1 className="mt-4 text-xl font-bold text-natural-charcoal">
+            {t("errorTitle")}
+          </h1>
+          <p className="mt-2 text-sm text-natural-charcoal/70">
+            {t("errors.missingPlan")}
+          </p>
+          <button
+            onClick={() => router.push(`/${locale}/pricing`)}
+            className="mt-6 rounded-full bg-natural-green px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-natural-green-hover"
+          >
+            {t("backToPricing")}
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   if (loading) {
     return (

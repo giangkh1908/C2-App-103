@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getMyUsage } from "@/lib/planApi";
 import type { UserUsage } from "@/types/auth";
@@ -15,12 +15,10 @@ export default function UsageCounter({ refreshTrigger = 0 }: { refreshTrigger?: 
   // Fetch 1 lần khi mount
   useEffect(() => {
     if (!isAuthenticated) {
-      setLoading(false);
       return;
     }
 
     let cancelled = false;
-    setLoading(true);
 
     getMyUsage(apiFetch)
       .then((data) => {

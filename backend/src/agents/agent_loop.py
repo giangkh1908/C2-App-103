@@ -57,9 +57,7 @@ class AgentLoop:
         history_messages = []
         if history:
             for msg in history:
-                history_messages.append(
-                    LLMMessage(role=msg["role"], content=msg["content"])
-                )
+                history_messages.append(LLMMessage(role=msg["role"], content=msg["content"]))
 
         messages: list[LLMMessage] = [
             LLMMessage(role="system", content=build_tutor_system_prompt(config.level)),
@@ -110,11 +108,7 @@ class AgentLoop:
                             lf_output = llm_response.content or ""
                         else:
                             lf_output = None
-                        tool_name = (
-                            llm_response.tool_call.name
-                            if llm_response.tool_call
-                            else None
-                        )
+                        tool_name = llm_response.tool_call.name if llm_response.tool_call else None
                         gen.end(
                             output=lf_output,
                             metadata={
@@ -135,8 +129,7 @@ class AgentLoop:
                         pass
                 return AgentResponse(
                     answer=(
-                        "Hiện tại mình chưa xử lý được câu hỏi này. "
-                        "Bạn thử hỏi lại ngắn hơn nhé."
+                        "Hiện tại mình chưa xử lý được câu hỏi này. Bạn thử hỏi lại ngắn hơn nhé."
                     ),
                     steps=steps,
                 )
@@ -346,7 +339,9 @@ class AgentLoop:
                     error=tool_result.error,
                 )
                 steps.append(
-                    AgentStep(step_index=len(steps) + 1, tool_call=tool_call, observation=observation)
+                    AgentStep(
+                        step_index=len(steps) + 1, tool_call=tool_call, observation=observation
+                    )
                 )
                 last_observation = observation
                 last_tool_name = tool_call.name

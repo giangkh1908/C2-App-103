@@ -144,9 +144,11 @@ class TestCreatePaymentHappy:
         assert payment.amount_vnd == 49000
         assert payment.billing == "monthly"
         assert payment.plan_name == "plus"
-        assert payment.plan_id == plus_plan_doc["_id"] and isinstance(
-            payment.plan_id, str
-        ) or payment.plan_id == str(plus_plan_doc["_id"])
+        assert (
+            payment.plan_id == plus_plan_doc["_id"]
+            and isinstance(payment.plan_id, str)
+            or payment.plan_id == str(plus_plan_doc["_id"])
+        )
         # expiry lands at +30 days, with a healthy tolerance for
         # the few-ms drift between the assertion and the service clock.
         expected = datetime.now(UTC) + timedelta(days=30)
@@ -405,9 +407,7 @@ class TestVerifyAndMarkPaidHappy:
         assert "updated_at" in set_data
 
     @pytest.mark.asyncio
-    async def test_passes_raw_payload_to_payment(
-        self, mock_db, pending_payment_doc
-    ):
+    async def test_passes_raw_payload_to_payment(self, mock_db, pending_payment_doc):
         """The raw webhook payload is stored verbatim on the payment
         for audit / reconciliation — PII scrubbing is the gateway's
         job, not ours."""
@@ -476,9 +476,7 @@ class TestVerifyAndMarkPaidFailures:
         mock_db.users.update_one.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_wrong_amount_keeps_payment_pending(
-        self, mock_db, pending_payment_doc
-    ):
+    async def test_wrong_amount_keeps_payment_pending(self, mock_db, pending_payment_doc):
         """The gateway-claimed amount must match the catalog price
         exactly. On mismatch the payment must stay ``pending`` (so a
         corrected retry can settle it)."""
@@ -500,9 +498,7 @@ class TestVerifyAndMarkPaidFailures:
         mock_db.users.update_one.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_expired_payment_cannot_be_marked_paid(
-        self, mock_db, user_id, plan_id
-    ):
+    async def test_expired_payment_cannot_be_marked_paid(self, mock_db, user_id, plan_id):
         """If the sweeper already promoted the payment to ``expired``,
         a late-arriving webhook must not flip it to ``paid`` and must
         not activate the user."""
@@ -650,17 +646,13 @@ class TestGetPaymentByCode:
 
 class TestCancelPayment:
     @pytest.mark.asyncio
-    async def test_cancel_own_pending_payment(
-        self, mock_db, user_id, pending_payment_doc
-    ):
+    async def test_cancel_own_pending_payment(self, mock_db, user_id, pending_payment_doc):
         """Owner cancels their pending payment → status becomes expired."""
         updated_doc = {**pending_payment_doc, "status": PaymentStatus.EXPIRED.value}
         mock_db.payments.find_one_and_update = AsyncMock(return_value=updated_doc)
 
         with patch("src.services.payment_service.get_db", return_value=mock_db):
-            result = await cancel_payment(
-                pending_payment_doc["payment_code"], user_id
-            )
+            result = await cancel_payment(pending_payment_doc["payment_code"], user_id)
 
         assert result is not None
         assert result.status == PaymentStatus.EXPIRED
@@ -683,16 +675,12 @@ class TestCancelPayment:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_cancel_not_owner_returns_none(
-        self, mock_db, user_id, pending_payment_doc
-    ):
+    async def test_cancel_not_owner_returns_none(self, mock_db, user_id, pending_payment_doc):
         """Different user_id → None."""
         mock_db.payments.find_one_and_update = AsyncMock(return_value=None)
 
         with patch("src.services.payment_service.get_db", return_value=mock_db):
-            result = await cancel_payment(
-                pending_payment_doc["payment_code"], "other_user_id"
-            )
+            result = await cancel_payment(pending_payment_doc["payment_code"], "other_user_id")
 
         assert result is None
         # find_one_and_update was called (atomically), but the user_id
@@ -700,9 +688,7 @@ class TestCancelPayment:
         mock_db.payments.find_one_and_update.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_cancel_non_pending_returns_none(
-        self, mock_db, user_id, pending_payment_doc
-    ):
+    async def test_cancel_non_pending_returns_none(self, mock_db, user_id, pending_payment_doc):
         """Already paid/expired payment → None."""
         paid_doc = {**pending_payment_doc, "status": PaymentStatus.PAID.value}
         # The atomic filter requires status=pending; it won't match.

@@ -74,9 +74,6 @@ def validate_learning_core_result(result: LearningCoreResult) -> None:
     if result.practice_question_spec.correct_answer not in result.practice_question_spec.options:
         raise ValueError("Practice question correct_answer must exist in options")
 
-
-
-
 def validate_lesson_response(response: LessonResponse, curriculum_topic_id: str | None = None) -> None:
     if curriculum_topic_id is not None:
         if response.visual.visual_type not in get_expected_curriculum_visuals(curriculum_topic_id):

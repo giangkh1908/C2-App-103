@@ -19,6 +19,7 @@ from src.core.security import create_access_token, hash_password
 @pytest.fixture
 def app():
     from src.main import app
+
     return app
 
 
@@ -215,9 +216,7 @@ class TestUpgradePlan:
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_upgrade_forbidden_for_non_admin(
-        self, app, mock_db, auth_headers, mock_plan
-    ):
+    async def test_upgrade_forbidden_for_non_admin(self, app, mock_db, auth_headers, mock_plan):
         """Non-admin (regular user) callers must receive 403.
 
         The endpoint is admin-only — end users upgrade through the

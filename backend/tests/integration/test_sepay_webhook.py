@@ -57,12 +57,8 @@ SEPAY_CANCEL_PATH = "/api/v1/payment/cancel/{code}"
 # ---------------------------------------------------------------------------
 
 
-_TEST_MONGODB_URI = os.getenv(
-    "PRACTICE_TEST_MONGODB_URI", "mongodb://127.0.0.1:27018"
-)
-_TEST_MONGODB_DB_NAME = os.getenv(
-    "PRACTICE_TEST_MONGODB_DB_NAME", "toan_truc_quan_sepay_test"
-)
+_TEST_MONGODB_URI = os.getenv("PRACTICE_TEST_MONGODB_URI", "mongodb://127.0.0.1:27018")
+_TEST_MONGODB_DB_NAME = os.getenv("PRACTICE_TEST_MONGODB_DB_NAME", "toan_truc_quan_sepay_test")
 
 
 async def _try_ping_real_mongo() -> bool:
@@ -104,6 +100,7 @@ async def mock_db():
         # and don't matter here because we pre-insert docs.
         try:
             from src.core.database import ensure_payment_indexes
+
             await ensure_payment_indexes(db)
         except Exception:
             pass
@@ -348,9 +345,7 @@ class TestSePayWebhookHappy:
         assert response.json() == {"success": True}
 
         # DB: payment is paid, txn id persisted, raw payload stored.
-        updated = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        updated = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         assert updated is not None
         assert updated["status"] == PaymentStatus.PAID.value
         assert updated["gateway_transaction_id"] == "12345"
@@ -393,17 +388,13 @@ class TestSePayWebhookAuth:
             {"Authorization": "Bearer wrong-key"},  # wrong scheme
             {},  # missing entirely
         ):
-            response = await client.post(
-                SEPAY_WEBHOOK_PATH, json=payload, headers=bad_header
-            )
+            response = await client.post(SEPAY_WEBHOOK_PATH, json=payload, headers=bad_header)
             assert response.status_code == 401, (
                 f"expected 401 for header={bad_header!r}, got {response.status_code}"
             )
 
         # No DB mutation: payment is still pending, user untouched.
-        updated = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        updated = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         assert updated["status"] == PaymentStatus.PENDING.value
 
 
@@ -432,9 +423,7 @@ class TestPaymentCancel:
         assert body["payment_code"] == pending_payment["payment_code"]
         assert body["new_status"] == "expired"
 
-        updated = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        updated = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         assert updated["status"] == PaymentStatus.EXPIRED.value
 
     async def test_non_owner_returns_404(
@@ -451,9 +440,7 @@ class TestPaymentCancel:
         )
         assert response.status_code == 404
         # Original payment unchanged.
-        updated = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        updated = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         assert updated["status"] == PaymentStatus.PENDING.value
 
     async def test_unknown_code_returns_404(
@@ -514,9 +501,7 @@ class TestSePayWebhookIdempotency:
         # First call: flips status to paid.
         first = await client.post(SEPAY_WEBHOOK_PATH, json=payload, headers=_auth_header())
         assert first.status_code == 200
-        after_first = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        after_first = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         assert after_first["status"] == PaymentStatus.PAID.value
         original_paid_at = after_first["paid_at"]
         original_txn_id = after_first["gateway_transaction_id"]
@@ -528,9 +513,7 @@ class TestSePayWebhookIdempotency:
         assert second.status_code == 200
         assert second.json() == {"success": True}
 
-        after_second = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        after_second = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         # No rewrite: paid_at, txn_id, status, raw payload all
         # preserved from the first (winning) call.
         assert after_second["status"] == PaymentStatus.PAID.value
@@ -565,9 +548,7 @@ class TestSePayWebhookAmountMismatch:
         retry with the right amount will then settle normally.
         """
         # Pending payment amount is 49000 vnd. Gateway sends 100.
-        payload = _sepay_payload(
-            pending_payment["payment_code"], amount=100, txn_id=888
-        )
+        payload = _sepay_payload(pending_payment["payment_code"], amount=100, txn_id=888)
 
         response = await client.post(SEPAY_WEBHOOK_PATH, json=payload, headers=_auth_header())
 
@@ -575,9 +556,7 @@ class TestSePayWebhookAmountMismatch:
         assert response.json() == {"success": True}
 
         # DB: payment is still pending (NOT paid), no txn id stamped.
-        updated = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        updated = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         assert updated["status"] == PaymentStatus.PENDING.value
         assert updated["gateway_transaction_id"] is None
         assert updated["paid_at"] is None
@@ -615,8 +594,5 @@ class TestSePayWebhookFiltering:
         assert response.status_code == 200
         assert response.json() == {"success": True}
 
-        updated = await clean_payment_state.payments.find_one(
-            {"_id": pending_payment["_id"]}
-        )
+        updated = await clean_payment_state.payments.find_one({"_id": pending_payment["_id"]})
         assert updated["status"] == PaymentStatus.PENDING.value
-

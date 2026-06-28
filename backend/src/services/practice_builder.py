@@ -18,7 +18,9 @@ def build_practice_questions(
             str(tool_data["groups"] + tool_data["items_per_group"]),
         ]
         return (
-            LessonPracticeQuestion(question=question, options=options, correct_answer=str(tool_data["total"])),
+            LessonPracticeQuestion(
+                question=question, options=options, correct_answer=str(tool_data["total"])
+            ),
             PracticeQuestion(
                 id=f"practice_mult_{tool_data['groups']}_{tool_data['items_per_group']}",
                 question_text=question,
@@ -42,7 +44,9 @@ def build_practice_questions(
             str(tool_data["remainder"]),
         ]
         return (
-            LessonPracticeQuestion(question=question, options=options, correct_answer=str(tool_data["items_per_group"])),
+            LessonPracticeQuestion(
+                question=question, options=options, correct_answer=str(tool_data["items_per_group"])
+            ),
             PracticeQuestion(
                 id=f"practice_div_{tool_data['total_items']}_{tool_data['groups']}",
                 question_text=question,
@@ -66,7 +70,9 @@ def build_practice_questions(
             f"1/{tool_data['denominator']}",
         ]
         return (
-            LessonPracticeQuestion(question=question, options=options, correct_answer=tool_data["fraction_text"]),
+            LessonPracticeQuestion(
+                question=question, options=options, correct_answer=tool_data["fraction_text"]
+            ),
             PracticeQuestion(
                 id=f"practice_frac_{tool_data['numerator']}_{tool_data['denominator']}",
                 question_text=question,
@@ -109,7 +115,9 @@ def build_practice_questions(
         str(tool_data["width"]),
     ]
     return (
-        LessonPracticeQuestion(question=question, options=options, correct_answer=str(tool_data["area"])),
+        LessonPracticeQuestion(
+            question=question, options=options, correct_answer=str(tool_data["area"])
+        ),
         PracticeQuestion(
             id=f"practice_rect_{tool_data['length']}_{tool_data['width']}",
             question_text=question,

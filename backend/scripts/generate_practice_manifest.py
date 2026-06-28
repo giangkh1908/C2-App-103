@@ -29,13 +29,17 @@ def build_draft_manifest(rows: list[dict]) -> dict[str, dict[str, list[str]]]:
         )
         chosen = [exam["source_row_id"] for exam in grade_exams[:ACTIVE_EXAMS_PER_GRADE]]
         if len(chosen) < ACTIVE_EXAMS_PER_GRADE:
-            raise ValueError(f"Grade {grade} only has {len(chosen)} clean exams, expected {ACTIVE_EXAMS_PER_GRADE}")
+            raise ValueError(
+                f"Grade {grade} only has {len(chosen)} clean exams, expected {ACTIVE_EXAMS_PER_GRADE}"
+            )
         manifest["grades"][str(grade)] = chosen
     return manifest
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate a draft curated manifest from a full dataset snapshot")
+    parser = argparse.ArgumentParser(
+        description="Generate a draft curated manifest from a full dataset snapshot"
+    )
     parser.add_argument(
         "--input-path",
         type=Path,

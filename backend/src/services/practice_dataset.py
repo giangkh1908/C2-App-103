@@ -15,9 +15,14 @@ logger = logging.getLogger("toan_truc_quan.practice_dataset")
 
 ACTIVE_EXAMS_PER_GRADE = 10
 DATASET_SOURCE = "hllj/vi_grade_school_math_mcq"
-DEFAULT_FULL_DATASET_PATH = Path(__file__).resolve().parents[2] / "data" / "practice" / "vi_grade_school_math_mcq_full.json"
+DEFAULT_FULL_DATASET_PATH = (
+    Path(__file__).resolve().parents[2] / "data" / "practice" / "vi_grade_school_math_mcq_full.json"
+)
 DEFAULT_CURATED_MANIFEST_PATH = (
-    Path(__file__).resolve().parents[2] / "data" / "practice" / "vi_grade_school_math_mcq_curated_manifest.json"
+    Path(__file__).resolve().parents[2]
+    / "data"
+    / "practice"
+    / "vi_grade_school_math_mcq_curated_manifest.json"
 )
 EXPLANATION_PATTERNS = (
     re.compile(r"dap an dung la[:\s]+([A-D])", re.IGNORECASE),
@@ -189,7 +194,9 @@ def load_curated_manifest(path: Path) -> dict[int, list[str]]:
             raise ValueError(f"Curated manifest is missing grade {grade}")
         source_row_ids = [str(item).strip() for item in raw_ids if str(item).strip()]
         if len(source_row_ids) != ACTIVE_EXAMS_PER_GRADE:
-            raise ValueError(f"Grade {grade} must contain exactly {ACTIVE_EXAMS_PER_GRADE} curated exams")
+            raise ValueError(
+                f"Grade {grade} must contain exactly {ACTIVE_EXAMS_PER_GRADE} curated exams"
+            )
         if len(set(source_row_ids)) != len(source_row_ids):
             raise ValueError(f"Grade {grade} contains duplicate curated exam ids")
         manifest[grade] = source_row_ids
@@ -236,7 +243,9 @@ def parse_exam_rows(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], d
             stats["questions_seen"] += 1
             question_text = clean_question_text(str(problem.get("question", "")).strip())
             raw_choices = problem.get("choices") or []
-            choices = [sanitize_text(str(choice)) for choice in raw_choices if sanitize_text(str(choice))]
+            choices = [
+                sanitize_text(str(choice)) for choice in raw_choices if sanitize_text(str(choice))
+            ]
             explanation_raw = sanitize_text(str(problem.get("explanation", "")).strip())
 
             if not question_text:
@@ -345,7 +354,9 @@ def curate_exam_documents(
                     f"Curated manifest references missing exam id '{source_row_id}' for grade {grade}"
                 )
             if exam["grade"] != grade:
-                raise ValueError(f"Curated exam id '{source_row_id}' is assigned to the wrong grade")
+                raise ValueError(
+                    f"Curated exam id '{source_row_id}' is assigned to the wrong grade"
+                )
             exam["is_active"] = True
             exam["sort_order"] = sort_order
             exam["curation_status"] = "active_curated"
@@ -403,11 +414,21 @@ def build_exam_catalog(
         active_exam_ids_by_grade[grade] = [
             exam["exam_id"]
             for exam in sorted(
-                (candidate for candidate in exams if candidate["grade"] == grade and candidate["is_active"]),
-                key=lambda exam: (exam["sort_order"] or 9999, exam["title"].lower(), exam["exam_id"]),
+                (
+                    candidate
+                    for candidate in exams
+                    if candidate["grade"] == grade and candidate["is_active"]
+                ),
+                key=lambda exam: (
+                    exam["sort_order"] or 9999,
+                    exam["title"].lower(),
+                    exam["exam_id"],
+                ),
             )
         ]
-    return PracticeExamCatalog(exams_by_id=exams_by_id, active_exam_ids_by_grade=active_exam_ids_by_grade)
+    return PracticeExamCatalog(
+        exams_by_id=exams_by_id, active_exam_ids_by_grade=active_exam_ids_by_grade
+    )
 
 
 _mongo_catalog: PracticeExamCatalog | None = None
@@ -419,10 +440,14 @@ async def load_exam_catalog_from_db(db) -> PracticeExamCatalog:
     Falls back to local JSON file if the MongoDB collection is empty.
     """
     global _mongo_catalog
-    exams = await db.practice_exam_sets.find(
-        {"is_active": True},
-        {"_id": 0},
-    ).sort([("grade", 1), ("sort_order", 1)]).to_list(length=None)
+    exams = (
+        await db.practice_exam_sets.find(
+            {"is_active": True},
+            {"_id": 0},
+        )
+        .sort([("grade", 1), ("sort_order", 1)])
+        .to_list(length=None)
+    )
 
     if not exams:
         logger.warning(

@@ -34,8 +34,12 @@ def wait_for_mongo(uri: str, timeout_seconds: int) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run /practice integration tests against a disposable Mongo container")
-    parser.add_argument("--keep-up", action="store_true", help="Keep the Mongo test container running after tests")
+    parser = argparse.ArgumentParser(
+        description="Run /practice integration tests against a disposable Mongo container"
+    )
+    parser.add_argument(
+        "--keep-up", action="store_true", help="Keep the Mongo test container running after tests"
+    )
     parser.add_argument(
         "--timeout-seconds",
         type=int,
@@ -62,7 +66,14 @@ def main() -> int:
     ]
     test_cmd = ["pytest", "tests/integration/test_practice_api.py", "-q"]
 
-    subprocess.run(cleanup_cmd, cwd=backend_dir, env=env, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(
+        cleanup_cmd,
+        cwd=backend_dir,
+        env=env,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
     subprocess.run(run_cmd, cwd=backend_dir, env=env, check=True)
     wait_for_mongo(env["PRACTICE_TEST_MONGODB_URI"], args.timeout_seconds)
 

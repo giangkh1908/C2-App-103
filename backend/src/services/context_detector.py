@@ -38,13 +38,10 @@ DEFAULT_TOOL_ARGS: dict[Topic, dict[str, int | str]] = {
 
 def normalize_text(text: str) -> str:
     text = unicodedata.normalize("NFD", text)
-    text = "".join(
-        ch
-        for ch in text
-        if unicodedata.category(ch) != "Mn"
-    )
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
     text = text.lower()
-    return text.replace("đ", 'd')
+    return text.replace("đ", "d")
+
 
 def detect_context(message: str, selected_topic: Topic | None) -> LearningContext:
     normalized = normalize_text(message)
@@ -88,11 +85,7 @@ def detect_context(message: str, selected_topic: Topic | None) -> LearningContex
             intent=intent,
             tool_name="rectangle_measurement",
             tool_args=tool_args,
-            visual_type=(
-                "perimeter_path"
-                if tool_args.get("mode") == "perimeter"
-                else "area_grid"
-            ),
+            visual_type=("perimeter_path" if tool_args.get("mode") == "perimeter" else "area_grid"),
         )
 
     if topic == "data_representation":

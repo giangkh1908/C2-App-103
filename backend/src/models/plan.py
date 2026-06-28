@@ -11,9 +11,14 @@ class PlanQuota(BaseModel):
 
 
 class PlanFeatures(BaseModel):
-    topics: list[str] = Field(default_factory=lambda: [
-        "multiplication", "division", "fraction_basic", "perimeter_area_basic"
-    ])
+    topics: list[str] = Field(
+        default_factory=lambda: [
+            "multiplication",
+            "division",
+            "fraction_basic",
+            "perimeter_area_basic",
+        ]
+    )
     progress_tracking: bool = False
     parent_dashboard: bool = False
     multi_accounts: bool = False

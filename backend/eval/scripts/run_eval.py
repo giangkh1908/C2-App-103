@@ -54,10 +54,16 @@ def run_evaluation(
 
         if verbose:
             status = "✓" if is_correct else "✗"
-            print(f"  {status} {problem['id']}: expected={detail['expected']}, actual={detail['actual']}")
+            print(
+                f"  {status} {problem['id']}: expected={detail['expected']}, actual={detail['actual']}"
+            )
 
     results["accuracy"] = results["correct"] / results["total"] if results["total"] > 0 else 0
-    avg_time = sum(d["response_time_ms"] for d in results["details"]) / len(results["details"]) if results["details"] else 0
+    avg_time = (
+        sum(d["response_time_ms"] for d in results["details"]) / len(results["details"])
+        if results["details"]
+        else 0
+    )
     results["avg_response_time_ms"] = int(avg_time)
 
     return results

@@ -46,18 +46,18 @@ class MemoryRepository:
             return ""
 
         # 1. Loại bỏ các emoji thuộc dải bổ sung (Supplementary Planes - Mặt cười, đồ vật, đồ ăn...)
-        text = re.sub(r'[\U00010000-\U0010ffff]', '', text)
-        
+        text = re.sub(r"[\U00010000-\U0010ffff]", "", text)
+
         # 2. Loại bỏ các biểu tượng/hình vẽ thuộc dải BMP thông dụng (Miscellaneous Symbols & Dingbats)
-        text = re.sub(r'[\u2600-\u27BF]', '', text)
-        
+        text = re.sub(r"[\u2600-\u27BF]", "", text)
+
         # 3. Loại bỏ khoảng trắng thừa xuất hiện sau khi xóa emoji
-        text = re.sub(r' +', ' ', text).strip()
+        text = re.sub(r" +", " ", text).strip()
 
         # 4. Rút ngắn văn bản nếu vượt quá giới hạn cấu hình
         if len(text) > MAX_ASSISTANT_STORE_LEN:
             text = text[:MAX_ASSISTANT_STORE_LEN].strip() + "..."
-            
+
         return text
 
     async def load_messages(

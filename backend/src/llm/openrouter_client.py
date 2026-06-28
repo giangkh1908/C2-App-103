@@ -40,8 +40,7 @@ class OpenRouterClient(BaseLLMClient):
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [
-                {"role": message.role, "content": message.content}
-                for message in messages
+                {"role": message.role, "content": message.content} for message in messages
             ],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
@@ -133,10 +132,7 @@ class OpenRouterClient(BaseLLMClient):
         """
         payload: dict[str, Any] = {
             "model": self.model,
-            "messages": [
-                {"role": m.role, "content": m.content}
-                for m in messages
-            ],
+            "messages": [{"role": m.role, "content": m.content} for m in messages],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
             "stream": True,

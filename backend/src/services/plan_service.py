@@ -140,6 +140,7 @@ async def create_plan(plan: PlanCreate) -> PlanInDB:
 async def update_plan(plan_id: str, updates: dict) -> PlanInDB | None:
     db = get_db()
     from datetime import UTC, datetime
+
     updates["updated_at"] = datetime.now(UTC)
 
     mongo_updates = {}

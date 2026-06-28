@@ -110,9 +110,7 @@ class SessionRepository:
         }
 
     async def delete_session(self, session_id: str, user_id: str) -> None:
-        await self._collection.delete_many(
-            {"session_id": session_id, "user_id": user_id}
-        )
+        await self._collection.delete_many({"session_id": session_id, "user_id": user_id})
 
     async def session_exists(self, session_id: str, user_id: str) -> bool:
         doc = await self._collection.find_one(

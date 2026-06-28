@@ -6,7 +6,12 @@ import type {
   SpeechTranscriptResult,
   SpeechTranscribeOptions,
 } from './speech';
-import { DEFAULT_TTS_LOCALE, getSpeechModeByKind, sanitizeSpeechText } from './speech';
+import {
+  DEFAULT_TTS_LOCALE,
+  getSpeechModeByKind,
+  isProductionRuntime,
+  sanitizeSpeechText,
+} from './speech';
 
 type BrowserSpeechRecognition = {
   continuous: boolean;
@@ -26,6 +31,8 @@ type BrowserWindow = Window & {
   SpeechRecognition?: SpeechRecognitionConstructor;
   webkitSpeechRecognition?: SpeechRecognitionConstructor;
 };
+
+let hasWarnedAboutBrowserTtsInProduction = false;
 
 export interface SpeechToTextProvider {
   mode: SpeechMode;
@@ -247,7 +254,24 @@ export function createSpeechToTextProvider(): SpeechToTextProvider {
 export function createTextToSpeechProvider(
   apiFetch?: (path: string, options?: RequestInit) => Promise<Response>,
 ): TextToSpeechProvider {
-  return getSpeechModeByKind('tts') === 'server'
+  const mode = getSpeechModeByKind('tts');
+  if (
+    mode !== 'server' &&
+    isProductionRuntime() &&
+    !hasWarnedAboutBrowserTtsInProduction
+  ) {
+    hasWarnedAboutBrowserTtsInProduction = true;
+    console.warn(
+      '[TTS] NEXT_PUBLIC_TTS_MODE is not "server" in production. The app may fall back to a browser voice instead of Hoai My.',
+    );
+  }
+
+  const effectiveMode =
+    mode !== 'server' && isProductionRuntime()
+      ? 'server'
+      : mode;
+
+  return effectiveMode === 'server'
     ? createServerTextToSpeechProvider(apiFetch)
     : createBrowserTextToSpeechProvider();
 }

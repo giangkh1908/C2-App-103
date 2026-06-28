@@ -1,13 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
+from src.core.config import settings
 from src.core.database import get_db
 from src.core.deps import get_current_user
+from src.core.logging import get_logger
 from src.models.speech import TextToSpeechRequest
 from src.models.user import UserInDB
 from src.services.speech_service import SpeechService, SpeechServiceError
 from src.services.usage_service import UsageService
 
 router = APIRouter(prefix="/speech", tags=["speech"])
+logger = get_logger("toan_truc_quan.api.speech")
 
 
 @router.post("/tts")
@@ -44,6 +47,14 @@ async def text_to_speech(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="He thong chua tao duoc giong doc tu dich vu am thanh luc nay.",
         ) from exc
+
+    logger.info(
+        "tts_response_ready",
+        request_path="/api/v1/speech/tts",
+        provider="edge_tts",
+        voice=settings.tts_voice,
+        media_type=speech_service.media_type,
+    )
 
     return Response(
         content=audio_bytes,

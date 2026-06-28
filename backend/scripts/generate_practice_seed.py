@@ -2,7 +2,6 @@
 import json
 from pathlib import Path
 
-
 OUTPUT_PATH = (
     Path(__file__).resolve().parents[1] / "data" / "practice" / "vi_grade_school_math_mcq_seed.json"
 )
@@ -216,7 +215,7 @@ def generate_grade_4_exam(index: int) -> list[dict]:
             f"Diện tích hình chữ nhật bằng {length} nhân {width}, được {length * width} cm2.",
         ),
         mcq(
-            f"Câu 3: Phân số nào bằng 1/2?",
+            "Câu 3: Phân số nào bằng 1/2?",
             f"{numerator}/{denominator}",
             [
                 f"{numerator}/{denominator + 1}",

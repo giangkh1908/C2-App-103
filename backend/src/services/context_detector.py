@@ -1,8 +1,8 @@
 import re
+import unicodedata
 
 from src.models.chat import Intent, Topic
 from src.services.types import LearningContext
-import unicodedata
 
 DEFAULT_TOOL_ARGS: dict[Topic, dict[str, int | str]] = {
     "multiplication": {

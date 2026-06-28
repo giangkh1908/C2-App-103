@@ -8,6 +8,7 @@ tool selection, latency (TTFT + total), and cost.
 import argparse
 import asyncio
 import json
+<<<<<<< HEAD
 import statistics
 import time
 import uuid
@@ -15,6 +16,16 @@ from datetime import datetime, timezone
 from typing import Any
 
 import httpx
+=======
+import time
+from typing import Any
+
+
+def load_dataset(path: str) -> dict[str, Any]:
+    """Load evaluation dataset from JSON file."""
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+>>>>>>> main
 
 
 def _percentile(values: list[float], pct: float) -> float:

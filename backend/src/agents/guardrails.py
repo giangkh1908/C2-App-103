@@ -5,10 +5,9 @@ Deterministic keyword-based heuristics only.
 No external dependencies, no ML, no regex-heavy solutions.
 """
 
+import unicodedata
 from dataclasses import dataclass
 from typing import Final
-import unicodedata
-
 
 # ---------------------------------------------------------------------------
 # Result type

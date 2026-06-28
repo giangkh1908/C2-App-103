@@ -214,7 +214,7 @@ class TestGetPlanByName:
 class TestCreatePlan:
     @pytest.mark.asyncio
     async def test_create_plan(self, mock_db):
-        from src.models.plan import PlanCreate, PlanQuota, PlanFeatures
+        from src.models.plan import PlanCreate, PlanFeatures, PlanQuota
 
         mock_db.plans.insert_one = AsyncMock()
         mock_db.plans.insert_one.return_value.inserted_id = ObjectId()

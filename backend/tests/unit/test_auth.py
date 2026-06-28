@@ -1,6 +1,8 @@
+from datetime import UTC
+from unittest.mock import patch
+
 import pytest
 from google.auth.exceptions import TransportError
-from unittest.mock import patch, AsyncMock
 from httpx import AsyncClient
 
 
@@ -187,7 +189,7 @@ class TestForgotPassword:
 class TestResetPassword:
     async def test_reset_password_success(self, client: AsyncClient, test_user, mock_db):
         import secrets
-        from datetime import datetime, timedelta, timezone
+        from datetime import datetime, timedelta
 
         token = secrets.token_urlsafe(32)
         await mock_db.users.update_one(
@@ -195,7 +197,7 @@ class TestResetPassword:
             {
                 "$set": {
                     "reset_token": token,
-                    "reset_token_expires": datetime.now(timezone.utc) + timedelta(hours=1),
+                    "reset_token_expires": datetime.now(UTC) + timedelta(hours=1),
                 }
             },
         )
@@ -222,7 +224,7 @@ class TestResetPassword:
 
     async def test_reset_password_expired_token(self, client: AsyncClient, test_user, mock_db):
         import secrets
-        from datetime import datetime, timedelta, timezone
+        from datetime import datetime, timedelta
 
         token = secrets.token_urlsafe(32)
         await mock_db.users.update_one(
@@ -230,7 +232,7 @@ class TestResetPassword:
             {
                 "$set": {
                     "reset_token": token,
-                    "reset_token_expires": datetime.now(timezone.utc) - timedelta(hours=1),
+                    "reset_token_expires": datetime.now(UTC) - timedelta(hours=1),
                 }
             },
         )
@@ -265,7 +267,7 @@ class TestVerifyEmail:
 
     async def test_verify_email_confirm_success(self, client: AsyncClient, test_user, mock_db):
         import secrets
-        from datetime import datetime, timedelta, timezone
+        from datetime import datetime, timedelta
 
         token = secrets.token_urlsafe(32)
         await mock_db.users.update_one(
@@ -273,7 +275,7 @@ class TestVerifyEmail:
             {
                 "$set": {
                     "verify_token": token,
-                    "verify_token_expires": datetime.now(timezone.utc) + timedelta(hours=24),
+                    "verify_token_expires": datetime.now(UTC) + timedelta(hours=24),
                 }
             },
         )

@@ -5,9 +5,9 @@ Lưu trữ lịch sử hội thoại theo session_id vào MongoDB collection
 ``agent_memory``. Không chứa business logic của agent.
 """
 
-from dataclasses import dataclass
-from datetime import datetime, timezone
 import re
+from dataclasses import dataclass
+from datetime import UTC, datetime
 
 from src.core.database import get_db
 
@@ -100,7 +100,7 @@ class MemoryRepository:
             assistant_message: Nội dung phản hồi của agent.
         """
         cleaned_assistant_message = self._clean_and_shorten_message(assistant_message)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         new_messages = [
             {"role": "user", "content": user_message},
             {"role": "assistant", "content": cleaned_assistant_message},
@@ -147,6 +147,6 @@ class MemoryRepository:
                         "$slice": -max_messages,
                     }
                 },
-                "$set": {"updated_at": datetime.now(timezone.utc)},
+                "$set": {"updated_at": datetime.now(UTC)},
             },
         )

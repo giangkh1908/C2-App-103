@@ -7,7 +7,6 @@ import sys
 import time
 from pathlib import Path
 
-
 DEFAULT_MONGODB_URI = "mongodb://127.0.0.1:27018"
 DEFAULT_MONGODB_DB_NAME = "toan_truc_quan_practice_test"
 DEFAULT_CONTAINER_NAME = "c2-practice-test-mongo"

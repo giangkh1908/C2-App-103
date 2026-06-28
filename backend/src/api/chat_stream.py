@@ -51,8 +51,8 @@ async def _stream_chat_turn(
         yield _sse("status", json.dumps({"message": "Đang tạo câu trả lời…"}, ensure_ascii=False))
         await asyncio.sleep(0)
 
-        from src.services.types import LearningCoreRequest
         from src.services.response_mapper import to_chat_response
+        from src.services.types import LearningCoreRequest
 
         chat_response = None
         async for event_type, payload in orchestrator.learning_core_service.generate_stream(

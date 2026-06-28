@@ -10,9 +10,8 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [costStats, setCostStats] = useState<AdminCostStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [costLoading, setCostLoading] = useState(true);
+  const [, setCostLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [costError, setCostError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;

@@ -3,7 +3,6 @@ import {
   createCheckout,
   getPaymentStatus,
   PaymentAuthError,
-  PaymentApiError,
   type ApiFetch,
 } from "@/lib/paymentApi";
 

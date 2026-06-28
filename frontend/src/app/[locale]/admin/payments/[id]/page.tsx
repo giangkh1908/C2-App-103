@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -69,30 +69,33 @@ export default function AdminPaymentDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [activateSuccess, setActivateSuccess] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await fetchPayment(apiFetch, id);
-      setPayment(result);
-    } catch (err) {
-      if (err instanceof AdminAuthError) {
-        router.push(`/${locale}/login`);
-        return;
-      }
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Đã xảy ra lỗi");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [apiFetch, id, locale, router]);
-
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const result = await fetchPayment(apiFetch, id);
+        if (!cancelled) setPayment(result);
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof AdminAuthError) {
+          router.push(`/${locale}/login`);
+          return;
+        }
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Đã xảy ra lỗi");
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiFetch, id, locale, router]);
 
   const handleActivate = async () => {
     setIsActivating(true);

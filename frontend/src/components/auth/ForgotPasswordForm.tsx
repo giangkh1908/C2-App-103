@@ -17,6 +17,12 @@ export default function ForgotPasswordForm() {
   const searchParams = useSearchParams();
   const { forgotPassword, isAuthenticated, isLoading } = useAuth();
 
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       const redirectTo = searchParams.get("redirectTo");
@@ -26,12 +32,6 @@ export default function ForgotPasswordForm() {
 
   if (isLoading) return null;
   if (isAuthenticated) return null;
-
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

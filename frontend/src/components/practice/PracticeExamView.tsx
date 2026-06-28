@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Circle, ClipboardCheck, LoaderCircle, Mic, MicOff, Save, Volume2, VolumeX } from "lucide-react";
@@ -105,7 +105,7 @@ export default function PracticeExamView({
   const percent = progressPercent(answeredCount, exam.questions.length);
   const [voiceTranscript, setVoiceTranscript] = useState("");
   const [pendingVoiceChoice, setPendingVoiceChoice] = useState<number | null>(null);
-  const [speechNotice, setSpeechNotice] = useState<string | null>(null);
+  const [manualSpeechNotice, setManualSpeechNotice] = useState<string | null>(null);
   const [activeNarrationKey, setActiveNarrationKey] = useState<string | null>(null);
   const {
     isSupported: isSpeechToTextSupported,
@@ -124,32 +124,34 @@ export default function PracticeExamView({
     clearError: clearTextToSpeechError,
   } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
 
-  useEffect(() => {
+  const speechNotice = useMemo(() => {
+    if (manualSpeechNotice) {
+      return manualSpeechNotice;
+    }
+    if (speechToTextError === "speech_not_supported" || textToSpeechError === "speech_not_supported") {
+      return speechCopy.unsupported;
+    }
+    if (speechToTextError) {
+      return speechCopy.sttError;
+    }
+    if (textToSpeechError) {
+      return speechCopy.unsupported;
+    }
+    return null;
+  }, [manualSpeechNotice, speechCopy.sttError, speechCopy.unsupported, speechToTextError, textToSpeechError]);
+
+  const resetVoiceUi = () => {
     setVoiceTranscript("");
     setPendingVoiceChoice(null);
-    setSpeechNotice(null);
+    setManualSpeechNotice(null);
     setActiveNarrationKey(null);
     stopTranscription();
     stopSpeaking();
-  }, [currentQuestion.question_id, stopSpeaking, stopTranscription]);
-
-  useEffect(() => {
-    if (speechToTextError === "speech_not_supported" || textToSpeechError === "speech_not_supported") {
-      setSpeechNotice(speechCopy.unsupported);
-      return;
-    }
-    if (speechToTextError) {
-      setSpeechNotice(speechCopy.sttError);
-      return;
-    }
-    if (textToSpeechError) {
-      setSpeechNotice(speechCopy.unsupported);
-    }
-  }, [speechCopy.sttError, speechCopy.unsupported, speechToTextError, textToSpeechError]);
+  };
 
   const handleReadQuestion = async (slow = false) => {
     if (!isTextToSpeechSupported) {
-      setSpeechNotice(speechCopy.unsupported);
+      setManualSpeechNotice(speechCopy.unsupported);
       return;
     }
 
@@ -160,7 +162,7 @@ export default function PracticeExamView({
     }
 
     clearTextToSpeechError();
-    setSpeechNotice(null);
+    setManualSpeechNotice(null);
     setActiveNarrationKey("question");
     await speak(currentQuestion.question_text, { slow, maxChars: 280 });
     setActiveNarrationKey(null);
@@ -168,7 +170,7 @@ export default function PracticeExamView({
 
   const handleSpeakAnswer = async () => {
     if (!isSpeechToTextSupported) {
-      setSpeechNotice(speechCopy.unsupported);
+      setManualSpeechNotice(speechCopy.unsupported);
       return;
     }
 
@@ -178,7 +180,7 @@ export default function PracticeExamView({
     }
 
     clearSpeechToTextError();
-    setSpeechNotice(null);
+    setManualSpeechNotice(null);
     const result = await transcribe();
     const transcript = result?.transcript?.trim() ?? "";
     setVoiceTranscript(transcript);
@@ -188,7 +190,7 @@ export default function PracticeExamView({
     } else {
       setPendingVoiceChoice(null);
       if (transcript) {
-        setSpeechNotice(speechCopy.retryChoice);
+        setManualSpeechNotice(speechCopy.retryChoice);
       }
     }
   };
@@ -198,7 +200,17 @@ export default function PracticeExamView({
     onChooseAnswer(currentQuestion.question_id, pendingVoiceChoice);
     setVoiceTranscript("");
     setPendingVoiceChoice(null);
-    setSpeechNotice(null);
+    setManualSpeechNotice(null);
+  };
+
+  const handleSelectQuestion = (index: number) => {
+    resetVoiceUi();
+    onSelectQuestion(index);
+  };
+
+  const handleMoveQuestion = (direction: -1 | 1) => {
+    resetVoiceUi();
+    onMoveQuestion(direction);
   };
 
   return (
@@ -227,7 +239,7 @@ export default function PracticeExamView({
                   type="button"
                   aria-label={t("result.questionNumber", { number: index + 1 })}
                   aria-current={active ? "step" : undefined}
-                  onClick={() => onSelectQuestion(index)}
+                  onClick={() => handleSelectQuestion(index)}
                   className={`min-h-11 rounded-xl border text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#587849]/35 ${
                     active
                       ? "border-[#587849] bg-[#587849] text-white"
@@ -345,7 +357,7 @@ export default function PracticeExamView({
                 onClick={() => {
                   setPendingVoiceChoice(null);
                   setVoiceTranscript("");
-                  setSpeechNotice(null);
+                  setManualSpeechNotice(null);
                   onChooseAnswer(currentQuestion.question_id, index);
                 }}
                 className={`flex min-h-14 items-start gap-3 rounded-[18px] border px-4 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#587849]/30 ${
@@ -366,7 +378,7 @@ export default function PracticeExamView({
             <button
               type="button"
               disabled={currentQuestionIndex === 0}
-              onClick={() => onMoveQuestion(-1)}
+              onClick={() => handleMoveQuestion(-1)}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#D9D4C7] px-4 text-sm font-semibold text-[#59635C] transition hover:bg-[#FBF8F0] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -375,7 +387,7 @@ export default function PracticeExamView({
             <button
               type="button"
               disabled={currentQuestionIndex === exam.questions.length - 1}
-              onClick={() => onMoveQuestion(1)}
+              onClick={() => handleMoveQuestion(1)}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#D9D4C7] px-4 text-sm font-semibold text-[#59635C] transition hover:bg-[#FBF8F0] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t("exam.nextQuestion")}
@@ -395,13 +407,13 @@ export default function PracticeExamView({
       </section>
 
       <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-[1fr_1.3fr_1fr] gap-2 border-t border-[#DED7C8] bg-white/95 p-3 backdrop-blur md:hidden">
-        <button type="button" disabled={currentQuestionIndex === 0} onClick={() => onMoveQuestion(-1)} className="min-h-12 rounded-xl border border-[#D9D4C7] text-sm font-semibold text-[#59635C] disabled:opacity-45">
+        <button type="button" disabled={currentQuestionIndex === 0} onClick={() => handleMoveQuestion(-1)} className="min-h-12 rounded-xl border border-[#D9D4C7] text-sm font-semibold text-[#59635C] disabled:opacity-45">
           {t("exam.mobilePrev")}
         </button>
         <button type="button" disabled={isSubmitting} onClick={onSubmit} className="min-h-12 rounded-xl bg-[#587849] text-sm font-bold text-white disabled:opacity-60">
           {t("exam.submit")}
         </button>
-        <button type="button" disabled={currentQuestionIndex === exam.questions.length - 1} onClick={() => onMoveQuestion(1)} className="min-h-12 rounded-xl border border-[#D9D4C7] text-sm font-semibold text-[#59635C] disabled:opacity-45">
+        <button type="button" disabled={currentQuestionIndex === exam.questions.length - 1} onClick={() => handleMoveQuestion(1)} className="min-h-12 rounded-xl border border-[#D9D4C7] text-sm font-semibold text-[#59635C] disabled:opacity-45">
           {t("exam.mobileNext")}
         </button>
       </div>

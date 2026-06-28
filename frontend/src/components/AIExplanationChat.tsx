@@ -423,7 +423,6 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
   const [pendingSuggestion, setPendingSuggestion] = useState<ChatSuggestion | null>(null);
   const [expandedSuggestionGroup, setExpandedSuggestionGroup] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [streamStatusText, setStreamStatusText] = useState<string | null>(null);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [speechNotice, setSpeechNotice] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -461,20 +460,19 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  useEffect(() => {
+  const derivedSpeechNotice = useMemo(() => {
     if (speechToTextError === 'speech_not_supported' || textToSpeechError === 'speech_not_supported') {
-      setSpeechNotice(speechCopy.unsupported);
-      return;
+      return speechCopy.unsupported;
     }
     if (speechToTextError) {
-      setSpeechNotice(speechCopy.sttError);
-      return;
+      return speechCopy.sttError;
     }
     if (textToSpeechError) {
-      setSpeechNotice(speechCopy.ttsError);
-      return;
+      return speechCopy.ttsError;
     }
+    return null;
   }, [speechCopy, speechToTextError, textToSpeechError]);
+  const visibleSpeechNotice = speechNotice ?? derivedSpeechNotice;
 
   // ── Session history ──
   const loadHistory = useCallback(async () => {
@@ -499,15 +497,6 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
 
     return () => { active = false; };
   }, [apiFetch]);
-
-  useEffect(() => {
-    if (messages.length === 1 && messages[0]?.id === 'welcome_1') {
-      setMessages([buildGradeWelcomeMessage(tChat, selectedGrade)]);
-    }
-    setPendingSuggestion(null);
-    setExpandedSuggestionGroup(null);
-    setSpeechNotice(null);
-  }, [selectedGrade, tChat]);
 
   const handleSpeak = useCallback(async (text: string, id: string, slow = false) => {
     if (!isTextToSpeechSupported) {
@@ -539,6 +528,18 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     setPendingSuggestion(nextSuggestion);
     inputRef.current?.focus();
   }, [selectedGrade]);
+
+  const handleGradeSelect = useCallback((grade: number) => {
+    setSelectedGrade(grade);
+    setMessages((prev) =>
+      prev.length === 1 && prev[0]?.id === 'welcome_1'
+        ? [buildGradeWelcomeMessage(tChat, grade)]
+        : prev,
+    );
+    setPendingSuggestion(null);
+    setExpandedSuggestionGroup(null);
+    setSpeechNotice(null);
+  }, [tChat]);
 
   const toggleRecording = useCallback(async () => {
     if (!isSpeechToTextSupported) {
@@ -647,7 +648,6 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
       },
     ]);
     setIsLoading(true);
-    setStreamStatusText(null);
 
     // Tạo placeholder message cho AI – sẽ được update từng chunk
     const aiMsgId = `ai_${Date.now()}`;
@@ -671,9 +671,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
           pendingSuggestion: getExactSuggestionMatch(text, pendingSuggestion),
         }),
         {
-          onStatus: (message) => {
-            setStreamStatusText(message);
-          },
+          onStatus: () => {},
 
           onToken: (chunk) => {
             // Append chunk vào text của AI message placeholder
@@ -685,7 +683,6 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
           },
 
           onDone: (payload) => {
-            setStreamStatusText(null);
             setSessionId(payload.session_id);
             setActiveSessionId(payload.session_id);
             setChatTurnCount((c) => c + 1);
@@ -736,7 +733,6 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
           },
 
           onError: (message) => {
-            setStreamStatusText(null);
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === aiMsgId
@@ -754,8 +750,6 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
         },
       );
     } catch (err) {
-      setStreamStatusText(null);
-      
       // Check if it's a 429 quota error
       const isQuotaError = err instanceof Error && err.message.includes('429');
       
@@ -783,7 +777,6 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     } finally {
       setPendingSuggestion(null);
       setIsLoading(false);
-      setStreamStatusText(null);
     }
   };
 
@@ -833,7 +826,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
               <button
                 key={grade}
                 type="button"
-                onClick={() => setSelectedGrade(grade)}
+                onClick={() => handleGradeSelect(grade)}
                 className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
                   selectedGrade === grade
                     ? 'bg-natural-green text-white'
@@ -1008,8 +1001,8 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
             <Send className="h-4 w-4" />
           </button>
         </form>
-        {speechNotice ? (
-          <p className="mt-2 text-center text-[10px] text-amber-600">{speechNotice}</p>
+        {visibleSpeechNotice ? (
+          <p className="mt-2 text-center text-[10px] text-amber-600">{visibleSpeechNotice}</p>
         ) : null}
         <p className="mt-2 text-center text-[10px] text-gray-400">
           {tChat('footer')}

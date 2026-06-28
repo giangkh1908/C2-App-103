@@ -60,4 +60,21 @@ describe('VisualRenderer guardrails', () => {
     expect(overflow.isValid).toBe(false);
     expect(inconsistent.isValid).toBe(false);
   });
+
+  it('falls back when the visual type is unsupported', () => {
+    render(
+      <VisualRenderer
+        visualData={{
+          type: 'totally_unknown_visual',
+          primaryCount: 1,
+          secondaryCount: 1,
+          totalCount: 1,
+          groupsLabel: 'Nhom',
+          itemsLabel: 'Vat',
+        }}
+      />
+    );
+
+    expect(screen.getByText(/visual not available/i)).toBeTruthy();
+  });
 });

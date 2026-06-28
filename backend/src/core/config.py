@@ -90,6 +90,26 @@ class Settings(BaseSettings):
         default=0.18, alias="OPENROUTER_COMPLETION_COST_PER_1M_TOKENS"
     )
 
+    # TTS
+    tts_provider_mode: Literal["openrouter_only"] = Field(
+        default="openrouter_only",
+        alias="TTS_PROVIDER_MODE",
+    )
+    tts_provider: Literal["openrouter_gpt_tts"] = Field(
+        default="openrouter_gpt_tts",
+        alias="TTS_PROVIDER",
+    )
+    tts_model: str = Field(default="gpt-4o-mini-tts", alias="TTS_MODEL")
+    tts_voice: str = Field(default="alloy", alias="TTS_VOICE")
+    tts_response_format: str = Field(default="wav", alias="TTS_RESPONSE_FORMAT")
+    tts_speed_normal: float = Field(default=1.0, ge=0.25, le=4.0, alias="TTS_SPEED_NORMAL")
+    tts_speed_slow: float = Field(default=0.85, ge=0.25, le=4.0, alias="TTS_SPEED_SLOW")
+    tts_max_chars: int = Field(default=1200, ge=50, le=10000, alias="TTS_MAX_CHARS")
+    openrouter_tts_path: str = Field(default="/audio/speech", alias="OPENROUTER_TTS_PATH")
+    tts_send_voice: bool = Field(default=False, alias="TTS_SEND_VOICE")
+    tts_send_response_format: bool = Field(default=False, alias="TTS_SEND_RESPONSE_FORMAT")
+    tts_send_speed: bool = Field(default=False, alias="TTS_SEND_SPEED")
+
     # SePay webhook (Vietnam payment gateway)
     sepay_webhook_api_key: str = Field(default="", alias="SEPAY_WEBHOOK_API_KEY")
     sepay_bank_account: str = Field(
@@ -142,6 +162,10 @@ class Settings(BaseSettings):
         "openrouter_app_name",
         "openrouter_prompt_cost_per_1m",
         "openrouter_completion_cost_per_1m",
+        "tts_model",
+        "tts_voice",
+        "tts_response_format",
+        "openrouter_tts_path",
         "jwt_secret_key",
         "jwt_algorithm",
         "mongodb_uri",

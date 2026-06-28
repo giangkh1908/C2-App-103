@@ -1,10 +1,70 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { motion } from "motion/react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Circle, ClipboardCheck, LoaderCircle, Save } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Circle, ClipboardCheck, LoaderCircle, Mic, MicOff, Save, Volume2, VolumeX } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useSpeechToText } from "@/hooks/useSpeechToText";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import type { PracticeExamDetail, PracticeExamQuestion } from "@/types";
 import { progressPercent, type SaveState } from "./practice-utils";
+import { DEFAULT_TTS_LOCALE, normalizeSpeechChoiceTranscript } from "@/lib/speech";
+
+function getPracticeSpeechCopy(locale: string) {
+  if (locale === "vi") {
+    return {
+      listen: "Nghe câu hỏi",
+      slow: "Đọc chậm",
+      speakAnswer: "Nói đáp án",
+      stop: "Dừng",
+      unsupported: "Thiết bị này chưa hỗ trợ nói hoặc nghe bằng giọng.",
+      transcriptLabel: "Con vừa nói:",
+      pendingChoice: "Hệ thống nghe thành đáp án",
+      confirmChoice: "Xác nhận đáp án",
+      retryChoice: "Nói lại hoặc chọn tay",
+      sttError: "Mình chưa nghe rõ đáp án. Con thử nói A, B, C hoặc D nhé.",
+      listening: "Đang nghe...",
+      reading: "Đang đọc...",
+    };
+  }
+
+  return {
+    listen: "Listen",
+    slow: "Slow",
+    speakAnswer: "Speak answer",
+    stop: "Stop",
+    unsupported: "This device does not support voice input or read-aloud.",
+    transcriptLabel: "You said:",
+    pendingChoice: "Detected answer",
+    confirmChoice: "Confirm answer",
+    retryChoice: "Try again or tap manually",
+    sttError: "I could not hear the answer clearly. Please say A, B, C, or D.",
+    listening: "Listening...",
+    reading: "Reading...",
+  };
+}
+
+function getSafePracticeSpeechCopy(locale: string) {
+  if (locale === "vi") {
+    return {
+      listen: "Nghe câu hỏi",
+      slow: "Đọc chậm",
+      speakAnswer: "Nói đáp án",
+      stop: "Dừng",
+      unsupported: "Thiết bị này chưa hỗ trợ nói hoặc nghe bằng giọng.",
+      transcriptLabel: "Con vừa nói:",
+      pendingChoice: "Hệ thống nghe thành đáp án",
+      confirmChoice: "Xác nhận đáp án",
+      retryChoice: "Nói lại hoặc chọn tay",
+      sttError: "Mình chưa nghe rõ đáp án. Con thử nói A, B, C hoặc D nhé.",
+      listening: "Đang nghe...",
+      reading: "Đang đọc...",
+    };
+  }
+
+  return getPracticeSpeechCopy(locale);
+}
 
 interface PracticeExamViewProps {
   exam: PracticeExamDetail;
@@ -37,8 +97,109 @@ export default function PracticeExamView({
   onSave,
   onSubmit,
 }: PracticeExamViewProps) {
+  const locale = useLocale();
   const t = useTranslations("practice");
+  const speechLocale = locale === "vi" ? "vi-VN" : "en-US";
+  const { apiFetch } = useAuth();
+  const speechCopy = useMemo(() => getSafePracticeSpeechCopy(locale), [locale]);
   const percent = progressPercent(answeredCount, exam.questions.length);
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [pendingVoiceChoice, setPendingVoiceChoice] = useState<number | null>(null);
+  const [speechNotice, setSpeechNotice] = useState<string | null>(null);
+  const [activeNarrationKey, setActiveNarrationKey] = useState<string | null>(null);
+  const {
+    isSupported: isSpeechToTextSupported,
+    isRecording,
+    error: speechToTextError,
+    transcribe,
+    stop: stopTranscription,
+    clearError: clearSpeechToTextError,
+  } = useSpeechToText(speechLocale);
+  const {
+    isSupported: isTextToSpeechSupported,
+    isSpeaking,
+    error: textToSpeechError,
+    speak,
+    stop: stopSpeaking,
+    clearError: clearTextToSpeechError,
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
+
+  useEffect(() => {
+    setVoiceTranscript("");
+    setPendingVoiceChoice(null);
+    setSpeechNotice(null);
+    setActiveNarrationKey(null);
+    stopTranscription();
+    stopSpeaking();
+  }, [currentQuestion.question_id, stopSpeaking, stopTranscription]);
+
+  useEffect(() => {
+    if (speechToTextError === "speech_not_supported" || textToSpeechError === "speech_not_supported") {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
+    }
+    if (speechToTextError) {
+      setSpeechNotice(speechCopy.sttError);
+      return;
+    }
+    if (textToSpeechError) {
+      setSpeechNotice(speechCopy.unsupported);
+    }
+  }, [speechCopy.sttError, speechCopy.unsupported, speechToTextError, textToSpeechError]);
+
+  const handleReadQuestion = async (slow = false) => {
+    if (!isTextToSpeechSupported) {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
+    }
+
+    if (activeNarrationKey === "question" && isSpeaking) {
+      stopSpeaking();
+      setActiveNarrationKey(null);
+      return;
+    }
+
+    clearTextToSpeechError();
+    setSpeechNotice(null);
+    setActiveNarrationKey("question");
+    await speak(currentQuestion.question_text, { slow, maxChars: 280 });
+    setActiveNarrationKey(null);
+  };
+
+  const handleSpeakAnswer = async () => {
+    if (!isSpeechToTextSupported) {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
+    }
+
+    if (isRecording) {
+      stopTranscription();
+      return;
+    }
+
+    clearSpeechToTextError();
+    setSpeechNotice(null);
+    const result = await transcribe();
+    const transcript = result?.transcript?.trim() ?? "";
+    setVoiceTranscript(transcript);
+    const choiceIndex = normalizeSpeechChoiceTranscript(transcript);
+    if (choiceIndex !== null && choiceIndex < currentQuestion.choices.length) {
+      setPendingVoiceChoice(choiceIndex);
+    } else {
+      setPendingVoiceChoice(null);
+      if (transcript) {
+        setSpeechNotice(speechCopy.retryChoice);
+      }
+    }
+  };
+
+  const handleConfirmVoiceChoice = () => {
+    if (pendingVoiceChoice === null) return;
+    onChooseAnswer(currentQuestion.question_id, pendingVoiceChoice);
+    setVoiceTranscript("");
+    setPendingVoiceChoice(null);
+    setSpeechNotice(null);
+  };
 
   return (
     <div className="grid gap-5 xl:grid-cols-[250px_minmax(0,1fr)]">
@@ -119,6 +280,60 @@ export default function PracticeExamView({
           <p className="text-base leading-8 text-[#2F3A34]">{currentQuestion.question_text}</p>
         </div>
 
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void handleReadQuestion(false)}
+            disabled={!isTextToSpeechSupported && !isSpeaking}
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#D9D4C7] px-4 text-sm font-semibold text-[#59635C] transition hover:bg-[#FBF8F0] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {activeNarrationKey === "question" && isSpeaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            {activeNarrationKey === "question" && isSpeaking ? speechCopy.reading : speechCopy.listen}
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleReadQuestion(true)}
+            disabled={!isTextToSpeechSupported && !isSpeaking}
+            className="inline-flex min-h-11 items-center rounded-xl border border-[#D9D4C7] px-4 text-sm font-semibold text-[#59635C] transition hover:bg-[#FBF8F0] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {speechCopy.slow}
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleSpeakAnswer()}
+            disabled={!isSpeechToTextSupported && !isRecording}
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#D9D4C7] px-4 text-sm font-semibold text-[#59635C] transition hover:bg-[#FBF8F0] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isRecording ? <MicOff className="h-4 w-4 text-rose-500" /> : <Mic className="h-4 w-4" />}
+            {isRecording ? speechCopy.listening : speechCopy.speakAnswer}
+          </button>
+        </div>
+
+        {(voiceTranscript || speechNotice || pendingVoiceChoice !== null) ? (
+          <div className="mt-4 rounded-[18px] border border-[#E7E0D1] bg-[#FFFDF8] p-4 text-sm text-[#4E5952]">
+            {voiceTranscript ? (
+              <p>
+                <span className="font-bold text-[#203049]">{speechCopy.transcriptLabel}</span> {voiceTranscript}
+              </p>
+            ) : null}
+            {pendingVoiceChoice !== null ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-[#EEF3E8] px-3 py-1 text-xs font-bold text-[#587849]">
+                  {speechCopy.pendingChoice}: {currentQuestion.choices[pendingVoiceChoice]}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleConfirmVoiceChoice}
+                  className="rounded-xl bg-[#587849] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#48653B]"
+                >
+                  {speechCopy.confirmChoice}
+                </button>
+              </div>
+            ) : null}
+            {speechNotice ? <p className="mt-3 text-xs text-amber-700">{speechNotice}</p> : null}
+          </div>
+        ) : null}
+
         <div className="mt-5 grid gap-3">
           {currentQuestion.choices.map((choice, index) => {
             const selected = answers[currentQuestion.question_id] === index;
@@ -127,7 +342,12 @@ export default function PracticeExamView({
                 key={`${currentQuestion.question_id}_${index}`}
                 type="button"
                 aria-pressed={selected}
-                onClick={() => onChooseAnswer(currentQuestion.question_id, index)}
+                onClick={() => {
+                  setPendingVoiceChoice(null);
+                  setVoiceTranscript("");
+                  setSpeechNotice(null);
+                  onChooseAnswer(currentQuestion.question_id, index);
+                }}
                 className={`flex min-h-14 items-start gap-3 rounded-[18px] border px-4 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#587849]/30 ${
                   selected
                     ? "border-[#587849] bg-[#F0F5E9] shadow-[0_8px_22px_rgba(88,120,73,0.1)]"

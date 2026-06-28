@@ -339,3 +339,149 @@
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:51.784463+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:55.908595+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:55:00.553161+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:28.056243+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:29:35.321168+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:29:35.322185+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":8.9,"client_ip":"127.0.0.1","event":"request_completed","request_id":"90ff95ca-cbc7-4a0f-92be-b225d248e301","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:35.897459+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:35.902010+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:35.913102+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":6.65,"client_ip":"127.0.0.1","event":"request_completed","request_id":"cf1c9785-ae61-4880-a083-70c91e1f7f1a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:44.143520+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:44.146539+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:44.154899+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.54,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8297a948-78db-41bb-96cc-97677d1a54b2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:51.193082+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:51.194765+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:51.200969+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.39,"client_ip":"127.0.0.1","event":"request_completed","request_id":"471c8b73-c565-4c2e-810d-9582bc41a0bc","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:56.439627+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:56.441849+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:26.138136+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:55:31.469422+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:55:31.471957+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":25.71,"client_ip":"127.0.0.1","event":"request_completed","request_id":"4e830262-d366-4128-8cac-17e947d61857","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:32.097201+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:32.101241+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:32.109706+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":5.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0caac666-a04d-4117-8b81-66f7c18ce7c0","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:37.208941+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:37.209947+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:37.216492+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":4.27,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8f993fbf-26d5-465e-80e2-18d5a8e302f3","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:42.472284+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:42.474522+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:42.479787+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.69,"client_ip":"127.0.0.1","event":"request_completed","request_id":"903ef1f5-7748-4c39-8765-6903444b2013","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:47.488770+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:47.489791+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:47.499159+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:52.079490+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:23.201102+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:57:27.649984+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:57:27.651499+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":2.96,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b3a291b0-a2de-4ece-8fa7-dcca194d81dc","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:28.159343+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:28.161348+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:28.168533+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":4.8,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a8d52f13-d719-4e8b-9494-f38c3d9bedaa","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:33.958531+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:33.961966+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:33.968403+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.53,"client_ip":"127.0.0.1","event":"request_completed","request_id":"636675f0-e292-4cb9-8c7f-1bec203cc140","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:40.277423+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:40.280059+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:40.285326+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":4.4,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8218644a-b46b-412b-a7eb-263a7d1ac8f2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:45.415820+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:45.417822+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:45.425080+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:50.067363+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:06:45.476509+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:06:50.762176+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:06:50.762176+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":2.48,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5eb85958-c26f-4a27-b90a-4859939c6512","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:06:51.300273+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:06:51.310662+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:06:51.316297+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":4.41,"client_ip":"127.0.0.1","event":"request_completed","request_id":"1307c083-31e2-4c31-a783-df8eef78d77b","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:06:55.702707+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:06:55.708087+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:06:55.740892+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":8.42,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f206f12a-bcf8-49a6-b7b8-dd8388c574aa","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:07:00.068838+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:07:00.070855+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:00.075938+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.4,"client_ip":"127.0.0.1","event":"request_completed","request_id":"25d92427-628e-49b3-b7aa-5c8f605c2799","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:07:04.497898+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:07:04.497898+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:04.504203+00:00"}
+{"provider":"openrouter_gpt_tts","model":"gpt-4o-mini-tts","slow":false,"event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T03:07:08.354454+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:08.362431+00:00"}
+{"provider":"openrouter_gpt_tts","status_code":503,"event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T03:07:12.328240+00:00"}
+{"provider":"openai_gpt_tts","model":"gpt-4o-mini-tts","slow":true,"event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T03:07:12.328240+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:12.337339+00:00"}
+{"provider":"openrouter_gpt_tts","status_code":503,"event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T03:07:16.016111+00:00"}
+{"provider":"openai_gpt_tts","status_code":502,"event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T03:07:16.016111+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:16.021983+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:41.805339+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:23:46.821081+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:23:46.821081+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":5.64,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d9580ca1-5100-4f4f-8e09-25c5631fa25f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:23:47.448560+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:23:47.451711+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:47.456886+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":9.57,"client_ip":"127.0.0.1","event":"request_completed","request_id":"429ef751-cbd2-4b1f-ab5a-f145947724b3","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:23:52.018399+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:23:52.018399+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:52.029960+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8cd0b348-a7f0-4dc7-ab64-71318cb4fdd2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:23:56.224105+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:23:56.224105+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:56.230841+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":3.02,"client_ip":"127.0.0.1","event":"request_completed","request_id":"7ed0662a-dd5b-445b-b51d-2db80ec33249","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:24:00.629498+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:24:00.631722+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:24:00.632739+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:24:04.948930+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:24:08.971337+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:37.207309+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:32:41.833385+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:32:41.833385+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":2.73,"client_ip":"127.0.0.1","event":"request_completed","request_id":"31dfee58-ccf1-432f-86aa-71fe4f270114","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:42.425630+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:42.425630+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:42.438146+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.28,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0a5dbe0e-3fcc-48e3-bbd9-b042bf23aff7","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:47.078062+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:47.079658+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:47.086155+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.09,"client_ip":"127.0.0.1","event":"request_completed","request_id":"3fe90e82-19ac-4205-80d5-8b145952f856","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:51.739614+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:51.740649+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:51.746657+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.07,"client_ip":"127.0.0.1","event":"request_completed","request_id":"924000c3-b0be-4e3c-8174-e129f997549f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:56.360561+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:56.360561+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:56.372885+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:33:00.573640+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:33:04.581700+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:05.738206+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:49:10.926547+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:49:10.932786+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":3.82,"client_ip":"127.0.0.1","event":"request_completed","request_id":"31389a53-fdd5-4b74-8c6f-fb39c8798785","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:11.463397+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:11.468440+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:11.473645+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":5.06,"client_ip":"127.0.0.1","event":"request_completed","request_id":"9cdf8ee9-0962-4598-b734-37bed1007c11","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:15.564454+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:15.564454+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:15.568493+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.56,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a5cc6606-eea0-4cee-a996-81f2c70431cd","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:20.147979+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:20.150089+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:20.154881+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.42,"client_ip":"127.0.0.1","event":"request_completed","request_id":"14a8ef8a-9693-4405-bde3-e02204e92530","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:24.346000+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:24.347064+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:24.352963+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:28.445358+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:32.081834+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:35.621426+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:39.585994+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:43.300275+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:47.049943+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:20.410266+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T05:28:24.763814+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T05:28:24.765852+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":4.29,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0bb46b97-7020-4b7a-b0ba-9733b342ffa4","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:25.383433+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:25.383433+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:25.394667+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":3.71,"client_ip":"127.0.0.1","event":"request_completed","request_id":"eea0bb9b-37e9-4062-a662-28c42b1c887f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:30.464795+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:30.464795+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:30.474347+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.93,"client_ip":"127.0.0.1","event":"request_completed","request_id":"2b4fa35e-aa3a-430c-8a7c-fc37a4d3ca6a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:35.330877+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:35.333103+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:35.337352+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.15,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5784956f-7663-40a1-bd83-32fafeb9bcd6","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:40.190795+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:40.190795+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:40.197374+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:44.110841+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:48.769753+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:52.848597+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:56.692558+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:29:01.052636+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:29:04.983268+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:29:09.179923+00:00"}

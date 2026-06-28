@@ -24,6 +24,8 @@ import {
 import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
 import UsageCounter from '@/components/UsageCounter';
 import UpgradeModal from '@/components/UpgradeModal';
+import { useSpeechToText } from '@/hooks/useSpeechToText';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import {
   getHistory,
   getSession,
@@ -47,6 +49,7 @@ import type {
   ResponseMode,
   VisualData,
 } from '../types';
+import { DEFAULT_TTS_LOCALE, sanitizeSpeechText } from '@/lib/speech';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -70,21 +73,7 @@ interface AIExplanationChatProps {
   initialGrade?: number;
 }
 
-type BrowserSpeechRecognition = {
-  continuous: boolean;
-  lang: string;
-  interimResults: boolean;
-  onstart: (() => void) | null;
-  onend: (() => void) | null;
-  onerror: (() => void) | null;
-  onresult: ((event: { results?: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  start: () => void;
-  stop: () => void;
-};
-type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
 type BrowserWindow = Window & {
-  SpeechRecognition?: SpeechRecognitionConstructor;
-  webkitSpeechRecognition?: SpeechRecognitionConstructor;
   webkitAudioContext?: typeof AudioContext;
 };
 
@@ -137,6 +126,26 @@ function createTimestamp(locale: string): string {
     minute: '2-digit',
     hour12: false,
   }).format(new Date());
+}
+
+function getSpeechUiCopy(locale: string) {
+  if (locale === 'vi') {
+    return {
+      unsupported: 'Thiết bị này chưa hỗ trợ nói hoặc nghe bằng giọng.',
+      sttError: 'Mình chưa nghe rõ. Con thử nói chậm và ngắn hơn nhé.',
+      ttsError: 'Hiện chưa nghe được lời giải. Con thử lại sau nhé.',
+      slowRead: 'Đọc chậm',
+      speaking: 'Đang đọc...',
+    };
+  }
+
+  return {
+    unsupported: 'This device does not support voice input or read-aloud.',
+    sttError: 'I could not hear that clearly. Please try again slowly.',
+    ttsError: 'The explanation cannot be read aloud right now. Please try again later.',
+    slowRead: 'Slow',
+    speaking: 'Reading...',
+  };
 }
 
 function playSfx(type: 'bell' | 'error' | 'sparkle'): void {
@@ -295,13 +304,16 @@ function VisualPanel({ message, onAnswerChoice }: {
 }
 
 
-function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpeaking, isLoading}: {
+function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, onSpeakSlow, isSpeaking, isLoading, slowReadLabel, speakingLabel }: {
   message: Message;
   onSuggestionClick: (text: string) => void;
   onAnswerChoice: (msgId: string, optIdx: number, correctIdx: number) => void;
   onSpeak: (text: string, id: string) => void;
+  onSpeakSlow: (text: string, id: string) => void;
   isSpeaking: boolean;
   isLoading: boolean;
+  slowReadLabel: string;
+  speakingLabel: string;
 }) {
   const t = useTranslations('learn.chat');
   const isClarification = message.responseMode === 'clarification_needed';
@@ -366,6 +378,13 @@ function AiMessage({ message, onSuggestionClick, onAnswerChoice, onSpeak, isSpea
           >
             {isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
           </button>
+          <button
+            onClick={() => onSpeakSlow(message.text, message.id)}
+            className="rounded-full border border-gray-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-gray-500 transition-colors hover:border-natural-green/40 hover:text-natural-green"
+            title={slowReadLabel}
+          >
+            {isSpeaking ? speakingLabel : slowReadLabel}
+          </button>
         </div>
 
         {/* Follow-up suggestions (non-clarification) */}
@@ -394,6 +413,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
   const { apiFetch } = useAuth();
   const tChat = useTranslations('learn.chat');
   const speechLocale = locale === 'vi' ? 'vi-VN' : 'en-US';
+  const speechCopy = useMemo(() => getSpeechUiCopy(locale), [locale]);
   const [selectedGrade, setSelectedGrade] = useState(initialGrade);
   const welcomeMessage = useMemo(() => buildGradeWelcomeMessage(tChat, selectedGrade), [selectedGrade, tChat]);
   const suggestionGroups = useMemo(() => getSuggestionGroupsForGrade(selectedGrade), [selectedGrade]);
@@ -404,8 +424,8 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
   const [expandedSuggestionGroup, setExpandedSuggestionGroup] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [streamStatusText, setStreamStatusText] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [speechNotice, setSpeechNotice] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [chatTurnCount, setChatTurnCount] = useState(0);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -417,39 +437,44 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
 
   const { sendStream } = useChatStream(apiFetch);
+  const {
+    isSupported: isSpeechToTextSupported,
+    isRecording,
+    error: speechToTextError,
+    transcribe,
+    stop: stopTranscription,
+    clearError: clearSpeechToTextError,
+  } = useSpeechToText(speechLocale);
+  const {
+    isSupported: isTextToSpeechSupported,
+    isSpeaking,
+    error: textToSpeechError,
+    speak,
+    stop: stopSpeaking,
+    clearError: clearTextToSpeechError,
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
 
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Speech recognition setup
   useEffect(() => {
-    const win = window as BrowserWindow;
-    const SR = win.SpeechRecognition || win.webkitSpeechRecognition;
-    if (!SR) return;
-    const rec = new SR();
-    rec.continuous = false;
-    rec.lang = speechLocale;
-    rec.interimResults = false;
-    rec.onstart = () => setIsRecording(true);
-    rec.onend = () => setIsRecording(false);
-    rec.onerror = () => setIsRecording(false);
-    rec.onresult = (e) => {
-      const t = e.results?.[0]?.[0]?.transcript;
-      if (t) setInputText((prev) => (prev ? `${prev} ${t}` : t));
-    };
-    recognitionRef.current = rec;
-    return () => { recognitionRef.current?.stop(); recognitionRef.current = null; };
-  }, [speechLocale]);
-
-  // TTS cleanup
-  useEffect(() => {
-    return () => { if (typeof window !== 'undefined') window.speechSynthesis?.cancel(); };
-  }, []);
+    if (speechToTextError === 'speech_not_supported' || textToSpeechError === 'speech_not_supported') {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
+    }
+    if (speechToTextError) {
+      setSpeechNotice(speechCopy.sttError);
+      return;
+    }
+    if (textToSpeechError) {
+      setSpeechNotice(speechCopy.ttsError);
+      return;
+    }
+  }, [speechCopy, speechToTextError, textToSpeechError]);
 
   // ── Session history ──
   const loadHistory = useCallback(async () => {
@@ -481,26 +506,27 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     }
     setPendingSuggestion(null);
     setExpandedSuggestionGroup(null);
+    setSpeechNotice(null);
   }, [selectedGrade, tChat]);
 
-  const handleSpeak = useCallback((text: string, id: string) => {
-    if (!window.speechSynthesis) return;
-    if (speakingMsgId === id) {
-      window.speechSynthesis.cancel();
+  const handleSpeak = useCallback(async (text: string, id: string, slow = false) => {
+    if (!isTextToSpeechSupported) {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
+    }
+
+    if (speakingMsgId === id && isSpeaking) {
+      stopSpeaking();
       setSpeakingMsgId(null);
       return;
     }
-    window.speechSynthesis.cancel();
-    const plainText = text
-      .replace(/[#>*`_-]/g, '')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '$1');
 
-    const utter = new SpeechSynthesisUtterance(plainText);    utter.lang = speechLocale;
-    utter.rate = 0.95;
-    utter.onend = () => setSpeakingMsgId(null);
+    setSpeechNotice(null);
+    clearTextToSpeechError();
     setSpeakingMsgId(id);
-    window.speechSynthesis.speak(utter);
-  }, [speakingMsgId, speechLocale]);
+    await speak(sanitizeSpeechText(text), { slow });
+    setSpeakingMsgId(null);
+  }, [clearTextToSpeechError, isSpeaking, isTextToSpeechSupported, speak, speakingMsgId, speechCopy.unsupported, stopSpeaking]);
 
   const handleSuggestionClick = useCallback((suggestion: string | ChatSuggestion) => {
     const nextSuggestion =
@@ -514,14 +540,24 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     inputRef.current?.focus();
   }, [selectedGrade]);
 
-  const toggleRecording = () => {
-    if (!recognitionRef.current) return;
-    if (isRecording) {
-      recognitionRef.current.stop();
-    } else {
-      recognitionRef.current.start();
+  const toggleRecording = useCallback(async () => {
+    if (!isSpeechToTextSupported) {
+      setSpeechNotice(speechCopy.unsupported);
+      return;
     }
-  };
+
+    if (isRecording) {
+      stopTranscription();
+      return;
+    }
+
+    setSpeechNotice(null);
+    clearSpeechToTextError();
+    const result = await transcribe();
+    if (result?.transcript) {
+      setInputText((prev) => (prev ? `${prev} ${result.transcript}` : result.transcript));
+    }
+  }, [clearSpeechToTextError, isRecording, isSpeechToTextSupported, speechCopy.unsupported, stopTranscription, transcribe]);
 
   const handleAnswerChoice = useCallback((msgId: string, optIdx: number, correctIdx: number) => {
     setMessages((prev) =>
@@ -883,9 +919,12 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
                 message={msg}
                 onSuggestionClick={handleSuggestionClick}
                 onAnswerChoice={handleAnswerChoice}
-                onSpeak={handleSpeak}
-                isSpeaking={speakingMsgId === msg.id}
+                onSpeak={(text, id) => void handleSpeak(text, id, false)}
+                onSpeakSlow={(text, id) => void handleSpeak(text, id, true)}
+                isSpeaking={speakingMsgId === msg.id && isSpeaking}
                 isLoading={isLoading}
+                slowReadLabel={speechCopy.slowRead}
+                speakingLabel={speechCopy.speaking}
               />
             );
           })}
@@ -948,10 +987,11 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
             type="button"
             id="mic-btn"
             onClick={toggleRecording}
+            disabled={!isSpeechToTextSupported && !isRecording}
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition-all ${
               isRecording
                 ? 'border-red-300 bg-red-50 text-red-500 shadow-md animate-pulse'
-                : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100'
+                : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
             }`}
             title={isRecording ? tChat('stopRecording') : tChat('startRecording')}
           >
@@ -968,6 +1008,9 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
             <Send className="h-4 w-4" />
           </button>
         </form>
+        {speechNotice ? (
+          <p className="mt-2 text-center text-[10px] text-amber-600">{speechNotice}</p>
+        ) : null}
         <p className="mt-2 text-center text-[10px] text-gray-400">
           {tChat('footer')}
         </p>

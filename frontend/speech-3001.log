@@ -1,0 +1,20 @@
+▲ Next.js 16.2.7 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://localhost:3001
+- Environments: .env.local, .env
+✓ Ready in 1599ms
+Creating turbopack project {
+  dir: 'D:\\Download\\Môn học\\AI in Action\\Draft2\\C2-App-103\\frontend',
+  testMode: true
+}
+⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result.
+○ Compiling proxy ...
+
+○ Compiling /[locale] ...
+ GET /vi 200 in 18.0s (next.js: 16.5s, proxy.ts: 16ms, application-code: 1537ms)
+○ Compiling /[locale]/login ...
+ GET /vi/login 200 in 7.7s (next.js: 7.5s, proxy.ts: 52ms, application-code: 189ms)
+ GET /vi 200 in 126ms (next.js: 24ms, proxy.ts: 11ms, application-code: 92ms)
+○ Compiling /[locale]/learn ...
+ GET /vi/learn 200 in 13.4s (next.js: 13.2s, proxy.ts: 56ms, application-code: 113ms)
+ GET /vi/login?redirectTo=%2Fvi%2Flearn 200 in 194ms (next.js: 57ms, proxy.ts: 19ms, application-code: 118ms)

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useLocale } from "next-intl";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Sparkles, Check, Crown, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -44,7 +43,6 @@ const FALLBACK_PLANS = [
 
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const locale = useLocale();
-  const router = useRouter();
   const { apiFetch } = useAuth();
   const [plans, setPlans] = useState(FALLBACK_PLANS);
   const [upgrading, setUpgrading] = useState<string | null>(null);

@@ -9,7 +9,6 @@ import {
   fetchPlans,
   changeUserPlan,
   AdminAuthError,
-  AdminApiError,
   type ApiFetch,
 } from "@/lib/adminApi";
 

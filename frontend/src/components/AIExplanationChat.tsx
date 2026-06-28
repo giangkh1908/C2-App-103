@@ -389,7 +389,7 @@ export default function AIExplanationChat() {
   const [topicIds, setTopicIds] = useState<MathDomain[]>(() => TOPIC_META.map((topic) => topic.id));
   const [selectedTopic, setSelectedTopic] = useState<MathDomain | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [streamStatusText, setStreamStatusText] = useState<string | null>(null);
+  const [, setStreamStatusText] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -406,7 +406,7 @@ export default function AIExplanationChat() {
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api/v1';
-  const { sendStream, abort: abortStream } = useChatStream(apiFetch);
+  const { sendStream } = useChatStream(apiFetch);
   const topics = useMemo(() => topicIds.map((id) => localizeTopic({ id })), [topicIds, localizeTopic]);
 
   // Auto-scroll

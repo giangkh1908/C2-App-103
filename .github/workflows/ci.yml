@@ -67,7 +67,7 @@ jobs:
       - name: Tests (pytest)
         env:
           PRACTICE_TEST_MONGODB_URI: mongodb://127.0.0.1:${{ env.MONGO_PORT }}
-        run: pytest --cov=src --cov-report=term-missing -v
+        run: pytest -n auto --dist=loadfile --cov=src --cov-report=term-missing -v
 
       - name: Docker build check
         run: docker build -t backend-test-${{ github.run_id }} .

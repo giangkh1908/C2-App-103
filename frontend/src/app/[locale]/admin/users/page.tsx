@@ -67,8 +67,36 @@ export default function AdminUsersPage() {
   }, [apiFetch, page, router, locale]);
 
   useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const result = await fetchUsers(apiFetch, {
+          page,
+          page_size: PAGE_SIZE,
+        });
+        if (!cancelled) {
+          setUsers(result.items);
+          setTotal(result.total);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof AdminAuthError) {
+          router.push(`/${locale}/login`);
+          return;
+        }
+        setError(
+          err instanceof Error ? err.message : "Đã xảy ra lỗi khi tải danh sách",
+        );
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiFetch, page, router, locale]);
 
   useEffect(() => {
     fetchPlans(apiFetch)

@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from bson import ObjectId
-from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 
 from src.core.security import create_access_token, hash_password

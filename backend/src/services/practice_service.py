@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -160,7 +160,7 @@ class PracticeService:
         if start_mode == "create_new" and existing_in_progress is not None:
             raise ValueError("An in-progress attempt already exists")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if start_mode == "restart" and existing_in_progress is not None:
             await db.practice_attempts.update_one(
                 {"attempt_id": existing_in_progress["attempt_id"], "user_id": user_id},
@@ -222,7 +222,7 @@ class PracticeService:
             ):
                 raise ValueError("Selected choice index is out of range")
 
-        updated_at = datetime.now(timezone.utc)
+        updated_at = datetime.now(UTC)
         answer_docs = [answer.model_dump() for answer in answers]
         await db.practice_attempts.update_one(
             {"attempt_id": attempt_id, "user_id": user_id},
@@ -289,7 +289,7 @@ class PracticeService:
 
         total_count = len(exam.questions)
         score = round((correct_count / total_count) * 100) if total_count else 0
-        submitted_at = datetime.now(timezone.utc)
+        submitted_at = datetime.now(UTC)
         result_summary = PracticeAttemptResultSummary(
             score=score,
             correct_count=correct_count,

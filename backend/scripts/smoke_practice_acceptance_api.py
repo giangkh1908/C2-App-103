@@ -6,7 +6,6 @@ from typing import Any
 
 import requests
 
-
 VISUAL_DEPENDENT_MARKERS = (
     "hình bên",
     "hình dưới",

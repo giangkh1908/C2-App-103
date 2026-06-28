@@ -2,7 +2,6 @@ from src.models.chat import Topic
 from src.models.lesson import LessonResponse
 from src.services.types import LearningCoreResult
 
-
 EXPECTED_VISUAL_TYPES: dict[Topic, set[str]] = {
     "multiplication": {"equal_groups"},
     "division": {"sharing"},

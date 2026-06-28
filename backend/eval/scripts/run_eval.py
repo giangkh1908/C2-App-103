@@ -3,15 +3,13 @@
 
 import argparse
 import json
-import sys
 import time
-from pathlib import Path
 from typing import Any
 
 
 def load_dataset(path: str) -> dict[str, Any]:
     """Load evaluation dataset from JSON file."""
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 

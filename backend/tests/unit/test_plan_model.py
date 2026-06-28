@@ -1,13 +1,12 @@
 """Unit tests for Plan model."""
 
-import pytest
 from datetime import UTC, datetime
 
 from src.models.plan import (
+    PlanCreate,
     PlanFeatures,
     PlanInDB,
     PlanQuota,
-    PlanCreate,
     PlanUpdate,
     create_plan_doc,
     plan_to_response,

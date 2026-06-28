@@ -4,7 +4,7 @@ import re
 import unicodedata
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -177,7 +177,7 @@ def _increment_reason(stats: dict[str, Any], reason: str) -> None:
 
 
 def load_curated_manifest(path: Path) -> dict[int, list[str]]:
-    with open(path, "r", encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         payload = json.load(file)
 
     if not isinstance(payload, dict):
@@ -204,7 +204,7 @@ def load_curated_manifest(path: Path) -> dict[int, list[str]]:
 
 
 def parse_exam_rows(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     exams: list[dict[str, Any]] = []
     stats: dict[str, Any] = {
         "rows_seen": 0,
@@ -375,7 +375,7 @@ def curate_exam_documents(
 
 
 def load_rows_from_file(path: Path) -> list[dict[str, Any]]:
-    with open(path, "r", encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         payload = json.load(file)
     rows = payload["rows"] if isinstance(payload, dict) and "rows" in payload else payload
     if not isinstance(rows, list):

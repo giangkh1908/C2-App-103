@@ -1,11 +1,10 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
-from datetime import datetime, timedelta, timezone
-from unittest.mock import patch, AsyncMock
 from httpx import AsyncClient
 from jose import jwt
 
 from src.core.config import settings
-from src.core.security import create_access_token, create_refresh_token
 
 
 @pytest.mark.asyncio
@@ -236,7 +235,7 @@ class TestFlowTokenRefresh:
                 "sub": user_id,
                 "role": "user",
                 "type": "access",
-                "exp": datetime.now(timezone.utc) - timedelta(minutes=1),
+                "exp": datetime.now(UTC) - timedelta(minutes=1),
             },
             settings.jwt_secret_key,
             algorithm=settings.jwt_algorithm,
@@ -336,7 +335,7 @@ class TestFlowPasswordResetExpiredToken:
             {"email": "expired@example.com"},
             {
                 "$set": {
-                    "reset_token_expires": datetime.now(timezone.utc) - timedelta(hours=2),
+                    "reset_token_expires": datetime.now(UTC) - timedelta(hours=2),
                 }
             },
         )

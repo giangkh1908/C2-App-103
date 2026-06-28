@@ -109,6 +109,19 @@ Kiểm tra:
 
 Không commit `.env.docker`; file này chứa secret thật. Chỉ commit `.env.docker.example`.
 
+## Guardrails
+
+Agent sử dụng module `backend/src/agents/guardrails.py` để đảm bảo an toàn và đúng chủ đề. Các lớp bảo vệ:
+
+| Guardrail | Mô tả | Response |
+|---|---|---|
+| **Prompt Injection** | Chặn hơn 40 mẫu tấn công (EN + VI): "ignore instructions", "show system prompt", "jailbreak", … | Trả lời từ chối lịch sự |
+| **Greeting** | Phát hiện lời chào ngắn (≤4 từ) | Chào lại và gợi ý học toán |
+| **Gibberish** | Phát hiện input vô nghĩa (keyboard mash, ký tự lặp, dấu câu liên tiếp) | Yêu cầu nhập câu hỏi cụ thể |
+| **Topic Constraint** | Chặn yêu cầu ngoài toán học (viết văn, nấu ăn, dịch thuật, code, …) | Từ chối và gợi ý hỏi về toán |
+
+`guard_message()` được gọi đầu pipeline trong `LearningCoreService` trước khi chạy LLM, đảm bảo không tốn token cho input độc hại.
+
 ---
 
 # Starter Code Template — Cohort 2

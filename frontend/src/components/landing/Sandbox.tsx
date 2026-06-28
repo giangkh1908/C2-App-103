@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/useAuth";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import { getAudioContext } from "@/lib/audio";
+import { DEFAULT_TTS_LOCALE } from "@/lib/speech";
 
 // ── Types ──
 type Domain = "multiplication" | "division" | "fraction_basic" | "perimeter_area_basic";
@@ -69,6 +72,7 @@ function playSound(type: "pop" | "crunch" | "correct" | "synth") {
 // ── Main Component ──
 export default function Sandbox() {
   const t = useTranslations("sandbox");
+  const { apiFetch } = useAuth();
   const [activeTab, setActiveTab] = useState<Domain>("multiplication");
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [answersChecked, setAnswersChecked] = useState(false);
@@ -82,33 +86,38 @@ export default function Sandbox() {
 
   // TTS — dùng ref để tránh stale closure và re-create không cần thiết
   const [speakingText, setSpeakingText] = useState<string | null>(null);
-  const speakingTextRef = useRef<string | null>(null);
+  const [speechNotice, setSpeechNotice] = useState<string | null>(null);
+  const { isSupported, isSpeaking, speak, stop } = useTextToSpeech(
+    DEFAULT_TTS_LOCALE,
+    apiFetch,
+  );
 
-  useEffect(() => {
-    speakingTextRef.current = speakingText;
-  }, [speakingText]);
-
-  const speakText = useCallback((text: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    if (speakingTextRef.current === text) {
+  const speakText = useCallback(async (text: string) => {
+    if (!isSupported) {
+      setSpeechNotice("Hiện chưa tạo được giọng đọc tiếng Việt.");
+      return;
+    }
+    if (speakingText === text && isSpeaking) {
+      stop();
       setSpeakingText(null);
       return;
     }
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "vi-VN";
-    utter.rate = 0.95;
-    utter.onend = () => setSpeakingText(null);
+    setSpeechNotice(null);
     setSpeakingText(text);
-    window.speechSynthesis.speak(utter);
-  }, []);
+    try {
+      await speak(text, { maxChars: 320 });
+    } catch {
+      setSpeechNotice("Hiện chưa tạo được giọng đọc tiếng Việt.");
+    } finally {
+      setSpeakingText(null);
+    }
+  }, [isSpeaking, isSupported, speak, speakingText, stop]);
 
-  // Cleanup TTS khi unmount
   useEffect(() => {
     return () => {
-      window.speechSynthesis?.cancel();
+      stop();
     };
-  }, []);
+  }, [stop]);
 
   // Lesson data from translations
   const LESSONS = useMemo(() => ({
@@ -487,15 +496,19 @@ export default function Sandbox() {
                 </h3>
               </div>
               <button
-                onClick={() => speakText(activeLesson.shortExplanation)}
+                onClick={() => void speakText(activeLesson.shortExplanation)}
                 className={`flex items-center gap-1.5 self-start sm:self-center px-4 py-2 rounded-full border border-natural-border text-xs font-bold cursor-pointer transition-all active:scale-97 ${
-                  speakingText === activeLesson.shortExplanation
+                  speakingText === activeLesson.shortExplanation && isSpeaking
                     ? "bg-natural-orange text-white border-transparent"
                     : "bg-natural-bg text-natural-charcoal/80 hover:bg-natural-bg/90"
                 }`}
               >
                 <span className="text-sm">🔊</span>
-                <span>{speakingText === activeLesson.shortExplanation ? t("ttsPlaying") : t("ttsButton")}</span>
+                <span>
+                  {speakingText === activeLesson.shortExplanation && isSpeaking
+                    ? t("ttsPlaying")
+                    : t("ttsButton")}
+                </span>
               </button>
             </div>
 
@@ -512,6 +525,9 @@ export default function Sandbox() {
                   <h4 className="text-[10px] font-black uppercase text-natural-green tracking-wider mb-1">{t("visualTitle")}</h4>
                   <p className="text-xs text-natural-charcoal leading-relaxed">{activeLesson.lifeExample}</p>
                 </div>
+                {speechNotice ? (
+                  <p className="text-xs font-semibold text-amber-700">{speechNotice}</p>
+                ) : null}
               </div>
               <div className="md:col-span-7 flex items-center justify-center bg-gradient-to-br from-white via-natural-bg to-white p-5 rounded-3xl border border-natural-border/80 min-h-[290px] shadow-inner">
                 {renderSimulation()}

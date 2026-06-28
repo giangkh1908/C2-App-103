@@ -3,6 +3,10 @@
 export type SpeechMode = 'browser' | 'server';
 export const DEFAULT_TTS_LOCALE = 'vi-VN';
 
+export function isProductionRuntime(): boolean {
+  return process.env.NODE_ENV === 'production';
+}
+
 export function getSpeechModeByKind(kind: 'stt' | 'tts'): SpeechMode {
   const envValue =
     kind === 'stt'

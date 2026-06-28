@@ -5,6 +5,7 @@ import { createSpeechToTextProvider, createTextToSpeechProvider } from "@/lib/sp
 describe("speech providers", () => {
   const originalSttMode = process.env.NEXT_PUBLIC_STT_MODE;
   const originalTtsMode = process.env.NEXT_PUBLIC_TTS_MODE;
+  const originalNodeEnv = process.env.NODE_ENV;
   const OriginalAudio = globalThis.Audio;
   const originalCreateObjectURL = URL.createObjectURL;
   const originalRevokeObjectURL = URL.revokeObjectURL;
@@ -35,6 +36,7 @@ describe("speech providers", () => {
   afterAll(() => {
     process.env.NEXT_PUBLIC_STT_MODE = originalSttMode;
     process.env.NEXT_PUBLIC_TTS_MODE = originalTtsMode;
+    process.env.NODE_ENV = originalNodeEnv;
     globalThis.Audio = OriginalAudio;
     URL.createObjectURL = originalCreateObjectURL;
     URL.revokeObjectURL = originalRevokeObjectURL;
@@ -90,6 +92,46 @@ describe("speech providers", () => {
     );
     expect(URL.createObjectURL).toHaveBeenCalled();
     expect(URL.revokeObjectURL).toHaveBeenCalled();
+  });
+
+  it("forces server tts in production even when the public mode is set to browser", async () => {
+    process.env.NODE_ENV = "production";
+    process.env.NEXT_PUBLIC_STT_MODE = "browser";
+    process.env.NEXT_PUBLIC_TTS_MODE = "browser";
+
+    const audioBlob = new Blob(["audio"], { type: "audio/wav" });
+    const apiFetch = vi.fn().mockResolvedValue(
+      createResponseLike({
+        ok: true,
+        status: 200,
+        blob: async () => audioBlob,
+      }),
+    );
+
+    URL.createObjectURL = vi.fn(() => "blob:tts");
+    URL.revokeObjectURL = vi.fn();
+
+    class MockAudio {
+      currentTime = 0;
+      onended: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      pause = vi.fn();
+      play = vi.fn().mockImplementation(async () => {
+        this.onended?.();
+      });
+    }
+
+    // @ts-expect-error test double
+    globalThis.Audio = MockAudio;
+
+    const provider = createTextToSpeechProvider(apiFetch);
+    await provider.speakText("Xin chao");
+
+    expect(provider.mode).toBe("server");
+    expect(apiFetch).toHaveBeenCalledWith(
+      "/speech/tts",
+      expect.objectContaining({ method: "POST" }),
+    );
   });
 
   it("surfaces the safer server tts fallback message when the backend returns an unknown error", async () => {

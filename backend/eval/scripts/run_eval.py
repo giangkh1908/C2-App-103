@@ -11,7 +11,7 @@ import json
 import statistics
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import httpx
@@ -192,7 +192,7 @@ async def run_evaluation(
     return {
         "model": dataset.get("model", "unknown"),
         "dataset": dataset.get("topic", "unknown"),
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        "timestamp": datetime.now(tz=UTC).isoformat(),
         "total": total,
         "metrics": {
             "accuracy": round(keyword_correct / total, 4) if total else 0.0,

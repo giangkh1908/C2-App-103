@@ -3,11 +3,11 @@ from time import perf_counter
 from uuid import uuid4
 
 from src.agents.guardrails import guard_message
-from src.core.metrics import record_cost_per_request, record_pipeline_latency
 from src.agents.schemas import AgentResponse
 from src.agents.tutor_agent import TutorAgent
 from src.core.config import settings
 from src.core.logging import get_logger
+from src.core.metrics import record_cost_per_request, record_pipeline_latency
 from src.models.chat import Topic
 from src.services.context_detector import detect_context
 from src.services.memory_repository import MemoryRepository

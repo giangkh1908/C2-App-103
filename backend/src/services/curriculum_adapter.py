@@ -7,9 +7,9 @@ from dataclasses import dataclass
 from src.core.config import settings
 from src.models.chat import PracticeQuestion, SimulationConfig, VisualCard, VisualData
 from src.models.lesson import LessonPracticeQuestion, LessonSimulation, LessonVisual
+from src.services.types import LearningCoreRequest, LearningCoreResult, SessionMetadata
 from src.services.visualization_generator import VisualizationPlan, resolve_visualization_plan
 from src.services.visualization_validator import validate_visual_payload
-from src.services.types import LearningCoreRequest, LearningCoreResult, SessionMetadata
 
 RUNTIME_TOPIC_BY_CURRICULUM_TOPIC = {
     # Grade 1
@@ -90,7 +90,12 @@ ALLOWED_VISUALS_BY_CURRICULUM_TOPIC = {
     "G2-GEO-01": ("geometry_shape", "shape_sorting", "real_object_match"),
     "G2-GEO-02": ("ruler_measurement", "shape_composition", "drag_drop_shapes"),
     "G2-MEAS-01": ("mass_capacity_visual", "clock_calendar", "money_visual", "ruler_measurement"),
-    "G2-MEAS-02": ("ruler_measurement", "clock_calendar", "mass_capacity_visual", "polyline_length_visual"),
+    "G2-MEAS-02": (
+        "ruler_measurement",
+        "clock_calendar",
+        "mass_capacity_visual",
+        "polyline_length_visual",
+    ),
     "G2-STAT-01": ("picture_graph", "data_table", "counting_objects"),
     "G2-PROB-01": ("probability_experiment", "scenario_cards"),
 }
@@ -216,27 +221,73 @@ PROMPT_EXAMPLES_BY_CURRICULUM_TOPIC = {
 
 SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC = {
     # Grade 1
-    "G1-NUM-01": ("chuc", "don vi", "cau tao so", "tach so", "que tinh", "may chuc", "may don vi", "gom may"),
+    "G1-NUM-01": (
+        "chuc",
+        "don vi",
+        "cau tao so",
+        "tach so",
+        "que tinh",
+        "may chuc",
+        "may don vi",
+        "gom may",
+    ),
     "G1-NUM-02": ("so sanh", "lon hon", "be hon", "thu tu", "tia so", "xep"),
     "G1-OPS-01": ("cong", "tru", "them", "bot", "lay di", "que tinh"),
     "G1-OPS-02": ("tinh nham", "khung 10", "nham", "nhanh", "tia so"),
     "G1-WORD-01": ("bai toan", "loi van", "tom tat", "so do", "con lai", "them"),
     "G1-GEO-01": ("ben trai", "ben phai", "tren", "duoi", "o giua", "truoc", "sau", "vi tri"),
-    "G1-GEO-02": ("hinh tron", "hinh vuong", "hinh tam giac", "hinh chu nhat", "khoi hop", "do vat"),
+    "G1-GEO-02": (
+        "hinh tron",
+        "hinh vuong",
+        "hinh tam giac",
+        "hinh chu nhat",
+        "khoi hop",
+        "do vat",
+    ),
     "G1-GEO-03": ("ghep hinh", "xep hinh", "manh ghep", "keo tha", "ngoi nha"),
     "G1-MEAS-01": ("dai hon", "ngan hon", "dong ho", "lich", "thu", "ngay", "tuan"),
     "G1-MEAS-02": ("do dai", "thuoc", "cm", "doc gio", "gio dung"),
     # Grade 2
-    "G2-NUM-01": ("tram", "nghin", "cau tao so", "so tron tram", "tia so", "bien dien", "may tram", "may chuc", "may don vi", "gom may"),
+    "G2-NUM-01": (
+        "tram",
+        "nghin",
+        "cau tao so",
+        "so tron tram",
+        "tia so",
+        "bien dien",
+        "may tram",
+        "may chuc",
+        "may don vi",
+        "gom may",
+    ),
     "G2-NUM-02": ("so sanh", "lon nhat", "be nhat", "sap xep", "tang dan", "giam dan"),
     "G2-NUM-03": ("uoc luong", "nhom chuc", "uoc tinh", "bao nhieu"),
     "G2-OPS-01": ("cong co nho", "tru co muon", "ket qua", "cot doc", "dat tinh"),
     "G2-OPS-02": ("nhan", "chia", "bang nhan 2", "bang nhan 5", "bang chia", "deu"),
     "G2-OPS-03": ("nham", "tron chuc", "tron tram", "nhanh", "nham nhanh", "tia so", "tinh"),
     "G2-WORD-01": ("bai toan", "loi van", "mot buoc", "tat ca", "con lai", "nhieu hon", "it hon"),
-    "G2-GEO-01": ("diem", "doan thang", "duong cong", "duong thang", "duong gap khuc", "tu giac", "khoi tru", "khoi cau"),
+    "G2-GEO-01": (
+        "diem",
+        "doan thang",
+        "duong cong",
+        "duong thang",
+        "duong gap khuc",
+        "tu giac",
+        "khoi tru",
+        "khoi cau",
+    ),
     "G2-GEO-02": ("ve doan thang", "gep cat", "ghep hinh", "do dai cho truoc"),
-    "G2-MEAS-01": ("kg", "khoi luong", "lit", "dung tich", "dm", "km", "gio phut", "tien", "ngay thang"),
+    "G2-MEAS-01": (
+        "kg",
+        "khoi luong",
+        "lit",
+        "dung tich",
+        "dm",
+        "km",
+        "gio phut",
+        "tien",
+        "ngay thang",
+    ),
     "G2-MEAS-02": ("chuyen doi", "do gap khuc", "kim phut", "uoc luong do luong"),
     "G2-STAT-01": ("bieu do tranh", "phan loai", "kiem dem", "bang so lieu", "nhan xet"),
     "G2-PROB-01": ("co the", "chac chan", "khong the", "xac suat", "ngau nhien"),
@@ -337,7 +388,6 @@ def build_curriculum_scope_redirect_message(curriculum_topic_id: str) -> str:
         f"Con đang chọn bài '{topic_label}'. Câu hỏi này có vẻ chưa đúng nội dung của bài đó. "
         "Con hãy hỏi lại đúng phần kiến thức của bài này nhé."
     )
-
 
 
 def is_curriculum_topic_message_in_scope(curriculum_topic_id: str, message: str) -> bool:
@@ -441,7 +491,11 @@ def build_grade1_curriculum_result(
 
     visual_spec = LessonVisual(
         visual_type=payload.visual_type,
-        object=str((payload.config or {}).get("object_name") or (payload.config or {}).get("shape_name") or "curriculum"),
+        object=str(
+            (payload.config or {}).get("object_name")
+            or (payload.config or {}).get("shape_name")
+            or "curriculum"
+        ),
         groups=payload.primary_count,
         items_per_group=payload.secondary_count,
         total_items=int(payload.total_count),
@@ -615,7 +669,9 @@ def _build_num_02_payload(visual_type: str, numbers: list[int]) -> CurriculumVis
     )
 
 
-def _build_ops_01_payload(visual_type: str, normalized: str, numbers: list[int]) -> CurriculumVisualPayload:
+def _build_ops_01_payload(
+    visual_type: str, normalized: str, numbers: list[int]
+) -> CurriculumVisualPayload:
     a = numbers[0] if len(numbers) > 0 else 24
     b = numbers[1] if len(numbers) > 1 else 13
     is_subtraction = any(token in normalized for token in ("bot", "tru", "lay di"))
@@ -672,7 +728,9 @@ def _build_ops_01_payload(visual_type: str, normalized: str, numbers: list[int])
     )
 
 
-def _build_ops_02_payload(visual_type: str, normalized: str, numbers: list[int]) -> CurriculumVisualPayload:
+def _build_ops_02_payload(
+    visual_type: str, normalized: str, numbers: list[int]
+) -> CurriculumVisualPayload:
     a = numbers[0] if len(numbers) > 0 else 8
     b = numbers[1] if len(numbers) > 1 else 5
     is_subtraction = any(token in normalized for token in ("bot", "tru", "lay di"))
@@ -711,7 +769,9 @@ def _build_ops_02_payload(visual_type: str, normalized: str, numbers: list[int])
     )
 
 
-def _build_word_01_payload(visual_type: str, normalized: str, numbers: list[int]) -> CurriculumVisualPayload:
+def _build_word_01_payload(
+    visual_type: str, normalized: str, numbers: list[int]
+) -> CurriculumVisualPayload:
     start = numbers[0] if len(numbers) > 0 else 5
     change = numbers[1] if len(numbers) > 1 else 3
     is_subtraction = any(token in normalized for token in ("bot", "con lai", "bay di", "tru"))
@@ -810,7 +870,9 @@ def _build_geo_01_payload(numbers: list[int], normalized: str) -> CurriculumVisu
 
 def _build_geo_02_payload(visual_type: str, normalized: str) -> CurriculumVisualPayload:
     shape_id, shape_name = _parse_shape(normalized)
-    explanation = f"Visual này giúp con nhận biết {shape_name.lower()} thông qua đặc điểm và vật quen thuộc."
+    explanation = (
+        f"Visual này giúp con nhận biết {shape_name.lower()} thông qua đặc điểm và vật quen thuộc."
+    )
     life_example = f"Con có thể tìm {shape_name.lower()} trong đồ vật xung quanh."
     config = {"shape_name": shape_name}
     options = ["Hình tròn", "Hình vuông", "Hình tam giác", "Hình chữ nhật"]
@@ -847,7 +909,11 @@ def _build_geo_02_payload(visual_type: str, normalized: str) -> CurriculumVisual
 
 def _build_geo_03_payload(visual_type: str, normalized: str) -> CurriculumVisualPayload:
     target_shape = "Ngôi nhà" if "nha" in normalized else "Hình mới"
-    parts = ["Tam giác", "Hình vuông"] if "tam giac" in normalized and "vuong" in normalized else ["Hình vuông", "Hình vuông", "Tam giác"]
+    parts = (
+        ["Tam giác", "Hình vuông"]
+        if "tam giac" in normalized and "vuong" in normalized
+        else ["Hình vuông", "Hình vuông", "Tam giác"]
+    )
     explanation = f"Con có thể ghép các hình nhỏ để tạo thành {target_shape.lower()}."
     life_example = f"Mỗi phần nhỏ ghép lại sẽ tạo ra {target_shape.lower()} rõ ràng hơn."
     config = {"target_shape": target_shape, "parts": parts}
@@ -881,12 +947,18 @@ def _build_geo_03_payload(visual_type: str, normalized: str) -> CurriculumVisual
     )
 
 
-def _build_meas_01_payload(visual_type: str, normalized: str, numbers: list[int]) -> CurriculumVisualPayload:
+def _build_meas_01_payload(
+    visual_type: str, normalized: str, numbers: list[int]
+) -> CurriculumVisualPayload:
     if visual_type == "clock_calendar":
         if any(token in normalized for token in ("thu", "ngay", "tuan", "lich")):
             weekday = _parse_weekday(normalized)
-            explanation = f"Visual lịch giúp con nhận ra thứ trong tuần. Ở đây đang là {weekday.lower()}."
-            life_example = f"Con có thể dùng lịch để tìm ngày hôm nay và ngày hôm sau của {weekday.lower()}."
+            explanation = (
+                f"Visual lịch giúp con nhận ra thứ trong tuần. Ở đây đang là {weekday.lower()}."
+            )
+            life_example = (
+                f"Con có thể dùng lịch để tìm ngày hôm nay và ngày hôm sau của {weekday.lower()}."
+            )
             config = {"mode": "calendar", "weekday": weekday}
             options = ["Thứ hai", "Thứ ba", "Thứ tư", weekday]
             if weekday not in options:
@@ -897,7 +969,9 @@ def _build_meas_01_payload(visual_type: str, normalized: str, numbers: list[int]
         else:
             hour = numbers[0] if numbers else 7
             explanation = f"Visual đồng hồ đang chỉ {hour} giờ đúng."
-            life_example = f"Khi kim ngắn chỉ {hour} và kim dài chỉ số 12, ta đọc là {hour} giờ đúng."
+            life_example = (
+                f"Khi kim ngắn chỉ {hour} và kim dài chỉ số 12, ta đọc là {hour} giờ đúng."
+            )
             config = {"mode": "clock", "hour": hour, "minute": 0}
             options = [f"{hour} giờ", f"{hour + 1} giờ", "12 giờ", "1 giờ"]
             correct_answer = f"{hour} giờ"
@@ -1011,7 +1085,9 @@ def _build_meas_01_payload(visual_type: str, normalized: str, numbers: list[int]
     )
 
 
-def _build_meas_02_payload(visual_type: str, normalized: str, numbers: list[int]) -> CurriculumVisualPayload:
+def _build_meas_02_payload(
+    visual_type: str, normalized: str, numbers: list[int]
+) -> CurriculumVisualPayload:
     if visual_type == "clock_calendar":
         hour = numbers[0] if numbers else 7
         explanation = f"Con đang thực hành đọc {hour} giờ đúng trên đồng hồ."
@@ -1050,7 +1126,9 @@ def _build_meas_02_payload(visual_type: str, normalized: str, numbers: list[int]
 
     length = numbers[0] if numbers else 12
     object_name = "Cây bút"
-    explanation = f"Con đang thực hành đo độ dài {object_name.lower()} bằng thước. Kết quả là {length} cm."
+    explanation = (
+        f"Con đang thực hành đo độ dài {object_name.lower()} bằng thước. Kết quả là {length} cm."
+    )
     life_example = "Khi đo vật, con đặt đầu vật tại vạch 0 rồi đọc vạch cuối."
     config = {"object_name": object_name}
     return CurriculumVisualPayload(
@@ -1117,8 +1195,6 @@ def _get_visualization_plan(
         requested_template=requested_visual,
         allowed_templates=ALLOWED_VISUALS_BY_CURRICULUM_TOPIC[curriculum_topic_id],
     )
-
-
 
 
 def _normalize(text: str) -> str:

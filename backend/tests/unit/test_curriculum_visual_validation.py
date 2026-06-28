@@ -1,4 +1,4 @@
-﻿from src.services.curriculum_adapter import build_grade1_curriculum_result
+from src.services.curriculum_adapter import build_grade1_curriculum_result
 from src.services.learning_core import detect_curriculum_topic
 from src.services.response_mapper import to_lesson_response
 from src.services.types import LearningCoreRequest

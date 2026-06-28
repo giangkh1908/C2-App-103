@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from src.models.curriculum import CurriculumTopic
+from src.services.curriculum_adapter import get_prompt_examples_for_curriculum_topic
 from src.services.curriculum_service import (
     get_all_topics,
     get_grade_summaries,
@@ -8,7 +8,6 @@ from src.services.curriculum_service import (
     get_topics_for_grade,
     search_topics,
 )
-from src.services.curriculum_adapter import get_prompt_examples_for_curriculum_topic
 
 router = APIRouter(prefix="/curriculum", tags=["curriculum"])
 

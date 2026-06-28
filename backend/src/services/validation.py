@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from src.models.chat import Topic
 from src.models.lesson import LessonResponse
 from src.services.curriculum_adapter import get_expected_curriculum_visuals
@@ -29,6 +31,27 @@ EXPECTED_SIMULATION_TYPES: dict[str, str] = {
 }
 
 
+@dataclass(slots=True)
+class FinalResponseValidationResult:
+    is_valid: bool
+    errors: list[str]
+
+
+def _validate_follow_up_suggestions(suggestions: list[str]) -> list[str]:
+    errors: list[str] = []
+    if len(suggestions) > 8:
+        errors.append("follow_up_suggestions must not exceed 8 items")
+    for suggestion in suggestions:
+        if not isinstance(suggestion, str):
+            errors.append("follow_up_suggestions must contain only strings")
+            continue
+        if not suggestion.strip():
+            errors.append("follow_up_suggestions must not contain blank strings")
+        if len(suggestion.strip()) > 160:
+            errors.append("follow_up_suggestions must stay concise")
+    return errors
+
+
 def validate_learning_core_result(result: LearningCoreResult) -> None:
     # Clarification responses không cần visual/practice — skip validation
     if result.response_mode == "clarification_needed":
@@ -58,7 +81,10 @@ def validate_learning_core_result(result: LearningCoreResult) -> None:
     if result.simulation_spec is None:
         raise ValueError("simulation_spec must not be None for non-clarification responses")
 
-    if result.curriculum_topic_id is None and result.simulation_spec.simulation_type != EXPECTED_SIMULATION_TYPES[visual_type]:
+    if (
+        result.curriculum_topic_id is None
+        and result.simulation_spec.simulation_type != EXPECTED_SIMULATION_TYPES[visual_type]
+    ):
         raise ValueError("Simulation type does not match visual type")
 
     if not result.tts_text.strip():
@@ -73,7 +99,10 @@ def validate_learning_core_result(result: LearningCoreResult) -> None:
     if result.practice_question_spec.correct_answer not in result.practice_question_spec.options:
         raise ValueError("Practice question correct_answer must exist in options")
 
-def validate_lesson_response(response: LessonResponse, curriculum_topic_id: str | None = None) -> None:
+
+def validate_lesson_response(
+    response: LessonResponse, curriculum_topic_id: str | None = None
+) -> None:
     if curriculum_topic_id is not None:
         if response.visual.visual_type not in get_expected_curriculum_visuals(curriculum_topic_id):
             raise ValueError("Curriculum lesson visual_type does not match curriculum topic")
@@ -82,7 +111,8 @@ def validate_lesson_response(response: LessonResponse, curriculum_topic_id: str 
 
     if (
         curriculum_topic_id is None
-        and response.simulation.simulation_type != EXPECTED_SIMULATION_TYPES[response.visual.visual_type]
+        and response.simulation.simulation_type
+        != EXPECTED_SIMULATION_TYPES[response.visual.visual_type]
     ):
         raise ValueError("Lesson simulation_type does not match visual_type")
 
@@ -91,3 +121,29 @@ def validate_lesson_response(response: LessonResponse, curriculum_topic_id: str 
 
     if not response.tts_text.strip():
         raise ValueError("Lesson tts_text must not be empty")
+
+
+def check_final_response_contract(result: LearningCoreResult) -> FinalResponseValidationResult:
+    errors = _validate_follow_up_suggestions(result.follow_up_suggestions)
+
+    if not result.assistant_message.strip():
+        errors.append("assistant_message must not be empty")
+
+    if result.response_mode not in {
+        "explain_only",
+        "explain_with_visual",
+        "explain_with_visual_and_practice",
+        "clarification_needed",
+    }:
+        errors.append("response_mode must be a supported value")
+
+    return FinalResponseValidationResult(
+        is_valid=len(errors) == 0,
+        errors=errors,
+    )
+
+
+def validate_final_response_contract(result: LearningCoreResult) -> None:
+    contract = check_final_response_contract(result)
+    if not contract.is_valid:
+        raise ValueError("; ".join(contract.errors))

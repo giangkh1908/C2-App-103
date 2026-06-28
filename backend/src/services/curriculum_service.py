@@ -87,9 +87,7 @@ async def load_curriculum_from_db(database: AsyncIOMotorDatabase) -> None:
 
         # Auto-generate keywords if missing
         if not topic.keywords:
-            topic.keywords = _generate_keywords(
-                topic.topic_name, topic.content, topic.topic_id
-            )
+            topic.keywords = _generate_keywords(topic.topic_name, topic.content, topic.topic_id)
 
         topics_by_id[topic.topic_id] = topic
         topics_by_grade.setdefault(topic.grade, []).append(topic)

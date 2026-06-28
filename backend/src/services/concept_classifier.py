@@ -37,7 +37,8 @@ def classify_curriculum_concept(
         ):
             return "mass_capacity"
         if requested_template == "clock_calendar" or any(
-            token in normalized_message for token in ("gio", "dong ho", "phut", "lich", "ngay", "thang", "thu")
+            token in normalized_message
+            for token in ("gio", "dong ho", "phut", "lich", "ngay", "thang", "thu")
         ):
             return "time_clock"
         return "measurement_length"

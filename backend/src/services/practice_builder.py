@@ -92,7 +92,9 @@ def build_practice_questions(
         question = "Cột nào cao nhất trong biểu đồ?"
         options = labels
         return (
-            LessonPracticeQuestion(question=question, options=options, correct_answer=labels[max_index]),
+            LessonPracticeQuestion(
+                question=question, options=options, correct_answer=labels[max_index]
+            ),
             PracticeQuestion(
                 id="practice_bar_chart_compare",
                 question_text=question,

@@ -13,6 +13,25 @@ describe("speech providers", () => {
     vi.clearAllMocks();
   });
 
+  function createResponseLike<T extends Blob | Record<string, unknown>>({
+    ok,
+    status,
+    blob,
+    json,
+  }: {
+    ok: boolean;
+    status: number;
+    blob?: T extends Blob ? () => Promise<Blob> : () => Promise<Blob>;
+    json?: () => Promise<Record<string, unknown> | null>;
+  }): Response {
+    return {
+      ok,
+      status,
+      blob: blob ?? (async () => new Blob([], { type: "audio/wav" })),
+      json: json ?? (async () => null),
+    } as Response;
+  }
+
   afterAll(() => {
     process.env.NEXT_PUBLIC_STT_MODE = originalSttMode;
     process.env.NEXT_PUBLIC_TTS_MODE = originalTtsMode;
@@ -33,8 +52,13 @@ describe("speech providers", () => {
     process.env.NEXT_PUBLIC_STT_MODE = "browser";
     process.env.NEXT_PUBLIC_TTS_MODE = "server";
 
+    const audioBlob = new Blob(["audio"], { type: "audio/wav" });
     const apiFetch = vi.fn().mockResolvedValue(
-      new Response(new Blob(["audio"], { type: "audio/wav" }), { status: 200 }),
+      createResponseLike({
+        ok: true,
+        status: 200,
+        blob: async () => audioBlob,
+      }),
     );
 
     URL.createObjectURL = vi.fn(() => "blob:tts");
@@ -73,7 +97,11 @@ describe("speech providers", () => {
     process.env.NEXT_PUBLIC_TTS_MODE = "server";
 
     const apiFetch = vi.fn().mockResolvedValue(
-      new Response("nope", { status: 502, headers: { "Content-Type": "text/plain" } }),
+      createResponseLike({
+        ok: false,
+        status: 502,
+        json: async () => null,
+      }),
     );
 
     const provider = createTextToSpeechProvider(apiFetch);

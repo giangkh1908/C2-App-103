@@ -3,7 +3,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.core.config import settings
 from src.services.speech_service import SpeechService, SpeechServiceError
 
 
@@ -51,7 +50,9 @@ async def test_synthesize_with_edge_tts_returns_audio_bytes():
         async def save(self, path: str) -> None:
             Path(path).write_bytes(fake_audio)
 
-    fake_edge_tts = type("FakeEdgeTtsModule", (), {"Communicate": lambda *args, **kwargs: FakeCommunicate()})()
+    fake_edge_tts = type(
+        "FakeEdgeTtsModule", (), {"Communicate": lambda *args, **kwargs: FakeCommunicate()}
+    )()
 
     with patch.object(SpeechService, "_edge_tts_module", return_value=fake_edge_tts):
         audio_bytes = await service._synthesize_with_edge_tts("Xin chao", slow=True)

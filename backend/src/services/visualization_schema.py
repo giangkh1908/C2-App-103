@@ -74,11 +74,21 @@ TOPIC_TO_CONCEPT: dict[str, ConceptType] = {
 CONCEPT_DEFINITIONS: dict[ConceptType, ConceptDefinition] = {
     "addition_with_objects": ConceptDefinition(
         default_template="operation_story",
-        allowed_templates=("operation_story", "counting_objects", "place_value_blocks", "stick_bundles"),
+        allowed_templates=(
+            "operation_story",
+            "counting_objects",
+            "place_value_blocks",
+            "stick_bundles",
+        ),
     ),
     "subtraction_with_objects": ConceptDefinition(
         default_template="operation_story",
-        allowed_templates=("operation_story", "counting_objects", "place_value_blocks", "stick_bundles"),
+        allowed_templates=(
+            "operation_story",
+            "counting_objects",
+            "place_value_blocks",
+            "stick_bundles",
+        ),
     ),
     "mental_math_number_line": ConceptDefinition(
         default_template="number_line",
@@ -119,9 +129,7 @@ CONCEPT_DEFINITIONS: dict[ConceptType, ConceptDefinition] = {
     "place_value": ConceptDefinition(
         default_template="place_value_blocks",
         allowed_templates=("place_value_blocks", "number_line", "counting_objects"),
-        keyword_overrides=(
-            (("tia so",), "number_line"),
-        ),
+        keyword_overrides=((("tia so",), "number_line"),),
         polypad_enabled=True,
         polypad_mode="base-ten-blocks",
     ),
@@ -155,7 +163,12 @@ CONCEPT_DEFINITIONS: dict[ConceptType, ConceptDefinition] = {
     ),
     "measurement_length": ConceptDefinition(
         default_template="ruler_measurement",
-        allowed_templates=("comparison_visual", "ruler_measurement", "clock_calendar", "polyline_length_visual"),
+        allowed_templates=(
+            "comparison_visual",
+            "ruler_measurement",
+            "clock_calendar",
+            "polyline_length_visual",
+        ),
         keyword_overrides=(
             (("gio", "dong ho", "phut", "ngay", "thang", "lich", "thu"), "clock_calendar"),
             (("gap khuc",), "polyline_length_visual"),
@@ -166,7 +179,12 @@ CONCEPT_DEFINITIONS: dict[ConceptType, ConceptDefinition] = {
     ),
     "time_clock": ConceptDefinition(
         default_template="clock_calendar",
-        allowed_templates=("clock_calendar", "money_visual", "mass_capacity_visual", "ruler_measurement"),
+        allowed_templates=(
+            "clock_calendar",
+            "money_visual",
+            "mass_capacity_visual",
+            "ruler_measurement",
+        ),
         keyword_overrides=(
             (("tien",), "money_visual"),
             (("kg", "lit", "khoi luong", "dung tich"), "mass_capacity_visual"),
@@ -190,23 +208,17 @@ CONCEPT_DEFINITIONS: dict[ConceptType, ConceptDefinition] = {
     "picture_graph": ConceptDefinition(
         default_template="picture_graph",
         allowed_templates=("picture_graph", "data_table", "counting_objects"),
-        keyword_overrides=(
-            (("bang", "so lieu"), "data_table"),
-        ),
+        keyword_overrides=((("bang", "so lieu"), "data_table"),),
     ),
     "probability_basic": ConceptDefinition(
         default_template="probability_experiment",
         allowed_templates=("probability_experiment", "scenario_cards"),
-        keyword_overrides=(
-            (("co the", "chac chan", "khong the"), "scenario_cards"),
-        ),
+        keyword_overrides=((("co the", "chac chan", "khong the"), "scenario_cards"),),
     ),
     "word_problem_bar_model": ConceptDefinition(
         default_template="bar_model",
         allowed_templates=("bar_model", "operation_story", "counting_objects", "array_model"),
-        keyword_overrides=(
-            (("them", "bot", "con lai"), "operation_story"),
-        ),
+        keyword_overrides=((("them", "bot", "con lai"), "operation_story"),),
     ),
 }
 

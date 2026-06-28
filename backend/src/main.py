@@ -20,13 +20,13 @@ from src.core.logging import (
     unbind_request_context,
 )
 from src.core.metrics import record_request_duration, reset_metrics
+from src.services.curriculum_service import load_curriculum_from_db
 from src.services.payment_service import (
     expire_overdue_payments,
     reconcile_paid_payments,
 )
 from src.services.plan_service import seed_default_plans
 from src.services.practice_dataset import load_exam_catalog_from_db
-from src.services.curriculum_service import load_curriculum_from_db
 from src.services.subscription_service import (
     expire_overdue_subscriptions,
     send_expiry_reminder_emails,

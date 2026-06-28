@@ -33,7 +33,13 @@ def validate_visual_payload(
 
     if template == "comparison_visual":
         operator = payload.get("compare_operator")
-        expected = ">" if primary_count > secondary_count else "<" if primary_count < secondary_count else "="
+        expected = (
+            ">"
+            if primary_count > secondary_count
+            else "<"
+            if primary_count < secondary_count
+            else "="
+        )
         if operator is not None and operator != expected:
             errors.append("Comparison operator does not match the compared values.")
 
@@ -67,14 +73,20 @@ def validate_visual_payload(
         if not isinstance(denominations, list) or not denominations:
             errors.append("Money visual requires at least one denomination.")
         else:
-            numeric = [int(value) for value in denominations if isinstance(value, (int, float, str))]
+            numeric = [
+                int(value) for value in denominations if isinstance(value, (int, float, str))
+            ]
             if sum(numeric) != total_value:
                 errors.append("Money visual total_value does not equal the denominations sum.")
 
     if template in {"picture_graph", "data_table"}:
         labels = payload.get("labels")
         values = payload.get("values")
-        if not isinstance(labels, list) or not isinstance(values, list) or len(labels) != len(values):
+        if (
+            not isinstance(labels, list)
+            or not isinstance(values, list)
+            or len(labels) != len(values)
+        ):
             errors.append("Data visuals require labels and values with matching lengths.")
 
     if template == "probability_experiment":
@@ -86,7 +98,11 @@ def validate_visual_payload(
             errors.append("Probability favorable_count exceeds outcomes length.")
 
     max_value = max(primary_count, secondary_count, int(total_count))
-    if grade == 1 and concept_type in {"mental_math_ten_frame", "mental_math_number_line"} and max_value > 20:
+    if (
+        grade == 1
+        and concept_type in {"mental_math_ten_frame", "mental_math_number_line"}
+        and max_value > 20
+    ):
         errors.append("Grade 1 mental math templates should stay within 20.")
     if grade == 1 and concept_type == "place_value" and int(total_count) > 100:
         errors.append("Grade 1 place value payload exceeds the expected range.")

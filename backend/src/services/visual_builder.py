@@ -2,7 +2,6 @@ from src.models.chat import SimulationConfig, Topic, VisualCard, VisualData
 from src.models.lesson import LessonSimulation, LessonVisual
 from src.services.types import LearningContext
 
-
 # Curriculum visual templates that map to existing backend types
 _LEGACY_TEMPLATE_MAP = {
     "candy": "candy",
@@ -211,14 +210,18 @@ def _build_rectangle_bundle(
     mode_label = "chu vi" if context.visual_type == "perimeter_path" else "di\u1ec7n t\u00edch"
     return (
         LessonVisual(
-            visual_type="perimeter_path" if context.visual_type == "perimeter_path" else "area_grid",
+            visual_type="perimeter_path"
+            if context.visual_type == "perimeter_path"
+            else "area_grid",
             object="grid",
             length=tool_data["length"],
             width=tool_data["width"],
             unit=str(tool_data["unit"]),
         ),
         LessonSimulation(
-            simulation_type="perimeter_path_counter" if context.visual_type == "perimeter_path" else "area_grid_counter",
+            simulation_type="perimeter_path_counter"
+            if context.visual_type == "perimeter_path"
+            else "area_grid_counter",
             prompt=(
                 "Con th\u1eed ch\u1ea1m theo \u0111\u01b0\u1eddng bao quanh \u0111\u1ec3 \u0111\u1ebfm chu vi nh\u00e9."
                 if context.visual_type == "perimeter_path"
@@ -235,7 +238,9 @@ def _build_rectangle_bundle(
                 primary_count=tool_data["length"],
                 secondary_count=tool_data["width"],
                 total_count=float(
-                    tool_data["perimeter"] if context.visual_type == "perimeter_path" else tool_data["area"]
+                    tool_data["perimeter"]
+                    if context.visual_type == "perimeter_path"
+                    else tool_data["area"]
                 ),
                 groups_label="Chi\u1ec1u d\u00e0i",
                 items_label="Chi\u1ec1u r\u1ed9ng",

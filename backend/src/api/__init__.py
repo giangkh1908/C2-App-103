@@ -2,10 +2,10 @@ from fastapi import APIRouter
 
 from src.api.admin import router as admin_router
 from src.api.auth import router as auth_router
-from src.api.curriculum import router as curriculum_router
 from src.api.chat import router as chat_router
 from src.api.chat_history import router as chat_history_router
 from src.api.chat_stream import router as chat_stream_router
+from src.api.curriculum import router as curriculum_router
 from src.api.health import router as health_router
 from src.api.lessons import router as lessons_router
 from src.api.metrics import router as metrics_router

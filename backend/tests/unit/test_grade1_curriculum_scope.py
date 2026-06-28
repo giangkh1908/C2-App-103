@@ -1,6 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -15,8 +14,14 @@ from src.services.types import LearningCoreRequest
 
 
 def test_curriculum_scope_detector_rejects_other_grade1_topic() -> None:
-    assert is_curriculum_topic_message_in_scope("G1-GEO-02", "Giải thích 24 + 13 bằng que tính") is False
-    assert is_curriculum_topic_message_in_scope("G1-GEO-02", "Nhận biết hình vuông và hình tròn") is True
+    assert (
+        is_curriculum_topic_message_in_scope("G1-GEO-02", "Giải thích 24 + 13 bằng que tính")
+        is False
+    )
+    assert (
+        is_curriculum_topic_message_in_scope("G1-GEO-02", "Nhận biết hình vuông và hình tròn")
+        is True
+    )
 
 
 def test_build_grade1_curriculum_result_keeps_expected_visual() -> None:
@@ -32,9 +37,9 @@ def test_build_grade1_curriculum_result_keeps_expected_visual() -> None:
 
     assert result is not None
     assert result.visual_card is not None
-    assert result.visual_card.visual_data.type == "stick_bundles"
+    assert result.visual_card.visual_data.type == "operation_story"
     assert result.visual_spec is not None
-    assert result.visual_spec.visual_type == "stick_bundles"
+    assert result.visual_spec.visual_type == "operation_story"
     assert result.practice_question_chat is not None
     assert result.follow_up_suggestions == get_prompt_examples_for_curriculum_topic("G1-OPS-01")
 
@@ -52,9 +57,9 @@ def test_build_grade1_curriculum_result_uses_stick_bundles_for_subtraction() -> 
 
     assert result is not None
     assert result.visual_card is not None
-    assert result.visual_card.visual_data.type == "stick_bundles"
+    assert result.visual_card.visual_data.type == "operation_story"
     assert result.visual_spec is not None
-    assert result.visual_spec.visual_type == "stick_bundles"
+    assert result.visual_spec.visual_type == "operation_story"
 
 
 @pytest.mark.asyncio

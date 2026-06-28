@@ -30,7 +30,9 @@ def resolve_visualization_plan(
         return None
 
     definition = CONCEPT_DEFINITIONS[concept_type]
-    allowed_for_concept = tuple(template for template in definition.allowed_templates if template in allowed_templates)
+    allowed_for_concept = tuple(
+        template for template in definition.allowed_templates if template in allowed_templates
+    )
     if not allowed_for_concept:
         allowed_for_concept = allowed_templates
 

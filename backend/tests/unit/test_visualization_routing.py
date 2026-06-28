@@ -1,16 +1,25 @@
 from src.services.concept_classifier import classify_curriculum_concept
 from src.services.curriculum_adapter import build_grade1_curriculum_result
-from src.services.visualization_validator import validate_visual_payload
 from src.services.types import LearningCoreRequest
+from src.services.visualization_validator import validate_visual_payload
 
 
 def test_concept_classifier_maps_core_grade1_and_grade2_prompts() -> None:
     assert classify_curriculum_concept("G1-NUM-02", "so sanh 34 va 7") == "compare_numbers"
     assert classify_curriculum_concept("G1-NUM-01", "24 co may chuc may don vi") == "place_value"
     assert classify_curriculum_concept("G1-OPS-02", "tinh 8 + 5") == "mental_math_ten_frame"
-    assert classify_curriculum_concept("G1-OPS-02", "dung tia so de tinh 7 + 2") == "mental_math_number_line"
-    assert classify_curriculum_concept("G2-OPS-02", "minh hoa 3 x 5 bang mang o vuong") == "multiplication_as_groups"
-    assert classify_curriculum_concept("G2-OPS-02", "chia deu 20 keo cho 5 ban") == "division_as_sharing"
+    assert (
+        classify_curriculum_concept("G1-OPS-02", "dung tia so de tinh 7 + 2")
+        == "mental_math_number_line"
+    )
+    assert (
+        classify_curriculum_concept("G2-OPS-02", "minh hoa 3 x 5 bang mang o vuong")
+        == "multiplication_as_groups"
+    )
+    assert (
+        classify_curriculum_concept("G2-OPS-02", "chia deu 20 keo cho 5 ban")
+        == "division_as_sharing"
+    )
 
 
 def test_visualization_validator_rejects_invalid_addition_math() -> None:

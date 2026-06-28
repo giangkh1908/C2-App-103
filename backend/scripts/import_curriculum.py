@@ -19,10 +19,10 @@ from pathlib import Path
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-
 # ---------------------------------------------------------------------------
 # Markdown parser
 # ---------------------------------------------------------------------------
+
 
 def _strip_accents(text: str) -> str:
     nfkd = unicodedata.normalize("NFKD", text)
@@ -126,9 +126,7 @@ def parse_curriculum_markdown(md_path: str) -> list[dict]:
                 if outcomes_match:
                     raw_outcomes = outcomes_match.group(1)
                     outcomes = re.findall(r"-\s*(.+?)(?=\n\s*-|\Z)", raw_outcomes, re.DOTALL)
-                    topic_data["learning_outcomes"] = [
-                        o.strip() for o in outcomes if o.strip()
-                    ]
+                    topic_data["learning_outcomes"] = [o.strip() for o in outcomes if o.strip()]
 
                 # Visual templates
                 vt_match = re.search(
@@ -219,9 +217,7 @@ logger = logging.getLogger("import_curriculum")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Import curriculum markdown to MongoDB"
-    )
+    parser = argparse.ArgumentParser(description="Import curriculum markdown to MongoDB")
     parser.add_argument(
         "--md-path",
         required=True,
@@ -269,9 +265,7 @@ def main() -> None:
         sys.exit(1)
 
     # Import
-    count = asyncio.run(
-        import_to_mongodb(topics, mongodb_uri, db_name, replace=args.replace)
-    )
+    count = asyncio.run(import_to_mongodb(topics, mongodb_uri, db_name, replace=args.replace))
     logger.info("done: imported %d topics", count)
 
 

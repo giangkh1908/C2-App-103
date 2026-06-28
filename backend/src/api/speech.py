@@ -19,7 +19,9 @@ async def text_to_speech(
     usage_service = UsageService(db=get_db())
     speech_service = SpeechService()
 
-    has_quota, remaining, limit = await usage_service.check_and_record_usage(user_id, "tts_requests")
+    has_quota, remaining, limit = await usage_service.check_and_record_usage(
+        user_id, "tts_requests"
+    )
     if not has_quota:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,

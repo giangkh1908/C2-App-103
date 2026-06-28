@@ -3,8 +3,8 @@ from __future__ import annotations
 from src.models.chat import PracticeQuestion
 from src.models.lesson import LessonPracticeQuestion
 from src.services.curriculum_adapter import (
-    CurriculumVisualPayload,
     PROMPT_EXAMPLES_BY_CURRICULUM_TOPIC,
+    CurriculumVisualPayload,
 )
 
 
@@ -81,7 +81,9 @@ def pick_g2_visual(
     if curriculum_topic_id == "G2-OPS-03":
         if "tia so" in normalized:
             return "number_line"
-        if any(token in normalized for token in ("tram", "chuc")) or (numbers and max(numbers) >= 20):
+        if any(token in normalized for token in ("tram", "chuc")) or (
+            numbers and max(numbers) >= 20
+        ):
             return "place_value_blocks"
         return None
     if curriculum_topic_id == "G2-WORD-01":
@@ -166,7 +168,7 @@ def _build_num_02(visual_type: str, numbers: list[int]) -> CurriculumVisualPaylo
         visual_type=visual_type,
         title=f"So sánh {a} và {b}",
         explanation=f"Khi so sánh {a} và {b}, con thấy ngay {a} {symbol} {b}.",
-        life_example=f"Con có thể so từng hàng trăm, chục, đơn vị để biết số nào lớn hơn.",
+        life_example="Con có thể so từng hàng trăm, chục, đơn vị để biết số nào lớn hơn.",
         primary_count=a,
         secondary_count=b,
         total_count=float(max(a, b)),
@@ -270,7 +272,9 @@ def _build_ops_02(
         total_items = a
         groups = max(b, 1)
         items = total_items // groups
-        explanation = f"Ta chia đều {total_items} đồ vật cho {groups} nhóm, mỗi nhóm có {items} đồ vật."
+        explanation = (
+            f"Ta chia đều {total_items} đồ vật cho {groups} nhóm, mỗi nhóm có {items} đồ vật."
+        )
         config = {
             "operation": "÷",
             "before": total_items,

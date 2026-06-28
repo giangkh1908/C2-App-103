@@ -1,11 +1,8 @@
 """Unit-test-local conftest.
 
-The repo-level `tests/conftest.py` declares an autouse fixture
-`patched_practice_catalog` that depends (via `seeded_practice_data` ->
-`mock_db` -> `mongo_client`) on a live MongoDB at 127.0.0.1:27018.
-That is correct for integration / API tests but it forces every
-unit test in this directory to also require a running Mongo,
-which is wrong: pure model / utility tests must run without it.
+The repo-level `tests/conftest.py` declares DB-backed fixtures for
+integration/API tests. Unit tests in this directory should stay
+Mongo-free: pure model / utility tests must run without a live MongoDB.
 
 We override `mongo_client`, `mock_db`, and the autouse catalog
 fixture here with Mongo-free versions. Integration tests live in

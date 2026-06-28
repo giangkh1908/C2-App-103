@@ -106,7 +106,7 @@ async def admin_headers(admin_user):
 
 
 @pytest_asyncio.fixture
-async def seeded_practice_data(mock_db):
+async def seeded_practice_data():
     dataset_path = (
         Path(__file__).resolve().parents[1]
         / "data"

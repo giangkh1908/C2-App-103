@@ -3,7 +3,6 @@ from src.models.lesson import LessonResponse
 from src.services.curriculum_adapter import get_expected_curriculum_visuals
 from src.services.types import LearningCoreResult
 
-
 EXPECTED_VISUAL_TYPES: dict[Topic, set[str]] = {
     "multiplication": {"equal_groups"},
     "division": {"sharing"},

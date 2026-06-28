@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -13,7 +13,6 @@ from src.services.practice_dataset import (  # noqa: E402
     load_curated_manifest,
     load_rows_from_file,
 )
-
 
 MOJIBAKE_MARKERS = ("Ãƒ", "Ã„", "Ã…", "Ã†", "Ã¡Âº", "Ã¡Â»")
 

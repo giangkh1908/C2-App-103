@@ -585,3 +585,17 @@
 {"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":true,"rate":"-15%","media_type":"audio/mpeg","event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T06:44:27.751331+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:27.761956+00:00"}
 {"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":false,"rate":"0%","error_message":"boom","event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T06:44:31.259757+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:11:56.538591+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:00.657045+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:05.475961+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:09.682939+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:13.550977+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:17.322149+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:21.722646+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:25.712491+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:29.504534+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:33.441489+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:37.300281+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:41.487116+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:45.360711+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:49.931758+00:00"}

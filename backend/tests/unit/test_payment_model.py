@@ -5,7 +5,6 @@ and the round-trip between PaymentInDB and the raw Mongo document.
 """
 
 from datetime import UTC, datetime
-from types import SimpleNamespace
 
 import pytest
 from bson import ObjectId

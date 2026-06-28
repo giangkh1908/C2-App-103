@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 from time import sleep
 from typing import Any
 

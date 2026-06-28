@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from bson import ObjectId
 
-from src.services.usage_service import ROLLING_WINDOW_HOURS, UsageService
+from src.services.usage_service import UsageService
 
 
 @pytest.fixture

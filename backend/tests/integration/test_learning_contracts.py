@@ -199,8 +199,8 @@ async def test_lessons_generate_returns_spec_payload(client, auth_headers, test_
 
 @pytest.mark.asyncio
 async def test_chat_and_lesson_share_the_same_core_shape(client, auth_headers) -> None:
-    from src.api.lessons import get_learning_core_service as get_lessons_core_service
     from src.api.chat import get_tutor_chat_orchestrator
+    from src.api.lessons import get_learning_core_service as get_lessons_core_service
 
     core_result = build_core_result("division", response_source="fallback")
     fake_service = AsyncMock()

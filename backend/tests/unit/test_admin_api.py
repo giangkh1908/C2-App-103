@@ -15,7 +15,6 @@ from httpx import ASGITransport, AsyncClient
 
 from src.core.security import create_access_token, hash_password
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

@@ -18,6 +18,11 @@ from src.services.practice_dataset import (
 
 TEST_MONGODB_URI = os.getenv("PRACTICE_TEST_MONGODB_URI", "mongodb://127.0.0.1:27018")
 TEST_MONGODB_DB_NAME = os.getenv("PRACTICE_TEST_MONGODB_DB_NAME", "toan_truc_quan_practice_test")
+# Each pytest-xdist worker gets its own DB so parallel test runs don't race
+# on shared collections. Falls back to the shared name when running serially.
+_XDIST_WORKER = os.getenv("PYTEST_XDIST_WORKER", "")
+if _XDIST_WORKER:
+    TEST_MONGODB_DB_NAME = f"{TEST_MONGODB_DB_NAME}_{_XDIST_WORKER}"
 
 
 @pytest_asyncio.fixture
@@ -101,7 +106,7 @@ async def admin_headers(admin_user):
 
 
 @pytest_asyncio.fixture
-async def seeded_practice_data(mock_db):
+async def seeded_practice_data():
     dataset_path = (
         Path(__file__).resolve().parents[1]
         / "data"

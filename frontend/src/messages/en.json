@@ -29,22 +29,14 @@
       "perimeter_area_basic": "Perimeter & Area"
     },
     "chat": {
-      "title": "AI Math Tutor",
-      "subtitle": "Ask any elementary math question",
-      "gradeLabel": "Grade",
-      "freeTopic": "Free Topic",
-      "welcome": "Hello! I'm your AI math tutor. Ask me anything about elementary math — I'll explain with visual examples!",
+      "title": "Grade 1 Math Tutor",
+      "subtitle": "Free chat — I'll explain with visuals",
+      "welcome": "Hello! I'm your Grade 1 math tutor. Just ask freely — I'll explain with visual examples!",
       "ready": "Ready to learn!",
-      "suggestions": {
-        "multiply": "Explain multiplication",
-        "compareFractions": "Compare fractions",
-        "perimeterArea": "Perimeter & area",
-        "division": "Explain division"
-      },
       "connectionError": "Connection error. Please try again.",
       "retrySuggestion": "Try again",
-      "chooseTopicSuggestion": "Choose a topic",
-      "inputPlaceholder": "Ask a math question...",
+      "chooseTopicSuggestion": "Try another question",
+      "inputPlaceholder": "Ask any Grade 1 math question...",
       "stopRecording": "Stop recording",
       "startRecording": "Start recording",
       "footer": "AI Tutor — Visual Math Learning",

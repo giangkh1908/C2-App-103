@@ -112,6 +112,10 @@ async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:
     await target_db.usage_logs.create_index("timestamp")
     await target_db.usage_logs.create_index([("user_id", 1), ("action", 1), ("timestamp", 1)])
     await ensure_payment_indexes(target_db)
+    # Curriculum topic indexes
+    await target_db.curriculum_topics.create_index("topic_id", unique=True)
+    await target_db.curriculum_topics.create_index("grade")
+    await target_db.curriculum_topics.create_index([("grade", 1), ("strand", 1)])
 
 
 async def connect_db() -> None:

@@ -44,4 +44,5 @@ Thumbs.db
 # .ai-log/*.jsonl
 
 .ai-log/
+nul
 

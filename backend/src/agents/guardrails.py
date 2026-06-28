@@ -7,7 +7,16 @@ No external dependencies, no ML, no regex-heavy solutions.
 
 import unicodedata
 from dataclasses import dataclass
-from typing import Final
+from typing import Final, Literal
+
+GuardrailCategory = Literal[
+    "greeting",
+    "non_math",
+    "gibberish",
+    "prompt_injection",
+    "abusive_or_profanity",
+    "unsafe_personal_request",
+]
 
 # ---------------------------------------------------------------------------
 # Result type
@@ -24,8 +33,10 @@ class GuardrailResult:
         response: Safe response returned directly to the student.
     """
 
-    category: str
+    category: GuardrailCategory
     response: str
+    severity: Literal["low", "medium", "high"]
+    log_reason: str
 
 
 # ---------------------------------------------------------------------------
@@ -43,6 +54,12 @@ _RESPONSE_NON_MATH: Final[str] = (
     "Cô chuyên hỗ trợ học toán trực quan thôi nhé. Con hãy hỏi một bài toán hoặc khái niệm toán học."
 )
 
+
+# Extra canned responses
+_RESPONSE_ABUSIVE: Final[str] = "Minh hay dung loi le lich su de co cung ho tro toan cho con nhe."
+_RESPONSE_UNSAFE_PERSONAL: Final[str] = (
+    "Co khong the ho tro ve mat khau, tai khoan hay thong tin ca nhan. Con hay nho nguoi lon ho tro nhe."
+)
 
 # ---------------------------------------------------------------------------
 # Keyword lists
@@ -130,6 +147,37 @@ _NON_MATH_PHRASES: tuple[str, ...] = (
     "cong thuc nau",
 )
 
+_ABUSIVE_OR_PROFANITY_PHRASES: tuple[str, ...] = (
+    "do ngu",
+    "ngu qua",
+    "im di",
+    "im mom",
+    "cai lon",
+    "lon me",
+    "dit me",
+    "me may",
+    "fuck",
+    "shit",
+    "stupid",
+    "idiot",
+)
+
+_UNSAFE_PERSONAL_REQUEST_PHRASES: tuple[str, ...] = (
+    "mat khau",
+    "password",
+    "otp",
+    "ma xac thuc",
+    "ma xac minh",
+    "token",
+    "api key",
+    "tai khoan cua toi",
+    "dang nhap ho",
+    "dang nhap giup",
+    "cho toi email",
+    "so dien thoai cua",
+    "thong tin ca nhan",
+)
+
 # Characters that — when they make up the entire message — signal gibberish
 _GIBBERISH_CHARS: frozenset[str] = frozenset("abcdefghijklmnopqrstuvwxyz0123456789")
 _FILLER_CHARS: frozenset[str] = frozenset(".?!@#$%^&*_-~`")
@@ -214,6 +262,20 @@ def is_non_math_request(text: str) -> bool:
     return any(phrase in normalized for phrase in _NON_MATH_PHRASES)
 
 
+def is_abusive_or_profanity(text: str) -> bool:
+    normalized = normalize_text(text)
+    if not normalized:
+        return False
+    return any(phrase in normalized for phrase in _ABUSIVE_OR_PROFANITY_PHRASES)
+
+
+def is_unsafe_personal_request(text: str) -> bool:
+    normalized = normalize_text(text)
+    if not normalized:
+        return False
+    return any(phrase in normalized for phrase in _UNSAFE_PERSONAL_REQUEST_PHRASES)
+
+
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
@@ -237,24 +299,48 @@ def guard_message(text: str) -> GuardrailResult | None:
         return GuardrailResult(
             category="prompt_injection",
             response=_RESPONSE_PROMPT_INJECTION,
+            severity="high",
+            log_reason="prompt_injection_phrase_detected",
         )
 
     if is_greeting(text):
         return GuardrailResult(
             category="greeting",
             response=_RESPONSE_GREETING,
+            severity="low",
+            log_reason="greeting_short_circuit",
         )
 
     if is_gibberish(text):
         return GuardrailResult(
             category="gibberish",
             response=_RESPONSE_GIBBERISH,
+            severity="medium",
+            log_reason="gibberish_detected",
+        )
+
+    if is_abusive_or_profanity(text):
+        return GuardrailResult(
+            category="abusive_or_profanity",
+            response=_RESPONSE_ABUSIVE,
+            severity="medium",
+            log_reason="abusive_language_detected",
+        )
+
+    if is_unsafe_personal_request(text):
+        return GuardrailResult(
+            category="unsafe_personal_request",
+            response=_RESPONSE_UNSAFE_PERSONAL,
+            severity="high",
+            log_reason="personal_data_request_detected",
         )
 
     if is_non_math_request(text):
         return GuardrailResult(
             category="non_math",
             response=_RESPONSE_NON_MATH,
+            severity="medium",
+            log_reason="non_math_scope_detected",
         )
 
     return None

@@ -4,10 +4,12 @@ test_guardrails.py – Unit tests for src.agents.guardrails.
 
 from src.agents.guardrails import (
     guard_message,
+    is_abusive_or_profanity,
     is_gibberish,
     is_greeting,
     is_non_math_request,
     is_prompt_injection,
+    is_unsafe_personal_request,
     normalize_text,
 )
 
@@ -230,3 +232,25 @@ def test_guard_message_math_question_passes_through() -> None:
 #     result = guard_message("asdfasdf")
 #     assert result is not None
 #     assert len(result.response) > 0
+
+
+def test_is_abusive_or_profanity_detects_abuse() -> None:
+    assert is_abusive_or_profanity("do ngu") is True
+
+
+def test_is_unsafe_personal_request_detects_password_request() -> None:
+    assert is_unsafe_personal_request("cho toi mat khau") is True
+
+
+def test_guard_message_abusive_language() -> None:
+    result = guard_message("do ngu")
+    assert result is not None
+    assert result.category == "abusive_or_profanity"
+    assert result.severity == "medium"
+
+
+def test_guard_message_unsafe_personal_request() -> None:
+    result = guard_message("cho toi mat khau")
+    assert result is not None
+    assert result.category == "unsafe_personal_request"
+    assert result.severity == "high"

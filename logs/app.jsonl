@@ -1,3 +1,9 @@
+﻿{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:01:24.008694+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:01:32.623826+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:01:45.781926+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:07:11.320597+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:07:20.149097+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-25T03:07:26.552249+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:14:10.384496+00:00"}
 {"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-23T15:14:14.412162+00:00"}
 {"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-23T15:14:14.413675+00:00"}
@@ -152,3 +158,580 @@
 {"method":"POST","path":"/api/v1/payment/webhook/sepay","status_code":401,"duration_ms":2.02,"client_ip":"127.0.0.1","event":"request_completed","request_id":"2ef23d55-5445-4a68-b05e-dbc09c1efd62","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-23T15:16:47.729835+00:00"}
 {"event":"HTTP Request: POST http://test/api/v1/payment/webhook/sepay \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-23T15:16:47.732361+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-23T15:16:47.736892+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:43:45.122704+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:43:49.644103+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:43:53.657474+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:43:57.629606+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:44:01.554233+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:44:05.376845+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:44:09.220561+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:44:13.094917+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:44:17.553208+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:44:21.497283+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:44:25.615795+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:06.196393+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:10.534613+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:14.713588+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:18.935738+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:23.041463+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:27.134184+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:31.192789+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:35.369985+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:39.566235+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:43.859382+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:46:47.929081+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:50:57.946953+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:02.557711+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:06.993405+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:11.287464+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:15.911653+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:20.292017+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:24.624598+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:29.724577+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:35.208991+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:40.341400+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T05:51:44.501023+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:45:56.082349+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:00.537458+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:04.886775+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:08.786922+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:12.553036+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:16.303640+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:20.195542+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:23.917694+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:27.935769+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:31.621039+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:35.486643+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:39.243065+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:42.969954+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T06:46:46.963059+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:28.217704+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:32.885437+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:37.209002+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:41.169391+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:45.019275+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:48.759707+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:52.561821+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:07:56.337418+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:08:00.006248+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:08:03.752041+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:08:07.695333+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:08:11.508412+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:08:15.390460+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:08:19.482983+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:06.391368+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:11.483817+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:15.218253+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:19.158532+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:22.993153+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:27.337917+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:31.091729+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:34.783697+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:38.540634+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:42.343373+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:47.386630+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:51.817079+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:56.185014+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:34:59.915761+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:03.839372+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:07.678271+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:11.506980+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:15.225287+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:46.159190+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:50.571166+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:55.009432+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:35:59.089885+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:02.910479+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:06.688173+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:10.473878+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:14.219036+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:18.094410+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:21.987064+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:25.674080+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:29.568616+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:33.337547+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:37.135630+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:40.889598+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:44.620709+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:48.405493+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T07:36:52.200184+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:00:53.045818+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:00:57.339558+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:01.188063+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:05.240593+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:08.750849+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:12.644780+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:16.337212+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:19.872093+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:23.475885+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:27.224626+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:31.149300+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:35.240059+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:38.805355+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:42.532410+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:46.172330+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:49.993597+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:53.671473+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:01:57.434344+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:33:56.107581+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:02.249925+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:07.079812+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:10.766757+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:14.371624+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:18.344463+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:22.345302+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:25.961281+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:29.923073+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:33.562883+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:37.190640+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:41.173131+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:44.858205+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:48.691662+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:52.392866+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:55.937126+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:34:59.658376+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:35:03.339222+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:35:07.142352+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:18.380243+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:22.248244+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:25.995178+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:29.974485+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:33.831317+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:37.452549+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:41.069183+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:44.744192+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:48.444002+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:52.336506+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:56.175799+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:46:59.877316+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:47:03.726072+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:47:07.890284+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:47:41.244475+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:47:45.090545+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:47:48.860039+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:47:52.683824+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:47:56.587906+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:00.364840+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:04.289488+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:07.990513+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:12.179096+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:17.332285+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:23.061217+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:27.112000+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:30.905510+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:48:34.900553+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:53:48.601780+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:53:53.105475+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:53:58.195034+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:02.263056+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:06.064789+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:09.861713+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:13.651278+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:17.441668+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:21.226120+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:24.847181+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:28.768909+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:32.632250+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:36.164134+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:39.876720+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:43.612232+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:47.555295+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:51.784463+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:54:55.908595+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T11:55:00.553161+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:28.056243+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:29:35.321168+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:29:35.322185+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":8.9,"client_ip":"127.0.0.1","event":"request_completed","request_id":"90ff95ca-cbc7-4a0f-92be-b225d248e301","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:35.897459+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:35.902010+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:35.913102+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":6.65,"client_ip":"127.0.0.1","event":"request_completed","request_id":"cf1c9785-ae61-4880-a083-70c91e1f7f1a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:44.143520+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:44.146539+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:44.154899+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.54,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8297a948-78db-41bb-96cc-97677d1a54b2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:51.193082+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:51.194765+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:29:51.200969+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.39,"client_ip":"127.0.0.1","event":"request_completed","request_id":"471c8b73-c565-4c2e-810d-9582bc41a0bc","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:29:56.439627+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:29:56.441849+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:26.138136+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:55:31.469422+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:55:31.471957+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":25.71,"client_ip":"127.0.0.1","event":"request_completed","request_id":"4e830262-d366-4128-8cac-17e947d61857","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:32.097201+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:32.101241+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:32.109706+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":5.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0caac666-a04d-4117-8b81-66f7c18ce7c0","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:37.208941+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:37.209947+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:37.216492+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":4.27,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8f993fbf-26d5-465e-80e2-18d5a8e302f3","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:42.472284+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:42.474522+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:42.479787+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.69,"client_ip":"127.0.0.1","event":"request_completed","request_id":"903ef1f5-7748-4c39-8765-6903444b2013","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:55:47.488770+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:55:47.489791+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:47.499159+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:55:52.079490+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:23.201102+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:57:27.649984+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-27T13:57:27.651499+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":2.96,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b3a291b0-a2de-4ece-8fa7-dcca194d81dc","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:28.159343+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:28.161348+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:28.168533+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":4.8,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a8d52f13-d719-4e8b-9494-f38c3d9bedaa","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:33.958531+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:33.961966+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:33.968403+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.53,"client_ip":"127.0.0.1","event":"request_completed","request_id":"636675f0-e292-4cb9-8c7f-1bec203cc140","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:40.277423+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:40.280059+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:40.285326+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":4.4,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8218644a-b46b-412b-a7eb-263a7d1ac8f2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-27T13:57:45.415820+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-27T13:57:45.417822+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:45.425080+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-27T13:57:50.067363+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:06:45.476509+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:06:50.762176+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:06:50.762176+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":2.48,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5eb85958-c26f-4a27-b90a-4859939c6512","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:06:51.300273+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:06:51.310662+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:06:51.316297+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":4.41,"client_ip":"127.0.0.1","event":"request_completed","request_id":"1307c083-31e2-4c31-a783-df8eef78d77b","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:06:55.702707+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:06:55.708087+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:06:55.740892+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":8.42,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f206f12a-bcf8-49a6-b7b8-dd8388c574aa","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:07:00.068838+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:07:00.070855+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:00.075938+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.4,"client_ip":"127.0.0.1","event":"request_completed","request_id":"25d92427-628e-49b3-b7aa-5c8f605c2799","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:07:04.497898+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:07:04.497898+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:04.504203+00:00"}
+{"provider":"openrouter_gpt_tts","model":"gpt-4o-mini-tts","slow":false,"event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T03:07:08.354454+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:08.362431+00:00"}
+{"provider":"openrouter_gpt_tts","status_code":503,"event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T03:07:12.328240+00:00"}
+{"provider":"openai_gpt_tts","model":"gpt-4o-mini-tts","slow":true,"event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T03:07:12.328240+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:12.337339+00:00"}
+{"provider":"openrouter_gpt_tts","status_code":503,"event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T03:07:16.016111+00:00"}
+{"provider":"openai_gpt_tts","status_code":502,"event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T03:07:16.016111+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:07:16.021983+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:41.805339+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:23:46.821081+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:23:46.821081+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":5.64,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d9580ca1-5100-4f4f-8e09-25c5631fa25f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:23:47.448560+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:23:47.451711+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:47.456886+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":9.57,"client_ip":"127.0.0.1","event":"request_completed","request_id":"429ef751-cbd2-4b1f-ab5a-f145947724b3","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:23:52.018399+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:23:52.018399+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:52.029960+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8cd0b348-a7f0-4dc7-ab64-71318cb4fdd2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:23:56.224105+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:23:56.224105+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:23:56.230841+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":3.02,"client_ip":"127.0.0.1","event":"request_completed","request_id":"7ed0662a-dd5b-445b-b51d-2db80ec33249","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:24:00.629498+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:24:00.631722+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:24:00.632739+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:24:04.948930+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:24:08.971337+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:37.207309+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:32:41.833385+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:32:41.833385+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":2.73,"client_ip":"127.0.0.1","event":"request_completed","request_id":"31dfee58-ccf1-432f-86aa-71fe4f270114","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:42.425630+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:42.425630+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:42.438146+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.28,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0a5dbe0e-3fcc-48e3-bbd9-b042bf23aff7","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:47.078062+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:47.079658+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:47.086155+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.09,"client_ip":"127.0.0.1","event":"request_completed","request_id":"3fe90e82-19ac-4205-80d5-8b145952f856","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:51.739614+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:51.740649+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:51.746657+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.07,"client_ip":"127.0.0.1","event":"request_completed","request_id":"924000c3-b0be-4e3c-8174-e129f997549f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:32:56.360561+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:32:56.360561+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:32:56.372885+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:33:00.573640+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:33:04.581700+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:05.738206+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:49:10.926547+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T03:49:10.932786+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":3.82,"client_ip":"127.0.0.1","event":"request_completed","request_id":"31389a53-fdd5-4b74-8c6f-fb39c8798785","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:11.463397+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:11.468440+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:11.473645+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":5.06,"client_ip":"127.0.0.1","event":"request_completed","request_id":"9cdf8ee9-0962-4598-b734-37bed1007c11","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:15.564454+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:15.564454+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:15.568493+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.56,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a5cc6606-eea0-4cee-a996-81f2c70431cd","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:20.147979+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:20.150089+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:20.154881+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.42,"client_ip":"127.0.0.1","event":"request_completed","request_id":"14a8ef8a-9693-4405-bde3-e02204e92530","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T03:49:24.346000+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T03:49:24.347064+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:24.352963+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:28.445358+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:32.081834+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:35.621426+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:39.585994+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:43.300275+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T03:49:47.049943+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:20.410266+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T05:28:24.763814+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T05:28:24.765852+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":4.29,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0bb46b97-7020-4b7a-b0ba-9733b342ffa4","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:25.383433+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:25.383433+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:25.394667+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":3.71,"client_ip":"127.0.0.1","event":"request_completed","request_id":"eea0bb9b-37e9-4062-a662-28c42b1c887f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:30.464795+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:30.464795+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:30.474347+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.93,"client_ip":"127.0.0.1","event":"request_completed","request_id":"2b4fa35e-aa3a-430c-8a7c-fc37a4d3ca6a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:35.330877+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:35.333103+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:35.337352+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.15,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5784956f-7663-40a1-bd83-32fafeb9bcd6","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:28:40.190795+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:28:40.190795+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:40.197374+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:44.110841+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:48.769753+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:52.848597+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:28:56.692558+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:29:01.052636+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:29:04.983268+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:29:09.179923+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:15.308868+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T05:47:20.034916+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T05:47:20.040707+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":4.77,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5bd5c50f-857b-4e21-b862-535b421452c4","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:47:20.641032+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:47:20.643335+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:20.649107+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.23,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0e486704-acff-4286-a561-13fd74b94c54","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:47:25.717472+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:47:25.717472+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:25.721143+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.07,"client_ip":"127.0.0.1","event":"request_completed","request_id":"82fec12a-929f-4888-be21-da50605338f7","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:47:30.261675+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:47:30.261675+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:30.272078+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.48,"client_ip":"127.0.0.1","event":"request_completed","request_id":"bec0836d-bda5-4e33-b9b8-7b230c2d14f9","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T05:47:34.761396+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T05:47:34.763410+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:34.770302+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:38.649979+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:42.491264+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:46.356830+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:50.404151+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:54.239157+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:47:58.159778+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:48:01.997535+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T05:48:05.796252+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:26.960084+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T06:16:31.315599+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T06:16:31.316151+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":4.87,"client_ip":"127.0.0.1","event":"request_completed","request_id":"81c9c467-010f-40a6-9bf0-d08bfef6dfd1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:16:31.919781+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:16:31.921548+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:31.926401+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.75,"client_ip":"127.0.0.1","event":"request_completed","request_id":"07dd9319-bfbb-4357-ace7-8fc56e4aae31","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:16:36.371814+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:16:36.373423+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:36.380632+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.01,"client_ip":"127.0.0.1","event":"request_completed","request_id":"1942596e-6a3a-49d5-835e-791442785528","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:16:40.558410+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:16:40.560422+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:40.567421+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.38,"client_ip":"127.0.0.1","event":"request_completed","request_id":"15360dd0-1ca6-4747-b9dc-e86ca6f50253","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:16:44.670818+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:16:44.671917+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:44.676494+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:48.182360+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:51.860319+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:16:56.077184+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":true,"rate":"-15%","media_type":"audio/mpeg","event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T06:17:00.041368+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:00.049902+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":false,"rate":"0%","error_message":"boom","event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T06:17:03.763607+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:22.732396+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T06:17:26.935946+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T06:17:26.939243+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":2.52,"client_ip":"127.0.0.1","event":"request_completed","request_id":"ec1f7c5d-34ec-4d43-9110-e008e9cde0fe","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:17:27.516753+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:17:27.522765+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:27.528248+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.46,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e1799cae-b59e-4b7b-9983-aa3b8a8c0f5b","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:17:32.114310+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:17:32.115336+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:32.119361+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":3.74,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0d10577a-4707-4384-8a31-ef9c41654b18","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:17:36.259961+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:17:36.261977+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:36.266039+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.06,"client_ip":"127.0.0.1","event":"request_completed","request_id":"bed46f3e-bf0d-4d4d-b68c-c00fd04aaf85","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:17:40.625556+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:17:40.625556+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:40.634574+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:44.290994+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:47.801746+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:51.478778+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":true,"rate":"-15%","media_type":"audio/mpeg","event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T06:17:55.120445+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:17:55.127465+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":false,"rate":"0%","error_message":"boom","event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T06:17:58.866213+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:04.516296+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:09.321865+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:13.295640+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:17.158375+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:20.669795+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:24.261959+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:27.999253+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:31.568410+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:35.127831+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:38.872888+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:42.624433+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:46.344000+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:49.933376+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:53.603810+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:43:57.157043+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T06:44:00.658564+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-28T06:44:00.659429+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":4.64,"client_ip":"127.0.0.1","event":"request_completed","request_id":"df7c84b1-5896-4802-8d7b-212b242f886d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:44:01.204022+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:44:01.204022+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:01.209559+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.13,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f35a4c4d-4d83-4120-b3ac-8d22ebb3b14a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:44:05.334458+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:44:05.334458+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:05.341218+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":4.42,"client_ip":"127.0.0.1","event":"request_completed","request_id":"89f79dac-63cb-453a-bb64-980e9a620188","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:44:09.467571+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:44:09.471215+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:09.479112+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.8,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0763af19-84e3-4e1d-8b4d-cbf8c78ca488","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-28T06:44:13.554284+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-28T06:44:13.554284+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:13.562207+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:17.218106+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:20.784977+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:24.182565+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":true,"rate":"-15%","media_type":"audio/mpeg","event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-28T06:44:27.751331+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T06:44:27.761956+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":false,"rate":"0%","error_message":"boom","event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-28T06:44:31.259757+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:11:56.538591+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:00.657045+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:05.475961+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:09.682939+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:13.550977+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:17.322149+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:21.722646+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:25.712491+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:29.504534+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:33.441489+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:37.300281+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:41.487116+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:45.360711+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:12:49.931758+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:16.871483+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:21.803182+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:26.566351+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:32.059892+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:37.059317+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:41.808496+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:46.849491+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:51.077533+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:55.213606+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:42:59.565744+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:03.562549+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:07.620074+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:12.770437+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:17.060417+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:21.091662+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:25.406578+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:29.492111+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:33.436891+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:37.623362+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:42.050354+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:46.010205+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:50.122949+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:54.439973+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:43:58.623023+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:02.663079+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:06.704420+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:10.909225+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:15.635564+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:20.148251+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:24.150304+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:28.469784+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:32.502976+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:36.484976+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:40.559080+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:44.699989+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:48.768188+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:52.812488+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:44:57.060677+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:01.319725+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:05.303559+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:09.552069+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:13.718923+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:17.643974+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:22.802421+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:26.888624+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-28T13:45:31.188386+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:31.197011+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-28T13:45:35.141477+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:35.150589+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:39.247644+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:43.768688+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:47.789460+00:00"}
+{"curriculum_topic_id":"G1-GEO-02","grade":1,"event":"scope_redirected","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-28T13:45:52.123349+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:52.133258+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:45:56.230663+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:00.429039+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:04.570920+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:08.597482+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:12.659618+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:16.925554+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:21.074937+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:25.679154+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:30.778759+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:34.838474+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:38.951036+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:43.407311+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:47.716583+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:46:52.559461+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:47:36.128291+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:47:40.645387+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:47:44.703652+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:47:49.275389+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:47:53.587663+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:47:57.881532+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:03.062166+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:07.211036+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:11.380111+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:15.843749+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:19.969474+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:24.033586+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:28.163810+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:32.136598+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:36.775245+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:41.344251+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:45.700339+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:49.875242+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:54.070201+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:48:58.317718+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:02.492022+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:06.573565+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:10.685316+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:14.863244+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:19.015743+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:22.996566+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:27.241326+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:31.403337+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:35.589248+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:39.693624+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:44.562635+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:48.716666+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:52.808522+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:49:56.860067+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:01.243502+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:05.201411+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:09.439525+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:13.676648+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:17.637951+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:21.861094+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:26.002899+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:30.075970+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:34.157139+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:38.477266+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:42.465340+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-28T13:50:46.700458+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:46.710811+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-28T13:50:51.513930+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:51.521981+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:55.589595+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:50:59.658903+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:03.702352+00:00"}
+{"curriculum_topic_id":"G1-GEO-02","grade":1,"event":"scope_redirected","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-28T13:51:07.841867+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:07.851063+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:12.163099+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:16.326427+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:20.454837+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:24.526900+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:28.788172+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:32.933969+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:36.951122+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:41.217705+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:45.385261+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:50.031574+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:54.748830+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:51:59.050772+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:52:03.597497+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-28T13:52:08.031600+00:00"}

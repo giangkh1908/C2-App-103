@@ -1,0 +1,86 @@
+{
+  "topic": "multiplication",
+  "description": "Grade 2-3 multiplication problems for evaluating candy_multiplication tool and correct numeric answers",
+  "problems": [
+    {
+      "id": "mul_001",
+      "grade": 2,
+      "question": "3 nhóm, mỗi nhóm có 4 cái kẹo. Có tất cả bao nhiêu cái kẹo?",
+      "expected_answer_keywords": ["12", "mười hai"],
+      "expected_tool": "candy_multiplication",
+      "level": "L2"
+    },
+    {
+      "id": "mul_002",
+      "grade": 2,
+      "question": "5 x 2 bằng bao nhiêu?",
+      "expected_answer_keywords": ["10", "mười"],
+      "expected_tool": "candy_multiplication",
+      "level": "L2"
+    },
+    {
+      "id": "mul_003",
+      "grade": 3,
+      "question": "Con có 6 chiếc đĩa, mỗi đĩa có 3 quả táo. Tổng cộng có bao nhiêu quả táo?",
+      "expected_answer_keywords": ["18", "mười tám"],
+      "expected_tool": "candy_multiplication",
+      "level": "L3"
+    },
+    {
+      "id": "mul_004",
+      "grade": 2,
+      "question": "2 x 7 bằng bao nhiêu? Giải thích cho con hiểu.",
+      "expected_answer_keywords": ["14", "mười bốn"],
+      "expected_tool": "candy_multiplication",
+      "level": "L2"
+    },
+    {
+      "id": "mul_005",
+      "grade": 3,
+      "question": "Có 4 chiếc rổ, mỗi rổ đựng 5 bông hoa. Có tất cả bao nhiêu bông hoa?",
+      "expected_answer_keywords": ["20", "hai mươi"],
+      "expected_tool": "candy_multiplication",
+      "level": "L3"
+    },
+    {
+      "id": "mul_006",
+      "grade": 2,
+      "question": "8 x 2 bằng bao nhiêu?",
+      "expected_answer_keywords": ["16", "mười sáu"],
+      "expected_tool": "candy_multiplication",
+      "level": "L2"
+    },
+    {
+      "id": "mul_007",
+      "grade": 3,
+      "question": "3 nhóm bạn, mỗi nhóm có 9 chiếc bút. Tổng số bút là bao nhiêu?",
+      "expected_answer_keywords": ["27", "hai mươi bảy"],
+      "expected_tool": "candy_multiplication",
+      "level": "L3"
+    },
+    {
+      "id": "mul_008",
+      "grade": 3,
+      "question": "7 x 3 bằng bao nhiêu? Hãy dùng hình vẽ để giải thích.",
+      "expected_answer_keywords": ["21", "hai mươi mốt"],
+      "expected_tool": "candy_multiplication",
+      "level": "L3"
+    },
+    {
+      "id": "mul_009",
+      "grade": 3,
+      "question": "Có 6 chiếc hộp, mỗi hộp đựng 4 cái kẹo. Có bao nhiêu cái kẹo tất cả?",
+      "expected_answer_keywords": ["24", "hai mươi tư"],
+      "expected_tool": "candy_multiplication",
+      "level": "L3"
+    },
+    {
+      "id": "mul_010",
+      "grade": 3,
+      "question": "5 x 5 bằng bao nhiêu? Hãy giải thích bằng ví dụ nhóm đều.",
+      "expected_answer_keywords": ["25", "hai mươi lăm"],
+      "expected_tool": "candy_multiplication",
+      "level": "L3"
+    }
+  ]
+}

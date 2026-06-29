@@ -208,8 +208,9 @@ export default function AdminDashboard() {
     loadLlmLogs(llmFilter);
   };
 
-  const dailyBudgetUsd = 1.0;
-  const budgetPct = Math.min((todayCost / dailyBudgetUsd) * 100, 100);
+  const dailyBudgetUsd = stats?.daily_budget_usd;
+  const hasDailyBudget = typeof dailyBudgetUsd === "number" && dailyBudgetUsd > 0;
+  const budgetPct = hasDailyBudget ? Math.min((todayCost / dailyBudgetUsd) * 100, 100) : 0;
   const budgetColor =
     budgetPct > 90 ? "bg-red-500" : budgetPct > 70 ? "bg-yellow-500" : "bg-green-500";
 
@@ -260,7 +261,7 @@ export default function AdminDashboard() {
       <div className="mb-6 rounded-xl border border-natural-border bg-white p-6 shadow-sm">
         <p className="text-sm font-medium text-natural-charcoal/60">Ngân sách LLM hôm nay</p>
         <p className="mt-1 text-2xl font-bold text-natural-charcoal">
-          ${todayCost.toFixed(4)} / ${dailyBudgetUsd.toFixed(2)} ({budgetPct.toFixed(0)}%)
+          ${todayCost.toFixed(4)} / {hasDailyBudget ? `$${dailyBudgetUsd.toFixed(2)}` : "—"} ({budgetPct.toFixed(0)}%)
         </p>
         <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-gray-200">
           <div

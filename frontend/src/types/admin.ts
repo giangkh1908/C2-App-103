@@ -34,6 +34,7 @@ export interface AdminStats {
   total_subscriptions: number;
   pending_payments: number;
   active_users: number;
+  daily_budget_usd?: number;
 }
 
 export interface PaginatedResponse<T> {

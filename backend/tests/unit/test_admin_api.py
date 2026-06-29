@@ -648,6 +648,9 @@ class TestExtendSubscription:
         assert data["total_subscriptions"] == 0
         assert data["pending_payments"] == 0
         assert data["active_users"] == 0
+        from src.core.config import settings
+
+        assert data["daily_budget_usd"] == settings.llm_daily_budget_usd
 
 
 class TestListPlans:

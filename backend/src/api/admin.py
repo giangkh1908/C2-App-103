@@ -14,6 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from pymongo import ReturnDocument
 
+from src.core.config import settings
 from src.core.database import get_db
 from src.core.deps import get_current_admin
 from src.models.payment import PaymentInDB
@@ -442,6 +443,7 @@ async def get_stats(
         "total_subscriptions": total_subscriptions,
         "pending_payments": pending_payments,
         "active_users": active_users,
+        "daily_budget_usd": settings.llm_daily_budget_usd,
     }
 
 

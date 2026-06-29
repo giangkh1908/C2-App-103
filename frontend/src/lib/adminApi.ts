@@ -198,7 +198,32 @@ export async function fetchStats(
     await throwAdminError(res);
   }
 
-  return res.json() as Promise<AdminStats>;
+  const data = (await res.json()) as AdminStats & {
+    dailyBudgetUsd?: number;
+    llm_daily_budget_usd?: number;
+    llmDailyBudgetUsd?: number;
+    budget?: {
+      daily_budget_usd?: number;
+      dailyBudgetUsd?: number;
+    };
+  };
+
+  const dailyBudgetUsd =
+    data.daily_budget_usd ??
+    data.dailyBudgetUsd ??
+    data.llm_daily_budget_usd ??
+    data.llmDailyBudgetUsd ??
+    data.budget?.daily_budget_usd ??
+    data.budget?.dailyBudgetUsd;
+
+  if (dailyBudgetUsd === undefined && process.env.NODE_ENV === "development") {
+    console.warn("Admin stats response is missing daily_budget_usd", data);
+  }
+
+  return {
+    ...data,
+    daily_budget_usd: dailyBudgetUsd,
+  };
 }
 
 /**

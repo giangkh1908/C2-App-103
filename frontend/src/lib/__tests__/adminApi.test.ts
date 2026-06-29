@@ -56,6 +56,7 @@ const mockStats = {
   total_subscriptions: 10,
   pending_payments: 2,
   active_users: 8,
+  daily_budget_usd: 0.5,
 };
 
 describe("fetchPayments", () => {
@@ -300,6 +301,23 @@ describe("fetchStats", () => {
     expect(result.total_subscriptions).toBe(10);
     expect(result.pending_payments).toBe(2);
     expect(result.active_users).toBe(8);
+    expect(result.daily_budget_usd).toBe(0.5);
+  });
+
+  it("normalizes alternate daily budget field names", async () => {
+    apiFetch.mockResolvedValueOnce(
+      jsonResponse({
+        total_revenue: 990000,
+        total_subscriptions: 10,
+        pending_payments: 2,
+        active_users: 8,
+        llm_daily_budget_usd: 0.5,
+      }),
+    );
+
+    const result = await fetchStats(apiFetch as unknown as ApiFetch);
+
+    expect(result.daily_budget_usd).toBe(0.5);
   });
 });
 

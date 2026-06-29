@@ -190,33 +190,10 @@ jobs:
       - name: Tests (vitest)
         run: npm run test -- --run
 
-  frontend-build:
-    name: Frontend build
-    needs: [changes, frontend-fast]
-    if: ${{ always() && needs.changes.outputs.frontend == 'true' && needs.frontend-fast.result == 'success' }}
-    runs-on: self-hosted
-    timeout-minutes: 15
-    defaults:
-      run:
-        shell: bash
-        working-directory: frontend
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Next.js build
-        run: npm run build
-
   frontend-docker:
     name: Frontend docker build
-    needs: [changes, frontend-build]
-    if: ${{ always() && needs.changes.outputs.frontend == 'true' && needs.frontend-build.result == 'success' }}
+    needs: [changes, frontend-fast]
+    if: ${{ always() && needs.changes.outputs.frontend == 'true' && needs.frontend-fast.result == 'success' }}
     runs-on: self-hosted
     timeout-minutes: 15
     defaults:
@@ -241,7 +218,6 @@ jobs:
       - backend-integration
       - backend-docker
       - frontend-fast
-      - frontend-build
       - frontend-docker
     if: ${{ always() }}
     runs-on: self-hosted
@@ -256,7 +232,6 @@ jobs:
           BACKEND_INTEGRATION: ${{ needs.backend-integration.result }}
           BACKEND_DOCKER: ${{ needs.backend-docker.result }}
           FRONTEND_FAST: ${{ needs.frontend-fast.result }}
-          FRONTEND_BUILD: ${{ needs.frontend-build.result }}
           FRONTEND_DOCKER: ${{ needs.frontend-docker.result }}
         run: |
           set -euo pipefail
@@ -301,7 +276,6 @@ jobs:
             "frontend" \
             "$FRONTEND_CHANGED" \
             "frontend-fast=$FRONTEND_FAST" \
-            "frontend-build=$FRONTEND_BUILD" \
             "frontend-docker=$FRONTEND_DOCKER"
 
           if [ "$BACKEND_CHANGED" != "true" ] && [ "$FRONTEND_CHANGED" != "true" ]; then

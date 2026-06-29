@@ -14,6 +14,7 @@ from typing import Any
 
 from src.core.config import settings
 from src.core.logging import get_logger
+from src.core.metrics import record_fallback
 
 from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMStreamUsage, LLMToolCall
 from .openrouter_client import OpenRouterClient
@@ -47,6 +48,7 @@ class ModelRouter(BaseLLMClient):
             app_name=settings.openrouter_app_name,
             temperature=settings.openrouter_temperature,
             max_tokens=settings.openrouter_max_tokens,
+            _backend=True,  # prevent infinite recursion
         )
 
     # ── BaseLLMClient interface ──────────────────────────────────────────
@@ -101,6 +103,7 @@ class ModelRouter(BaseLLMClient):
                         to_model=models_to_try[i + 1],
                         reason=str(exc),
                     )
+                    record_fallback(model)
                     await asyncio.sleep(delay)
                     delay = min(delay * _BACKOFF_FACTOR, _MAX_BACKOFF)
                 continue
@@ -150,6 +153,7 @@ class ModelRouter(BaseLLMClient):
                         to_model=models_to_try[i + 1],
                         reason=str(exc),
                     )
+                    record_fallback(model)
                     await asyncio.sleep(delay)
                     delay = min(delay * _BACKOFF_FACTOR, _MAX_BACKOFF)
                 continue

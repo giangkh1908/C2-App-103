@@ -255,4 +255,3 @@ async def test_chat_and_lesson_share_the_same_core_shape(client, auth_headers) -
     assert lesson_payload["real_life_example"] == chat_payload["visual_card"]["life_example"]
     assert lesson_payload["practice_question"]["correct_answer"] == "3"
     assert chat_payload["practice_question"]["options"][1] == "3"
-

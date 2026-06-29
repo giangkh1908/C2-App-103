@@ -39,7 +39,7 @@ function buildSepayQrUrl(args: {
     acc: SEPAY_ACCOUNT_NUMBER,
     template: "compact",
     amount: String(args.amount),
-    content: args.paymentCode,
+    des: args.paymentCode,
   });
   return `https://qr.sepay.vn/img?${params.toString()}`;
 }
@@ -144,7 +144,13 @@ export default function PaymentClient({
         setPayment(next);
         if (next.status === "paid") {
           stoppedRef.current = true;
-          router.replace(`/${locale}/payment/success`);
+          const qs = new URLSearchParams({
+            plan: next.plan_name,
+            billing: next.billing,
+            ...(next.paid_at && { paid_at: next.paid_at }),
+            ...(next.expires_at && { expires_at: next.expires_at }),
+          });
+          router.replace(`/${locale}/payment/success?${qs.toString()}`);
         } else if (next.status === "failed" || next.status === "expired") {
           stoppedRef.current = true;
           router.replace(`/${locale}/payment/failed`);

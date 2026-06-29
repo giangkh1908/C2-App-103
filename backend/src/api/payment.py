@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import re
 import secrets
 from typing import Any, Literal
 
@@ -147,15 +148,51 @@ def _build_qr_url(payment_code: str, amount_vnd: int) -> str:
         )
         return ""
 
+    # Tham số ``des`` là nội dung chuyển khoản hiển thị trong app ngân hàng.
+    # KHÔNG dùng ``content`` — SePay không nhận diện tham số này, QR sẽ thiếu nội dung.
     template = (
         "https://qr.sepay.vn/img"
         f"?bank={quote(bank)}"
         f"&acc={quote(acc)}"
         f"&amount={int(amount_vnd)}"
-        f"&content={quote(payment_code)}"
+        f"&des={quote(payment_code)}"
         "&template=compact"
     )
     return template
+
+
+# Regex để trích xuất TTQ... payment_code từ nội dung chuyển khoản.
+# Format: TTQ + 6 hex chars (user_id prefix) + unix timestamp + 6 hex chars (random)
+# Ví dụ: "TTQa1b2c31713456789d0e1f2" nằm lẫn trong "KIM HONG GIANG chuyen tien..."
+_PAYMENT_CODE_RE = re.compile(r"TTQ[a-fA-F0-9]{6}\d+[a-fA-F0-9]{6}")
+
+
+def _extract_payment_code(payload: dict[str, Any]) -> str | None:
+    """Trích xuất payment_code từ SePay webhook payload.
+
+    Ưu tiên dùng trường ``code`` (SePay QR flow) — đây là mã SePay
+    sinh ra khi user quét QR, chứa chính xác payment_code ta đã nhúng
+    vào QR URL.
+
+    Nếu ``code`` rỗng (user chuyển thủ công, không quét QR), parse
+    trường ``content`` bằng regex để tìm mã ``TTQ...`` nằm lẫn trong
+    nội dung tin nhắn ngân hàng.
+    """
+    # Path 1: SePay QR — code field chứa chính payment_code
+    code = payload.get("code")
+    if code and isinstance(code, str) and code.strip():
+        return code.strip()
+
+    # Path 2: Manual transfer — parse content để tìm TTQ...
+    content = payload.get("content")
+    if not content or not isinstance(content, str):
+        return None
+
+    match = _PAYMENT_CODE_RE.search(content)
+    if match:
+        return match.group(0)
+
+    return None
 
 
 @router.post("/webhook/sepay")
@@ -223,12 +260,24 @@ async def sepay_webhook(
         )
         return {"success": True}
 
-    # 4) Resolve the payment_code from the inbound content. SePay
-    #    echoes the user's transfer content back in ``content``; that
-    #    is the unique business code we generated at checkout time.
-    payment_code = payload.get("content")
+    # 4) Resolve the payment_code from the inbound payload.
+    #
+    #    Two paths:
+    #    - QR-based transfers: SePay stores the embedded content in
+    #      ``code``. This is the preferred field because it contains
+    #      exactly what we embedded in the QR URL.
+    #    - Manual transfers (user tự gõ nội dung chuyển khoản): SePay
+    #      echoes the full bank transfer message in ``content``, e.g.
+    #      "KIM HONG GIANG chuyen tien ... Ma giao dich Trace840778".
+    #      We parse that text with a regex to extract the TTQ... code.
+    payment_code = _extract_payment_code(payload)
     if not payment_code:
-        logger.warning("sepay_webhook_missing_content", payload_id=inbound_id)
+        logger.warning(
+            "sepay_webhook_missing_content",
+            payload_id=inbound_id,
+            code_field=payload.get("code"),
+            content_preview=(payload.get("content") or "")[:80],
+        )
         return {"success": True}
 
     # 5) Coerce amount. SePay sends it as an int; if it's a string

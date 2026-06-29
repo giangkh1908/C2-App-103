@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Detect backend/frontend changes
         id: filter
@@ -31,7 +31,8 @@ jobs:
 
           git diff --name-only \
             "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" \
-            > changed-files.txt
+            > changed-files.txt 2>/dev/null || \
+          git diff --name-only HEAD~1 HEAD > changed-files.txt
 
           echo "Changed files:"
           cat changed-files.txt

@@ -24,10 +24,14 @@ export interface SpeechSpeakOptions {
   locale?: string;
   slow?: boolean;
   maxChars?: number;
+  source?: string;
+  caseId?: string;
 }
 
 export interface SpeechTranscribeOptions {
   locale?: string;
+  source?: string;
+  caseId?: string;
 }
 
 export function sanitizeSpeechText(text: string, maxChars = 320): string {

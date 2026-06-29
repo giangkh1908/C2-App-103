@@ -105,6 +105,14 @@ export default function AdminPaymentDetailPage() {
       const updated = await activatePayment(apiFetch, id);
       setPayment(updated);
       setActivateSuccess(true);
+      // Redirect to success page with payment data
+      const qs = new URLSearchParams({
+        plan: updated.plan_name,
+        billing: updated.billing,
+        ...(updated.paid_at && { paid_at: updated.paid_at }),
+        ...(updated.expires_at && { expires_at: updated.expires_at }),
+      });
+      router.push(`/${locale}/payment/success?${qs.toString()}`);
     } catch (err) {
       if (err instanceof AdminAuthError) {
         router.push(`/${locale}/login`);

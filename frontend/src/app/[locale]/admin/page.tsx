@@ -323,7 +323,10 @@ export default function AdminDashboard() {
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
-                  label={({ model }) => model.split("/").pop() ?? model}
+                  label={(entry) => {
+                    const model = (entry as unknown as Record<string, string>)?.name;
+                    return model?.split("/").pop() ?? model;
+                  }}
                 >
                   {llmStats.cost_by_model.map((_, idx) => (
                     <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />

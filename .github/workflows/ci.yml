@@ -69,11 +69,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: pip
-          cache-dependency-path: backend/pyproject.toml
 
       - name: Install deps
-        run: pip install -e ".[dev]"
+        run: |
+          pip install -e ".[dev]"
+          pip cache purge
 
       - name: Lint (ruff)
         run: ruff check .
@@ -106,8 +106,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: pip
-          cache-dependency-path: backend/pyproject.toml
 
       - name: Ensure mongo:7 image cached
         run: docker image inspect mongo:7 >/dev/null 2>&1 || docker pull mongo:7
@@ -132,7 +130,9 @@ jobs:
           exit 1
 
       - name: Install deps
-        run: pip install -e ".[dev]"
+        run: |
+          pip install -e ".[dev]"
+          pip cache purge
 
       - name: Integration tests
         env:
@@ -179,8 +179,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
 
       - name: Install deps
         run: npm ci
@@ -207,8 +205,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
 
       - name: Install deps
         run: npm ci

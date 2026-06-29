@@ -25,6 +25,7 @@ interface PaymentClientProps {
 }
 
 const POLL_INTERVAL_MS = 5_000;
+const SESSION_TTL_MS = 15 * 60 * 1_000;
 const SEPAY_BANK_CODE = process.env.NEXT_PUBLIC_SEPAY_BANK_CODE ?? "";
 const SEPAY_ACCOUNT_NUMBER = process.env.NEXT_PUBLIC_SEPAY_ACCOUNT_NUMBER ?? "";
 
@@ -51,6 +52,13 @@ function formatVnd(amount: number, locale: string): string {
   }).format(amount);
 }
 
+function formatCountdown(ms: number): string {
+  const totalSec = Math.ceil(ms / 1_000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}:${sec.toString().padStart(2, "0")}`;
+}
+
 export default function PaymentClient({
   locale,
   planName,
@@ -68,6 +76,7 @@ export default function PaymentClient({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [timeLeftMs, setTimeLeftMs] = useState<number | null>(null);
   const stoppedRef = useRef(false);
 
   // 1. Create checkout intent on mount.
@@ -152,6 +161,26 @@ export default function PaymentClient({
       clearInterval(id);
     };
   }, [apiFetch, locale, payment?.payment_code, router]);
+
+  // 3. Countdown timer: compute remaining time from created_at.
+  useEffect(() => {
+    if (!payment?.created_at) return;
+    const sessionEnd = new Date(payment.created_at).getTime() + SESSION_TTL_MS;
+
+    const tick = () => {
+      const remaining = sessionEnd - Date.now();
+      if (remaining <= 0) {
+        stoppedRef.current = true;
+        router.replace(`/${locale}/payment/failed`);
+        return;
+      }
+      setTimeLeftMs(remaining);
+    };
+
+    tick();
+    const id = setInterval(tick, 1_000);
+    return () => clearInterval(id);
+  }, [payment?.created_at, locale, router]);
 
   const handleCopy = useCallback(async () => {
     if (!payment?.payment_code) return;
@@ -348,6 +377,11 @@ export default function PaymentClient({
             <Loader2 className="h-3.5 w-3.5 animate-spin text-natural-green" />
             {t("waiting")}
           </p>
+          {timeLeftMs !== null && timeLeftMs > 0 && (
+            <p className="text-xs text-natural-charcoal/50">
+              {t("sessionExpiresIn", { time: formatCountdown(timeLeftMs) })}
+            </p>
+          )}
           <button
             onClick={handleCancel}
             className="rounded-full border border-natural-border bg-white px-5 py-2 text-sm font-bold text-natural-charcoal/70 transition-colors hover:border-red-300 hover:text-red-600"

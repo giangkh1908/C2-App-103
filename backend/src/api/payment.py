@@ -70,6 +70,7 @@ class CheckoutResponse(BaseModel):
     qr_url: str
     plan_name: str
     billing: Literal["monthly", "yearly"]
+    created_at: str | None = None
     expires_at: str | None = None
 
 
@@ -81,6 +82,7 @@ class PaymentStatusResponse(BaseModel):
     plan_name: str
     billing: Literal["monthly", "yearly"]
     amount_vnd: int
+    created_at: str | None = None
     paid_at: str | None = None
     expires_at: str | None = None
 
@@ -340,6 +342,7 @@ async def create_checkout(
         qr_url=_build_qr_url(payment.payment_code, payment.amount_vnd),
         plan_name=payment.plan_name,
         billing=payment.billing,
+        created_at=payment.created_at.isoformat() if payment.created_at else None,
         expires_at=payment.expires_at.isoformat() if payment.expires_at else None,
     )
 
@@ -362,12 +365,18 @@ async def get_payment_status(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Payment not found.",
         )
+
+    if payment.status == PaymentStatus.PENDING:
+        await payment_service.expire_if_session_overdue(payment_code)
+        payment = await payment_service.get_payment_by_code(payment_code)
+
     return PaymentStatusResponse(
         payment_code=payment.payment_code,
         status=payment.status,
         plan_name=payment.plan_name,
         billing=payment.billing,
         amount_vnd=payment.amount_vnd,
+        created_at=payment.created_at.isoformat() if payment.created_at else None,
         paid_at=payment.paid_at.isoformat() if payment.paid_at else None,
         expires_at=payment.expires_at.isoformat() if payment.expires_at else None,
     )

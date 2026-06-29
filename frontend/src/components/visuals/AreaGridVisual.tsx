@@ -6,7 +6,6 @@ import { VisualProps } from './shared';
 export default function AreaGridVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
   groupsLabel = 'Diện tích',
   itemsLabel = 'ô vuông',
 }: VisualProps) {

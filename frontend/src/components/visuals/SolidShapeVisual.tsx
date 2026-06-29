@@ -77,8 +77,6 @@ const SOLIDS = [
 
 export default function SolidShapeVisual({
   primaryCount,
-  secondaryCount,
-  totalCount,
   groupsLabel = 'Hình 3D',
   itemsLabel = 'khối',
 }: VisualProps) {

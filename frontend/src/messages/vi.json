@@ -528,6 +528,7 @@
     "step2": "Quét mã QR phía trên",
     "step3": "Xác nhận chuyển khoản với đúng nội dung là mã thanh toán",
     "waiting": "Đang chờ thanh toán...",
+    "sessionExpiresIn": "Hết hạn sau {time}",
     "cancelPayment": "Hủy thanh toán",
     "backToPricing": "Quay lại bảng giá",
     "paymentConfirmed": "Đã nhận được thanh toán",

@@ -3,7 +3,7 @@
 import React from 'react';
 import { VisualProps } from './shared';
 
-export default function VolumeCubesVisual({ primaryCount, secondaryCount, totalCount, groupsLabel, itemsLabel }: VisualProps) {
+export default function VolumeCubesVisual({ primaryCount, secondaryCount, totalCount, groupsLabel }: VisualProps) {
   const cubeSize = 25;
   const rows = Math.min(primaryCount, 5);
   const cols = Math.min(secondaryCount, 5);

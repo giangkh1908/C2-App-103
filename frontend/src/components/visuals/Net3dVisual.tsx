@@ -5,8 +5,6 @@ import { VisualProps } from './shared';
 
 export default function Net3dVisual({
   primaryCount,
-  secondaryCount,
-  totalCount,
   groupsLabel = 'Hình khai triển',
   itemsLabel = 'mặt',
 }: VisualProps) {

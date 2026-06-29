@@ -38,7 +38,6 @@ import { useChatStream } from '@/lib/useChatStream';
 import InteractiveSimulation from './InteractiveSimulation';
 import PolypadLauncher from './visualization/PolypadLauncher';
 import {
-  buildDefaultSuggestionsForGrade,
   findSuggestionByText,
   getSuggestionGroupsForGrade,
   type ChatSuggestion,
@@ -76,47 +75,6 @@ interface AIExplanationChatProps {
 type BrowserWindow = Window & {
   webkitAudioContext?: typeof AudioContext;
 };
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const LEGACY_GRADE1_GROUPS_UNUSED = [
-  { label: 'Số và cấu tạo số', icon: '🔢', suggestions: ['Số 24 có mấy chục mấy đơn vị?', 'Biểu diễn số 36 bằng chục và đơn vị', 'Đếm 42 bằng khối chục đơn vị'] },
-  { label: 'So sánh số', icon: '⚖️', suggestions: ['So sánh 37 và 42', 'Số nào lớn hơn: 58 hay 53?', 'Đặt 19, 21, 20 theo thứ tự'] },
-  { label: 'Cộng trừ', icon: '➕', suggestions: ['Minh họa 24 + 13 bằng que tính', 'Bớt 15 từ 48', 'Giải thích 32 - 10 bằng chục đơn vị'] },
-  { label: 'Tính nhẩm', icon: '🧠', suggestions: ['Tính nhẩm 8 + 5 bằng khung 10', 'Nhanh 30 - 10', 'Dùng tia số để tính 7 + 2'] },
-  { label: 'Bài toán lời văn', icon: '📖', suggestions: ['Lan có 5 quả táo, mẹ cho thêm 3 quả', 'Bài toán bớt đi 2 con chim', 'Tóm tắt bài toán lời văn'] },
-  { label: 'Vị trí không gian', icon: '📍', suggestions: ['Quả bóng ở bên trái cái hộp', 'Chỉ vị trí ở giữa', 'Minh họa trên dưới trước sau'] },
-  { label: 'Nhận biết hình', icon: '🔷', suggestions: ['Nhận biết hình vuông và hình tròn', 'Vật nào là khối hộp chữ nhật?', 'Ghép đồ vật với hình học'] },
-  { label: 'Ghép hình', icon: '🧩', suggestions: ['Ghép các hình để tạo ngôi nhà', 'Xếp hình từ tam giác và hình vuông', 'Tạo hình mới bằng kéo thả'] },
-  { label: 'Đo độ dài / Lịch / Đồng hồ', icon: '📏', suggestions: ['So sánh bút nào dài hơn', 'Đọc giờ đúng trên đồng hồ', 'Thứ mấy đứng sau thứ ba?'] },
-];
-
-function buildLegacyWelcomeMessageUnused(tChat: (key: string) => string): Message {
-  return {
-  id: 'welcome_1',
-  role: 'ai',
-  text: tChat('welcome'),
-  timestampLabel: tChat('ready'),
-  responseMode: 'explain_only',
-  followUpSuggestions: [
-    'Số 24 có mấy chục mấy đơn vị?',
-    'So sánh 37 và 42',
-    'Tính nhẩm 8 + 5',
-    'Đọc giờ trên đồng hồ',
-  ],
-  };
-}
-
-function buildGradeWelcomeMessage(tChat: (key: string) => string, grade: number): Message {
-  return {
-    id: 'welcome_1',
-    role: 'ai',
-    text: tChat('welcome'),
-    timestampLabel: tChat('ready'),
-    responseMode: 'explain_only',
-    followUpSuggestions: buildDefaultSuggestionsForGrade(grade).map((item) => item.text),
-  };
-}
 
 // ─── Helper Functions ────────────────────────────────────────────────────────
 

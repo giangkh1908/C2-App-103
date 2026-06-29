@@ -5,8 +5,6 @@ import { VisualProps } from './shared';
 
 export default function AngleProtractorVisual({
   primaryCount,
-  secondaryCount,
-  totalCount,
   groupsLabel = 'Góc',
   itemsLabel = 'độ',
 }: VisualProps) {

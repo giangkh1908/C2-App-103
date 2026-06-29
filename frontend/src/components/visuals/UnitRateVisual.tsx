@@ -7,7 +7,6 @@ import { type VisualProps } from './shared';
 export default function UnitRateVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
   groupsLabel = 'nhóm',
   itemsLabel = 'vật',
 }: VisualProps) {

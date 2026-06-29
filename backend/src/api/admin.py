@@ -12,6 +12,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
+from pymongo import ReturnDocument
 
 from src.core.database import get_db
 from src.core.deps import get_current_admin
@@ -181,7 +182,8 @@ async def activate_payment(
             "$set": {
                 "plan_id": payment.plan_id,
                 "subscription_status": "active",
-                "subscription_expires_at": now + timedelta(days=30),
+                "subscription_expires_at": payment.expires_at or (now + timedelta(days=30)),
+                "usage": {},
                 "updated_at": now,
             }
         },
@@ -198,6 +200,72 @@ async def activate_payment(
     result = PaymentInDB.from_mongo(updated_doc).model_dump(mode="json")
     result["activated_user_email"] = activated_user_email
     return result
+
+
+@router.post("/payments/reprocess/{payment_code}")
+async def reprocess_payment(
+    payment_code: str,
+    admin=Depends(get_current_admin),
+):
+    """Xử lý lại thanh toán đang chờ bằng payment_code.
+
+    Dùng khi webhook SePay bị miss — endpoint này tìm payment theo
+    ``payment_code`` (nội dung chuyển khoản), kích hoạt thủ công
+    với thời hạn đúng theo gói của payment.
+    """
+    db = get_db()
+    doc = await db.payments.find_one({"payment_code": payment_code})
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Không tìm thấy thanh toán với mã này",
+        )
+
+    payment = PaymentInDB.from_mongo(doc)
+    if payment.status != "pending":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Chỉ có thể xử lý lại thanh toán đang chờ",
+        )
+
+    now = datetime.now(UTC)
+    gateway_txn_id = f"reprocess_{int(now.timestamp())}"
+
+    result = await db.payments.find_one_and_update(
+        {"payment_code": payment_code, "status": "pending"},
+        {
+            "$set": {
+                "status": "paid",
+                "gateway_transaction_id": gateway_txn_id,
+                "paid_at": now,
+                "raw_webhook_payload": {},
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Có xung đột khi xử lý — vui lòng thử lại",
+        )
+
+    user_oid = _safe_objectid(payment.user_id)
+    if user_oid is not None:
+        await db.users.update_one(
+            {"_id": user_oid},
+            {
+                "$set": {
+                    "plan_id": payment.plan_id,
+                    "subscription_status": "active",
+                    "subscription_expires_at": payment.expires_at or (now + timedelta(days=30)),
+                    "usage": {},
+                    "updated_at": now,
+                }
+            },
+        )
+
+    result["activated_user_email"] = ""
+    return PaymentInDB.from_mongo(result).model_dump(mode="json")
 
 
 @router.get("/users")

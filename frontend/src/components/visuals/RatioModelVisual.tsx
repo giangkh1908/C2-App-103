@@ -6,7 +6,6 @@ import { VisualProps } from './shared';
 export default function RatioModelVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
   groupsLabel = 'phần',
 }: VisualProps) {
   const a = Math.max(0, primaryCount);

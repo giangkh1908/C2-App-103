@@ -80,11 +80,11 @@ def _build_scheduler() -> AsyncIOScheduler:
         replace_existing=True,
     )
 
-    # Payment expiry: every hour, expire pending payment intents older
-    # than 24 hours.
+    # Payment expiry: every 5 minutes, expire pending payment intents older
+    # than 15 minutes.
     scheduler.add_job(
         expire_overdue_payments,
-        CronTrigger(minute=0, timezone=_SCHEDULER_TIMEZONE),
+        CronTrigger(minute="*/5", timezone=_SCHEDULER_TIMEZONE),
         id="expire_overdue_payments",
         name="Expire overdue payment intents",
         replace_existing=True,

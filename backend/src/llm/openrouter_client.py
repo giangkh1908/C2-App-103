@@ -211,7 +211,11 @@ class OpenRouterClient(BaseLLMClient):
                     error=None,
                 )
 
-                record_llm_request(model=self.model, tokens=prompt_tokens + completion_tokens, latency_ms=latency_ms)
+                record_llm_request(
+                    model=self.model,
+                    tokens=prompt_tokens + completion_tokens,
+                    latency_ms=latency_ms,
+                )
                 logger.debug(
                     "openrouter_stream_done",
                     model=self.model,
@@ -290,7 +294,7 @@ class OpenRouterClient(BaseLLMClient):
             line = line.strip()
             if not line or not line.startswith("data: "):
                 continue
-            payload = line[len("data: "):].strip()
+            payload = line[len("data: ") :].strip()
             if payload == "[DONE]":
                 break
 

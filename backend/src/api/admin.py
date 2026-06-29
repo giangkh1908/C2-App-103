@@ -556,10 +556,14 @@ async def get_llm_stats(
                             "_id": {"$dateToString": {"format": "%Y-%m-%d", "date": "$created_at"}},
                             "cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
                             "requests": {"$sum": 1},
-                            "tokens": {"$sum": {"$add": [
-                                {"$ifNull": ["$tokens_in", 0]},
-                                {"$ifNull": ["$tokens_out", 0]},
-                            ]}},
+                            "tokens": {
+                                "$sum": {
+                                    "$add": [
+                                        {"$ifNull": ["$tokens_in", 0]},
+                                        {"$ifNull": ["$tokens_out", 0]},
+                                    ]
+                                }
+                            },
                         },
                     },
                     {"$sort": {"_id": 1}},
@@ -593,10 +597,14 @@ async def get_llm_stats(
                     {
                         "$group": {
                             "_id": "$user_id",
-                            "tokens": {"$sum": {"$add": [
-                                {"$ifNull": ["$tokens_in", 0]},
-                                {"$ifNull": ["$tokens_out", 0]},
-                            ]}},
+                            "tokens": {
+                                "$sum": {
+                                    "$add": [
+                                        {"$ifNull": ["$tokens_in", 0]},
+                                        {"$ifNull": ["$tokens_out", 0]},
+                                    ]
+                                }
+                            },
                             "cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
                         },
                     },

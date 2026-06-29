@@ -832,9 +832,7 @@ class TestLlmStats:
                             "tokens": 150,
                         }
                     ],
-                    "cost_by_model": [
-                        {"model": "deepseek/deepseek-v4-flash", "cost_usd": 0.001}
-                    ],
+                    "cost_by_model": [{"model": "deepseek/deepseek-v4-flash", "cost_usd": 0.001}],
                     "tokens_by_user": [{"user_id": "user1", "tokens": 150, "cost_usd": 0.001}],
                     "overall": [
                         {

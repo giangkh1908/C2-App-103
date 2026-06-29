@@ -250,6 +250,7 @@ class TestListPayments:
         doc = _make_payment_doc()
         mock_db.payments.count_documents = AsyncMock(return_value=1)
         mock_db.payments.find = MagicMock(return_value=_mock_cursor([doc]))
+        mock_db.users.find = MagicMock(return_value=_mock_cursor([]))
 
         with _patch_db(mock_db):
             transport = ASGITransport(app=app)

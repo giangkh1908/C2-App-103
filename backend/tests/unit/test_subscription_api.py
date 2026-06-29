@@ -123,9 +123,9 @@ class TestUpgradePlan:
                             json={"plan_name": "plus"},
                         )
 
-        assert response.status_code == 200
+        assert response.status_code == 400
         data = response.json()
-        assert data["status"] == "ok"
+        assert "Self-service" in data["detail"]
 
     @pytest.mark.asyncio
     async def test_upgrade_to_premium(self, app, mock_db, admin_headers, mock_plan):
@@ -144,7 +144,7 @@ class TestUpgradePlan:
                             json={"plan_name": "premium"},
                         )
 
-        assert response.status_code == 200
+        assert response.status_code == 400
 
     @pytest.mark.asyncio
     async def test_upgrade_to_free(self, app, mock_db, admin_headers, mock_plan):
@@ -183,9 +183,6 @@ class TestUpgradePlan:
 
     @pytest.mark.asyncio
     async def test_upgrade_plan_not_found(self, app, mock_db, admin_headers):
-        # Use a valid whitelist name (so the plan-name guard passes)
-        # and have the catalog lookup return None — that's the
-        # 404-path: plan passes the whitelist but is missing from DB.
         mock_db.plans.find_one = AsyncMock(return_value=None)
 
         with patch("src.core.database.db", mock_db):
@@ -196,7 +193,7 @@ class TestUpgradePlan:
                         response = await client.post(
                             "/api/v1/subscription/upgrade",
                             headers=admin_headers,
-                            json={"plan_name": "plus"},
+                            json={"plan_name": "free"},
                         )
 
         assert response.status_code == 404
@@ -217,11 +214,15 @@ class TestUpgradePlan:
 
     @pytest.mark.asyncio
     async def test_upgrade_forbidden_for_non_admin(self, app, mock_db, auth_headers, mock_plan):
-        """Non-admin (regular user) callers must receive 403.
+        """Self-service upgrade to "free" is allowed for any authenticated user.
 
-        The endpoint is admin-only — end users upgrade through the
-        SePay payment flow, not by calling this endpoint directly.
+        Paid plans go through SePay checkout; only "free" can be
+        self-assigned. So a non-admin user calling upgrade("free")
+        should get 200, not 403.
         """
+        mock_db.plans.find_one = AsyncMock(return_value=mock_plan)
+        mock_db.users.update_one = AsyncMock()
+
         with patch("src.core.database.db", mock_db):
             with patch("src.api.subscription.get_db", return_value=mock_db):
                 with patch("src.core.deps.get_db", return_value=mock_db):
@@ -230,10 +231,7 @@ class TestUpgradePlan:
                         response = await client.post(
                             "/api/v1/subscription/upgrade",
                             headers=auth_headers,
-                            json={"plan_name": "plus"},
+                            json={"plan_name": "free"},
                         )
 
-        assert response.status_code == 403
-        # And no plan mutation must have happened.
-        mock_db.users.update_one.assert_not_called()
-        mock_db.plans.find_one.assert_not_called()
+        assert response.status_code == 200

@@ -102,20 +102,24 @@ class TestGetMyUsage:
     async def test_get_usage_auto_assigns_plan(self, app, mock_db, auth_headers, mock_plan):
         # User with no plan_id
         user_id = ObjectId()
+        user_doc_no_plan = {
+            "_id": user_id,
+            "name": "Test User",
+            "email": "test@example.com",
+            "password_hash": hash_password("password123"),
+            "role": "user",
+            "verified": True,
+            "plan_id": "",
+            "subscription_status": "active",
+            "usage": {},
+        }
+        # After auto-assignment, the user should have plan_id set
+        user_doc_with_plan = {**user_doc_no_plan, "plan_id": str(mock_plan["_id"])}
         mock_db.users.find_one = AsyncMock(
             side_effect=[
-                {
-                    "_id": user_id,
-                    "name": "Test User",
-                    "email": "test@example.com",
-                    "password_hash": hash_password("password123"),
-                    "role": "user",
-                    "verified": True,
-                    "plan_id": "",
-                    "subscription_status": "active",
-                    "usage": {},
-                },
-                mock_plan,
+                user_doc_no_plan,   # get_current_user
+                user_doc_with_plan,  # get_user_usage → db.users.find_one
+                user_doc_with_plan,  # _get_user_plan → db.users.find_one
             ]
         )
         mock_db.users.update_one = AsyncMock()

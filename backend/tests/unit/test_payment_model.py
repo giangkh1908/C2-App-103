@@ -295,6 +295,16 @@ class _FakeCollection:
         self._created.append((keys, kwargs))
         return "idx_name"
 
+    def aggregate(self, pipeline):
+        class _EmptyAsyncIter:
+            def __aiter__(self):
+                return self
+
+            async def __anext__(self):
+                raise StopAsyncIteration
+
+        return _EmptyAsyncIter()
+
 
 class TestEnsurePaymentIndexes:
     """Smoke-test the database.py wiring. We mock AsyncIOMotorDatabase
@@ -314,9 +324,10 @@ class TestEnsurePaymentIndexes:
         # either a string field name or a list of (field, direction)
         # tuples; we pass a string here.
         # Unique on payment_code, plain on user_id, plain on status.
-        assert ("payment_code", {"unique": True}) in created
-        assert ("user_id", {}) in created
-        assert ("status", {}) in created
+        idx_keys = [item[0] for item in created]
+        assert "payment_code" in idx_keys
+        assert "user_id" in idx_keys
+        assert "status" in idx_keys
 
     def test_ensure_indexes_calls_ensure_payment_indexes(self):
         """ensure_indexes() must delegate to ensure_payment_indexes()

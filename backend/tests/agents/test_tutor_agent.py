@@ -2,12 +2,13 @@
 test_tutor_agent.py – Unit tests cho TutorAgent.
 """
 
+from collections.abc import AsyncGenerator
 from typing import Any
 
 import pytest
 
 from src.agents.tutor_agent import TutorAgent
-from src.llm.base import BaseLLMClient, LLMMessage, LLMResponse
+from src.llm.base import BaseLLMClient, LLMMessage, LLMResponse, LLMStreamUsage
 from src.tools.registry import create_default_tool_registry
 
 _LLM_ANSWER = "Xin chào, mình sẽ giúp bạn học toán."
@@ -27,6 +28,14 @@ class SimpleLLM(BaseLLMClient):
         tools: list[dict[str, Any]] | None = None,
     ) -> LLMResponse:
         return LLMResponse(content=_LLM_ANSWER)
+
+    async def generate_stream(
+        self,
+        messages: list[LLMMessage],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> AsyncGenerator[str | LLMStreamUsage, None]:
+        yield _LLM_ANSWER
+        yield LLMStreamUsage(prompt_tokens=0, completion_tokens=0)
 
 
 # ---------------------------------------------------------------------------

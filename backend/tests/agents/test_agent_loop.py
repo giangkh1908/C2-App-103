@@ -2,13 +2,14 @@
 test_agent_loop.py – Unit tests cho AgentLoop với fake LLM.
 """
 
+from collections.abc import AsyncGenerator
 from typing import Any
 
 import pytest
 
 from src.agents.agent_loop import AgentLoop
 from src.agents.schemas import AgentRunConfig
-from src.llm.base import BaseLLMClient, LLMMessage, LLMResponse, LLMToolCall
+from src.llm.base import BaseLLMClient, LLMMessage, LLMResponse, LLMStreamUsage, LLMToolCall
 from src.tools.registry import create_default_tool_registry
 
 # ---------------------------------------------------------------------------
@@ -31,6 +32,14 @@ class FinalAnswerLLM(BaseLLMClient):
         self.last_messages = messages
         self.last_tools = tools
         return LLMResponse(content="Câu trả lời cuối cùng")
+
+    async def generate_stream(
+        self,
+        messages: list[LLMMessage],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> AsyncGenerator[str | LLMToolCall | LLMStreamUsage, None]:
+        yield "Câu trả lời cuối cùng"
+        yield LLMStreamUsage(prompt_tokens=0, completion_tokens=0)
 
 
 # ---------------------------------------------------------------------------
@@ -98,6 +107,14 @@ class ToolThenFinalLLM(BaseLLMClient):
 
         return LLMResponse(content=_FINAL_ANSWER)
 
+    async def generate_stream(
+        self,
+        messages: list[LLMMessage],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> AsyncGenerator[str | LLMToolCall | LLMStreamUsage, None]:
+        yield _FINAL_ANSWER
+        yield LLMStreamUsage(prompt_tokens=0, completion_tokens=0)
+
 
 # ---------------------------------------------------------------------------
 # Test – tool call rồi final answer
@@ -159,6 +176,14 @@ class MissingToolThenFinalLLM(BaseLLMClient):
 
         return LLMResponse(content=_MISSING_TOOL_ANSWER)
 
+    async def generate_stream(
+        self,
+        messages: list[LLMMessage],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> AsyncGenerator[str | LLMToolCall | LLMStreamUsage, None]:
+        yield _MISSING_TOOL_ANSWER
+        yield LLMStreamUsage(prompt_tokens=0, completion_tokens=0)
+
 
 # ---------------------------------------------------------------------------
 # Test – missing tool
@@ -200,6 +225,13 @@ class ErrorLLM(BaseLLMClient):
         messages: list[LLMMessage],
         tools: list[dict[str, Any]] | None = None,
     ) -> LLMResponse:
+        raise RuntimeError("llm down")
+
+    async def generate_stream(
+        self,
+        messages: list[LLMMessage],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> AsyncGenerator[str | LLMToolCall | LLMStreamUsage, None]:
         raise RuntimeError("llm down")
 
 

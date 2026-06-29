@@ -2,7 +2,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import AsyncClient
-
 from src.services.speech_service import SpeechServiceError
 
 

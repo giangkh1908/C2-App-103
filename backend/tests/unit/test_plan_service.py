@@ -104,12 +104,12 @@ class TestSeedDefaultPlans:
     @pytest.mark.asyncio
     async def test_seed_creates_missing_plans(self, mock_db):
         mock_db.plans.find_one = AsyncMock(return_value=None)
-        mock_db.plans.insert_one = AsyncMock()
+        mock_db.plans.update_one = AsyncMock()
 
         with patch("src.services.plan_service.get_db", return_value=mock_db):
             await seed_default_plans()
 
-        assert mock_db.plans.insert_one.call_count == 3
+        assert mock_db.plans.update_one.call_count == 3
 
     @pytest.mark.asyncio
     async def test_seed_skips_existing_plans(self, mock_db):
@@ -147,13 +147,13 @@ class TestGetFreePlanId:
 class TestGetAllPlans:
     @pytest.mark.asyncio
     async def test_get_all_plans(self, mock_db, mock_plan_doc):
-        mock_db.plans.find = MagicMock()
-        mock_db.plans.find.return_value.sort = MagicMock()
+        async def mock_aiter():
+            yield mock_plan_doc
 
-        async def mock_to_list(_):
-            return [mock_plan_doc]
-
-        mock_db.plans.find.return_value.sort.return_value.to_list = mock_to_list
+        mock_cursor = MagicMock()
+        mock_cursor.sort.return_value = mock_cursor
+        mock_cursor.__aiter__ = lambda _: mock_aiter()
+        mock_db.plans.find = MagicMock(return_value=mock_cursor)
 
         with patch("src.services.plan_service.get_db", return_value=mock_db):
             plans = await get_all_plans()
@@ -263,6 +263,6 @@ class TestUpdatePlan:
         mock_db.plans.find_one = AsyncMock(return_value=None)
 
         with patch("src.services.plan_service.get_db", return_value=mock_db):
-            plan = await update_plan("nonexistent", {"price_monthly": 59000})
+            plan = await update_plan(str(ObjectId()), {"price_monthly": 59000})
 
         assert plan is None

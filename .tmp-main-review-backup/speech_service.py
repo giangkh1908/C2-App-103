@@ -91,7 +91,9 @@ class SpeechService:
                 voice=settings.tts_voice,
                 rate=rate,
             )
-            with NamedTemporaryFile(suffix=f".{settings.tts_response_format}", delete=False) as tmp_file:
+            with NamedTemporaryFile(
+                suffix=f".{settings.tts_response_format}", delete=False
+            ) as tmp_file:
                 temp_path = Path(tmp_file.name)
 
             try:

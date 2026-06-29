@@ -211,6 +211,6 @@ def test_build_exam_documents_from_rows_requires_manifest_entries_for_all_grades
 
 
 def test_load_curated_manifest_validates_target_count() -> None:
-    manifest_path = Path("tests/fixtures/practice_invalid_manifest.json")
+    manifest_path = Path("backend/tests/fixtures/practice_invalid_manifest.json")
     with pytest.raises(ValueError, match="exactly 10"):
         load_curated_manifest(manifest_path)

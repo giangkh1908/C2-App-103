@@ -9,8 +9,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from src.core.config import settings
-
 
 @pytest.fixture
 def mock_db():

@@ -137,7 +137,7 @@ def mock_db(mongo_client):
 
 
 @pytest.fixture(autouse=True)
-def patched_practice_catalog_unit():
+def patched_practice_catalog():
     """No-op stand-in for the integration autouse fixture.
 
     The full practice catalog is only required by tests that exercise

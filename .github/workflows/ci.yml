@@ -138,7 +138,7 @@ jobs:
       - name: Integration tests
         env:
           PRACTICE_TEST_MONGODB_URI: mongodb://127.0.0.1:${{ env.MONGO_PORT }}
-        run: pytest tests/integration -n auto --dist=loadfile --cov=src --cov-report=term-missing -v
+        run: pytest tests/integration -n auto --dist=loadfile --durations=10 -v
 
       - name: Cleanup MongoDB
         if: always()

@@ -5,6 +5,7 @@ import type {
   AdminStats,
   AdminUser,
   LlmLogFilter,
+  LlmStatsResponse,
   PaginatedResponse,
   PaymentFilter,
   UserFilter,
@@ -197,7 +198,32 @@ export async function fetchStats(
     await throwAdminError(res);
   }
 
-  return res.json() as Promise<AdminStats>;
+  const data = (await res.json()) as AdminStats & {
+    dailyBudgetUsd?: number;
+    llm_daily_budget_usd?: number;
+    llmDailyBudgetUsd?: number;
+    budget?: {
+      daily_budget_usd?: number;
+      dailyBudgetUsd?: number;
+    };
+  };
+
+  const dailyBudgetUsd =
+    data.daily_budget_usd ??
+    data.dailyBudgetUsd ??
+    data.llm_daily_budget_usd ??
+    data.llmDailyBudgetUsd ??
+    data.budget?.daily_budget_usd ??
+    data.budget?.dailyBudgetUsd;
+
+  if (dailyBudgetUsd === undefined && process.env.NODE_ENV === "development") {
+    console.warn("Admin stats response is missing daily_budget_usd", data);
+  }
+
+  return {
+    ...data,
+    daily_budget_usd: dailyBudgetUsd,
+  };
 }
 
 /**
@@ -285,5 +311,60 @@ export async function fetchLlmLogs(
     await throwAdminError(res);
   }
 
-  return res.json() as Promise<PaginatedResponse<AdminLlmLog>>;
+  const data = (await res.json()) as PaginatedResponse<
+    AdminLlmLog & {
+      _id?: string;
+      tokens_in?: number;
+      tokens_out?: number;
+    }
+  >;
+
+  return {
+    ...data,
+    items: data.items.map((log) => ({
+      ...log,
+      id: log.id ?? log._id ?? "",
+      prompt_tokens: log.prompt_tokens ?? log.tokens_in ?? 0,
+      completion_tokens: log.completion_tokens ?? log.tokens_out ?? 0,
+      cost_usd: log.cost_usd ?? 0,
+      latency_ms: log.latency_ms ?? 0,
+    })),
+  };
+}
+
+/**
+ * GET /admin/llm-stats?days=7 — fetch real-time LLM stats for dashboard charts.
+ *
+ * Throws `AdminAuthError` on 401/403, `AdminApiError` on other errors.
+ */
+export async function fetchLlmStats(
+  apiFetch: ApiFetch,
+  days: number = 7,
+): Promise<LlmStatsResponse> {
+  const qs = `?${new URLSearchParams({ days: String(days) })}`;
+  const res = await apiFetch(`/admin/llm-stats${qs}`);
+
+  if (!res.ok) {
+    await throwAdminError(res);
+  }
+
+  return res.json() as Promise<LlmStatsResponse>;
+}
+
+/**
+ * GET /admin/llm-stats?days=1 — fetch today's cost for budget bar.
+ *
+ * Throws `AdminAuthError` on 401/403, `AdminApiError` on other errors.
+ */
+export async function fetchTodayBudget(
+  apiFetch: ApiFetch,
+): Promise<{ today_cost_usd: number }> {
+  const res = await apiFetch("/admin/llm-stats?days=1");
+
+  if (!res.ok) {
+    await throwAdminError(res);
+  }
+
+  const data = (await res.json()) as LlmStatsResponse;
+  return { today_cost_usd: data.overall.total_cost_usd };
 }

@@ -20,6 +20,7 @@ from src.core.logging import (
     unbind_request_context,
 )
 from src.core.metrics import record_request_duration, reset_metrics
+from src.services.budget_alert import check_llm_budget
 from src.services.curriculum_service import load_curriculum_from_db
 from src.services.payment_service import (
     expire_overdue_payments,
@@ -87,6 +88,15 @@ def _build_scheduler() -> AsyncIOScheduler:
         CronTrigger(minute="*/5", timezone=_SCHEDULER_TIMEZONE),
         id="expire_overdue_payments",
         name="Expire overdue payment intents",
+        replace_existing=True,
+    )
+
+    # LLM budget check: every 15 minutes, alert if daily cost exceeds budget
+    scheduler.add_job(
+        check_llm_budget,
+        CronTrigger(minute="*/15", timezone=_SCHEDULER_TIMEZONE),
+        id="check_llm_budget",
+        name="Check LLM daily budget",
         replace_existing=True,
     )
 

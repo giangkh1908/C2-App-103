@@ -8,6 +8,8 @@ import {
   fetchStats,
   fetchPlans,
   changeUserPlan,
+  fetchLlmLogs,
+  fetchLlmStats,
   AdminAuthError,
   type ApiFetch,
 } from "@/lib/adminApi";
@@ -54,6 +56,7 @@ const mockStats = {
   total_subscriptions: 10,
   pending_payments: 2,
   active_users: 8,
+  daily_budget_usd: 0.5,
 };
 
 describe("fetchPayments", () => {
@@ -298,6 +301,23 @@ describe("fetchStats", () => {
     expect(result.total_subscriptions).toBe(10);
     expect(result.pending_payments).toBe(2);
     expect(result.active_users).toBe(8);
+    expect(result.daily_budget_usd).toBe(0.5);
+  });
+
+  it("normalizes alternate daily budget field names", async () => {
+    apiFetch.mockResolvedValueOnce(
+      jsonResponse({
+        total_revenue: 990000,
+        total_subscriptions: 10,
+        pending_payments: 2,
+        active_users: 8,
+        llm_daily_budget_usd: 0.5,
+      }),
+    );
+
+    const result = await fetchStats(apiFetch as unknown as ApiFetch);
+
+    expect(result.daily_budget_usd).toBe(0.5);
   });
 });
 
@@ -512,5 +532,103 @@ describe("changeUserPlan", () => {
       status: 400,
       message: "Invalid plan name",
     });
+  });
+});
+
+describe("fetchLlmStats", () => {
+  let apiFetch: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    apiFetch = vi.fn();
+  });
+
+  it("GETs /admin/llm-stats?days=7 and returns LlmStatsResponse", async () => {
+    const mockResponse = {
+      daily_costs: [
+        { date: "2026-06-22", cost_usd: 0.042, requests: 150, tokens: 45000 },
+      ],
+      cost_by_model: [
+        { model: "deepseek/deepseek-v4-flash", cost_usd: 0.83 },
+      ],
+      tokens_by_user: [
+        { user_id: "user1", tokens: 5000, cost_usd: 0.01 },
+      ],
+      overall: {
+        total_cost_usd: 0.92,
+        total_requests: 1200,
+        error_rate: 0.02,
+        latency_p50_ms: 320,
+        latency_p95_ms: 890,
+      },
+    };
+    apiFetch.mockResolvedValueOnce(jsonResponse(mockResponse));
+
+    const result = await fetchLlmStats(
+      apiFetch as unknown as ApiFetch,
+      7,
+    );
+
+    expect(apiFetch).toHaveBeenCalledTimes(1);
+    const [path] = apiFetch.mock.calls[0] as [string];
+    expect(path).toBe("/admin/llm-stats?days=7");
+
+    expect(result.daily_costs).toHaveLength(1);
+    expect(result.daily_costs[0].cost_usd).toBe(0.042);
+    expect(result.cost_by_model[0].model).toBe("deepseek/deepseek-v4-flash");
+    expect(result.tokens_by_user[0].user_id).toBe("user1");
+    expect(result.overall.total_cost_usd).toBe(0.92);
+    expect(result.overall.error_rate).toBe(0.02);
+  });
+
+  it("throws AdminAuthError on 401", async () => {
+    apiFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ detail: "Not authenticated" }), {
+        status: 401,
+      }),
+    );
+
+    await expect(
+      fetchLlmStats(apiFetch as unknown as ApiFetch),
+    ).rejects.toBeInstanceOf(AdminAuthError);
+  });
+});
+
+describe("fetchLlmLogs", () => {
+  let apiFetch: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    apiFetch = vi.fn();
+  });
+
+  it("normalizes legacy token fields from /admin/llm-logs", async () => {
+    apiFetch.mockResolvedValueOnce(
+      jsonResponse({
+        items: [
+          {
+            _id: "log_001",
+            user_id: "user_001",
+            model: "openai/gpt-4o-mini",
+            status: "success",
+            tokens_in: 12,
+            tokens_out: 34,
+            cost_usd: 0.001,
+            latency_ms: 250,
+            created_at: "2026-06-29T00:00:00Z",
+          },
+        ],
+        total: 1,
+        page: 1,
+        page_size: 20,
+      }),
+    );
+
+    const result = await fetchLlmLogs(apiFetch as unknown as ApiFetch);
+
+    expect(apiFetch).toHaveBeenCalledTimes(1);
+    const [path] = apiFetch.mock.calls[0] as [string];
+    expect(path).toBe("/admin/llm-logs");
+    expect(result.items[0].id).toBe("log_001");
+    expect(result.items[0].prompt_tokens).toBe(12);
+    expect(result.items[0].completion_tokens).toBe(34);
   });
 });

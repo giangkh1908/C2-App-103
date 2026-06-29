@@ -14,6 +14,10 @@ describe("speech providers", () => {
     vi.clearAllMocks();
   });
 
+  function setEnv(name: string, value: string | undefined): void {
+    (process.env as Record<string, string | undefined>)[name] = value;
+  }
+
   function createResponseLike<T extends Blob | Record<string, unknown>>({
     ok,
     status,
@@ -34,25 +38,25 @@ describe("speech providers", () => {
   }
 
   afterAll(() => {
-    process.env.NEXT_PUBLIC_STT_MODE = originalSttMode;
-    process.env.NEXT_PUBLIC_TTS_MODE = originalTtsMode;
-    process.env.NODE_ENV = originalNodeEnv;
+    setEnv("NEXT_PUBLIC_STT_MODE", originalSttMode);
+    setEnv("NEXT_PUBLIC_TTS_MODE", originalTtsMode);
+    setEnv("NODE_ENV", originalNodeEnv);
     globalThis.Audio = OriginalAudio;
     URL.createObjectURL = originalCreateObjectURL;
     URL.revokeObjectURL = originalRevokeObjectURL;
   });
 
   it("uses browser mode for STT when configured separately from TTS", () => {
-    process.env.NEXT_PUBLIC_STT_MODE = "browser";
-    process.env.NEXT_PUBLIC_TTS_MODE = "server";
+    setEnv("NEXT_PUBLIC_STT_MODE", "browser");
+    setEnv("NEXT_PUBLIC_TTS_MODE", "server");
 
     const provider = createSpeechToTextProvider();
     expect(provider.mode).toBe("browser");
   });
 
   it("calls the backend tts endpoint and plays the returned audio", async () => {
-    process.env.NEXT_PUBLIC_STT_MODE = "browser";
-    process.env.NEXT_PUBLIC_TTS_MODE = "server";
+    setEnv("NEXT_PUBLIC_STT_MODE", "browser");
+    setEnv("NEXT_PUBLIC_TTS_MODE", "server");
 
     const audioBlob = new Blob(["audio"], { type: "audio/wav" });
     const apiFetch = vi.fn().mockResolvedValue(
@@ -95,9 +99,9 @@ describe("speech providers", () => {
   });
 
   it("forces server tts in production even when the public mode is set to browser", async () => {
-    process.env.NODE_ENV = "production";
-    process.env.NEXT_PUBLIC_STT_MODE = "browser";
-    process.env.NEXT_PUBLIC_TTS_MODE = "browser";
+    setEnv("NODE_ENV", "production");
+    setEnv("NEXT_PUBLIC_STT_MODE", "browser");
+    setEnv("NEXT_PUBLIC_TTS_MODE", "browser");
 
     const audioBlob = new Blob(["audio"], { type: "audio/wav" });
     const apiFetch = vi.fn().mockResolvedValue(
@@ -135,8 +139,8 @@ describe("speech providers", () => {
   });
 
   it("surfaces the safer server tts fallback message when the backend returns an unknown error", async () => {
-    process.env.NEXT_PUBLIC_STT_MODE = "browser";
-    process.env.NEXT_PUBLIC_TTS_MODE = "server";
+    setEnv("NEXT_PUBLIC_STT_MODE", "browser");
+    setEnv("NEXT_PUBLIC_TTS_MODE", "server");
 
     const apiFetch = vi.fn().mockResolvedValue(
       createResponseLike({

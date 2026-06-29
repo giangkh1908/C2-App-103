@@ -12,6 +12,7 @@ import {
   isProductionRuntime,
   sanitizeSpeechText,
 } from './speech';
+import { recordSpeechTelemetry } from './speechTelemetry';
 
 type BrowserSpeechRecognition = {
   continuous: boolean;
@@ -140,6 +141,17 @@ function createBrowserTextToSpeechProvider(): TextToSpeechProvider {
         const utterance = new SpeechSynthesisUtterance(plainText);
         utterance.lang = options?.locale ?? DEFAULT_TTS_LOCALE;
         utterance.rate = options?.slow ? 0.82 : 0.95;
+        utterance.onstart = () => {
+          recordSpeechTelemetry({
+            event: 'tts_play_start',
+            mode: 'browser',
+            source: options?.source,
+            caseId: options?.caseId,
+            locale: utterance.lang,
+            textLength: plainText.length,
+            slow: Boolean(options?.slow),
+          });
+        };
         utterance.onend = () => resolve();
         utterance.onerror = () => reject(new Error('speech_synthesis_failed'));
         window.speechSynthesis.speak(utterance);
@@ -213,6 +225,16 @@ function createServerTextToSpeechProvider(
         }
 
         activeAudio.onended = () => {
+          recordSpeechTelemetry({
+            event: 'tts_play_end',
+            mode: 'server',
+            source: options?.source,
+            caseId: options?.caseId,
+            locale: options?.locale ?? DEFAULT_TTS_LOCALE,
+            textLength: plainText.length,
+            audioBytes: audioBlob.size,
+            slow: Boolean(options?.slow),
+          });
           if (activeObjectUrl) {
             URL.revokeObjectURL(activeObjectUrl);
             activeObjectUrl = null;
@@ -228,7 +250,20 @@ function createServerTextToSpeechProvider(
           activeAudio = null;
           reject(new Error('speech_synthesis_failed'));
         };
-        void activeAudio.play().catch(() => reject(new Error('speech_synthesis_failed')));
+        void activeAudio.play()
+          .then(() => {
+            recordSpeechTelemetry({
+              event: 'tts_play_start',
+              mode: 'server',
+              source: options?.source,
+              caseId: options?.caseId,
+              locale: options?.locale ?? DEFAULT_TTS_LOCALE,
+              textLength: plainText.length,
+              audioBytes: audioBlob.size,
+              slow: Boolean(options?.slow),
+            });
+          })
+          .catch(() => reject(new Error('speech_synthesis_failed')));
       });
     },
     stopSpeaking: () => {

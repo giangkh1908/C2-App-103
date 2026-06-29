@@ -84,6 +84,10 @@ jobs:
       - name: Unit/component tests
         run: pytest tests/unit tests/agents tests/tools -n auto --dist=loadfile -q
 
+  # backend-integration và backend-docker đều chỉ phụ thuộc backend-fast,
+  # nên 2 job này chạy SONG SONG sau khi backend-fast pass.
+  # Build Docker image không liên quan gì tới kết quả pytest integration,
+  # nên không cần đợi integration xong mới build.
   backend-integration:
     name: Backend integration tests
     needs: [changes, backend-fast]
@@ -141,8 +145,8 @@ jobs:
 
   backend-docker:
     name: Backend docker build
-    needs: [changes, backend-integration]
-    if: ${{ always() && needs.changes.outputs.backend == 'true' && needs.backend-integration.result == 'success' }}
+    needs: [changes, backend-fast]
+    if: ${{ always() && needs.changes.outputs.backend == 'true' && needs.backend-fast.result == 'success' }}
     runs-on: self-hosted
     timeout-minutes: 15
     defaults:

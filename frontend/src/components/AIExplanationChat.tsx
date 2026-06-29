@@ -38,6 +38,7 @@ import { useChatStream } from '@/lib/useChatStream';
 import InteractiveSimulation from './InteractiveSimulation';
 import PolypadLauncher from './visualization/PolypadLauncher';
 import {
+  buildDefaultSuggestionsForGrade,
   findSuggestionByText,
   getSuggestionGroupsForGrade,
   type ChatSuggestion,
@@ -77,6 +78,17 @@ type BrowserWindow = Window & {
 };
 
 // ─── Helper Functions ────────────────────────────────────────────────────────
+
+function buildGradeWelcomeMessage(tChat: (key: string) => string, grade: number): Message {
+  return {
+    id: 'welcome_1',
+    role: 'ai',
+    text: tChat('welcome'),
+    timestampLabel: tChat('ready'),
+    responseMode: 'explain_only',
+    followUpSuggestions: buildDefaultSuggestionsForGrade(grade).map((item) => item.text),
+  };
+}
 
 function createTimestamp(locale: string): string {
   return new Intl.DateTimeFormat(locale === 'vi' ? 'vi-VN' : 'en-US', {

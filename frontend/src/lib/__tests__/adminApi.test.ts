@@ -8,6 +8,7 @@ import {
   fetchStats,
   fetchPlans,
   changeUserPlan,
+  fetchLlmLogs,
   fetchLlmStats,
   AdminAuthError,
   type ApiFetch,
@@ -571,5 +572,45 @@ describe("fetchLlmStats", () => {
     await expect(
       fetchLlmStats(apiFetch as unknown as ApiFetch),
     ).rejects.toBeInstanceOf(AdminAuthError);
+  });
+});
+
+describe("fetchLlmLogs", () => {
+  let apiFetch: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    apiFetch = vi.fn();
+  });
+
+  it("normalizes legacy token fields from /admin/llm-logs", async () => {
+    apiFetch.mockResolvedValueOnce(
+      jsonResponse({
+        items: [
+          {
+            _id: "log_001",
+            user_id: "user_001",
+            model: "openai/gpt-4o-mini",
+            status: "success",
+            tokens_in: 12,
+            tokens_out: 34,
+            cost_usd: 0.001,
+            latency_ms: 250,
+            created_at: "2026-06-29T00:00:00Z",
+          },
+        ],
+        total: 1,
+        page: 1,
+        page_size: 20,
+      }),
+    );
+
+    const result = await fetchLlmLogs(apiFetch as unknown as ApiFetch);
+
+    expect(apiFetch).toHaveBeenCalledTimes(1);
+    const [path] = apiFetch.mock.calls[0] as [string];
+    expect(path).toBe("/admin/llm-logs");
+    expect(result.items[0].id).toBe("log_001");
+    expect(result.items[0].prompt_tokens).toBe(12);
+    expect(result.items[0].completion_tokens).toBe(34);
   });
 });

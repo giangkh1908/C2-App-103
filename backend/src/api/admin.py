@@ -491,7 +491,9 @@ async def list_llm_logs(
     )
     items: list[dict] = []
     async for doc in cursor:
-        doc["_id"] = str(doc["_id"])
+        doc["id"] = str(doc.pop("_id"))
+        doc["prompt_tokens"] = doc.get("prompt_tokens", doc.get("tokens_in", 0))
+        doc["completion_tokens"] = doc.get("completion_tokens", doc.get("tokens_out", 0))
         if doc.get("created_at"):
             doc["created_at"] = doc["created_at"].isoformat()
         items.append(doc)

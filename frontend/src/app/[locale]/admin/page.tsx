@@ -16,10 +16,89 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useAuth } from "@/hooks/useAuth";
-import { fetchCostStats, fetchLlmLogs, fetchLlmStats, fetchStats, fetchTodayBudget } from "@/lib/adminApi";
+import { fetchCostStats, fetchLlmLogs, fetchStats } from "@/lib/adminApi";
 import type { AdminCostStats, AdminLlmLog, AdminStats, LlmStatsResponse } from "@/types/admin";
 
 const PIE_COLORS = ["#4A6741", "#6B8F5E", "#8FAE7E", "#B0C9A0", "#C7D9B9"];
+
+function buildLlmStatsFromLogs(logs: AdminLlmLog[], days = 7): LlmStatsResponse {
+  const now = new Date();
+  const since = new Date(now);
+  since.setDate(now.getDate() - days);
+
+  const recentLogs = logs.filter((log) => {
+    const createdAt = new Date(log.created_at);
+    return !Number.isNaN(createdAt.getTime()) && createdAt >= since;
+  });
+
+  const dailyCosts = new Map<string, { cost_usd: number; requests: number; tokens: number }>();
+  const costByModel = new Map<string, number>();
+  const tokensByUser = new Map<string, { tokens: number; cost_usd: number }>();
+  const latencies: number[] = [];
+
+  for (const log of recentLogs) {
+    const createdAt = new Date(log.created_at);
+    const date = createdAt.toISOString().slice(0, 10);
+    const promptTokens = log.prompt_tokens ?? 0;
+    const completionTokens = log.completion_tokens ?? 0;
+    const tokens = promptTokens + completionTokens;
+    const cost = log.cost_usd ?? 0;
+    const latency = log.latency_ms ?? 0;
+
+    const daily = dailyCosts.get(date) ?? { cost_usd: 0, requests: 0, tokens: 0 };
+    daily.cost_usd += cost;
+    daily.requests += 1;
+    daily.tokens += tokens;
+    dailyCosts.set(date, daily);
+
+    costByModel.set(log.model, (costByModel.get(log.model) ?? 0) + cost);
+
+    const userTokens = tokensByUser.get(log.user_id) ?? { tokens: 0, cost_usd: 0 };
+    userTokens.tokens += tokens;
+    userTokens.cost_usd += cost;
+    tokensByUser.set(log.user_id, userTokens);
+
+    latencies.push(latency);
+  }
+
+  latencies.sort((a, b) => a - b);
+  const totalCost = recentLogs.reduce((sum, log) => sum + (log.cost_usd ?? 0), 0);
+  const totalErrors = recentLogs.filter((log) => log.status === "failure").length;
+  const percentile = (p: number) =>
+    latencies.length ? latencies[Math.min(Math.floor(latencies.length * p), latencies.length - 1)] : 0;
+
+  return {
+    daily_costs: Array.from(dailyCosts.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, value]) => ({
+        date,
+        cost_usd: Number(value.cost_usd.toFixed(6)),
+        requests: value.requests,
+        tokens: value.tokens,
+      })),
+    cost_by_model: Array.from(costByModel.entries())
+      .sort(([, a], [, b]) => b - a)
+      .map(([model, cost_usd]) => ({
+        model,
+        cost_usd: Number(cost_usd.toFixed(6)),
+      })),
+    tokens_by_user: Array.from(tokensByUser.entries())
+      .sort(([, a], [, b]) => b.tokens - a.tokens)
+      .slice(0, 10)
+      .map(([user_id, value]) => ({
+        user_id,
+        tokens: value.tokens,
+        cost_usd: Number(value.cost_usd.toFixed(6)),
+      })),
+    overall: {
+      total_cost_usd: Number(totalCost.toFixed(6)),
+      total_requests: recentLogs.length,
+      error_rate: recentLogs.length ? Number((totalErrors / recentLogs.length).toFixed(4)) : 0,
+      latency_p50_ms: percentile(0.5),
+      latency_p95_ms: percentile(0.95),
+    },
+  };
+}
 
 export default function AdminDashboard() {
   const { apiFetch } = useAuth();
@@ -29,6 +108,7 @@ export default function AdminDashboard() {
   const [todayCost, setTodayCost] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [llmError, setLlmError] = useState<string | null>(null);
   const [llmLogs, setLlmLogs] = useState<AdminLlmLog[]>([]);
   const [llmTotal, setLlmTotal] = useState(0);
   const [llmLoading, setLlmLoading] = useState(false);
@@ -39,48 +119,7 @@ export default function AdminDashboard() {
     date: "",
   });
 
-  const fetchAll = useCallback(async () => {
-    const now = new Date();
-    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
-    try {
-      const [statsData, costData, llmData, budgetData] = await Promise.all([
-        fetchStats(apiFetch),
-        fetchCostStats(apiFetch, currentMonth),
-        fetchLlmStats(apiFetch, 7),
-        fetchTodayBudget(apiFetch),
-      ]);
-      setStats(statsData);
-      setCostStats(costData);
-      setLlmStats(llmData);
-      setTodayCost(budgetData.today_cost_usd);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể tải dữ liệu");
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFetch]);
-
-  useEffect(() => {
-    fetchAll().catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiFetch]);
-
-  // Auto-refresh every 30s
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchAll().catch(() => {});
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [fetchAll]);
-
-  // Load LLM logs separately
-  useEffect(() => {
-    queueMicrotask(() => loadLlmLogs(llmFilter));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiFetch]);
-
-  const loadLlmLogs = async (filters?: typeof llmFilter) => {
+  const loadLlmLogs = useCallback(async (filters?: typeof llmFilter) => {
     setLlmLoading(true);
     try {
       const data = await fetchLlmLogs(apiFetch, {
@@ -93,13 +132,77 @@ export default function AdminDashboard() {
       });
       setLlmLogs(data.items);
       setLlmTotal(data.total);
+      const hasActiveFilter = Boolean(
+        filters?.model || filters?.user_id || filters?.status || filters?.date,
+      );
+      if (!hasActiveFilter) {
+        const statsFromLogs = buildLlmStatsFromLogs(data.items);
+        setLlmStats(statsFromLogs);
+        const today = new Date().toISOString().slice(0, 10);
+        setTodayCost(
+          data.items
+            .filter((log) => {
+              const createdAt = new Date(log.created_at);
+              return (
+                !Number.isNaN(createdAt.getTime()) &&
+                createdAt.toISOString().slice(0, 10) === today
+              );
+            })
+            .reduce((sum, log) => sum + (log.cost_usd ?? 0), 0),
+        );
+      }
     } catch {
       setLlmLogs([]);
       setLlmTotal(0);
+      setLlmError("Không thể tải thống kê LLM");
     } finally {
       setLlmLoading(false);
     }
-  };
+  }, [apiFetch]);
+
+  const fetchAll = useCallback(async () => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+    setError(null);
+    setLlmError(null);
+
+    try {
+      const [statsData, costData] = await Promise.all([
+        fetchStats(apiFetch),
+        fetchCostStats(apiFetch, currentMonth),
+      ]);
+      setStats(statsData);
+      setCostStats(costData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể tải dữ liệu");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+  }, [apiFetch]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      fetchAll().catch(() => {});
+    });
+  }, [fetchAll]);
+
+  // Auto-refresh every 30s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchAll().catch(() => {});
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [fetchAll]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      loadLlmLogs(llmFilter).catch(() => {});
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadLlmLogs]);
 
   const handleLlmSearch = () => {
     loadLlmLogs(llmFilter);
@@ -181,6 +284,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Charts ── */}
+      {llmError && (
+        <div className="mt-6 rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm font-medium text-yellow-800">
+          {llmError}
+        </div>
+      )}
+
       {llmStats && (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <div className="rounded-xl border border-natural-border bg-white p-6 shadow-sm">
@@ -428,16 +537,16 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums text-natural-charcoal">
-                        {log.prompt_tokens.toLocaleString("vi-VN")}
+                        {(log.prompt_tokens ?? 0).toLocaleString("vi-VN")}
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums text-natural-charcoal">
-                        {log.completion_tokens.toLocaleString("vi-VN")}
+                        {(log.completion_tokens ?? 0).toLocaleString("vi-VN")}
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums text-natural-charcoal">
-                        ${log.cost_usd.toFixed(6)}
+                        ${(log.cost_usd ?? 0).toFixed(6)}
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums text-natural-charcoal">
-                        {log.latency_ms.toLocaleString("vi-VN")}
+                        {(log.latency_ms ?? 0).toLocaleString("vi-VN")}
                       </td>
                     </tr>
                   ))}

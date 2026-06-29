@@ -286,7 +286,25 @@ export async function fetchLlmLogs(
     await throwAdminError(res);
   }
 
-  return res.json() as Promise<PaginatedResponse<AdminLlmLog>>;
+  const data = (await res.json()) as PaginatedResponse<
+    AdminLlmLog & {
+      _id?: string;
+      tokens_in?: number;
+      tokens_out?: number;
+    }
+  >;
+
+  return {
+    ...data,
+    items: data.items.map((log) => ({
+      ...log,
+      id: log.id ?? log._id ?? "",
+      prompt_tokens: log.prompt_tokens ?? log.tokens_in ?? 0,
+      completion_tokens: log.completion_tokens ?? log.tokens_out ?? 0,
+      cost_usd: log.cost_usd ?? 0,
+      latency_ms: log.latency_ms ?? 0,
+    })),
+  };
 }
 
 /**

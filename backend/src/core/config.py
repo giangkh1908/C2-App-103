@@ -89,6 +89,8 @@ class Settings(BaseSettings):
     openrouter_completion_cost_per_1m: float = Field(
         default=0.18, alias="OPENROUTER_COMPLETION_COST_PER_1M_TOKENS"
     )
+    # Comma-separated list of fallback models for OpenRouter
+    llm_fallback_models: str = Field(default="", alias="LLM_FALLBACK_MODELS")
 
     # TTS
     tts_provider_mode: Literal["edge_tts_only"] = Field(
@@ -158,6 +160,7 @@ class Settings(BaseSettings):
         "openrouter_app_name",
         "openrouter_prompt_cost_per_1m",
         "openrouter_completion_cost_per_1m",
+        "llm_fallback_models",
         "tts_model",
         "tts_voice",
         "tts_response_format",

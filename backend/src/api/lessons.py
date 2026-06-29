@@ -16,8 +16,8 @@ router = APIRouter(prefix="/lessons", tags=["lessons"])
 @router.post("/generate", response_model=LessonResponse)
 async def generate_lesson(
     request: LessonGenerateRequest,
-    learning_core_service: LearningCoreService = Depends(get_learning_core_service),
     current_user: UserInDB = Depends(require_quota("chat_turns")),
+    learning_core_service: LearningCoreService = Depends(get_learning_core_service),
 ) -> LessonResponse:
     result = await learning_core_service.generate(
         LearningCoreRequest(

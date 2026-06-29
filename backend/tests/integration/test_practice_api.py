@@ -4,7 +4,7 @@ import pytest
 @pytest.mark.asyncio
 async def test_get_practice_grades_requires_auth(client):
     response = await client.get("/api/v1/practice/grades")
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 @pytest.mark.asyncio

@@ -142,6 +142,7 @@ async def client(mock_db):
         patch("src.core.database.db", mock_db),
         patch("src.api.auth.get_db", return_value=mock_db),
         patch("src.core.deps.get_db", return_value=mock_db),
+        patch.object(settings, "sepay_webhook_api_key", "test-sepay-key"),
         patch("src.main.db_module.connect_db", new_callable=AsyncMock, return_value=None),
         patch("src.main.db_module.close_db", new_callable=AsyncMock, return_value=None),
         patch(

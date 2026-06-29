@@ -793,3 +793,102 @@ class TestChangePlan:
         assert response.status_code == 404
         data = response.json()
         assert "Không tìm thấy người dùng" in data.get("detail", "")
+
+
+class TestLlmStats:
+    @pytest.mark.asyncio
+    async def test_returns_aggregated_stats(self, app, mock_db, admin_headers):
+        """GET /admin/llm-stats trả về daily_costs, cost_by_model, tokens_by_user, overall."""
+        from datetime import UTC, datetime
+
+        now = datetime.now(UTC)
+        audit_docs = [
+            {
+                "_id": ObjectId(),
+                "model": "deepseek/deepseek-v4-flash",
+                "user_id": "user1",
+                "prompt_preview": "test",
+                "tokens_in": 100,
+                "tokens_out": 50,
+                "cost_usd": 0.001,
+                "latency_ms": 300,
+                "status": "success",
+                "created_at": now,
+            },
+        ]
+
+        mock_aggregate = AsyncMock()
+        mock_aggregate.to_list = AsyncMock(
+            return_value=[
+                {
+                    "daily_costs": [
+                        {
+                            "date": now.strftime("%Y-%m-%d"),
+                            "cost_usd": 0.001,
+                            "requests": 1,
+                            "tokens": 150,
+                        }
+                    ],
+                    "cost_by_model": [
+                        {"model": "deepseek/deepseek-v4-flash", "cost_usd": 0.001}
+                    ],
+                    "tokens_by_user": [{"user_id": "user1", "tokens": 150, "cost_usd": 0.001}],
+                    "overall": [
+                        {
+                            "total_cost_usd": 0.001,
+                            "total_requests": 1,
+                            "total_errors": 0,
+                            "latencies": [300],
+                        }
+                    ],
+                }
+            ]
+        )
+        mock_db.llm_audit_logs.aggregate = MagicMock(return_value=mock_aggregate)
+
+        with _patch_db(mock_db):
+            transport = ASGITransport(app=app)
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/llm-stats", headers=admin_headers)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "daily_costs" in data
+        assert "cost_by_model" in data
+        assert "tokens_by_user" in data
+        assert "overall" in data
+        assert data["overall"]["total_cost_usd"] == 0.001
+        assert data["overall"]["total_requests"] == 1
+        assert data["overall"]["error_rate"] == 0
+        assert data["overall"]["latency_p50_ms"] == 300
+        assert data["overall"]["latency_p95_ms"] == 300
+
+    @pytest.mark.asyncio
+    async def test_returns_empty_when_no_data(self, app, mock_db, admin_headers):
+        """GET /admin/llm-stats trả về empty arrays khi không có data."""
+        mock_aggregate = AsyncMock()
+        mock_aggregate.to_list = AsyncMock(return_value=[{}])
+        mock_db.llm_audit_logs.aggregate = MagicMock(return_value=mock_aggregate)
+
+        with _patch_db(mock_db):
+            transport = ASGITransport(app=app)
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/llm-stats", headers=admin_headers)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["daily_costs"] == []
+        assert data["cost_by_model"] == []
+        assert data["tokens_by_user"] == []
+        assert data["overall"]["total_cost_usd"] == 0
+        assert data["overall"]["total_requests"] == 0
+
+    @pytest.mark.asyncio
+    async def test_non_admin_gets_403(self, app, mock_db, auth_headers):
+        """Non-admin user nhận 403."""
+        with _patch_db(mock_db):
+            transport = ASGITransport(app=app)
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.get("/api/v1/admin/llm-stats", headers=auth_headers)
+
+        assert response.status_code == 403

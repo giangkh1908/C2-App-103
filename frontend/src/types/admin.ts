@@ -93,3 +93,36 @@ export interface LlmLogFilter {
   page?: number;
   page_size?: number;
 }
+
+export interface DailyCost {
+  date: string;
+  cost_usd: number;
+  requests: number;
+  tokens: number;
+}
+
+export interface CostByModel {
+  model: string;
+  cost_usd: number;
+}
+
+export interface TokensByUser {
+  user_id: string;
+  tokens: number;
+  cost_usd: number;
+}
+
+export interface OverallLlmStats {
+  total_cost_usd: number;
+  total_requests: number;
+  error_rate: number;
+  latency_p50_ms: number;
+  latency_p95_ms: number;
+}
+
+export interface LlmStatsResponse {
+  daily_costs: DailyCost[];
+  cost_by_model: CostByModel[];
+  tokens_by_user: TokensByUser[];
+  overall: OverallLlmStats;
+}

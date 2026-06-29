@@ -5,6 +5,7 @@ import type {
   AdminStats,
   AdminUser,
   LlmLogFilter,
+  LlmStatsResponse,
   PaginatedResponse,
   PaymentFilter,
   UserFilter,
@@ -286,4 +287,41 @@ export async function fetchLlmLogs(
   }
 
   return res.json() as Promise<PaginatedResponse<AdminLlmLog>>;
+}
+
+/**
+ * GET /admin/llm-stats?days=7 — fetch real-time LLM stats for dashboard charts.
+ *
+ * Throws `AdminAuthError` on 401/403, `AdminApiError` on other errors.
+ */
+export async function fetchLlmStats(
+  apiFetch: ApiFetch,
+  days: number = 7,
+): Promise<LlmStatsResponse> {
+  const qs = `?${new URLSearchParams({ days: String(days) })}`;
+  const res = await apiFetch(`/admin/llm-stats${qs}`);
+
+  if (!res.ok) {
+    await throwAdminError(res);
+  }
+
+  return res.json() as Promise<LlmStatsResponse>;
+}
+
+/**
+ * GET /admin/llm-stats?days=1 — fetch today's cost for budget bar.
+ *
+ * Throws `AdminAuthError` on 401/403, `AdminApiError` on other errors.
+ */
+export async function fetchTodayBudget(
+  apiFetch: ApiFetch,
+): Promise<{ today_cost_usd: number }> {
+  const res = await apiFetch("/admin/llm-stats?days=1");
+
+  if (!res.ok) {
+    await throwAdminError(res);
+  }
+
+  const data = (await res.json()) as LlmStatsResponse;
+  return { today_cost_usd: data.overall.total_cost_usd };
 }

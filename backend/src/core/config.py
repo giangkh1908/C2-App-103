@@ -91,6 +91,8 @@ class Settings(BaseSettings):
     )
     # Comma-separated list of fallback models for OpenRouter
     llm_fallback_models: str = Field(default="", alias="LLM_FALLBACK_MODELS")
+    # Daily LLM budget in USD — triggers alert when exceeded
+    llm_daily_budget_usd: float = Field(default=1.0, alias="LLM_DAILY_BUDGET_USD")
 
     # TTS
     tts_provider_mode: Literal["edge_tts_only"] = Field(
@@ -161,6 +163,7 @@ class Settings(BaseSettings):
         "openrouter_prompt_cost_per_1m",
         "openrouter_completion_cost_per_1m",
         "llm_fallback_models",
+        "llm_daily_budget_usd",
         "tts_model",
         "tts_voice",
         "tts_response_format",

@@ -526,3 +526,135 @@ async def get_cost_stats(
     result = await service.get_cost_stats(month)
 
     return result
+
+
+@router.get("/llm-stats")
+async def get_llm_stats(
+    days: int = Query(7, ge=1, le=90, description="Số ngày gần nhất để thống kê"),
+    admin=Depends(get_current_admin),
+):
+    """Thống kê real-time chi phí LLM cho admin dashboard.
+
+    Aggregate từ ``llm_audit_logs`` trong N ngày gần nhất.
+    Trả về daily cost, cost by model, tokens by user, overall stats.
+    """
+    db = get_db()
+    now = datetime.now(UTC)
+    since = now - timedelta(days=days)
+
+    pipeline = [
+        {"$match": {"created_at": {"$gte": since}}},
+        {
+            "$facet": {
+                "daily_costs": [
+                    {
+                        "$group": {
+                            "_id": {"$dateToString": {"format": "%Y-%m-%d", "date": "$created_at"}},
+                            "cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
+                            "requests": {"$sum": 1},
+                            "tokens": {"$sum": {"$add": [
+                                {"$ifNull": ["$tokens_in", 0]},
+                                {"$ifNull": ["$tokens_out", 0]},
+                            ]}},
+                        },
+                    },
+                    {"$sort": {"_id": 1}},
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "date": "$_id",
+                            "cost_usd": {"$round": ["$cost_usd", 6]},
+                            "requests": 1,
+                            "tokens": 1,
+                        },
+                    },
+                ],
+                "cost_by_model": [
+                    {
+                        "$group": {
+                            "_id": "$model",
+                            "cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
+                        },
+                    },
+                    {"$sort": {"cost_usd": -1}},
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "model": "$_id",
+                            "cost_usd": {"$round": ["$cost_usd", 6]},
+                        },
+                    },
+                ],
+                "tokens_by_user": [
+                    {
+                        "$group": {
+                            "_id": "$user_id",
+                            "tokens": {"$sum": {"$add": [
+                                {"$ifNull": ["$tokens_in", 0]},
+                                {"$ifNull": ["$tokens_out", 0]},
+                            ]}},
+                            "cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
+                        },
+                    },
+                    {"$sort": {"tokens": -1}},
+                    {"$limit": 10},
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "user_id": "$_id",
+                            "tokens": 1,
+                            "cost_usd": {"$round": ["$cost_usd", 6]},
+                        },
+                    },
+                ],
+                "overall": [
+                    {
+                        "$group": {
+                            "_id": None,
+                            "total_cost_usd": {"$sum": {"$ifNull": ["$cost_usd", 0]}},
+                            "total_requests": {"$sum": 1},
+                            "total_errors": {
+                                "$sum": {"$cond": [{"$eq": ["$status", "failure"]}, 1, 0]},
+                            },
+                            "latencies": {"$push": {"$ifNull": ["$latency_ms", 0]}},
+                        },
+                    },
+                ],
+            },
+        },
+    ]
+
+    cursor = db.llm_audit_logs.aggregate(pipeline)
+    result = await cursor.to_list(length=1)
+    doc = result[0] if result else {}
+
+    # Compute p50/p95 from latencies
+    overall = doc.get("overall", [])
+    if overall:
+        o = overall[0]
+        latencies = sorted(o.get("latencies", []))
+        n = len(latencies)
+        total_requests = o.get("total_requests", 0)
+        total_errors = o.get("total_errors", 0)
+        overall_stats = {
+            "total_cost_usd": round(o.get("total_cost_usd", 0), 6),
+            "total_requests": total_requests,
+            "error_rate": round(total_errors / total_requests, 4) if total_requests else 0,
+            "latency_p50_ms": round(latencies[int(n * 0.5)] if n else 0, 2),
+            "latency_p95_ms": round(latencies[int(n * 0.95)] if n else 0, 2),
+        }
+    else:
+        overall_stats = {
+            "total_cost_usd": 0,
+            "total_requests": 0,
+            "error_rate": 0,
+            "latency_p50_ms": 0,
+            "latency_p95_ms": 0,
+        }
+
+    return {
+        "daily_costs": doc.get("daily_costs", []),
+        "cost_by_model": doc.get("cost_by_model", []),
+        "tokens_by_user": doc.get("tokens_by_user", []),
+        "overall": overall_stats,
+    }

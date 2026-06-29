@@ -74,7 +74,7 @@ def validate_visual_payload(
             errors.append("Money visual requires at least one denomination.")
         else:
             numeric = [
-                int(value) for value in denominations if isinstance(value, (int, float, str))
+                int(value) for value in denominations if isinstance(value, int | float | str)
             ]
             if sum(numeric) != total_value:
                 errors.append("Money visual total_value does not equal the denominations sum.")
@@ -115,7 +115,7 @@ def validate_visual_payload(
 def _as_number(value: object, fallback: int | float) -> int:
     if isinstance(value, bool):
         return int(fallback)
-    if isinstance(value, (int, float)):
+    if isinstance(value, int | float):
         return int(value)
     if isinstance(value, str):
         try:

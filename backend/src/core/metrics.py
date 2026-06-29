@@ -143,6 +143,12 @@ def get_metrics() -> dict[str, Any]:
                 "p99": round(_percentile(llm_latencies, 99), 2),
             },
             "failures_by_type": failure_types,
+            "llm_fallback_count_total": counters.get("llm_fallback_count", 0),
+            "llm_fallback_by_model": {
+                k.split(":", 1)[1]: v
+                for k, v in counters.items()
+                if k.startswith("llm_fallback_count:")
+            },
         },
         "tools": {
             "calls_total": tool_calls_total,
@@ -239,3 +245,14 @@ def record_request_duration(latency_ms: float) -> None:
 def record_guardrail_block() -> None:
     """Record a guardrail block."""
     increment_counter("guardrail_blocks_total")
+
+
+def record_fallback(model: str) -> None:
+    """Record a model fallback event.
+
+    Increments a global counter *and* a per-model counter so the
+    operator can see both the overall fallback rate and which
+    specific models are falling back.
+    """
+    increment_counter("llm_fallback_count")
+    increment_counter(f"llm_fallback_count:{model}")

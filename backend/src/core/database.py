@@ -111,6 +111,23 @@ async def ensure_indexes(target_db: AsyncIOMotorDatabase) -> None:
     await target_db.usage_logs.create_index("user_id")
     await target_db.usage_logs.create_index("timestamp")
     await target_db.usage_logs.create_index([("user_id", 1), ("action", 1), ("timestamp", 1)])
+    # LLM audit log indexes
+    try:
+        await target_db.llm_audit_logs.create_index("created_at")
+    except (DuplicateKeyError, OperationFailure):
+        pass
+    try:
+        await target_db.llm_audit_logs.create_index("model")
+    except (DuplicateKeyError, OperationFailure):
+        pass
+    try:
+        await target_db.llm_audit_logs.create_index("user_id")
+    except (DuplicateKeyError, OperationFailure):
+        pass
+    try:
+        await target_db.llm_audit_logs.create_index("status")
+    except (DuplicateKeyError, OperationFailure):
+        pass
     await ensure_payment_indexes(target_db)
     # Curriculum topic indexes
     await target_db.curriculum_topics.create_index("topic_id", unique=True)

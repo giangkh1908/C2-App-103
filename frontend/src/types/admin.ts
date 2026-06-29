@@ -72,3 +72,24 @@ export interface AdminCostStats {
   previous_month: number | null;
   top_users: UserCostEntry[];
 }
+
+export interface AdminLlmLog {
+  id: string;
+  user_id: string;
+  model: string;
+  status: "success" | "failure";
+  prompt_tokens: number;
+  completion_tokens: number;
+  cost_usd: number;
+  latency_ms: number;
+  created_at: string;
+}
+
+export interface LlmLogFilter {
+  model?: string;
+  user_id?: string;
+  status?: string;
+  date?: string;
+  page?: number;
+  page_size?: number;
+}

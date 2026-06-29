@@ -161,6 +161,16 @@ def normalize(data: dict, tool: str) -> dict | None:
             }
         )
 
+    elif tool == "mimocode":
+        base.update(
+            {
+                "prompt": data.get("prompt", "")[:1000],
+                "tool_name": data.get("tool_name", ""),
+                "tool_input": data.get("tool_input") if event != "UserPromptSubmit" else None,
+                "tool_response": str(data.get("tool_response", ""))[:500],
+            }
+        )
+
     # Skip only true noise: no prompt AND no tool-specific payload (tool_input,
     # response_summary, tool_response, tool_args, files_context). Previously
     # this only checked `prompt`, which dropped Claude Bash/Edit events (their

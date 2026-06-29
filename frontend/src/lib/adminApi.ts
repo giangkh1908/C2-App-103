@@ -1,8 +1,10 @@
 import type {
   AdminCostStats,
+  AdminLlmLog,
   AdminPayment,
   AdminStats,
   AdminUser,
+  LlmLogFilter,
   PaginatedResponse,
   PaymentFilter,
   UserFilter,
@@ -258,4 +260,30 @@ export async function fetchCostStats(
   }
 
   return res.json() as Promise<AdminCostStats>;
+}
+
+/**
+ * GET /admin/llm-logs — fetch recent LLM audit log entries with optional filters.
+ *
+ * Throws `AdminAuthError` on 401/403, `AdminApiError` on other errors.
+ */
+export async function fetchLlmLogs(
+  apiFetch: ApiFetch,
+  filter?: LlmLogFilter,
+): Promise<PaginatedResponse<AdminLlmLog>> {
+  const qs = buildQuery({
+    model: filter?.model,
+    user_id: filter?.user_id,
+    status: filter?.status,
+    date: filter?.date,
+    page: filter?.page,
+    page_size: filter?.page_size,
+  });
+  const res = await apiFetch(`/admin/llm-logs${qs}`);
+
+  if (!res.ok) {
+    await throwAdminError(res);
+  }
+
+  return res.json() as Promise<PaginatedResponse<AdminLlmLog>>;
 }

@@ -445,6 +445,65 @@ async def get_stats(
     }
 
 
+@router.get("/llm-logs")
+async def list_llm_logs(
+    model: str | None = Query(None),
+    user_id: str | None = Query(None),
+    status_filter: str | None = Query(None, alias="status"),
+    date: str | None = Query(None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    admin=Depends(get_current_admin),
+):
+    """Lịch sử gọi LLM với bộ lọc và phân trang.
+
+    Hỗ trợ lọc theo model, user_id, trạng thái (success/failure),
+    ngày (YYYY-MM-DD), phân trang.
+    """
+    db = get_db()
+    filter_dict: dict = {}
+
+    if model:
+        filter_dict["model"] = model
+    if user_id:
+        filter_dict["user_id"] = user_id
+    if status_filter:
+        filter_dict["status"] = status_filter
+    if date:
+        try:
+            parsed = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=UTC)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Date phải đúng định dạng YYYY-MM-DD, nhận: {date!r}",
+            )
+        filter_dict["created_at"] = {
+            "$gte": parsed,
+            "$lt": parsed + timedelta(days=1),
+        }
+
+    total = await db.llm_audit_logs.count_documents(filter_dict)
+    cursor = (
+        db.llm_audit_logs.find(filter_dict)
+        .sort("created_at", -1)
+        .skip((page - 1) * page_size)
+        .limit(page_size)
+    )
+    items: list[dict] = []
+    async for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        if doc.get("created_at"):
+            doc["created_at"] = doc["created_at"].isoformat()
+        items.append(doc)
+
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+    }
+
+
 @router.get("/costs")
 async def get_cost_stats(
     month: str = Query(..., description="Định dạng YYYY-MM, ví dụ 2026-06"),

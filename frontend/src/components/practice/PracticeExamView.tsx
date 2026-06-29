@@ -114,7 +114,7 @@ export default function PracticeExamView({
     transcribe,
     stop: stopTranscription,
     clearError: clearSpeechToTextError,
-  } = useSpeechToText(speechLocale);
+  } = useSpeechToText(speechLocale, { source: "practice_exam" });
   const {
     isSupported: isTextToSpeechSupported,
     isSpeaking,
@@ -122,7 +122,7 @@ export default function PracticeExamView({
     speak,
     stop: stopSpeaking,
     clearError: clearTextToSpeechError,
-  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch, { source: "practice_exam" });
 
   const speechNotice = useMemo(() => {
     if (manualSpeechNotice) {

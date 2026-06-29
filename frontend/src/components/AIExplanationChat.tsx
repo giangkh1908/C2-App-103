@@ -445,7 +445,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     transcribe,
     stop: stopTranscription,
     clearError: clearSpeechToTextError,
-  } = useSpeechToText(speechLocale);
+  } = useSpeechToText(speechLocale, { source: 'learn_chat' });
   const {
     isSupported: isTextToSpeechSupported,
     isSpeaking,
@@ -453,7 +453,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     speak,
     stop: stopSpeaking,
     clearError: clearTextToSpeechError,
-  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch, { source: 'learn_chat' });
 
   // Auto-scroll
   useEffect(() => {

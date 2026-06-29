@@ -117,7 +117,7 @@ class TestGetMyUsage:
         user_doc_with_plan = {**user_doc_no_plan, "plan_id": str(mock_plan["_id"])}
         mock_db.users.find_one = AsyncMock(
             side_effect=[
-                user_doc_no_plan,   # get_current_user
+                user_doc_no_plan,  # get_current_user
                 user_doc_with_plan,  # get_user_usage → db.users.find_one
                 user_doc_with_plan,  # _get_user_plan → db.users.find_one
             ]

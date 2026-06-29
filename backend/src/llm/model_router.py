@@ -48,7 +48,6 @@ class ModelRouter(BaseLLMClient):
             app_name=settings.openrouter_app_name,
             temperature=settings.openrouter_temperature,
             max_tokens=settings.openrouter_max_tokens,
-            _backend=True,  # prevent infinite recursion
         )
 
     # ── BaseLLMClient interface ──────────────────────────────────────────

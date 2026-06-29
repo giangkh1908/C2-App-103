@@ -25,7 +25,6 @@ export default function PieChartVisual({
   primaryCount,
   secondaryCount,
   totalCount,
-  groupsLabel = 'Phần',
   itemsLabel = 'đơn vị',
 }: VisualProps) {
   const segments = primaryCount;
@@ -46,7 +45,7 @@ export default function PieChartVisual({
 
   // Build SVG pie chart
   let cumAngle = -90; // start from top
-  const paths = segmentData.map((seg, i) => {
+  const paths = segmentData.map((seg) => {
     const pct = seg.value / total;
     const angle = pct * 360;
     const startAngle = cumAngle;

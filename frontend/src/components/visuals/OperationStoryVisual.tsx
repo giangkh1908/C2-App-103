@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { motion } from 'motion/react';
@@ -11,7 +11,6 @@ export default function OperationStoryVisual({
   secondaryCount,
   totalCount,
   groupsLabel = 'đồ vật',
-  itemsLabel = 'bài toán',
   config,
 }: VisualProps) {
   const before = getConfigNumber(config, 'before') ?? primaryCount;

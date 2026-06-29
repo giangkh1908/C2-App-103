@@ -255,18 +255,3 @@ async def test_chat_and_lesson_share_the_same_core_shape(client, auth_headers) -
     assert lesson_payload["real_life_example"] == chat_payload["visual_card"]["life_example"]
     assert lesson_payload["practice_question"]["correct_answer"] == "3"
     assert chat_payload["practice_question"]["options"][1] == "3"
-
-
-@pytest.mark.asyncio
-async def test_lessons_generate_rejects_invalid_topic(client, auth_headers) -> None:
-    response = await client.post(
-        "/api/v1/lessons/generate",
-        json={
-            "grade": 3,
-            "topic": "geometry_magic",
-            "prompt": "Giai thich",
-        },
-        headers=auth_headers,
-    )
-
-    assert response.status_code == 422

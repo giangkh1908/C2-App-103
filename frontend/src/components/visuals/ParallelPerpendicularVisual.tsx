@@ -5,22 +5,11 @@ import { VisualProps } from './shared';
 
 export default function ParallelPerpendicularVisual({
   primaryCount,
-  secondaryCount,
-  totalCount,
   groupsLabel = 'Quan hệ',
   itemsLabel = 'đường thẳng',
 }: VisualProps) {
   const mode = primaryCount % 2 === 0 ? 'parallel' : 'perpendicular';
   const isParallel = mode === 'parallel';
-
-  const parallelPairs = [
-    { l1: [40, 30, 260, 30], l2: [40, 70, 260, 70], label: 'Song song' },
-    { l1: [40, 100, 260, 100], l2: [40, 140, 260, 140], label: 'Song song' },
-  ];
-
-  const perpPairs = [
-    { l1: [60, 20, 60, 150], l2: [30, 90, 170, 90], label: 'Vuông góc' },
-  ];
 
   return (
     <div className="flex flex-col items-center gap-3 w-full">

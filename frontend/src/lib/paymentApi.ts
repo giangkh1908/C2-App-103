@@ -10,6 +10,7 @@ interface CheckoutResponse {
   qr_url: string;
   plan_name: string;
   billing: PaymentBilling;
+  created_at: string | null;
   expires_at: string | null;
 }
 
@@ -23,6 +24,7 @@ interface PaymentStatusResponse {
   plan_name: string;
   billing: PaymentBilling;
   amount_vnd: number;
+  created_at: string | null;
   paid_at: string | null;
   expires_at: string | null;
 }
@@ -67,7 +69,7 @@ function paymentFromCheckout(res: CheckoutResponse): Payment {
     status: "pending",
     gateway_transaction_id: null,
     raw_webhook_payload: null,
-    created_at: new Date().toISOString(),
+    created_at: res.created_at ?? new Date().toISOString(),
     paid_at: null,
     expires_at: res.expires_at,
   };
@@ -91,7 +93,7 @@ function paymentFromStatus(res: PaymentStatusResponse): Payment {
     status: res.status,
     gateway_transaction_id: null,
     raw_webhook_payload: null,
-    created_at: "",
+    created_at: res.created_at ?? "",
     paid_at: res.paid_at,
     expires_at: res.expires_at,
   };

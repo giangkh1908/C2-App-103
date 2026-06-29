@@ -2,7 +2,7 @@
 
 import { VisualProps } from './shared';
 
-export default function SpeedDistanceTimeVisual({ primaryCount, secondaryCount, totalCount, groupsLabel, itemsLabel }: VisualProps) {
+export default function SpeedDistanceTimeVisual({ primaryCount, secondaryCount, groupsLabel }: VisualProps) {
   const width = 400;
   const height = 250;
   const lineY = 150;

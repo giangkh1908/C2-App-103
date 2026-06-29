@@ -46,7 +46,6 @@ function Bar({
 export default function EquivalentFractionVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
 }: VisualProps) {
   const num1 = primaryCount;
   const den1 = Math.max(1, secondaryCount);

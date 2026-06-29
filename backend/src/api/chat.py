@@ -30,8 +30,8 @@ def get_tutor_chat_orchestrator(
 @router.post("/turn", response_model=ChatTurnResponse)
 async def chat_turn(
     request: ChatTurnRequest,
-    orchestrator: TutorChatOrchestrator = Depends(get_tutor_chat_orchestrator),
     current_user: UserInDB = Depends(get_current_user),
+    orchestrator: TutorChatOrchestrator = Depends(get_tutor_chat_orchestrator),
 ) -> ChatTurnResponse:
     user_id = str(current_user.id)
     db = get_db()

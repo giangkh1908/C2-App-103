@@ -6,7 +6,6 @@ import { VisualProps } from './shared';
 export default function DecimalPlaceValueVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
 }: VisualProps) {
   const integerPart = primaryCount;
   const decimalDigits = String(Math.abs(secondaryCount)).split('').map(Number);

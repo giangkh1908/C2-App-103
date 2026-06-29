@@ -78,8 +78,6 @@ const SHAPES_CONFIG = [
 
 export default function ShapeAttributeHighlightVisual({
   primaryCount,
-  secondaryCount,
-  totalCount,
   groupsLabel = 'Thuộc tính',
   itemsLabel = 'hình',
 }: VisualProps) {

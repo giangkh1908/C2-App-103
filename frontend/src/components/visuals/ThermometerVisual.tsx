@@ -2,7 +2,7 @@
 
 import { VisualProps } from './shared';
 
-export default function ThermometerVisual({ primaryCount, secondaryCount, totalCount, groupsLabel, itemsLabel }: VisualProps) {
+export default function ThermometerVisual({ primaryCount, groupsLabel }: VisualProps) {
   const width = 200;
   const height = 300;
   const cx = width / 2;

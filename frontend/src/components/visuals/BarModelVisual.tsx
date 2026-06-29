@@ -5,7 +5,6 @@ import { VisualProps } from './shared';
 
 export default function BarModelVisual({
   primaryCount,
-  secondaryCount,
   totalCount,
   groupsLabel = 'phần',
   itemsLabel = 'đơn vị',

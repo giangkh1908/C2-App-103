@@ -529,6 +529,7 @@
     "step2": "Scan the QR code above",
     "step3": "Confirm the transfer with the payment code as content",
     "waiting": "Waiting for payment...",
+    "sessionExpiresIn": "Expires in {time}",
     "cancelPayment": "Cancel payment",
     "backToPricing": "Back to pricing",
     "paymentConfirmed": "Payment received",

@@ -46,7 +46,7 @@ logger = get_logger("toan_truc_quan.payment_service")
 # How long a `pending` payment is allowed to sit before the sweeper
 # promotes it to `expired`. Mirrors the index note in
 # `src.core.database.ensure_payment_indexes`.
-PAYMENT_PENDING_TTL = timedelta(hours=24)
+PAYMENT_PENDING_TTL = timedelta(minutes=15)
 
 # Window the freshly created payment_code should match the user-side
 # `subscription_expires_at`. Monthly rolls 30 days forward, yearly
@@ -527,6 +527,29 @@ async def reconcile_paid_payments() -> int:
     if activated:
         logger.info("reconcile_completed", activated=activated)
     return activated
+
+
+async def expire_if_session_overdue(payment_code: str) -> bool:
+    """Atomically expire a pending payment if its session has exceeded TTL.
+
+    Returns True if the payment was expired, False if it wasn't pending
+    or wasn't overdue.
+    """
+    db = get_db()
+    cutoff = datetime.now(UTC) - PAYMENT_PENDING_TTL
+    result = await db.payments.find_one_and_update(
+        {
+            "payment_code": payment_code,
+            "status": PaymentStatus.PENDING.value,
+            "created_at": {"$lt": cutoff},
+        },
+        {"$set": {"status": PaymentStatus.EXPIRED.value}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if result:
+        logger.info("payment_session_expired", payment_code=payment_code)
+        return True
+    return False
 
 
 async def get_payment_by_code(payment_code: str) -> PaymentInDB | None:

@@ -5,8 +5,6 @@ import { VisualProps } from './shared';
 
 export default function PercentBarVisual({
   primaryCount,
-  secondaryCount,
-  totalCount,
 }: VisualProps) {
   const percent = Math.max(0, Math.min(100, primaryCount));
   const barW = 280;

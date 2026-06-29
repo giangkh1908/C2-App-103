@@ -6,7 +6,6 @@ import { VisualProps } from './shared';
 export default function AreaModelDecimalVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
 }: VisualProps) {
   const width = Math.max(primaryCount, 0.1);
   const height = Math.max(secondaryCount, 0.1);

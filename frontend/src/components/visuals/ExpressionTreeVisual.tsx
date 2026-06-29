@@ -16,9 +16,7 @@ interface TreeNode {
 export default function ExpressionTreeVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
   groupsLabel = '+',
-  itemsLabel,
 }: VisualProps) {
   const left = primaryCount;
   const right = secondaryCount;
@@ -34,7 +32,6 @@ export default function ExpressionTreeVisual({
     }
   })();
 
-  const total = typeof result === 'number' ? result : totalCount;
   const displayResult = typeof result === 'number' ? result : result;
 
   const treeNodes: Record<string, TreeNode> = {

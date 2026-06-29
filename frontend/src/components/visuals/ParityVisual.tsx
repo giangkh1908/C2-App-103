@@ -6,7 +6,6 @@ import type { VisualProps } from './shared';
 
 export default function ParityVisual({
   primaryCount,
-  secondaryCount,
   totalCount,
   groupsLabel = 'số',
   itemsLabel = 'vật',

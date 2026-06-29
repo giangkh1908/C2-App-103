@@ -6,10 +6,8 @@ import type { VisualProps } from './shared';
 
 export default function RoundingVisual({
   primaryCount,
-  secondaryCount,
   totalCount,
   groupsLabel = 'làm tròn',
-  itemsLabel = 'giá trị',
 }: VisualProps) {
   const raw = primaryCount;
   const floor = Math.floor(raw);

@@ -6,11 +6,9 @@ import { VisualProps } from './shared';
 export default function FractionBarVisual({
   primaryCount,
   secondaryCount,
-  totalCount,
 }: VisualProps) {
   const filled = Math.max(0, Math.min(primaryCount, secondaryCount));
   const total = Math.max(1, secondaryCount);
-  const segW = 100 / total;
 
   return (
     <div className="flex flex-col items-center gap-3 w-full">

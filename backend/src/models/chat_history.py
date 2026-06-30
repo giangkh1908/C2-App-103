@@ -9,6 +9,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from src.models.chat import PracticeQuestion, ResponseMode, Topic, VisualCard
+
 
 class ChatSessionSummary(BaseModel):
     """Thông tin ngắn gọn của một session, dùng để hiển thị trong sidebar."""
@@ -28,6 +30,13 @@ class ChatMessage(BaseModel):
     )
     content: str = Field(..., description="Nội dung tin nhắn.")
     created_at: datetime | None = Field(default=None, description="Thời điểm tin nhắn được tạo.")
+
+
+    detected_topic: Topic | None = Field(default=None)
+    response_mode: ResponseMode | None = Field(default=None)
+    follow_up_suggestions: list[str] = Field(default_factory=list)
+    visual_card: VisualCard | None = Field(default=None)
+    practice_question: PracticeQuestion | None = Field(default=None)
 
 
 class ChatSessionDetail(BaseModel):

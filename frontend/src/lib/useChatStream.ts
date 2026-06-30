@@ -12,6 +12,7 @@
 
 import { useCallback, useRef } from 'react';
 import type { ChatTurnResponse } from '@/types';
+import type { MathDomain } from '@/types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -30,6 +31,7 @@ export interface StreamRequest {
   session_id: string | null;
   grade: number;
   message: string;
+  selected_topic?: MathDomain;
   curriculum_topic_id?: string;
   curriculum_visual_template?: string;
 }

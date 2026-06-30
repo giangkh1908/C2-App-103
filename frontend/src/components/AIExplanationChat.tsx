@@ -45,6 +45,7 @@ import {
 } from './chatSuggestions';
 import type {
   ChatTurnResponse,
+  MathDomain,
   PracticeQuestion,
   ResponseMode,
   VisualData,
@@ -58,6 +59,7 @@ interface Message {
   role: 'user' | 'ai';
   text: string;
   timestampLabel: string;
+  detectedTopic?: MathDomain | null;
   responseMode?: ResponseMode;
   followUpSuggestions?: string[];
   title?: string;
@@ -96,6 +98,80 @@ function createTimestamp(locale: string): string {
     minute: '2-digit',
     hour12: false,
   }).format(new Date());
+}
+
+function mapVisualData(
+  visualCard: ChatTurnResponse['visual_card'] | null | undefined,
+): VisualData | undefined {
+  if (!visualCard) return undefined;
+  return {
+    type: visualCard.visual_data.type,
+    primaryCount: visualCard.visual_data.primary_count,
+    secondaryCount: visualCard.visual_data.secondary_count,
+    totalCount: visualCard.visual_data.total_count,
+    groupsLabel: visualCard.visual_data.groups_label,
+    itemsLabel: visualCard.visual_data.items_label,
+    config: visualCard.visual_data.config,
+    conceptType: visualCard.visual_data.concept_type,
+    polypadEnabled: visualCard.visual_data.polypad_enabled,
+    polypadMode: visualCard.visual_data.polypad_mode,
+  };
+}
+
+function mapPracticeQuestion(
+  practiceQuestion: ChatTurnResponse['practice_question'] | null | undefined,
+): PracticeQuestion | undefined {
+  if (!practiceQuestion) return undefined;
+  return {
+    id: practiceQuestion.id,
+    questionText: practiceQuestion.question_text,
+    options: practiceQuestion.options,
+    correctAnswerIndex: practiceQuestion.correct_answer_index,
+    successMessage: practiceQuestion.success_message,
+    failMessage: practiceQuestion.fail_message,
+    hint: practiceQuestion.hint,
+  };
+}
+
+function buildAssistantMessageFromPayload(
+  payload: Pick<
+    ChatTurnResponse,
+    | 'assistant_message'
+    | 'detected_topic'
+    | 'response_mode'
+    | 'follow_up_suggestions'
+    | 'visual_card'
+    | 'practice_question'
+  >,
+  messageId: string,
+  locale: string,
+): Message {
+  return {
+    id: messageId,
+    role: 'ai',
+    text: payload.assistant_message,
+    timestampLabel: createTimestamp(locale),
+    detectedTopic: payload.detected_topic,
+    responseMode: payload.response_mode,
+    followUpSuggestions: payload.follow_up_suggestions,
+    title: payload.visual_card?.title,
+    lifeExample: payload.visual_card?.life_example,
+    visualData: mapVisualData(payload.visual_card),
+    practiceQuestion: mapPracticeQuestion(payload.practice_question),
+    practiceAnswerIdx: null,
+    practiceFeedbackChecked: false,
+    simulationConfig: payload.visual_card?.simulation_config,
+  };
+}
+
+function getContinuityTopic(messages: Message[]): MathDomain | null {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role === 'ai' && message.detectedTopic) {
+      return message.detectedTopic;
+    }
+  }
+  return null;
 }
 
 function getSpeechUiCopy(locale: string) {
@@ -561,10 +637,26 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     try {
       const session = await getSession(apiFetch, selectedSessionId);
       const restoredMessages: Message[] = session.messages.map((message, index) => ({
-        id: `${selectedSessionId}-${index}`,
-        role: message.role === 'user' ? 'user' : 'ai',
-        text: message.content,
-        timestampLabel: '',
+        ...(message.role === 'user'
+          ? {
+            id: `${selectedSessionId}-${index}`,
+            role: 'user' as const,
+            text: message.content,
+            timestampLabel: '',
+          }
+        : buildAssistantMessageFromPayload(
+            {
+              assistant_message: message.content,
+              detected_topic: (message.detected_topic as ChatTurnResponse['detected_topic']) ?? null,
+              response_mode: (message.response_mode ?? 'explain_only') as ResponseMode,
+              follow_up_suggestions: message.follow_up_suggestions ?? [],
+              visual_card: (message.visual_card as ChatTurnResponse['visual_card']) ?? null,
+                practice_question:
+                  (message.practice_question as ChatTurnResponse['practice_question']) ?? null,
+              },
+              `${selectedSessionId}-${index}`,
+              locale,
+            )),
       }));
 
       setMessages(restoredMessages);
@@ -574,7 +666,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     } catch (error) {
       console.error('Failed to select session', error);
     }
-  }, [apiFetch]);
+  }, [apiFetch, locale]);
 
   const handleDeleteSession = useCallback(async (selectedSessionId: string) => {
     try {
@@ -638,6 +730,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
           sessionId: currentSessionId,
           grade: selectedGrade,
           message: text,
+          selectedTopic: getContinuityTopic(messages),
           pendingSuggestion: getExactSuggestionMatch(text, pendingSuggestion),
         }),
         {
@@ -658,44 +751,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
             setChatTurnCount((c) => c + 1);
 
             // Replace placeholder bằng full message với visual/practice data
-            const finalMsg: Message = {
-              id: aiMsgId,
-              role: 'ai',
-              text: payload.assistant_message,
-              timestampLabel: createTimestamp(locale),
-              responseMode: payload.response_mode,
-              followUpSuggestions: payload.follow_up_suggestions,
-              title: payload.visual_card?.title,
-              lifeExample: payload.visual_card?.life_example,
-              visualData: payload.visual_card
-                ? {
-                    type: payload.visual_card.visual_data.type,
-                    primaryCount: payload.visual_card.visual_data.primary_count,
-                    secondaryCount: payload.visual_card.visual_data.secondary_count,
-                    totalCount: payload.visual_card.visual_data.total_count,
-                    groupsLabel: payload.visual_card.visual_data.groups_label,
-                    itemsLabel: payload.visual_card.visual_data.items_label,
-                    config: payload.visual_card.visual_data.config,
-                    conceptType: payload.visual_card.visual_data.concept_type,
-                    polypadEnabled: payload.visual_card.visual_data.polypad_enabled,
-                    polypadMode: payload.visual_card.visual_data.polypad_mode,
-                  }
-                : undefined,
-              practiceQuestion: payload.practice_question
-                ? {
-                    id: payload.practice_question.id,
-                    questionText: payload.practice_question.question_text,
-                    options: payload.practice_question.options,
-                    correctAnswerIndex: payload.practice_question.correct_answer_index,
-                    successMessage: payload.practice_question.success_message,
-                    failMessage: payload.practice_question.fail_message,
-                    hint: payload.practice_question.hint,
-                  }
-                : undefined,
-              practiceAnswerIdx: null,
-              practiceFeedbackChecked: false,
-              simulationConfig: payload.visual_card?.simulation_config,
-            };
+            const finalMsg = buildAssistantMessageFromPayload(payload, aiMsgId, locale);
 
             setMessages((prev) => prev.map((m) => (m.id === aiMsgId ? finalMsg : m)));
             playSfx('bell');

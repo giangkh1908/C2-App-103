@@ -21,6 +21,11 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   created_at?: string;
+  detected_topic?: string | null;
+  response_mode?: string | null;
+  follow_up_suggestions?: string[];
+  visual_card?: Record<string, unknown> | null;
+  practice_question?: Record<string, unknown> | null;
 }
 
 export interface ChatSessionDetail {

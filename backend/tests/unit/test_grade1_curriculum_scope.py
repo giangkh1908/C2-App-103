@@ -72,6 +72,7 @@ async def test_learning_core_redirects_when_question_out_of_selected_grade1_less
         )
 
     service.memory_repository.append_turn = AsyncMock()
+    service.session_repository.get_recent_turns = AsyncMock(return_value=[])
     service.session_repository.get_latest_turn = AsyncMock(return_value=None)
     service.session_repository.save = AsyncMock()
 
@@ -102,6 +103,7 @@ async def test_learning_core_stream_uses_curriculum_path_for_grade1_comparison()
         )
 
     service.memory_repository.append_turn = AsyncMock()
+    service.session_repository.get_recent_turns = AsyncMock(return_value=[])
     service.session_repository.get_latest_turn = AsyncMock(return_value=None)
     service.session_repository.save = AsyncMock()
 

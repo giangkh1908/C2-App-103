@@ -330,6 +330,7 @@ def detect_curriculum_topic(message: str, grade: int) -> str | None:
 
 
 logger = get_logger("toan_truc_quan.learning_core")
+RECENT_SESSION_WINDOW = 5
 
 
 class LearningCoreService:
@@ -388,6 +389,34 @@ class LearningCoreService:
             user_message=user_message,
             assistant_message=assistant_message,
         )
+
+    async def _load_recent_session_turns(
+        self,
+        *,
+        session_id: str | None,
+        user_id: str,
+    ) -> list[dict]:
+        if session_id is None:
+            return []
+        try:
+            return await self.session_repository.get_recent_turns(
+                session_id,
+                user_id,
+                limit=RECENT_SESSION_WINDOW,
+            )
+        except RuntimeError:
+            logger.info(
+                "recent_turns_unavailable",
+                session_id=session_id,
+                user_id=user_id,
+            )
+            return []
+
+    def _pick_continuity_turn(self, recent_turns: list[dict]) -> dict | None:
+        for turn in recent_turns:
+            if turn.get("detected_topic") or turn.get("selected_topic"):
+                return turn
+        return recent_turns[0] if recent_turns else None
 
     async def _build_guardrail_result(
         self,
@@ -458,6 +487,75 @@ class LearningCoreService:
         )
         await self._persist(request, redirect_result)
         return redirect_result
+
+    def _build_follow_up_tool_args(self, topic: Topic, old_data: dict) -> dict[str, int | str]:
+        if topic == "multiplication":
+            old_groups = int(old_data.get("primary_count") or old_data.get("groups") or 3)
+            old_items = int(old_data.get("secondary_count") or old_data.get("items_per_group") or 4)
+            return {
+                "groups": old_groups + 1 if old_groups < 6 else 2,
+                "items_per_group": old_items - 1 if old_items > 2 else 5,
+                "item_name": "cÃ¡i káº¹o",
+                "group_name": "chiáº¿c Ä‘Ä©a",
+            }
+        if topic == "division":
+            return {
+                "total_items": 16,
+                "groups": 4,
+                "item_name": "quáº£ tÃ¡o",
+                "group_name": "báº¡n",
+            }
+        if topic == "fraction_basic":
+            return {
+                "numerator": 3,
+                "denominator": 8,
+                "whole_name": "chiáº¿c pizza",
+            }
+        if topic == "perimeter_area_basic":
+            return {
+                "length": 6,
+                "width": 4,
+                "unit": "cm",
+                "mode": "area_grid",
+            }
+        return build_random_tool_args(topic)
+
+    def _apply_follow_up_context(
+        self,
+        *,
+        request: LearningCoreRequest,
+        prev_turn: dict | None,
+        context: LearningContext,
+    ) -> LearningContext:
+        if not prev_turn:
+            return context
+
+        follow_up_intent = classify_follow_up_intent(request.message)
+        if follow_up_intent is None:
+            return context
+
+        prev_topic = prev_turn.get("detected_topic") or prev_turn.get("selected_topic")
+        if prev_topic and context.topic is None:
+            context = build_default_context(prev_topic)
+
+        if context.topic is None:
+            return context
+
+        if follow_up_intent == "new_example":
+            old_visual = prev_turn.get("visual_snapshot") or {}
+            old_data = old_visual.get("visual_data") or {}
+            context.intent = "give_example"
+            context.tool_args = self._build_follow_up_tool_args(context.topic, old_data)
+        elif follow_up_intent == "contextual_explain":
+            context.intent = "compare_or_why"
+
+        logger.info(
+            "follow_up_context_applied",
+            follow_up_intent=follow_up_intent,
+            topic=context.topic,
+            session_id=request.session_id,
+        )
+        return context
 
     def _validate_or_fallback_result(
         self,
@@ -545,12 +643,11 @@ class LearningCoreService:
         session_id = request.session_id or uuid4().hex
 
         # 1. Đọc lượt chat trước đó để thừa kế context (Topic, Bộ số cũ)
-        prev_turn = None
-        if session_id is not None:
-            prev_turn = await self.session_repository.get_latest_turn(
-                session_id,
-                request.user_id,
-            )
+        recent_turns = await self._load_recent_session_turns(
+            session_id=session_id,
+            user_id=request.user_id,
+        )
+        prev_turn = self._pick_continuity_turn(recent_turns)
 
         # 2. Khôi phục Topic nếu request hiện tại gửi lên trống (do tải lại session cũ)
         current_selected_topic = request.selected_topic
@@ -613,7 +710,7 @@ class LearningCoreService:
         )
 
         # 3. Kế thừa & Thay đổi bộ số khi học sinh yêu cầu "Ví dụ khác"
-        if prev_turn and any(
+        if False and prev_turn and any(
             kw in request.message.lower()
             for kw in ["ví dụ khác", "vi du khac", "ví dụ mới", "vi du moi"]
         ):
@@ -654,6 +751,12 @@ class LearningCoreService:
                         "unit": "cm",
                         "mode": "area_grid",
                     }
+
+        context = self._apply_follow_up_context(
+            request=request,
+            prev_turn=prev_turn,
+            context=context,
+        )
 
         history_payload = None
         if session_id is not None:
@@ -703,6 +806,15 @@ class LearningCoreService:
                 else:
                     tool_data = build_default_tool_data(default_topic, context.tool_args)
                     agent_metadata["visual_source"] = "fallback"
+                if is_low_signal_answer(answer):
+                    answer = build_contextual_explanation(context.topic, tool_data)
+                    response_source = "fallback"
+                    logger.info(
+                        "tool_answer_fallback_used",
+                        topic=context.topic,
+                        session_id=session_id,
+                        source="contextless_low_signal",
+                    )
                 answer, response_source = self._guard_answer_or_fallback(
                     answer=answer,
                     context=context,
@@ -855,9 +967,11 @@ class LearningCoreService:
 
         session_id = request.session_id or uuid4().hex
 
-        prev_turn = None
-        if session_id is not None:
-            prev_turn = await self.session_repository.get_latest_turn(session_id, request.user_id)
+        recent_turns = await self._load_recent_session_turns(
+            session_id=session_id,
+            user_id=request.user_id,
+        )
+        prev_turn = self._pick_continuity_turn(recent_turns)
 
         current_selected_topic = request.selected_topic
         if not current_selected_topic and prev_turn:
@@ -920,7 +1034,7 @@ class LearningCoreService:
 
         context = detect_context(request.message, current_selected_topic)
 
-        if prev_turn and any(
+        if False and prev_turn and any(
             kw in request.message.lower()
             for kw in ["ví dụ khác", "vi du khac", "ví dụ mới", "vi du moi"]
         ):
@@ -960,6 +1074,12 @@ class LearningCoreService:
                         "unit": "cm",
                         "mode": "area_grid",
                     }
+
+        context = self._apply_follow_up_context(
+            request=request,
+            prev_turn=prev_turn,
+            context=context,
+        )
 
         history_payload = None
         if session_id is not None:
@@ -1029,6 +1149,15 @@ class LearningCoreService:
             else:
                 tool_data = build_default_tool_data(default_topic, context.tool_args)
                 agent_metadata["visual_source"] = "fallback"
+            if is_low_signal_answer(answer):
+                answer = build_contextual_explanation(context.topic, tool_data)
+                response_source = "fallback"
+                logger.info(
+                    "tool_answer_fallback_used",
+                    topic=context.topic,
+                    session_id=session_id,
+                    source="stream_contextless_low_signal",
+                )
             answer, response_source = self._guard_answer_or_fallback(
                 answer=answer,
                 context=context,
@@ -1239,6 +1368,14 @@ class LearningCoreService:
                 )
             )
         except Exception:
+            logger.exception(
+                "session_persist_failed",
+                session_id=result.session_metadata.session_id,
+                topic=result.topic,
+                response_mode=result.response_mode,
+                has_visual=result.visual_card is not None,
+                has_practice=result.practice_question_chat is not None,
+            )
             return
 
 
@@ -1364,12 +1501,58 @@ def normalize_answer(answer: str) -> str:
     return cleaned
 
 
+def classify_follow_up_intent(message: str) -> str | None:
+    normalized = _normalize_text(message)
+    if any(
+        phrase in normalized
+        for phrase in (
+            "them vi du",
+            "vi du khac",
+            "vi du moi",
+            "vi du nua",
+            "cho them vi du",
+            "cho con them vi du",
+            "them mot vi du",
+            "them vi du nua",
+            "cho vi du khac",
+            "lam vi du khac",
+            "so khac",
+            "so khac di",
+            "doi so",
+            "doi so khac",
+        )
+    ):
+        return "new_example"
+    if any(
+        phrase in normalized
+        for phrase in (
+            "vi sao day la phep nhan",
+            "vi sao la phep nhan",
+            "giai thich lai",
+            "giai thich de hon",
+            "noi ro hon",
+            "tai sao lai nhu vay",
+        )
+    ):
+        return "contextual_explain"
+    return None
+
+
 def is_low_signal_answer(answer: str) -> bool:
-    error_phrases = {
-        "hien tai minh chua xu ly duoc cau hoi nay. ban thu hoi lai ngan hon nhe.",
-        "minh gap loi khi xu ly cau hoi. ban thu hoi lai ngan hon nhe.",
-    }
-    return answer.strip().lower() in error_phrases
+    lowered = answer.strip().lower()
+    retry_phrases = (
+        "thử hỏi lại ngắn hơn",
+        "thá»­ há»i láº¡i ngáº¯n hÆ¡n",
+    )
+    low_signal_prefixes = (
+        "mình gặp lỗi khi xử lý câu hỏi",
+        "mã¬nh gáº·p lá»—i khi xá»­ lÃ½ cÃ¢u há»i",
+        "hiện tại mình chưa xử lý được câu hỏi này",
+        "hiá»‡n táº¡i mÃ¬nh chÆ°a xá»­ lÃ½ Ä‘Æ°á»£c cÃ¢u há»i nÃ y",
+    )
+    return any(prefix in lowered for prefix in low_signal_prefixes) and any(
+        phrase in lowered for phrase in retry_phrases
+    )
 
 
 def grade_to_level(grade: int) -> str:

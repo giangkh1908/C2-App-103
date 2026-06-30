@@ -10,6 +10,12 @@ class SessionRepository:
         return get_db().learning_sessions
 
     async def save(self, payload: LearningPersistencePayload) -> None:
+        visual_snapshot = payload.result.visual_card.model_dump() if payload.result.visual_card else None
+        practice_snapshot = (
+            payload.result.practice_question_chat.model_dump()
+            if payload.result.practice_question_chat
+            else None
+        )
         await self._collection.insert_one(
             {
                 "session_id": payload.result.session_metadata.session_id,
@@ -27,8 +33,8 @@ class SessionRepository:
                 "assistant_message": payload.result.assistant_message,
                 "lesson_snapshot": payload.lesson_snapshot,
                 "chat_snapshot": payload.chat_snapshot.model_dump(),
-                "visual_snapshot": payload.result.visual_card.model_dump(),
-                "practice_snapshot": payload.result.practice_question_chat.model_dump(),
+                "visual_snapshot": visual_snapshot,
+                "practice_snapshot": practice_snapshot,
                 "created_at": datetime.now(UTC),
             }
         )
@@ -38,6 +44,19 @@ class SessionRepository:
             {"session_id": session_id, "user_id": user_id},
             sort=[("created_at", -1)],
         )
+
+    async def get_recent_turns(
+        self,
+        session_id: str,
+        user_id: str,
+        limit: int = 5,
+    ) -> list[dict]:
+        cursor = self._collection.find(
+            {"session_id": session_id, "user_id": user_id},
+            sort=[("created_at", -1)],
+            limit=limit,
+        )
+        return await cursor.to_list(length=limit)
 
     async def list_sessions(self, user_id: str) -> list[dict]:
         pipeline = [
@@ -85,6 +104,7 @@ class SessionRepository:
             user_content: str = doc.get("message", "")
             assistant_content: str = doc.get("assistant_message", "")
             created_at: datetime | None = doc.get("created_at")
+            chat_snapshot: dict = doc.get("chat_snapshot") or {}
 
             if user_content:
                 messages.append(
@@ -100,6 +120,11 @@ class SessionRepository:
                         "role": "assistant",
                         "content": assistant_content,
                         "created_at": created_at,
+                        "detected_topic": doc.get("detected_topic"),
+                        "response_mode": chat_snapshot.get("response_mode"),
+                        "follow_up_suggestions": chat_snapshot.get("follow_up_suggestions") or [],
+                        "visual_card": chat_snapshot.get("visual_card"),
+                        "practice_question": chat_snapshot.get("practice_question"),
                     }
                 )
 

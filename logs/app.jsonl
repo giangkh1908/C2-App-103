@@ -4466,3 +4466,78 @@ ory","timestamp":"2026-06-29T03:33:50.668951+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-29T14:52:07.305566+00:00"}
 {"category":"non_math","severity":"medium","log_reason":"non_math_scope_detected","grade":2,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-29T14:52:11.958918+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-29T14:52:11.967448+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:48:44.159701+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:48:44.174344+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:48:44.189906+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:48:44.203448+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:48:44.214142+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T14:48:44.226820+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:48:45.082819+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:48:45.094728+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:48:45.101730+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:50:39.504459+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:50:39.516968+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:50:39.527489+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:50:39.532544+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:50:39.546136+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T14:50:39.552448+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T14:50:39.554971+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:50:40.663267+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:50:40.670387+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:50:40.680199+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:53:52.111613+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:53:52.122297+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:53:52.133507+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:53:52.144922+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:53:52.158949+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T14:53:52.166578+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T14:53:52.166578+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:53:52.172839+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T14:53:52.182744+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T14:53:52.193157+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:44:52.565945+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:44:53.349909+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:44:53.480146+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:44:53.489615+00:00"}
+{"topic":"multiplication","session_id":"session-1","source":"contextless_low_signal","event":"tool_answer_fallback_used","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:44:53.489615+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:44:53.635066+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T15:44:53.642511+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:44:53.663624+00:00"}
+{"curriculum_topic_id":"G1-GEO-02","grade":1,"event":"scope_redirected","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:44:53.669850+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:44:53.676096+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:44:53.689597+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:48:50.906535+00:00"}
+{"session_id":"session-1","user_id":"user-1","event":"recent_turns_unavailable","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:48:50.924238+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T15:48:50.926236+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:48:50.939648+00:00"}
+{"session_id":"session-1","user_id":"user-1","event":"recent_turns_unavailable","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:48:50.949576+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T15:48:50.951572+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:48:50.963585+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:48:50.980282+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:48:50.982283+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:48:50.993081+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T15:48:51.001075+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:48:51.025192+00:00"}
+{"curriculum_topic_id":"G1-GEO-02","grade":1,"event":"scope_redirected","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T15:48:51.036442+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:48:51.047080+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T15:48:51.073415+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.062556+00:00"}
+{"session_id":"session-1","user_id":"user-1","event":"recent_turns_unavailable","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.073440+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:13:32.077439+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.085961+00:00"}
+{"session_id":"session-1","user_id":"user-1","event":"recent_turns_unavailable","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.095414+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:13:32.096412+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.106038+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.123189+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.124203+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.138841+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.147373+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.148371+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.158490+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.166137+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.167138+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.179690+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.189813+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.190808+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.198935+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:13:32.215788+00:00"}

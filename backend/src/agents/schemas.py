@@ -39,3 +39,5 @@ class AgentRunConfig(BaseModel):
     level: Literal["L1", "L2", "L3", "L4", "L5"] = "L3"
     max_steps: int = Field(default=4, ge=1, le=10)
     use_tools: bool = True
+    prompt_version: str = "v1"
+    prompt_id: str = "tutor_system"

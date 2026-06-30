@@ -94,6 +94,10 @@ class Settings(BaseSettings):
     # Daily LLM budget in USD — triggers alert when exceeded
     llm_daily_budget_usd: float = Field(default=1.0, alias="LLM_DAILY_BUDGET_USD")
 
+    # Prompt versioning
+    prompt_version: str = Field(default="v1", alias="PROMPT_VERSION")
+    prompt_id: str = Field(default="tutor_system", alias="PROMPT_ID")
+
     # TTS
     tts_provider_mode: Literal["edge_tts_only"] = Field(
         default="edge_tts_only",

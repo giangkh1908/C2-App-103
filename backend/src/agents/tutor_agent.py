@@ -9,6 +9,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from src.core.config import settings
 from src.llm.base import BaseLLMClient
 from src.tools.registry import ToolRegistry
 
@@ -32,6 +33,7 @@ class TutorAgent:
         level: str = "L3",
         use_tools: bool = True,
         history: list[dict[str, str]] | None = None,
+        prompt_version: str | None = None,
     ) -> AgentResponse:
         """Xử lý một câu hỏi toán học của học sinh.
 
@@ -41,6 +43,7 @@ class TutorAgent:
                 Nếu không hợp lệ sẽ tự động fallback về ``"L3"``.
             use_tools: Cho phép agent dùng tool trực quan hay không.
             history: Lịch sử cuộc trò chuyện truyền xuống AgentLoop.
+            prompt_version: Phiên bản prompt. ``None`` để dùng setting mặc định.
 
         Returns:
             :class:`AgentResponse` chứa câu trả lời và các bước trung gian.
@@ -48,10 +51,16 @@ class TutorAgent:
         if not message.strip():
             return AgentResponse(answer="Bạn hãy nhập một câu hỏi toán học để mình giúp nhé.")
 
+        pv = prompt_version or settings.prompt_version
+        pid = settings.prompt_id
         try:
-            config = AgentRunConfig(level=level, use_tools=use_tools)
+            config = AgentRunConfig(
+                level=level, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+            )
         except ValidationError:
-            config = AgentRunConfig(level=_FALLBACK_LEVEL, use_tools=use_tools)
+            config = AgentRunConfig(
+                level=_FALLBACK_LEVEL, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+            )
 
         try:
             return await self.agent_loop.run(user_message=message, config=config, history=history)
@@ -66,6 +75,7 @@ class TutorAgent:
         level: str = "L3",
         use_tools: bool = True,
         history: list[dict[str, str]] | None = None,
+        prompt_version: str | None = None,
     ) -> AsyncGenerator[tuple[str, Any], None]:
         """Streaming variant of chat(). Yields ("chunk", str) then ("done", AgentResponse)."""
         if not message.strip():
@@ -75,10 +85,16 @@ class TutorAgent:
             )
             return
 
+        pv = prompt_version or settings.prompt_version
+        pid = settings.prompt_id
         try:
-            config = AgentRunConfig(level=level, use_tools=use_tools)
+            config = AgentRunConfig(
+                level=level, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+            )
         except ValidationError:
-            config = AgentRunConfig(level=_FALLBACK_LEVEL, use_tools=use_tools)
+            config = AgentRunConfig(
+                level=_FALLBACK_LEVEL, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+            )
 
         try:
             async for event in self.agent_loop.run_stream(

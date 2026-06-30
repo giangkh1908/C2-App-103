@@ -1,20 +1,35 @@
 #!/usr/bin/env python3
 """Evaluation runner for AI tutor agent.
 
-Calls the live /api/v1/chat/stream endpoint and measures accuracy,
-tool selection, latency (TTFT + total), and cost.
+Two modes:
+- **online** (default): calls the live ``/api/v1/chat/stream`` HTTP endpoint.
+- **offline**: instantiates the LLM client + tool registry + TutorAgent
+  directly and calls ``tutor_agent.chat()`` — no backend needed.
+
+Output is a JSON dict with per-problem details and aggregate metrics
+including accuracy, tool accuracy, latency, TTFT, and cost.
 """
+
+from __future__ import annotations
 
 import argparse
 import asyncio
 import json
 import statistics
+import sys
 import time
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import httpx
+
+# Ensure backend/ is on sys.path so that "from src" imports work
+_HERE = Path(__file__).resolve().parent
+_BACKEND = _HERE.parent.parent
+if str(_BACKEND) not in sys.path:
+    sys.path.insert(0, str(_BACKEND))
 
 
 def _percentile(values: list[float], pct: float) -> float:
@@ -25,12 +40,17 @@ def _percentile(values: list[float], pct: float) -> float:
     return sorted_values[index]
 
 
-async def call_agent(
+# ══════════════════════════════════════════════════════════════════════════
+# Online mode — HTTP
+# ══════════════════════════════════════════════════════════════════════════
+
+
+async def call_agent_online(
     problem: dict[str, Any],
     base_url: str,
     token: str | None,
 ) -> dict[str, Any]:
-    """Call the streaming chat endpoint for one problem.
+    """Call the streaming chat endpoint for one problem (online mode).
 
     Returns: answer_text, detected_topic, tool_used, latency_ms, ttft_ms, tokens_used.
     """
@@ -106,15 +126,151 @@ async def call_agent(
     }
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# Offline mode — direct LLM call (no backend)
+# ══════════════════════════════════════════════════════════════════════════
+
+
+def _build_system_prompt(problem: dict[str, Any], prompt_version: str) -> str:
+    """Build the system prompt for offline eval, respecting prompt version."""
+    from src.agents.prompts import build_tutor_system_prompt
+
+    grade = problem.get("grade", 3)
+    if grade <= 2:
+        level = "L2"
+    elif grade <= 3:
+        level = "L3"
+    elif grade <= 4:
+        level = "L4"
+    else:
+        level = "L5"
+    return build_tutor_system_prompt(level, prompt_version=prompt_version)
+
+
+_tutor_agent_cache: Any = None  # TutorAgent singleton for offline mode
+
+
+def _get_tutor_agent(model: str | None = None) -> Any:
+    """Lazily create a TutorAgent singleton reused across offline eval runs.
+
+    Args:
+        model: Model name to use (e.g. ``"deepseek/deepseek-v4-flash"``).
+            ``None`` to use the default from settings.
+    """
+    global _tutor_agent_cache  # noqa: PLW0603
+    if _tutor_agent_cache is None:
+        from src.agents.tutor_agent import TutorAgent
+        from src.llm.model_router import ModelRouter
+        from src.tools.registry import create_default_tool_registry
+
+        llm = ModelRouter()
+        if model:
+            llm._client.model = model
+        tool_registry = create_default_tool_registry()
+        _tutor_agent_cache = TutorAgent(llm=llm, tool_registry=tool_registry)
+    return _tutor_agent_cache
+
+
+async def call_agent_offline(
+    problem: dict[str, Any],
+    prompt_version: str,
+    model: str | None = None,
+) -> dict[str, Any]:
+    """Call the agent directly for one problem (offline mode).
+
+    Returns the same dict shape as :func:`call_agent_online`.
+    """
+    tutor_agent = _get_tutor_agent(model)
+
+    grade = problem.get("grade", 3)
+    level_map = {1: "L1", 2: "L2", 3: "L3", 4: "L4", 5: "L5"}
+    level = level_map.get(grade, "L3")
+
+    request_start = time.perf_counter()
+    ttft_ms: float = 0.0
+
+    # Wrapper to capture first-token time from streaming
+    answer_parts: list[str] = []
+    first_token_time: float | None = None
+    tool_used: str | None = None
+    usage: dict[str, Any] = {}
+    detected_topic: str | None = None
+
+    try:
+        # Use the streaming variant so we can measure TTFT
+        async for event_type, payload in tutor_agent.chat_stream(
+            message=problem["question"],
+            level=level,
+            use_tools=True,
+            prompt_version=prompt_version,
+        ):
+            if event_type == "chunk":
+                chunk = str(payload)
+                if chunk and first_token_time is None:
+                    first_token_time = time.perf_counter()
+                    ttft_ms = round((first_token_time - request_start) * 1000, 2)
+                answer_parts.append(chunk)
+            elif event_type == "done":
+                agent_response = payload
+                tool_used = agent_response.tool_used
+                usage = agent_response.usage or {}
+    except Exception:
+        # Fallback: non-streaming
+        ar = await _get_tutor_agent(model).chat(
+            message=problem["question"],
+            level=level,
+            use_tools=True,
+            prompt_version=prompt_version,
+        )
+        answer_parts = [ar.answer]
+        tool_used = ar.tool_used
+        usage = ar.usage or {}
+        if first_token_time is None:
+            ttft_ms = 0.0
+
+    latency_ms = round((time.perf_counter() - request_start) * 1000, 2)
+    answer_text = "".join(answer_parts).strip()
+    tokens_used = int(usage.get("total_tokens", 0) or 0) or (
+        int(usage.get("prompt_tokens", 0) or 0) + int(usage.get("completion_tokens", 0) or 0)
+    )
+    cost_usd = float(usage.get("cost", 0) or 0)
+
+    return {
+        "answer_text": answer_text,
+        "detected_topic": detected_topic,
+        "tool_used": tool_used,
+        "latency_ms": latency_ms,
+        "ttft_ms": ttft_ms,
+        "tokens_used": tokens_used,
+        "usage": usage,
+        "cost_usd": cost_usd,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# Shared helpers
+# ══════════════════════════════════════════════════════════════════════════
+
+
 async def _run_single(
     problem: dict[str, Any],
-    base_url: str,
+    mode: str,
+    base_url: str | None,
     token: str | None,
+    prompt_version: str | None,
     verbose: bool,
+    model: str | None = None,
 ) -> dict[str, Any]:
-    """Run one problem and return the detail dict."""
+    """Run one problem and return the detail dict.
+
+    Dispatches to online or offline call-agent function based on *mode*.
+    """
     try:
-        result = await call_agent(problem, base_url, token)
+        if mode == "online":
+            assert base_url is not None
+            result = await call_agent_online(problem, base_url, token)
+        else:
+            result = await call_agent_offline(problem, prompt_version or "v1", model)
     except Exception as exc:
         if verbose:
             print(f"  ERROR {problem['id']}: {exc}")
@@ -128,6 +284,8 @@ async def _run_single(
             "latency_ms": 0.0,
             "ttft_ms": 0.0,
             "tokens_used": 0,
+            "usage": {},
+            "cost_usd": 0.0,
             "keyword_match": False,
             "tool_match": False,
             "error": str(exc),
@@ -159,23 +317,12 @@ async def _run_single(
     }
 
 
-async def run_evaluation(
-    dataset: dict[str, Any],
-    base_url: str = "http://localhost:8000",
-    token: str | None = None,
-    verbose: bool = False,
-    concurrency: int = 1,
-) -> dict[str, Any]:
-    """Run evaluation on all problems in the dataset."""
-    problems = dataset.get("problems", [])
-    semaphore = asyncio.Semaphore(min(concurrency, 5))
+def _assemble_metrics(details: list[dict[str, Any]], dataset: dict[str, Any]) -> dict[str, Any]:
+    """Build the top-level metrics dict from per-problem details.
 
-    async def _bounded(problem: dict[str, Any]) -> dict[str, Any]:
-        async with semaphore:
-            return await _run_single(problem, base_url, token, verbose)
-
-    details = await asyncio.gather(*[_bounded(p) for p in problems])
-
+    Shared between online and offline modes so baseline comparisons
+    are consistent.
+    """
     total = len(details)
     keyword_correct = sum(1 for d in details if d.get("keyword_match"))
     tool_correct = sum(1 for d in details if d.get("tool_match") and d.get("expected_tool"))
@@ -184,10 +331,7 @@ async def run_evaluation(
     latencies = [d["latency_ms"] for d in details if d["latency_ms"] > 0]
     ttfts = [d["ttft_ms"] for d in details if d["ttft_ms"] > 0]
     total_tokens = sum(d.get("tokens_used", 0) for d in details)
-
-    # Rough cost using deepseek-v4-flash pricing as default
-    _cost_per_1k = 0.00014
-    total_cost_usd = (total_tokens / 1000.0) * _cost_per_1k
+    total_cost_usd = sum(float(d.get("cost_usd", 0) or 0) for d in details)
 
     return {
         "model": dataset.get("model", "unknown"),
@@ -217,6 +361,33 @@ async def run_evaluation(
     }
 
 
+async def run_evaluation(
+    dataset: dict[str, Any],
+    mode: str = "offline",
+    base_url: str | None = None,
+    token: str | None = None,
+    prompt_version: str | None = None,
+    verbose: bool = False,
+    concurrency: int = 1,
+    model: str | None = None,
+) -> dict[str, Any]:
+    """Run evaluation on all problems in the dataset."""
+    problems = dataset.get("problems", [])
+    semaphore = asyncio.Semaphore(min(concurrency, 5))
+
+    async def _bounded(problem: dict[str, Any]) -> dict[str, Any]:
+        async with semaphore:
+            return await _run_single(problem, mode, base_url, token, prompt_version, verbose, model)
+
+    details = await asyncio.gather(*[_bounded(p) for p in problems])
+    return _assemble_metrics(details, dataset)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# CLI
+# ══════════════════════════════════════════════════════════════════════════
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run AI tutor agent evaluation")
     parser.add_argument("--dataset", required=True, help="Path to dataset JSON file")
@@ -224,12 +395,30 @@ def main() -> None:
         "--model", default="deepseek/deepseek-v4-flash", help="LLM model name (informational)"
     )
     parser.add_argument(
-        "--base-url", default="http://localhost:8000", help="Base URL of the backend API"
+        "--mode",
+        default="offline",
+        choices=["online", "offline"],
+        help="'online' calls the HTTP backend; 'offline' calls LLM directly (default: offline)",
+    )
+    parser.add_argument(
+        "--base-url",
+        default="http://localhost:8000",
+        help="Base URL of the backend API (online mode)",
     )
     parser.add_argument("--token", default=None, help="Bearer token for authentication")
     parser.add_argument("--concurrency", type=int, default=1, help="Max concurrent requests (1–5)")
     parser.add_argument("--verbose", action="store_true", help="Print per-problem results")
     parser.add_argument("--output", help="Output file path for JSON results")
+    parser.add_argument(
+        "--prompt-id",
+        default=None,
+        help="Prompt identifier (auto-detected from backend settings if omitted)",
+    )
+    parser.add_argument(
+        "--prompt-version",
+        default=None,
+        help="Prompt version (auto-detected from backend settings if omitted)",
+    )
     args = parser.parse_args()
 
     with open(args.dataset, encoding="utf-8") as f:
@@ -237,23 +426,49 @@ def main() -> None:
 
     dataset.setdefault("model", args.model)
 
+    # Resolve prompt_id / prompt_version from settings when not provided
+    prompt_id = args.prompt_id
+    prompt_version = args.prompt_version
+    if prompt_id is None or prompt_version is None:
+        try:
+            from src.core.config import settings as _s
+
+            if prompt_id is None:
+                prompt_id = _s.prompt_id
+            if prompt_version is None:
+                prompt_version = _s.prompt_version
+        except ImportError:
+            prompt_id = prompt_id or "tutor_system"
+            prompt_version = prompt_version or "v1"
+
     if args.verbose:
-        print(f"Dataset : {args.dataset}")
-        print(f"Topic   : {dataset.get('topic', 'unknown')}")
-        print(f"Problems: {len(dataset.get('problems', []))}")
-        print(f"Base URL: {args.base_url}")
-        print(f"Concurrency: {args.concurrency}")
+        print(f"Dataset  : {args.dataset}")
+        print(f"Topic    : {dataset.get('topic', 'unknown')}")
+        print(f"Problems : {len(dataset.get('problems', []))}")
+        print(f"Mode     : {args.mode}")
+        if args.mode == "online":
+            print(f"Base URL : {args.base_url}")
+            print(f"Concurrency: {args.concurrency}")
+        print(f"Prompt   : {prompt_id}@{prompt_version}")
         print()
 
     results = asyncio.run(
         run_evaluation(
             dataset,
-            base_url=args.base_url,
+            mode=args.mode,
+            base_url=args.base_url if args.mode == "online" else None,
             token=args.token,
+            prompt_version=prompt_version,
             verbose=args.verbose,
             concurrency=args.concurrency,
+            model=args.model if args.mode == "offline" else None,
         )
     )
+
+    # Stamp prompt version info on the result
+    results["prompt_id"] = prompt_id
+    results["prompt_version"] = prompt_version
+    results["mode"] = args.mode
 
     output_json = json.dumps(results, indent=2, ensure_ascii=False)
 

@@ -7,6 +7,7 @@ import httpx
 from src.core.config import settings
 from src.core.logging import get_logger
 from src.core.metrics import record_llm_failure, record_llm_request
+from src.services.llm_audit import AuditHook, _noop_audit
 
 from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMStreamUsage, LLMToolCall
 
@@ -23,6 +24,7 @@ class OpenRouterClient(BaseLLMClient):
         app_name: str = "mathbuddy-ai-backend",
         temperature: float = 0.7,
         max_tokens: int = 2048,
+        audit_hook: AuditHook | None = None,
     ) -> None:
         self.api_key = api_key
         self.model = model
@@ -31,6 +33,7 @@ class OpenRouterClient(BaseLLMClient):
         self.app_name = app_name
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.audit_hook = audit_hook or _noop_audit
 
     async def generate(
         self,
@@ -58,9 +61,7 @@ class OpenRouterClient(BaseLLMClient):
                 data = resp.json()
         except Exception as exc:
             latency_ms = round((perf_counter() - start) * 1000, 2)
-            from src.services.llm_audit import log_llm_call
-
-            await log_llm_call(
+            await self.audit_hook(
                 model=self.model,
                 user_id=None,
                 prompt_preview=prompt_preview,
@@ -96,9 +97,7 @@ class OpenRouterClient(BaseLLMClient):
             + completion_tokens * settings.openrouter_completion_cost_per_1m
         ) / 1_000_000
 
-        from src.services.llm_audit import log_llm_call
-
-        await log_llm_call(
+        await self.audit_hook(
             model=self.model,
             user_id=None,
             prompt_preview=prompt_preview,
@@ -144,6 +143,8 @@ class OpenRouterClient(BaseLLMClient):
         start = perf_counter()
         prompt_tokens: int = 0
         completion_tokens: int = 0
+        total_tokens: int = 0
+        cost: float = 0.0
         is_tool_call: bool = False
         error: Exception | None = None
 
@@ -164,6 +165,8 @@ class OpenRouterClient(BaseLLMClient):
                         elif isinstance(chunk, LLMStreamUsage):
                             prompt_tokens = chunk.prompt_tokens
                             completion_tokens = chunk.completion_tokens
+                            total_tokens = chunk.total_tokens
+                            cost = chunk.cost
                         yield chunk
         except Exception as exc:
             error = exc
@@ -178,9 +181,7 @@ class OpenRouterClient(BaseLLMClient):
             latency_ms = round((perf_counter() - start) * 1000, 2)
 
             if error is not None:
-                from src.services.llm_audit import log_llm_call
-
-                await log_llm_call(
+                await self.audit_hook(
                     model=self.model,
                     user_id=None,
                     prompt_preview=prompt_preview,
@@ -192,14 +193,18 @@ class OpenRouterClient(BaseLLMClient):
                     error=str(error),
                 )
             else:
+                # Use real cost from API when available, fall back to pricing calc
                 cost_usd = (
-                    prompt_tokens * settings.openrouter_prompt_cost_per_1m
-                    + completion_tokens * settings.openrouter_completion_cost_per_1m
-                ) / 1_000_000
+                    cost
+                    if cost > 0
+                    else (
+                        prompt_tokens * settings.openrouter_prompt_cost_per_1m
+                        + completion_tokens * settings.openrouter_completion_cost_per_1m
+                    )
+                    / 1_000_000
+                )
 
-                from src.services.llm_audit import log_llm_call
-
-                await log_llm_call(
+                await self.audit_hook(
                     model=self.model,
                     user_id=None,
                     prompt_preview=prompt_preview,
@@ -213,15 +218,17 @@ class OpenRouterClient(BaseLLMClient):
 
                 record_llm_request(
                     model=self.model,
-                    tokens=prompt_tokens + completion_tokens,
+                    tokens=total_tokens or (prompt_tokens + completion_tokens),
                     latency_ms=latency_ms,
                 )
                 logger.debug(
                     "openrouter_stream_done",
                     model=self.model,
-                    tokens_used=prompt_tokens + completion_tokens,
+                    tokens_used=total_tokens or (prompt_tokens + completion_tokens),
                     prompt_tokens=prompt_tokens,
                     completion_tokens=completion_tokens,
+                    total_tokens=total_tokens,
+                    cost=cost_usd,
                     latency_ms=latency_ms,
                     is_tool_call=is_tool_call,
                 )
@@ -288,7 +295,7 @@ class OpenRouterClient(BaseLLMClient):
     ) -> AsyncGenerator[str | LLMToolCall | LLMStreamUsage, None]:
         content_buffer = ""
         tool_calls: dict[int, dict[str, Any]] = {}
-        usage: dict[str, int] = {}
+        usage: dict[str, Any] = {}
 
         async for line in line_iterator:
             line = line.strip()
@@ -303,15 +310,19 @@ class OpenRouterClient(BaseLLMClient):
             except Exception:
                 continue
 
+            # Capture usage BEFORE checking choices — final chunk has choices=[] with usage
+            chunk_usage = chunk.get("usage")
+            if chunk_usage:
+                usage = {
+                    "prompt_tokens": chunk_usage.get("prompt_tokens", 0) or 0,
+                    "completion_tokens": chunk_usage.get("completion_tokens", 0) or 0,
+                    "total_tokens": chunk_usage.get("total_tokens", 0) or 0,
+                    "cost": float(chunk_usage.get("cost", 0) or 0),
+                }
+
             choices = chunk.get("choices") or []
             if not choices:
-                # Usage chunk when stream_options.include_usage is supported
-                chunk_usage = chunk.get("usage")
-                if chunk_usage:
-                    usage = {
-                        "prompt_tokens": chunk_usage.get("prompt_tokens", 0) or 0,
-                        "completion_tokens": chunk_usage.get("completion_tokens", 0) or 0,
-                    }
+                # Final usage chunk — captured above, nothing to yield
                 continue
 
             delta = choices[0].get("delta") or {}
@@ -353,6 +364,8 @@ class OpenRouterClient(BaseLLMClient):
             yield LLMStreamUsage(
                 prompt_tokens=usage.get("prompt_tokens", 0),
                 completion_tokens=usage.get("completion_tokens", 0),
+                total_tokens=usage.get("total_tokens", 0),
+                cost=usage.get("cost", 0.0),
             )
 
     def _safe_json_loads(self, value: str) -> Any:

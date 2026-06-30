@@ -17,8 +17,10 @@ from pathlib import Path
 import pytest
 
 from src.agents.prompts import (
-    build_tutor_system_prompt as build_hardcoded,
     TOOL_USE_INSTRUCTION,
+)
+from src.agents.prompts import (
+    build_tutor_system_prompt as build_hardcoded,
 )
 from src.llm.prompt_registry import PromptNotFoundError, PromptRegistry
 
@@ -29,6 +31,7 @@ _BACKEND = Path(__file__).resolve().parents[2]
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def reg() -> PromptRegistry:

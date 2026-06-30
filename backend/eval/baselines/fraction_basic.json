@@ -1,0 +1,275 @@
+{
+  "model": "deepseek/deepseek-v4-flash",
+  "dataset": "fraction_basic",
+  "timestamp": "2026-06-30T10:15:27.005761+00:00",
+  "total": 10,
+  "metrics": {
+    "accuracy": 0.9,
+    "tool_accuracy": 1.0,
+    "ttft_ms": {
+      "avg": 4395.83,
+      "p50": 3767.4,
+      "p95": 6294.12
+    },
+    "latency_ms": {
+      "avg": 15845.36,
+      "p50": 11988.27,
+      "p95": 21696.35
+    },
+    "cost_usd": {
+      "total": 0.00402515,
+      "avg_per_request": 0.00040252
+    },
+    "total_tokens": 56864
+  },
+  "details": [
+    {
+      "problem_id": "frac_001",
+      "expected_keywords": [
+        "1/2",
+        "một nửa",
+        "hai phần",
+        "một phần hai"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chà, câu hỏi hay quá! Để cô giải thích cho con bằng hình ảnh trực quan nhé!Tuyệt vời! Cô sẽ giải thích cho con nhé! 🍕\n\n## ½ chiếc pizza là gì?\n\nCô có **1 chiếc pizza nguyên vẹn** được cắt thành **2 phần bằng nhau**:\n\n![Bức tranh pizza ½]\n\nCon nhìn này 👆:\n\n- Chiếc pizza được chia làm **2 miếng bằng nhau** 🍕\n- Trong đó có **1 miếng** được tô màu vàng (phần có kẹo)\n- **1 miếng** còn lại để trống\n\n### Vậy ½ có nghĩa là:\n\n👉 **½ = 1 phần trong tổng số 2 phần bằng nhau**\n\nGiống như:\n- Con có 1 cái bánh, cắt làm 2 nửa\n- Con ăn 1 nửa → con đã ăn **½ cái bánh**\n- Nửa còn lại để dành → **½ cái bánh** nữa\n\n**Ví dụ dễ nhớ:**\n> Nếu con có 1 quả cam, bổ đôi ra → mỗi nửa là **½ quả cam** 🍊\n\nCon có thắc mắc gì thêm không nào? 😊",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 10761.64,
+      "ttft_ms": 3577.01,
+      "tokens_used": 5324,
+      "usage": {
+        "prompt_tokens": 4813,
+        "completion_tokens": 511,
+        "total_tokens": 5324,
+        "cost": 0.000312246
+      },
+      "cost_usd": 0.000312246,
+      "keyword_match": false,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_002",
+      "expected_keywords": [
+        "3/4",
+        "ba phần tư",
+        "ba",
+        "bốn"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chúng ta hãy cùng xem nhé! 🍰Nhìn nè con! 🍕\n\nChiếc bánh của con được chia thành **4 phần bằng nhau**:\n\n🟫🟫🟫⬜\n(Có 3 phần màu nâu — con đã ăn, và 1 phần trắng — còn lại)\n\n- **Mẫu số là 4**: chiếc bánh có tất cả **4 phần** bằng nhau.\n- **Tử số là 3**: con đã ăn **3 phần** trong số đó.\n\n**Vậy con đã ăn 3/4 (ba phần tư) chiếc bánh.** 🎉\n\nNghĩa là còn lại 1/4 (một phần tư) chiếc bánh chưa ăn nhé! Con có muốn học thêm về phân số nào nữa không? 😊",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 8706.49,
+      "ttft_ms": 3750.04,
+      "tokens_used": 5279,
+      "usage": {
+        "prompt_tokens": 4851,
+        "completion_tokens": 428,
+        "total_tokens": 5279,
+        "cost": 0.00021983000000000001
+      },
+      "cost_usd": 0.00021983000000000001,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_003",
+      "expected_keywords": [
+        "1/3",
+        "một phần ba",
+        "ba phần bằng nhau"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chúng ta cùng xem hình ảnh để hiểu phân số 1/3 nhé! 🍕\n\nTuyệt vời! Hãy cùng nhìn vào hình ảnh chiếc bánh pizza dưới đây nhé! 🍕\n\n---\n\n### 🍕 Phân số **1/3** nghĩa là gì?\n\n**1/3** đọc là **\"một phần ba\"** – nghĩa là chúng ta chia một vật thành **3 phần bằng nhau**, và lấy **1 phần**.\n\nHãy nhìn chiếc pizza này:\n\n- Chiếc pizza được cắt thành **3 miếng bằng nhau** ➡️ đó là **mẫu số 3**.\n- Chúng ta tô màu **1 miếng** ➡️ đó là **tử số 1**.\n- Vậy phần tô màu chính là **1/3 chiếc pizza**! 🎉\n\n| Miếng pizza | Có tô màu không? |\n|---|---|\n| ✅ Miếng thứ nhất | **Có** (1 phần đã lấy) |\n| ❌ Miếng thứ hai | Không |\n| ❌ Miếng thứ ba | Không |\n\n---\n\n### 🧸 Ví dụ dễ hiểu hơn:\nGiả sử bạn có **3 cái kẹo** và bạn ăn **1 cái** – vậy bạn đã ăn **1/3 số kẹo** của mình rồi đấy! 😊\n\n**Tóm lại:**\n> **1/3** = Chia một vật thành **3 phần** và lấy **1 phần** trong số đó.\n\nBạn còn thắc mắc gì về phân số nữa không? Mình sẵn sàng giúp bạn nhé! 🌟",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 11095.81,
+      "ttft_ms": 2974.19,
+      "tokens_used": 5425,
+      "usage": {
+        "prompt_tokens": 4836,
+        "completion_tokens": 589,
+        "total_tokens": 5425,
+        "cost": 0.000239932
+      },
+      "cost_usd": 0.000239932,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_004",
+      "expected_keywords": [
+        "2/5",
+        "hai phần năm",
+        "hai",
+        "năm"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chúng ta hãy cùng xem hình ảnh chiếc pizza nhé!Tuyệt vời! Mình cùng xem nào! 🍕\n\nChiếc pizza được chia thành **5 phần bằng nhau** (mẫu số là 5).\nTrong đó có **2 phần được tô màu** (tử số là 2).\n\nVậy **2/5 (hai phần năm)** của chiếc pizza đã được tô màu rồi đó!\n\nCó thể hiểu như thế này:\n- 🍕🍕🍕🍕🍕 → 5 miếng pizza\n- 🟠🟠⬜⬜⬜ → 2 miếng tô màu, 3 miếng chưa tô\n\n**Đáp án: 2 phần (2/5 chiếc pizza) được tô màu.** 🎉",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 14770.37,
+      "ttft_ms": 3767.4,
+      "tokens_used": 5196,
+      "usage": {
+        "prompt_tokens": 4834,
+        "completion_tokens": 362,
+        "total_tokens": 5196,
+        "cost": 0.000464812
+      },
+      "cost_usd": 0.000464812,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_005",
+      "expected_keywords": [
+        "3/8",
+        "ba phần tám"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chúng ta cùng xem nhé! 🍕\n\nTuyệt vời! 🎉 Mình đã tạo hình ảnh chiếc bánh được chia làm **8 phần bằng nhau** và tô màu **3 phần** con đã lấy.\n\nĐây là phân số:\n\n\\[\n\\frac{3}{8}\n\\]\n\n**Giải thích từng bước:**\n\n1. 🍕 Chiếc bánh được chia thành **8 phần bằng nhau** → đó là **mẫu số** (viết ở dưới).\n2. 🖐️ Con lấy **3 phần** → đó là **tử số** (viết ở trên).\n3. 📝 Viết lại: **3/8** — đọc là \"ba phần tám\".\n\n👉 **Phân số chỉ phần bánh con lấy là \\(\\frac{3}{8}\\).**\n\nVậy: \n- Tử số = **3** (số phần con lấy)\n- Mẫu số = **8** (tổng số phần bằng nhau)\n\nCon còn nhìn thấy 5 phần bánh chưa tô màu — đó là \\(\\frac{5}{8}\\) bánh còn lại! 😊\n\nCon có muốn thử thêm bài toán phân số nào nữa không?",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 13138.71,
+      "ttft_ms": 6601.4,
+      "tokens_used": 5393,
+      "usage": {
+        "prompt_tokens": 4904,
+        "completion_tokens": 489,
+        "total_tokens": 5393,
+        "cost": 0.000226996
+      },
+      "cost_usd": 0.000226996,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_006",
+      "expected_keywords": [
+        "1/2",
+        "một phần hai",
+        "lớn hơn"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chúng mình cùng so sánh nào! 🍕\n\nCô sẽ vẽ hai chiếc pizza để con dễ hình dung nhé!\n\n**Phân số \\( \\frac{1}{2} \\) lớn hơn \\( \\frac{1}{4} \\).** 🍕\n\nHãy tưởng tượng hai chiếc bánh pizza giống hệt nhau nhé!\n\n---\n\n**🥧 Pizza thứ nhất – \\( \\frac{1}{2} \\)**\n- Chiếc bánh được cắt thành **2 phần bằng nhau**.\n- Bạn lấy **1 phần** trong 2 phần đó.\n- 👉 Bạn có **một nửa cái bánh** (rất to!).\n\n**🥧 Pizza thứ hai – \\( \\frac{1}{4} \\)**\n- Chiếc bánh được cắt thành **4 phần bằng nhau**.\n- Bạn lấy **1 phần** trong 4 phần đó.\n- 👉 Bạn có **một miếng nhỏ hơn nhiều**.\n\n---\n\n### 🧐 Giải thích bằng lời:\n\nKhi **mẫu số** càng lớn (số ở dưới), chiếc bánh bị cắt ra càng nhiều miếng → mỗi miếng càng **nhỏ** hơn.\n\n- \\( \\frac{1}{2} \\): 1 cái bánh cắt làm 2 → mỗi miếng to.\n- \\( \\frac{1}{4} \\): 1 cái bánh cắt làm 4 → mỗi miếng nhỏ.\n\nVì vậy: **\\( \\frac{1}{2} > \\frac{1}{4} \\)** ✅\n\n---\n\n**Quy tắc dễ nhớ:** Trong các phân số có **cùng tử số** (số trên), phân số nào có **mẫu số nhỏ hơn** thì lớn hơn! 😊\n\nCon đã hiểu chưa nè? Có muốn thử so sánh hai phân số khác không?",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 36847.39,
+      "ttft_ms": 6294.12,
+      "tokens_used": 8502,
+      "usage": {
+        "prompt_tokens": 7461,
+        "completion_tokens": 1041,
+        "total_tokens": 8502,
+        "cost": 0.0007754699999999999
+      },
+      "cost_usd": 0.0007754699999999999,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_007",
+      "expected_keywords": [
+        "2/6",
+        "1/3",
+        "hai phần sáu",
+        "một phần ba"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Con hỏi hay quá! Đây là bài toán về phân số. Để cô dùng hình ảnh trực quan giúp con dễ hiểu nhé!\n\n## 🎯 Phân số là **2/6** (đọc là: hai phần sáu)\n\nNhìn vào hình trên, con thấy **tờ giấy** được chia thành **6 phần bằng nhau** (giống như 6 miếng pizza vậy). Trong đó:\n\n- 🟧 **2 phần** được tô màu → là **tử số** (số ở trên)\n- ⬜ **6 phần** tất cả → là **mẫu số** (số ở dưới)\n\n**Cách viết:**  \n\\[\n\\boxed{\\frac{2}{6}}\n\\]\n\n**Cách đọc:** \"Hai phần sáu\" 🎵\n\n**Giải thích dễ nhớ:**  \nTờ giấy có 6 ô vuông như nhau. Con tô màu **2 ô** trong số 6 ô đó. Vậy phân số chỉ phần đã tô là **2/6** nhé! ✅\n\nCó muốn cô giúp con rút gọn phân số 2/6 luôn không? 😊",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 11988.27,
+      "ttft_ms": 4123.82,
+      "tokens_used": 5405,
+      "usage": {
+        "prompt_tokens": 4871,
+        "completion_tokens": 534,
+        "total_tokens": 5405,
+        "cost": 0.000412294
+      },
+      "cost_usd": 0.000412294,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_008",
+      "expected_keywords": [
+        "1/4",
+        "một phần tư",
+        "còn lại"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chúng ta cùng xem nhé! 🍕\n\nHmm, con ăn **3 phần** của chiếc pizza 🍕, và cả chiếc pizza có tất cả **4 phần** bằng nhau!\n\nNhìn hình trên đây nhé! Có **4 miếng pizza** tất cả:\n\n- 🟠 Miếng 1 → đã ăn\n- 🟠 Miếng 2 → đã ăn  \n- 🟠 Miếng 3 → đã ăn\n- ⚪ Miếng 4 → **còn lại**\n\nVậy con đã ăn **3/4** (ba phần tư), và phần còn lại là **1 miếng** trong tổng số 4 miếng.\n\n👉 **Đáp số: Còn lại 1/4 (một phần tư) chiếc pizza nhé!** 🍕✨\n\nCon có thắc mắc gì thêm không nào? 😊",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 21696.35,
+      "ttft_ms": 4803.03,
+      "tokens_used": 5394,
+      "usage": {
+        "prompt_tokens": 4821,
+        "completion_tokens": 573,
+        "total_tokens": 5394,
+        "cost": 0.000530842
+      },
+      "cost_usd": 0.000530842,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_009",
+      "expected_keywords": [
+        "4/4",
+        "cả",
+        "toàn bộ",
+        "một"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chà, câu hỏi thú vị quá! Để cô giúp con nhìn thật rõ nhé! 🍕Tuyệt vời! Nhìn vào hình pizza của chúng ta đây! 🍕\n\n**Phân số 4/4 có nghĩa là: Cả chiếc bánh!** 🎉\n\n- Chiếc pizza được chia làm **4 phần bằng nhau** (mẫu số là 4).\n- Chúng ta có **4 phần** (tử số là 4).\n- 4 phần trên tổng số 4 phần → **tất cả 4 phần đều có** → đó là nguyên cả chiếc pizza!\n\nVậy **4/4 = 1** (một cái bánh nguyên vẹn).\n\nHãy tưởng tượng nhé:\n- Nếu con có 1 chiếc bánh, con chia làm 4 miếng. \n- Con ăn hết cả 4 miếng → con đã ăn **4/4** chiếc bánh → tức là **ăn hết cả cái bánh** luôn! 😄\n\nCòn nếu chỉ là **một phần** thôi, thì tử số sẽ nhỏ hơn mẫu số, ví dụ như **1/4** (một miếng) hoặc **2/4** (hai miếng) nhé!\n\n**Kết luận: 4/4 là CẢ chiếc bánh nguyên vẹn đấy!** 🎂✨",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 11781.88,
+      "ttft_ms": 3507.1,
+      "tokens_used": 5453,
+      "usage": {
+        "prompt_tokens": 4853,
+        "completion_tokens": 600,
+        "total_tokens": 5453,
+        "cost": 0.000243754
+      },
+      "cost_usd": 0.000243754,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "frac_010",
+      "expected_keywords": [
+        "5/8",
+        "năm phần tám",
+        "tám phần",
+        "năm phần"
+      ],
+      "expected_tool": "fraction_pizza",
+      "answer_text": "Chúng ta cùng xem hình ảnh chiếc pizza để hiểu phân số 5/8 nhé! 🍕Tuyệt vời! Cô đã có hình ảnh chiếc pizza rồi, cùng xem nhé! 🍕\n\n## 🍕 Phân số 5/8\n\n**Hình ảnh trên là một chiếc pizza được chia thành 8 phần bằng nhau.**\n\n| Số lát pizza được tô màu (có kẹo) | Tổng số lát pizza |\n|:---:|:---:|\n| **5** | **8** |\n\n👉 **Phân số 5/8** có nghĩa là:\n- **Tử số là 5** → chúng ta có **5 lát pizza được tô màu** (các lát 1, 2, 3, 4, 5)\n- **Mẫu số là 8** → chiếc pizza được chia thành **8 lát bằng nhau**\n- Còn **3 lát chưa tô màu** (lát 6, 7, 8)\n\n---\n\n### Cách hiểu đơn giản:\n> **Giả sử con có 1 chiếc pizza nguyên vẹn, con cắt ra 8 miếng bằng nhau.**\n> - Con ăn 5 miếng → con đã ăn **5/8** (năm phần tám) chiếc pizza 🍕\n> - Còn lại 3 miếng → **3/8** (ba phần tám) chiếc pizza\n\n**Hay nói cách khác:** 5/8 có nghĩa là **5 trong tổng số 8 phần bằng nhau** đó con nhé! 😊\n\nCon còn muốn hỏi gì về phân số nữa không?",
+      "detected_topic": null,
+      "tool_used": "fraction_pizza",
+      "latency_ms": 17666.66,
+      "ttft_ms": 4560.15,
+      "tokens_used": 5493,
+      "usage": {
+        "prompt_tokens": 4874,
+        "completion_tokens": 619,
+        "total_tokens": 5493,
+        "cost": 0.000598976
+      },
+      "cost_usd": 0.000598976,
+      "keyword_match": true,
+      "tool_match": true
+    }
+  ],
+  "prompt_id": "tutor_system",
+  "prompt_version": "v1",
+  "mode": "offline"
+}

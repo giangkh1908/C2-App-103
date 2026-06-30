@@ -1,0 +1,260 @@
+{
+  "model": "deepseek/deepseek-v4-flash",
+  "dataset": "division",
+  "timestamp": "2026-06-30T10:12:39.056067+00:00",
+  "total": 10,
+  "metrics": {
+    "accuracy": 1.0,
+    "tool_accuracy": 1.0,
+    "ttft_ms": {
+      "avg": 5389.07,
+      "p50": 4448.21,
+      "p95": 7028.87
+    },
+    "latency_ms": {
+      "avg": 14496.78,
+      "p50": 12723.46,
+      "p95": 18051.4
+    },
+    "cost_usd": {
+      "total": 0.00375259,
+      "avg_per_request": 0.00037526
+    },
+    "total_tokens": 53842
+  },
+  "details": [
+    {
+      "problem_id": "div_001",
+      "expected_keywords": [
+        "4",
+        "bốn"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Chia 12 cái kẹo cho 3 bạn — cô sẽ dùng hình vẽ giúp con nhé! 🍬Chúng ta có **12 cái kẹo** và **3 bạn**. Mình sẽ chia đều cho các bạn nhé! 🍬\n\n---\n\n**Bước 1:** Có 12 cái kẹo, chia cho 3 bạn.\n\n- Bạn thứ 1 nhận: 🍬🍬🍬🍬 (4 cái)\n- Bạn thứ 2 nhận: 🍬🍬🍬🍬 (4 cái)\n- Bạn thứ 3 nhận: 🍬🍬🍬🍬 (4 cái)\n\n**Bước 2:** Đếm lại xem có đủ 12 cái không nhé!  \n4 + 4 + 4 = **12** 🎉\n\n**Bước 3:** Vậy:\n\n> **12 ÷ 3 = 4**\n\nMỗi bạn được **4 cái kẹo**, chia đều, không thừa cái nào! 😊\n\nCon có muốn thử bài chia nào khác với số kẹo khác không?",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 12035.28,
+      "ttft_ms": 3962.32,
+      "tokens_used": 5358,
+      "usage": {
+        "prompt_tokens": 4868,
+        "completion_tokens": 490,
+        "total_tokens": 5358,
+        "cost": 0.000393392
+      },
+      "cost_usd": 0.000393392,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_002",
+      "expected_keywords": [
+        "4",
+        "bốn"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Bài toán này dễ ơi là dễ luôn! Cô sẽ giúp con nhé! 🍎Chúng ta cùng xem nhé! 🍎\n\nCó **20 quả táo** chia đều cho **5 bạn**.\n\n- **Bước 1:** Lấy 20 quả táo.\n- **Bước 2:** Chia đều lần lượt cho 5 bạn, mỗi bạn được 1 quả, 1 quả nữa...\n- **Bước 3:** Sau khi chia xong, mỗi bạn đều có **4 quả táo** như nhau! 🎉\n\n| Bạn 1 🧑 | Bạn 2 🧑 | Bạn 3 🧑 | Bạn 4 🧑 | Bạn 5 🧑 |\n|:--------:|:--------:|:--------:|:--------:|:--------:|\n| 🍎🍎🍎🍎 | 🍎🍎🍎🍎 | 🍎🍎🍎🍎 | 🍎🍎🍎🍎 | 🍎🍎🍎🍎 |\n\n**Đáp án:** Mỗi bạn được **4 quả táo**.\n\nPhép tính: **20 ÷ 5 = 4** ✅",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 25737.72,
+      "ttft_ms": 4448.21,
+      "tokens_used": 5355,
+      "usage": {
+        "prompt_tokens": 4890,
+        "completion_tokens": 465,
+        "total_tokens": 5355,
+        "cost": 0.000210936
+      },
+      "cost_usd": 0.000210936,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_003",
+      "expected_keywords": [
+        "5",
+        "năm"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Bài toán này là phép chia đều, cô dùng hình ảnh để giúp con dễ hiểu nhé!**Bài toán:** Mẹ có 15 cái bánh, xếp đều vào 3 đĩa. Hỏi mỗi đĩa có bao nhiêu cái bánh?\n\nĐây là **phép chia** đấy! Mình cùng xem nhé 👇\n\n---\n\n**Bước 1:** Mẹ có **15 cái bánh** 🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪\n\n**Bước 2:** Chia đều vào **3 đĩa** 🍽️🍽️🍽️\n\n**Bước 3:** Lấy 15 cái bánh chia làm 3 phần bằng nhau, ta làm phép tính:\n\n> **15 : 3 = 5**\n\n---\n\n### Mỗi đĩa có 5 cái bánh! 🎉\n\n| Đĩa 1 🍽️ | Đĩa 2 🍽️ | Đĩa 3 🍽️ |\n|---|---|---|\n| 🍪🍪🍪🍪🍪 | 🍪🍪🍪🍪🍪 | 🍪🍪🍪🍪🍪 |\n| 5 cái | 5 cái | 5 cái |\n\n**Đếm thử nhé:** 3 đĩa × 5 cái bánh = 15 cái. Đúng rồi! ✅\n\nCon nhớ nhé: **15 : 3 = 5** đọc là \"mười lăm chia ba bằng năm\" ✨",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 14372.66,
+      "ttft_ms": 5999.46,
+      "tokens_used": 5516,
+      "usage": {
+        "prompt_tokens": 4889,
+        "completion_tokens": 627,
+        "total_tokens": 5516,
+        "cost": 0.000602014
+      },
+      "cost_usd": 0.000602014,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_004",
+      "expected_keywords": [
+        "4",
+        "bốn"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Bài toán này là phép chia đều, cô sẽ dùng hình ảnh để giúp con dễ hiểu nhé!Cô thấy bài toán của con rồi! Đây là **phép chia** đó. Cô giải thích từng bước nhé:\n\n🌸 **Bài toán:** 8 bông hoa cắm đều vào 2 lọ.\n\n**Bước 1:** Con lấy 8 bông hoa chia làm 2 phần bằng nhau (vì có 2 lọ).\n\n**Bước 2:** Mỗi lọ sẽ nhận được số hoa là:\n\n👉 8 ÷ 2 = **4**\n\n**Bước 3:** Kiểm tra lại nhé:\n- Lọ thứ 1: 🏺 có **4 bông hoa** 🌸🌸🌸🌸\n- Lọ thứ 2: 🏺 có **4 bông hoa** 🌸🌸🌸🌸\n- Tổng: 4 + 4 = 8 bông ✅\n\n---\n\n**Kết luận:** Mỗi lọ có **4 bông hoa** 🎉",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 10106.12,
+      "ttft_ms": 3238.17,
+      "tokens_used": 5326,
+      "usage": {
+        "prompt_tokens": 4858,
+        "completion_tokens": 468,
+        "total_tokens": 5326,
+        "cost": 0.0003881
+      },
+      "cost_usd": 0.0003881,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_005",
+      "expected_keywords": [
+        "6",
+        "sáu"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Bài toán của chúng ta có 30 quyển vở chia đều cho 5 bạn, cô sẽ dùng hình ảnh trực quan để giúp con hiểu nhé!**Bài toán:** 30 quyển vở chia đều cho 5 bạn. Mỗi bạn được mấy quyển?\n\n---\n\n**Giải thích nhé!**\n\nĐây là phép tính **chia đều** — cô có 30 quyển vở và 5 bạn.\n\nCô chia lần lượt cho từng bạn:\n\n- Bạn 1️⃣: được 6 quyển\n- Bạn 2️⃣: được 6 quyển\n- Bạn 3️⃣: được 6 quyển\n- Bạn 4️⃣: được 6 quyển\n- Bạn 5️⃣: được 6 quyển\n\n👉 **Mỗi bạn được 6 quyển vở** nhé!\n\nPhép tính:  \n**30 : 5 = 6**  \n(đọc là: ba mươi chia năm bằng sáu)\n\nKhông còn dư quyển nào đâu, chia đều hết rồi! 🎉",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 17411.4,
+      "ttft_ms": 4679.41,
+      "tokens_used": 5366,
+      "usage": {
+        "prompt_tokens": 4888,
+        "completion_tokens": 478,
+        "total_tokens": 5366,
+        "cost": 0.00049284
+      },
+      "cost_usd": 0.00049284,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_006",
+      "expected_keywords": [
+        "6",
+        "sáu"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Chờ cô chút nhé, cô sẽ vẽ hình minh họa cho con xem!Có **18 viên kẹo** chia đều cho **3 bạn** nhé! 🍬🍬🍬\n\nHình trên mô tả rõ: mỗi bạn nhận 6 viên kẹo, và chia hết, không còn dư viên nào.\n\n**Giải thích từng bước:**\n\n1️⃣ **Tổng số kẹo:** 18 viên  \n2️⃣ **Số bạn:** 3 bạn  \n3️⃣ **Muốn chia đều**, ta làm phép tính:  \n    **18 ÷ 3 = 6**\n\n📌 Vậy **mỗi bạn nhận được 6 viên kẹo** 🎉\n\nCó thể kiểm tra lại: **6 + 6 + 6 = 18** ✅",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 18051.4,
+      "ttft_ms": 5261.12,
+      "tokens_used": 5328,
+      "usage": {
+        "prompt_tokens": 4876,
+        "completion_tokens": 452,
+        "total_tokens": 5328,
+        "cost": 0.000207016
+      },
+      "cost_usd": 0.000207016,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_007",
+      "expected_keywords": [
+        "2",
+        "hai"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Chào em! Đây là bài toán chia đều, cô sẽ dùng hình ảnh trực quan để giúp em hiểu nhé!Chúng ta có **10 quả cam** chia đều cho **5 bạn** 🍊\n\nNhìn hình bên dưới nhé:\n\n**Bước 1:** Có 10 quả cam tất cả.\n**Bước 2:** Chia đều cho 5 bạn. Mỗi bạn sẽ nhận được số cam bằng nhau. \n**Bước 3:** Đếm nào! Mỗi bạn được **2 quả cam**.\n\n| Bạn 1 🧑 | Bạn 2 🧑 | Bạn 3 🧑 | Bạn 4 🧑 | Bạn 5 🧑 |\n|:--------:|:--------:|:--------:|:--------:|:--------:|\n| 🍊🍊     | 🍊🍊     | 🍊🍊     | 🍊🍊     | 🍊🍊     |\n\n✅ **Đáp án:** Mỗi bạn được **2 quả cam**.\n\n**Giải thích:**  \n10 ÷ 5 = 2  \n(Vì 5 × 2 = 10, nên 10 chia 5 được 2)\n\nCon có muốn thử một phép chia khác không? 😊",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 9514.62,
+      "ttft_ms": 2965.41,
+      "tokens_used": 5352,
+      "usage": {
+        "prompt_tokens": 4881,
+        "completion_tokens": 471,
+        "total_tokens": 5352,
+        "cost": 0.000231198
+      },
+      "cost_usd": 0.000231198,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_008",
+      "expected_keywords": [
+        "5",
+        "năm"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Chúng ta cùng xem nhé! Cô có 25 chiếc bút chì chia đều cho 5 bạn:\n\n## Bài toán chia đều bút chì 🖍️\n\nCô giáo có **25 chiếc bút chì** và muốn chia **đều** cho **5 bạn học sinh**.\n\n**Cách làm từng bước nhé:**\n\n1. Cô lấy 25 chiếc bút chì 🖍️🖍️🖍️...\n2. Cô chia cho 5 bạn — mỗi bạn nhận số bút bằng nhau.\n3. Ta thực hiện phép chia: **25 ÷ 5 = 5**\n\n**Kết quả: Mỗi bạn được 5 chiếc bút chì!** 🎉\n\n| Bạn 1 🧒 | 🖍️🖍️🖍️🖍️🖍️ | 5 cái |\n|----------|----------------|-------|\n| Bạn 2 🧒 | 🖍️🖍️🖍️🖍️🖍️ | 5 cái |\n| Bạn 3 🧒 | 🖍️🖍️🖍️🖍️🖍️ | 5 cái |\n| Bạn 4 🧒 | 🖍️🖍️🖍️🖍️🖍️ | 5 cái |\n| Bạn 5 🧒 | 🖍️🖍️🖍️🖍️🖍️ | 5 cái |\n\n**Tổng cộng:** 5 + 5 + 5 + 5 + 5 = **25** — vừa đủ hết, không thừa không thiếu! ✅\n\n**Đáp số:** Mỗi học sinh được **5 chiếc bút chì**. ✏️",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 13618.27,
+      "ttft_ms": 7028.87,
+      "tokens_used": 5516,
+      "usage": {
+        "prompt_tokens": 4911,
+        "completion_tokens": 605,
+        "total_tokens": 5516,
+        "cost": 0.00043013000000000003
+      },
+      "cost_usd": 0.00043013000000000003,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_009",
+      "expected_keywords": [
+        "7",
+        "bảy"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Chia bánh cho các bạn xem nhé! 🍪Chúng ta có **14 cái bánh quy** chia đều cho **2 bạn** nhé! 🍪🍪\n\nNhìn vào hình trên:\n\n- **Bạn thứ nhất** 🧒 nhận được **7 cái bánh quy** 🍪🍪🍪🍪🍪🍪🍪\n- **Bạn thứ hai** 👧 cũng nhận được **7 cái bánh quy** 🍪🍪🍪🍪🍪🍪🍪\n\n📝 **Phép tính:**\n> **14 : 2 = 7**\n\n✅ Vậy mỗi bạn được **7 cái bánh quy** — chia đều, không thừa cái nào luôn! 🎉",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 11396.91,
+      "ttft_ms": 3967.64,
+      "tokens_used": 5313,
+      "usage": {
+        "prompt_tokens": 4859,
+        "completion_tokens": 454,
+        "total_tokens": 5313,
+        "cost": 0.00038545399999999997
+      },
+      "cost_usd": 0.00038545399999999997,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "div_010",
+      "expected_keywords": [
+        "8",
+        "tám"
+      ],
+      "expected_tool": "equal_division",
+      "answer_text": "Chúng ta có **40 viên bi** và **5 hộp**, chia đều nhé!\n\n**Bước 1:** Cô lấy 5 hộp, đặt cạnh nhau. 🟦🟦🟦🟦🟦\n\n**Bước 2:** Cô chia lần lượt từng viên bi vào mỗi hộp, mỗi hộp 1 viên, vòng quanh cho đến hết 40 viên.\n\n**Bước 3:** Đếm lại, mỗi hộp có:\n\n| Hộp 1 | Hộp 2 | Hộp 3 | Hộp 4 | Hộp 5 |\n|:-----:|:-----:|:-----:|:-----:|:-----:|\n| 8 viên | 8 viên | 8 viên | 8 viên | 8 viên |\n\n**👉 Vậy 40 ÷ 5 = 8**\n\n**Kết luận:** Mỗi hộp có **8 viên bi** 🎉",
+      "detected_topic": null,
+      "tool_used": "equal_division",
+      "latency_ms": 12723.46,
+      "ttft_ms": 12340.07,
+      "tokens_used": 5412,
+      "usage": {
+        "prompt_tokens": 4893,
+        "completion_tokens": 519,
+        "total_tokens": 5412,
+        "cost": 0.00041151
+      },
+      "cost_usd": 0.00041151,
+      "keyword_match": true,
+      "tool_match": true
+    }
+  ],
+  "prompt_id": "tutor_system",
+  "prompt_version": "v1",
+  "mode": "offline"
+}

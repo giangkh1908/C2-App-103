@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 
 
@@ -23,14 +24,19 @@ def _load_json(path: str) -> dict:
         return json.load(f)
 
 
-def _pct_change(current: float, baseline: float) -> float:
+def _pct_change(current: float, baseline: float) -> float | None:
+    """Return (current - baseline) / baseline, or None when baseline is 0."""
     if baseline == 0:
-        if current > 0:
-            return float("inf")
-        if current < 0:
-            return -float("inf")
-        return 0.0
+        return None
     return (current - baseline) / baseline
+
+
+def _fmt_change(change: float | None) -> str:
+    if change is None:
+        return "N/A"
+    if math.isinf(change):
+        return "+inf%" if change > 0 else "-inf%"
+    return f"{change * 100:+.2f}%"
 
 
 def compare(current_path: str, baseline_path: str, min_accuracy: float = 0.90) -> int:
@@ -61,7 +67,7 @@ def compare(current_path: str, baseline_path: str, min_accuracy: float = 0.90) -
     print("-" * 90)
 
     failed = False
-    checks: list[tuple[str, float, float, float, str]] = []
+    checks: list[tuple[str, float, float, float | None, str]] = []
 
     # ── Accuracy: absolute threshold ──────────────────────────────
     cur_acc = cur_metrics.get("accuracy", 0.0)
@@ -89,7 +95,7 @@ def compare(current_path: str, baseline_path: str, min_accuracy: float = 0.90) -
     cur_lat = _get_nested(cur_metrics, "latency_ms", "p50")
     base_lat = _get_nested(base_metrics, "latency_ms", "p50")
     lat_change = _pct_change(cur_lat, base_lat)
-    lat_ok = lat_change <= 0.50
+    lat_ok = lat_change is None or lat_change <= 0.50
     checks.append(("Latency p50 (ms)", base_lat, cur_lat, lat_change, "PASS" if lat_ok else "FAIL"))
     if not lat_ok:
         failed = True
@@ -98,7 +104,7 @@ def compare(current_path: str, baseline_path: str, min_accuracy: float = 0.90) -
     cur_ttft = _get_nested(cur_metrics, "ttft_ms", "p50")
     base_ttft = _get_nested(base_metrics, "ttft_ms", "p50")
     ttft_change = _pct_change(cur_ttft, base_ttft)
-    ttft_ok = ttft_change <= 0.50
+    ttft_ok = ttft_change is None or ttft_change <= 0.50
     checks.append(
         ("TTFT p50 (ms)", base_ttft, cur_ttft, ttft_change, "PASS" if ttft_ok else "FAIL")
     )
@@ -125,7 +131,7 @@ def compare(current_path: str, baseline_path: str, min_accuracy: float = 0.90) -
     checks.append(("Total tokens", float(base_tok), float(cur_tok), tok_change, "info"))
 
     for name, base_val, cur_val, change, status in checks:
-        chg_str = f"{change * 100:+.2f}%" if isinstance(change, float) else "N/A"
+        chg_str = _fmt_change(change)
         print(f"{name:<30} {base_val:<14} {cur_val:<14} {chg_str:<14} {status}")
 
     print()

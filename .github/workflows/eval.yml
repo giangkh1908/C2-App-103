@@ -156,17 +156,6 @@ jobs:
           echo "regression_failed=false" >> "$GITHUB_OUTPUT"
           echo "✅ All regression checks passed (or no baselines to compare)"
 
-      # ── Promote current results to baseline ─────────────────────
-      - name: Update baselines
-        if: always()
-        run: |
-          for ds in multiplication fraction_basic division perimeter_area; do
-            if [ -f eval/results_${ds}.json ]; then
-              cp eval/results_${ds}.json eval/baselines/${ds}.json
-              echo "✅ Baseline updated for ${ds}"
-            fi
-          done
-
       # ── Upload artifacts ────────────────────────────────────────
       - name: Upload eval results
         if: always()

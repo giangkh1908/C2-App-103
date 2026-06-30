@@ -10,7 +10,9 @@ class SessionRepository:
         return get_db().learning_sessions
 
     async def save(self, payload: LearningPersistencePayload) -> None:
-        visual_snapshot = payload.result.visual_card.model_dump() if payload.result.visual_card else None
+        visual_snapshot = (
+            payload.result.visual_card.model_dump() if payload.result.visual_card else None
+        )
         practice_snapshot = (
             payload.result.practice_question_chat.model_dump()
             if payload.result.practice_question_chat
@@ -122,7 +124,7 @@ class SessionRepository:
                         "created_at": created_at,
                         "detected_topic": doc.get("detected_topic"),
                         "response_mode": chat_snapshot.get("response_mode"),
-                        "follow_up_suggestions": chat_snapshot.get("follow_up_suggestions") or [],
+                        "follow_up_suggestions": (chat_snapshot.get("follow_up_suggestions") or []),
                         "visual_card": chat_snapshot.get("visual_card"),
                         "practice_question": chat_snapshot.get("practice_question"),
                     }

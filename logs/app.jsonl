@@ -4541,3 +4541,448 @@ ory","timestamp":"2026-06-29T03:33:50.668951+00:00"}
 {"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:13:32.190808+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:13:32.198935+00:00"}
 {"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:13:32.215788+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:56:57.951790+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:56:57.984815+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:56:58.011125+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:56:58.035355+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:56:58.056635+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.084481+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.085904+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:56:58.103503+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.110904+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.113437+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:56:58.127065+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.137332+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.138332+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:56:58.154059+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.166279+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:56:58.168278+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:00.329527+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:57:00.342079+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:27.540245+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:57:27.550492+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:27.561052+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:57:27.569047+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:27.574758+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.581414+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.582427+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:27.589711+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.595785+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.596787+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:27.605571+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.612056+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.613067+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:27.623604+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.629076+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:57:27.630079+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:57:27.642503+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:57:27.646574+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:26.028851+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:58:26.040058+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:26.047237+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:58:26.053274+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:26.057983+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.064608+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.064608+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:26.064608+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.076865+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.078993+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:26.085318+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.088807+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.090818+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:26.098396+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.100410+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:58:26.105897+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:26.113385+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:58:26.118412+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-30T16:58:49.095616+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-06-30T16:58:49.096268+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:49.629736+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":403,"duration_ms":3.28,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d0e0a981-29db-46d0-acca-19e7c4981319","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:49.637409+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:49.637409+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:50.095725+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":403,"duration_ms":1.43,"client_ip":"127.0.0.1","event":"request_completed","request_id":"775f6a57-d45a-4acd-80c9-b1193e93fcfc","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:50.100335+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:50.100335+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:50.673418+00:00"}
+{"method":"GET","path":"/api/v1/admin/stats","status_code":403,"duration_ms":1.18,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a0d3ab26-3344-42d3-827e-3e611c53727c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:50.678680+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/stats \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:50.678680+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:51.260254+00:00"}
+{"method":"GET","path":"/api/v1/admin/plans","status_code":403,"duration_ms":1.7,"client_ip":"127.0.0.1","event":"request_completed","request_id":"368fad10-bb66-4944-8cee-87f5dfbefaba","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:51.269391+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/plans \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:51.270931+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:51.758135+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan","status_code":403,"duration_ms":5.25,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f5741aaa-5720-4c14-8faf-f6d6b74948d7","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:51.772569+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:51.776604+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:52.284768+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":200,"duration_ms":8.82,"client_ip":"127.0.0.1","event":"request_completed","request_id":"2f8a79c7-57a8-49eb-bad3-44a2ab36a04c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:52.300575+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:52.303038+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:52.764400+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":200,"duration_ms":1.61,"client_ip":"127.0.0.1","event":"request_completed","request_id":"38bee025-dfe1-40e0-8f14-dcec4faa2a12","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:52.770287+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments?status=paid \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:52.770287+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:53.241174+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":200,"duration_ms":1.81,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b34a5386-6da4-4601-a843-1df1043605b0","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:53.248453+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments?search=TEST \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:53.250221+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:53.710356+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments/6a43f5cdd29db8497e474bf1","status_code":200,"duration_ms":1.51,"client_ip":"127.0.0.1","event":"request_completed","request_id":"7a0a4197-9136-4bb4-bd3a-cfe459080a17","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:53.718673+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments/6a43f5cdd29db8497e474bf1 \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:53.718673+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:54.180218+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments/0000000000000[PHONE_REDACTED]","status_code":404,"duration_ms":1.5,"client_ip":"127.0.0.1","event":"request_completed","request_id":"6fef56a4-7c15-4dce-b1a3-69367894376e","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:54.184740+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments/0000000000000[PHONE_REDACTED] \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:54.184740+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:54.646761+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments/invalid-id","status_code":404,"duration_ms":1.14,"client_ip":"127.0.0.1","event":"request_completed","request_id":"114027cc-cdf4-4010-be56-3a8f8bf4b6ab","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:54.653383+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments/invalid-id \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:54.655894+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:55.112782+00:00"}
+{"method":"POST","path":"/api/v1/admin/payments/6a43f5cfd29db8497e474bf7/activate","status_code":200,"duration_ms":2.02,"client_ip":"127.0.0.1","event":"request_completed","request_id":"15c4acdf-da85-409d-8616-c95c8b014d7b","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:55.118850+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/payments/6a43f5cfd29db8497e474bf7/activate \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:55.120858+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:55.575441+00:00"}
+{"method":"POST","path":"/api/v1/admin/payments/6a43f5cfd29db8497e474bfc/activate","status_code":400,"duration_ms":1.98,"client_ip":"127.0.0.1","event":"request_completed","request_id":"4fccc68e-c1e8-4533-a803-be39c657f86d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:55.581612+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/payments/6a43f5cfd29db8497e474bfc/activate \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:55.583548+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:56.035121+00:00"}
+{"method":"POST","path":"/api/v1/admin/payments/0000000000000[PHONE_REDACTED]/activate","status_code":404,"duration_ms":1.17,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d2a554af-3a46-44c8-85bf-6c08f568083a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:56.041693+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/payments/0000000000000[PHONE_REDACTED]/activate \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:56.044844+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:56.515829+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":200,"duration_ms":6.25,"client_ip":"127.0.0.1","event":"request_completed","request_id":"89b8edb6-4c5c-41bb-ba2e-e18aaac33cb3","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:57.078136+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:57.082500+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:57.619742+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":200,"duration_ms":1.82,"client_ip":"127.0.0.1","event":"request_completed","request_id":"6ca598d0-a414-43a7-bc31-4ceb0550a6d6","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:58.095566+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:58.098618+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:58.558711+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":200,"duration_ms":1.86,"client_ip":"127.0.0.1","event":"request_completed","request_id":"9ea2facb-f74f-4c06-aafc-39167d1e9015","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:58:59.032194+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:58:59.034128+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:58:59.508746+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a43f5d3d29db8497e474c08/extend","status_code":200,"duration_ms":3.81,"client_ip":"127.0.0.1","event":"request_completed","request_id":"41bb765d-9dc0-4cf2-b89c-13fbd3a8bd8c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:00.042996+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a43f5d3d29db8497e474c08/extend \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:00.045035+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:00.633982+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a43f5d4d29db8497e474c0a/extend","status_code":200,"duration_ms":1.58,"client_ip":"127.0.0.1","event":"request_completed","request_id":"cd7e6005-5ec6-46f7-a363-fe9bea0af2a9","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:01.154361+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a43f5d4d29db8497e474c0a/extend \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:01.156805+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:01.615085+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/0000000000000[PHONE_REDACTED]/extend","status_code":404,"duration_ms":1.1,"client_ip":"127.0.0.1","event":"request_completed","request_id":"4cc82d60-aaa0-4662-b445-c720903b8542","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:01.619140+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/0000000000000[PHONE_REDACTED]/extend \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:01.622977+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:02.080425+00:00"}
+{"method":"GET","path":"/api/v1/admin/stats","status_code":200,"duration_ms":1.42,"client_ip":"127.0.0.1","event":"request_completed","request_id":"73370618-add7-448d-b819-be78a3d72330","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:02.089365+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/stats \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:02.090876+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:02.554130+00:00"}
+{"method":"GET","path":"/api/v1/admin/plans","status_code":200,"duration_ms":1.92,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d540d975-f252-4507-ada1-4bbbd6fbada0","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:02.561050+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/plans \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:02.561050+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:03.020623+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a43f5d7d29db8497e474c11/change-plan","status_code":200,"duration_ms":2.8,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a7eb48e9-0a17-4c16-96a7-215ad46b2acf","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:03.487826+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a43f5d7d29db8497e474c11/change-plan \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:03.490101+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:03.948906+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a43f5d7d29db8497e474c15/change-plan","status_code":404,"duration_ms":2.18,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e228c572-efe4-4632-82c3-3bdced7bfd8c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:04.396399+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a43f5d7d29db8497e474c15/change-plan \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:04.398919+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:04.857918+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan","status_code":404,"duration_ms":2.12,"client_ip":"127.0.0.1","event":"request_completed","request_id":"114dfa78-da75-4e39-b919-fbddf7b9affb","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:04.863949+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:04.866481+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:05.331563+00:00"}
+{"method":"GET","path":"/api/v1/admin/llm-stats","status_code":200,"duration_ms":2.03,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e27b376b-53ac-47b4-b902-7a0da67fd876","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:05.337258+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/llm-stats \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:05.337258+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:05.829123+00:00"}
+{"method":"GET","path":"/api/v1/admin/llm-stats","status_code":200,"duration_ms":1.64,"client_ip":"127.0.0.1","event":"request_completed","request_id":"bdca2ea2-651d-4214-9622-6030928ad818","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:05.839452+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/llm-stats \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:05.844423+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:06.310046+00:00"}
+{"method":"GET","path":"/api/v1/admin/llm-stats","status_code":403,"duration_ms":1.03,"client_ip":"127.0.0.1","event":"request_completed","request_id":"be52b840-bfc5-4cae-a3af-deb2b2cc8039","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:06.315765+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/llm-stats \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:06.317296+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:06.322624+00:00"}
+{"method":"POST","path":"/api/v1/auth/register","status_code":201,"duration_ms":578.51,"client_ip":"127.0.0.1","event":"request_completed","request_id":"52357d17-9d90-40f7-8a72-e6decd2852d5","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:06.908477+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/register \"HTTP/1.1 201 Created\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:06.909490+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:06.915200+00:00"}
+{"method":"POST","path":"/api/v1/auth/register","status_code":409,"duration_ms":1.64,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b4cd7760-ee13-4a19-bec1-7bcd1b720c87","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:07.368928+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/register \"HTTP/1.1 409 Conflict\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:07.368928+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:07.375821+00:00"}
+{"method":"POST","path":"/api/v1/auth/register","status_code":422,"duration_ms":5.51,"client_ip":"127.0.0.1","event":"request_completed","request_id":"6850fe9e-6ec9-41f2-b7f6-90489cd0dab2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:07.388411+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/register \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:07.388916+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:07.394295+00:00"}
+{"method":"POST","path":"/api/v1/auth/login","status_code":200,"duration_ms":452.41,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5bf47731-b4e0-4884-97aa-21c5f126eb42","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:08.303030+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/login \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:08.303030+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:08.308683+00:00"}
+{"method":"POST","path":"/api/v1/auth/login","status_code":401,"duration_ms":464.65,"client_ip":"127.0.0.1","event":"request_completed","request_id":"63a0dfdb-c6a3-4e0e-a794-be9cb6350520","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:09.247133+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/login \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:09.247133+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:09.254641+00:00"}
+{"method":"POST","path":"/api/v1/auth/login","status_code":401,"duration_ms":1.78,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0da527f5-d760-487c-ab7f-f9496b404a1a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:09.261466+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/login \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:09.263766+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:09.267793+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":200,"duration_ms":1.13,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a09513c5-2f2a-4d2f-a245-4f05d538c39c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:09.725477+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:09.725477+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:09.767148+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":401,"duration_ms":0.71,"client_ip":"127.0.0.1","event":"request_completed","request_id":"92c8dbbd-76f6-4d9d-8cb8-289d6aa2613e","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:09.767148+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:09.767148+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:09.777608+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":401,"duration_ms":0.57,"client_ip":"127.0.0.1","event":"request_completed","request_id":"5e4fa86c-7bd0-4a49-940b-d6546c1d0973","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:09.777608+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:09.787979+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:09.787979+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":401,"duration_ms":0.79,"client_ip":"127.0.0.1","event":"request_completed","request_id":"67f345d9-6b97-444f-817c-772d864fb145","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:10.246890+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:10.253251+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:10.256535+00:00"}
+{"method":"POST","path":"/api/v1/auth/logout","status_code":200,"duration_ms":0.95,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e6b24dd8-041d-493c-aea2-70ddcc948b71","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:10.704596+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/logout \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:10.704596+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:10.714836+00:00"}
+{"method":"POST","path":"/api/v1/auth/logout","status_code":401,"duration_ms":0.54,"client_ip":"127.0.0.1","event":"request_completed","request_id":"bd45aa25-1543-43db-b4bb-6879bc5fec7c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:10.718558+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/logout \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:10.722852+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:10.726133+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":200,"duration_ms":1.14,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d7dfed43-60c0-4a7c-9f49-4e00396830bb","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:11.209129+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:11.209129+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:11.215411+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":401,"duration_ms":0.76,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8bf41bc2-3007-4097-a817-d4515b2bc483","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:11.223976+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:11.225524+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:11.229772+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":401,"duration_ms":0.57,"client_ip":"127.0.0.1","event":"request_completed","request_id":"ff767f05-7e28-4390-9be5-09f4d0940042","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:11.232454+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:11.232454+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:11.243090+00:00"}
+{"email_to":"[EMAIL_REDACTED]","email_subject":"Đặt lại mật khẩu - Toán Trực Quan AI","event":"email_disabled","request_id":"8e53266e-ba00-4403-a0ae-2245db822de3","logger":"toan_truc_quan.email","level":"info","timestamp":"2026-06-30T16:59:11.697706+00:00"}
+{"method":"POST","path":"/api/v1/auth/forgot-password","status_code":200,"duration_ms":2.25,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8e53266e-ba00-4403-a0ae-2245db822de3","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:11.697706+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/forgot-password \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:11.704790+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:11.711631+00:00"}
+{"method":"POST","path":"/api/v1/auth/forgot-password","status_code":200,"duration_ms":1.77,"client_ip":"127.0.0.1","event":"request_completed","request_id":"24ae7d15-0624-4f40-b456-e5bac03146c5","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:11.718560+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/forgot-password \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:11.721263+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:11.725759+00:00"}
+{"method":"POST","path":"/api/v1/auth/reset-password","status_code":200,"duration_ms":454.15,"client_ip":"127.0.0.1","event":"request_completed","request_id":"12452834-fd9b-4b5d-8507-d3f93fd1e61c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:12.631148+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/reset-password \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:12.635263+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:12.636008+00:00"}
+{"method":"POST","path":"/api/v1/auth/reset-password","status_code":400,"duration_ms":2.38,"client_ip":"127.0.0.1","event":"request_completed","request_id":"06bde8fc-cb1a-4618-93f4-4817b26afa2f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:12.654340+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/reset-password \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:12.656116+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:12.660628+00:00"}
+{"method":"POST","path":"/api/v1/auth/reset-password","status_code":400,"duration_ms":2.31,"client_ip":"127.0.0.1","event":"request_completed","request_id":"267abfa6-7a11-4ee7-a510-b1eac9f3c233","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:13.123153+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/reset-password \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:13.125485+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:13.130308+00:00"}
+{"email_to":"[EMAIL_REDACTED]","email_subject":"Xác thực email - Toán Trực Quan AI","event":"email_disabled","request_id":"78d7b76c-f5b0-41e4-aa72-e896f0b9cd97","logger":"toan_truc_quan.email","level":"info","timestamp":"2026-06-30T16:59:13.586694+00:00"}
+{"method":"POST","path":"/api/v1/auth/verify-email","status_code":200,"duration_ms":2.16,"client_ip":"127.0.0.1","event":"request_completed","request_id":"78d7b76c-f5b0-41e4-aa72-e896f0b9cd97","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:13.586694+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/verify-email \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:13.586694+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:13.593576+00:00"}
+{"method":"POST","path":"/api/v1/auth/verify-email","status_code":200,"duration_ms":1.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"fe295e39-4abe-4fa6-837f-0b07dce44a69","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.050382+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/verify-email \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.051939+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.054711+00:00"}
+{"method":"GET","path":"/api/v1/auth/verify-email/confirm","status_code":200,"duration_ms":0.98,"client_ip":"127.0.0.1","event":"request_completed","request_id":"cf33f64c-57ca-4230-8007-ccd5629e90ea","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.510207+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/verify-email/confirm?token=vmka1caFszkB0QzjOvC1AqsgoWzETdjpiSl0KG00G8I \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.512027+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.517120+00:00"}
+{"method":"GET","path":"/api/v1/auth/verify-email/confirm","status_code":400,"duration_ms":0.53,"client_ip":"127.0.0.1","event":"request_completed","request_id":"46129ad8-3afd-4afe-b324-b79bd3e1ce49","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.519191+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/verify-email/confirm?token=invalidtoken \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.524294+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.527546+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":503,"duration_ms":1.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"6b150bcf-d474-4ea6-90b8-e87f6999e76f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.535037+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 503 Service Unavailable\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.537989+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.540105+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":401,"duration_ms":2.03,"client_ip":"127.0.0.1","event":"request_completed","request_id":"29a56685-d928-401d-8aae-c6f82cce8d04","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.551931+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.551931+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.558856+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":503,"duration_ms":2.33,"client_ip":"127.0.0.1","event":"request_completed","request_id":"fe5ee444-5201-4b3a-a219-d56a0f412854","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.561057+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 503 Service Unavailable\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.561057+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.574084+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":200,"duration_ms":2.76,"client_ip":"127.0.0.1","event":"request_completed","request_id":"dd7f0ea7-213b-4967-8b36-620594c969c2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.582038+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.584159+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.584695+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":0.62,"client_ip":"127.0.0.1","event":"request_completed","request_id":"180843ff-bf70-4ea9-9672-6a33774b843c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.592500+00:00"}
+{"event":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:14.592500+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.604551+00:00"}
+{"daily_cost":2.0,"budget":1.0,"event":"llm_budget_exceeded","logger":"toan_truc_quan.budget_alert","level":"warning","timestamp":"2026-06-30T16:59:14.607500+00:00"}
+{"admin_count":2,"total_admins":2,"event":"llm_budget_alert_dispatched","logger":"toan_truc_quan.budget_alert","level":"info","timestamp":"2026-06-30T16:59:14.613496+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.623784+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.634326+00:00"}
+{"daily_cost":2.0,"budget":1.0,"event":"llm_budget_exceeded","logger":"toan_truc_quan.budget_alert","level":"warning","timestamp":"2026-06-30T16:59:14.639551+00:00"}
+{"event":"llm_budget_no_admins_to_alert","logger":"toan_truc_quan.budget_alert","level":"info","timestamp":"2026-06-30T16:59:14.640748+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.727811+00:00"}
+{"curriculum_topic_id":"G1-GEO-02","grade":1,"event":"scope_redirected","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.729486+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.739690+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.749895+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:59:14.756314+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.763391+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:59:14.769196+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.774274+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.781317+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.781317+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.788742+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.794051+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.794051+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.801767+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.801767+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.801767+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.812167+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.812167+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-06-30T16:59:14.812167+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.827823+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-06-30T16:59:14.827823+00:00"}
+{"foo":"bar","event":"hello_structlog","logger":"toan_truc_quan.test","level":"info","timestamp":"2026-06-30T16:59:14.844815+00:00"}
+{"event":"with_request_id","request_id":"req-test-123","logger":"toan_truc_quan.test","level":"info","timestamp":"2026-06-30T16:59:14.849605+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:14.853772+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":0.57,"client_ip":"127.0.0.1","event":"request_completed","request_id":"9e10d899-c3f0-4d90-8e06-5a3965640cee","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:14.858357+00:00"}
+{"event":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:15.712093+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.721838+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":0.88,"client_ip":"127.0.0.1","event":"request_completed","request_id":"client-req-1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:15.737126+00:00"}
+{"event":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:15.743927+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.754036+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":2.79,"client_ip":"127.0.0.1","event":"request_completed","request_id":"safe-request-id","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:15.775039+00:00"}
+{"event":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:15.779106+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.793169+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":401,"duration_ms":0.98,"client_ip":"127.0.0.1","event":"request_completed","request_id":"6d3a7cf0-2542-4f55-b6e1-eba78745d405","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:15.811152+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:15.821197+00:00"}
+{"event":"contact me at [EMAIL_REDACTED] or [PHONE_REDACTED]","logger":"toan_truc_quan.test","level":"info","timestamp":"2026-06-30T16:59:15.835933+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.943086+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.952277+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.960157+00:00"}
+{"payment_code":"TTQ507f1f1782838755095b0a","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:15.964517+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.976759+00:00"}
+{"payment_code":"TTQ507f1f178283875543ec3c","plan_name":"plus","billing":"yearly","amount_vnd":399000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:15.984565+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:15.994325+00:00"}
+{"payment_code":"TTQ507f1f1782838756ef7f03","plan_name":"premium","billing":"monthly","amount_vnd":99000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.001242+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.005695+00:00"}
+{"payment_code":"TTQ507f1f178283875624268f","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.012343+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.022891+00:00"}
+{"payment_code":"TTQ507f1f1782838756884ace","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.028628+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.041961+00:00"}
+{"payment_code":"TTQ507f1f1700000000","plan_name":"plus","event":"payment_duplicate_skipped","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.048046+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.061095+00:00"}
+{"payment_code":"TTQ507f1f1782838756f4600f","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.070410+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.081431+00:00"}
+{"payment_code":"TTQ507f1f1782838756a4485a","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.086699+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.096373+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.097459+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.107825+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.117869+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","plan_id":"507f1f77bcf86cd799439012","gateway_txn_id":"TXN-123","activation_succeeded":true,"event":"payment_marked_paid","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.117869+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.135118+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","plan_id":"507f1f77bcf86cd799439012","gateway_txn_id":"TXN-X","activation_succeeded":true,"event":"payment_marked_paid","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.142621+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.157473+00:00"}
+{"payment_code":"TTQ507f1f1700000000","current_status":"paid","event":"payment_verify_already_settled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.163105+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.182247+00:00"}
+{"payment_code":"TTQ507f1f1700000000","expected":49000,"received":100,"event":"payment_verify_amount_mismatch","logger":"toan_truc_quan.payment_service","level":"warning","timestamp":"2026-06-30T16:59:16.186727+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.192873+00:00"}
+{"payment_code":"TTQ507f1f1700000000","current_status":"expired","event":"payment_verify_already_settled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.200386+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.203146+00:00"}
+{"payment_code":"TTQ_NOPE","event":"payment_verify_unknown_code","logger":"toan_truc_quan.payment_service","level":"warning","timestamp":"2026-06-30T16:59:16.212491+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.213525+00:00"}
+{"count":3,"cutoff":"2026-06-30T16:44:16.213525+00:00","event":"payments_expired_sweep","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.213525+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.228687+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.245007+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.257576+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.265696+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.277514+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","event":"payment_cancelled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-06-30T16:59:16.279889+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.288978+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.297798+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.307146+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.390982+00:00"}
+{"plan_name":"free","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.392953+00:00"}
+{"plan_name":"plus","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.399236+00:00"}
+{"plan_name":"premium","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.401367+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.409974+00:00"}
+{"plan_name":"free","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.414094+00:00"}
+{"plan_name":"plus","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.418127+00:00"}
+{"plan_name":"premium","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.423666+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.443190+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.454889+00:00"}
+{"plan_name":"free","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.465751+00:00"}
+{"plan_name":"plus","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.469723+00:00"}
+{"plan_name":"premium","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-06-30T16:59:16.475062+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.488584+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.500305+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.511449+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.521507+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.533596+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.544613+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.562148+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.612826+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:16.639676+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:20.693081+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:20.705932+00:00"}
+{"request_path":"/api/v1/speech/tts","provider":"edge_tts","voice":"vi-VN-HoaiMyNeural","media_type":"audio/mpeg","event":"tts_response_ready","request_id":"feb3b775-2810-41a1-9b45-ddc5f35866c1","logger":"toan_truc_quan.api.speech","level":"info","timestamp":"2026-06-30T16:59:21.163189+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":156.7,"client_ip":"127.0.0.1","event":"request_completed","request_id":"feb3b775-2810-41a1-9b45-ddc5f35866c1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:21.317682+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:21.325493+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:21.330343+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.08,"client_ip":"127.0.0.1","event":"request_completed","request_id":"1983eecd-7219-423a-a495-dd36df8e38c8","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:21.797262+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:21.805884+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:21.810727+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":5.44,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e59f6591-56c5-45c5-a1eb-2e289a33295c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:22.269432+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:22.275424+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:22.281460+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":2.51,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f557a941-2c4b-4a4c-9138-f2e2ace9e61f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:22.737532+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:22.742803+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:22.751533+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:22.757654+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:22.768472+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":true,"rate":"-15%","media_type":"audio/mpeg","event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-06-30T16:59:22.795066+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:22.804887+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":false,"rate":"0%","error_message":"boom","event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-06-30T16:59:22.805394+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:23.262627+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":3.17,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d531c5c3-2242-46a5-9712-cb27e24a2ec5","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:23.269916+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:23.277338+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:23.756740+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":2.86,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8f1d1e97-2b12-4dbb-8c05-5a31421de463","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:23.763443+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:23.772870+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:24.268183+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":200,"duration_ms":4.11,"client_ip":"127.0.0.1","event":"request_completed","request_id":"af7ded00-951c-4731-92fb-069e63ff3d9f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:24.279352+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:24.286308+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:24.746508+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":2.27,"client_ip":"127.0.0.1","event":"request_completed","request_id":"117332c6-26ec-42e4-885c-f05691fa2ba8","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:24.760499+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:24.768612+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.219288+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":404,"duration_ms":3.25,"client_ip":"127.0.0.1","event":"request_completed","request_id":"de6cfe35-07ca-4f3b-afa0-01451d5ead20","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:25.228167+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:25.232707+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.236036+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":401,"duration_ms":1.37,"client_ip":"127.0.0.1","event":"request_completed","request_id":"13af3a1c-a1ef-4b90-aa75-4dc8ee8be329","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:25.240818+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:25.247458+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.704880+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":200,"duration_ms":3.04,"client_ip":"127.0.0.1","event":"request_completed","request_id":"1aa3d8af-a9e1-4d95-b82d-60946f0ad2a1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:25.717141+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:25.718805+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.727918+00:00"}
+{"count":1,"event":"subscriptions_expired_sweep","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-30T16:59:25.727918+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.741348+00:00"}
+{"count":5,"event":"subscriptions_expired_sweep","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-30T16:59:25.741348+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.749389+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.760472+00:00"}
+{"email_to":"[EMAIL_REDACTED]","event":"subscription_reminder_sent","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-30T16:59:25.760472+00:00"}
+{"count":1,"event":"subscription_reminders_dispatched","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-06-30T16:59:25.760472+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.773194+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.781530+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.788207+00:00"}
+{"email_to":"[EMAIL_REDACTED]","event":"subscription_reminder_send_exception","logger":"toan_truc_quan.subscription_service","level":"error","timestamp":"2026-06-30T16:59:25.788207+00:00","exception":"Traceback (most recent call last):\n  File \"D:\\Download\\Môn học\\AI in Action\\Draft2\\C2-App-103\\backend\\src\\services\\subscription_service.py\", line 152, in send_expiry_reminder_emails\n    await send_email(email, subject, html)\n  File \"D:\\Python\\Lib\\unittest\\mock.py\", line 2269, in _execute_mock_call\n    raise effect\nRuntimeError: resend 503"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.803194+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.811833+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.819429+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.830797+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.841959+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.841959+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.857683+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.865335+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.875633+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.883053+00:00"}
+{"user_id":"6a43f5edd29db8497e474c71","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-30T16:59:25.885515+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.897528+00:00"}
+{"user_id":"6a43f5edd29db8497e474c72","action":"chat_turns","new_count":6,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-30T16:59:25.899385+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.909994+00:00"}
+{"user_id":"6a43f5edd29db8497e474c73","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-30T16:59:25.912722+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.923056+00:00"}
+{"user_id":"6a43f5edd29db8497e474c74","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-06-30T16:59:25.923056+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.940899+00:00"}
+{"user_id":"6a43f5edd29db8497e474c75","event":"record_usage_user_not_found","logger":"toan_truc_quan.usage_service","level":"warning","timestamp":"2026-06-30T16:59:25.943591+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.943591+00:00"}
+{"user_id":"invalid_id","event":"record_usage_invalid_id","logger":"toan_truc_quan.usage_service","level":"warning","timestamp":"2026-06-30T16:59:25.953928+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.958337+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.964677+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:25.980314+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:26.444060+00:00"}
+{"method":"GET","path":"/api/v1/user/usage","status_code":200,"duration_ms":3.16,"client_ip":"127.0.0.1","event":"request_completed","request_id":"36b9d2c1-2163-4e82-b0e9-e6b58a7b72cb","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:26.453169+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:26.463347+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.024954+00:00"}
+{"method":"GET","path":"/api/v1/user/usage","status_code":200,"duration_ms":2.17,"client_ip":"127.0.0.1","event":"request_completed","request_id":"bc25c9e9-6d93-4171-a342-fcfafb883628","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:27.488480+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:27.495162+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.500641+00:00"}
+{"method":"GET","path":"/api/v1/user/usage","status_code":401,"duration_ms":0.89,"client_ip":"127.0.0.1","event":"request_completed","request_id":"50252fca-bc7e-4e1e-a01a-af1cbb69be90","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-06-30T16:59:27.503465+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-06-30T16:59:27.510525+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.528462+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.542032+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.554494+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.566096+00:00"}
+{"step":1,"event":"agent_loop_llm_failed","logger":"toan_truc_quan.agents.agent_loop","level":"error","timestamp":"2026-06-30T16:59:27.570040+00:00","exception":"Traceback (most recent call last):\n  File \"D:\\Download\\Môn học\\AI in Action\\Draft2\\C2-App-103\\backend\\src\\agents\\agent_loop.py\", line 101, in run\n    llm_response = await self.llm.generate(messages=messages, tools=tools)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Download\\Môn học\\AI in Action\\Draft2\\C2-App-103\\backend\\tests\\agents\\test_agent_loop.py\", line 228, in generate\n    raise RuntimeError(\"llm down\")\nRuntimeError: llm down"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.791069+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.797286+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.809688+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.831715+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.836824+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.836824+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.851922+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.858539+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.858539+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.868185+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.873411+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.880906+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.887293+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.902039+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.902039+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-06-30T16:59:27.915131+00:00"}

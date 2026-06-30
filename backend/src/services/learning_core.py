@@ -331,6 +331,19 @@ def detect_curriculum_topic(message: str, grade: int) -> str | None:
 
 logger = get_logger("toan_truc_quan.learning_core")
 RECENT_SESSION_WINDOW = 5
+FOLLOW_UP_EXAMPLE_LABELS: dict[Topic, dict[str, int | str]] = {
+    "multiplication": {
+        "item_name": "cái kẹo",
+        "group_name": "chiếc đĩa",
+    },
+    "division": {
+        "item_name": "quả táo",
+        "group_name": "bạn",
+    },
+    "fraction_basic": {
+        "whole_name": "chiếc pizza",
+    },
+}
 
 
 class LearningCoreService:
@@ -416,7 +429,10 @@ class LearningCoreService:
         for turn in recent_turns:
             if turn.get("detected_topic") or turn.get("selected_topic"):
                 return turn
-        return recent_turns[0] if recent_turns else None
+        for turn in recent_turns:
+            if turn.get("visual_snapshot"):
+                return turn
+        return None
 
     async def _build_guardrail_result(
         self,
@@ -495,21 +511,19 @@ class LearningCoreService:
             return {
                 "groups": old_groups + 1 if old_groups < 6 else 2,
                 "items_per_group": old_items - 1 if old_items > 2 else 5,
-                "item_name": "cÃ¡i káº¹o",
-                "group_name": "chiáº¿c Ä‘Ä©a",
+                **FOLLOW_UP_EXAMPLE_LABELS["multiplication"],
             }
         if topic == "division":
             return {
                 "total_items": 16,
                 "groups": 4,
-                "item_name": "quáº£ tÃ¡o",
-                "group_name": "báº¡n",
+                **FOLLOW_UP_EXAMPLE_LABELS["division"],
             }
         if topic == "fraction_basic":
             return {
                 "numerator": 3,
                 "denominator": 8,
-                "whole_name": "chiáº¿c pizza",
+                **FOLLOW_UP_EXAMPLE_LABELS["fraction_basic"],
             }
         if topic == "perimeter_area_basic":
             return {
@@ -708,49 +722,6 @@ class LearningCoreService:
             request.message,
             current_selected_topic,
         )
-
-        # 3. Kế thừa & Thay đổi bộ số khi học sinh yêu cầu "Ví dụ khác"
-        if False and prev_turn and any(
-            kw in request.message.lower()
-            for kw in ["ví dụ khác", "vi du khac", "ví dụ mới", "vi du moi"]
-        ):
-            if not context.topic and prev_turn.get("detected_topic"):
-                context.topic = prev_turn.get("detected_topic")
-
-            old_visual = prev_turn.get("visual_snapshot") or {}
-            old_data = old_visual.get("visual_data") or {}
-
-            # Nếu AI hoặc Detector chưa tự tạo bộ số mới, ta chủ động gán bộ số mới khác số cũ
-            if not context.tool_args or len(context.tool_args) <= 1:
-                if context.topic == "multiplication":
-                    old_g = int(old_data.get("primary_count") or 3)
-                    old_i = int(old_data.get("secondary_count") or 4)
-                    context.tool_args = {
-                        "groups": old_g + 1 if old_g < 6 else 2,
-                        "items_per_group": old_i - 1 if old_i > 2 else 5,
-                        "item_name": "cái kẹo",
-                        "group_name": "chiếc đĩa",
-                    }
-                elif context.topic == "division":
-                    context.tool_args = {
-                        "total_items": 16,
-                        "groups": 4,
-                        "item_name": "quả táo",
-                        "group_name": "bạn",
-                    }
-                elif context.topic == "fraction_basic":
-                    context.tool_args = {
-                        "numerator": 3,
-                        "denominator": 8,
-                        "whole_name": "chiếc pizza",
-                    }
-                elif context.topic == "perimeter_area_basic":
-                    context.tool_args = {
-                        "length": 6,
-                        "width": 4,
-                        "unit": "cm",
-                        "mode": "area_grid",
-                    }
 
         context = self._apply_follow_up_context(
             request=request,
@@ -1033,47 +1004,6 @@ class LearningCoreService:
             return
 
         context = detect_context(request.message, current_selected_topic)
-
-        if False and prev_turn and any(
-            kw in request.message.lower()
-            for kw in ["ví dụ khác", "vi du khac", "ví dụ mới", "vi du moi"]
-        ):
-            if not context.topic and prev_turn.get("detected_topic"):
-                context.topic = prev_turn.get("detected_topic")
-
-            old_visual = prev_turn.get("visual_snapshot") or {}
-            old_data = old_visual.get("visual_data") or {}
-
-            if not context.tool_args or len(context.tool_args) <= 1:
-                if context.topic == "multiplication":
-                    old_g = int(old_data.get("primary_count") or 3)
-                    old_i = int(old_data.get("secondary_count") or 4)
-                    context.tool_args = {
-                        "groups": old_g + 1 if old_g < 6 else 2,
-                        "items_per_group": old_i - 1 if old_i > 2 else 5,
-                        "item_name": "cái kẹo",
-                        "group_name": "chiếc đĩa",
-                    }
-                elif context.topic == "division":
-                    context.tool_args = {
-                        "total_items": 16,
-                        "groups": 4,
-                        "item_name": "quả táo",
-                        "group_name": "bạn",
-                    }
-                elif context.topic == "fraction_basic":
-                    context.tool_args = {
-                        "numerator": 3,
-                        "denominator": 8,
-                        "whole_name": "chiếc pizza",
-                    }
-                elif context.topic == "perimeter_area_basic":
-                    context.tool_args = {
-                        "length": 6,
-                        "width": 4,
-                        "unit": "cm",
-                        "mode": "area_grid",
-                    }
 
         context = self._apply_follow_up_context(
             request=request,

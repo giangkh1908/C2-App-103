@@ -18,6 +18,7 @@ async def test_learning_core_blocks_guardrail_before_llm_call() -> None:
             tool_registry=SimpleNamespace(),
         )
 
+    service.session_repository.get_recent_turns = AsyncMock(return_value=[])
     service.session_repository.get_latest_turn = AsyncMock(return_value=None)
     service.session_repository.save = AsyncMock()
     service.memory_repository.append_turn = AsyncMock()
@@ -48,6 +49,7 @@ async def test_learning_core_stream_blocks_guardrail_before_llm_call() -> None:
             tool_registry=SimpleNamespace(),
         )
 
+    service.session_repository.get_recent_turns = AsyncMock(return_value=[])
     service.session_repository.get_latest_turn = AsyncMock(return_value=None)
     service.session_repository.save = AsyncMock()
     service.memory_repository.append_turn = AsyncMock()
@@ -115,7 +117,7 @@ async def test_learning_core_follow_up_example_reuses_previous_topic_and_numbers
                         "secondary_count": 4,
                     }
                 },
-            }
+            },
         ]
     )
     service.session_repository.get_latest_turn = AsyncMock(return_value=None)
@@ -140,8 +142,8 @@ async def test_learning_core_follow_up_example_reuses_previous_topic_and_numbers
         {
             "groups": 5,
             "items_per_group": 3,
-            "item_name": "cÃ¡i káº¹o",
-            "group_name": "chiáº¿c Ä‘Ä©a",
+            "item_name": "cái kẹo",
+            "group_name": "chiếc đĩa",
         },
     )
 
@@ -212,6 +214,63 @@ async def test_learning_core_short_example_follow_ups_stay_on_multiplication(
     assert result.topic == "multiplication"
     tool_registry.call.assert_awaited_once()
     assert tool_registry.call.await_args.args[0] == "candy_multiplication"
+
+
+def test_pick_continuity_turn_prefers_topic_then_visual_snapshot() -> None:
+    with patch("src.services.learning_core.MemoryRepository") as memory_repository_cls:
+        memory_repository_cls.return_value.append_turn = AsyncMock()
+        service = LearningCoreService(
+            tutor_agent=SimpleNamespace(),
+            tool_registry=SimpleNamespace(),
+        )
+
+    assert (
+        service._pick_continuity_turn(
+            [
+                {
+                    "detected_topic": None,
+                    "selected_topic": None,
+                    "visual_snapshot": None,
+                },
+                {
+                    "detected_topic": "multiplication",
+                    "selected_topic": None,
+                    "visual_snapshot": None,
+                },
+            ]
+        )["detected_topic"]
+        == "multiplication"
+    )
+    assert service._pick_continuity_turn(
+        [
+            {
+                "detected_topic": None,
+                "selected_topic": None,
+                "visual_snapshot": None,
+            },
+            {
+                "detected_topic": None,
+                "selected_topic": None,
+                "visual_snapshot": {"visual_data": {"primary_count": 4}},
+            },
+        ]
+    ) == {
+        "detected_topic": None,
+        "selected_topic": None,
+        "visual_snapshot": {"visual_data": {"primary_count": 4}},
+    }
+    assert (
+        service._pick_continuity_turn(
+            [
+                {
+                    "detected_topic": None,
+                    "selected_topic": None,
+                    "visual_snapshot": None,
+                }
+            ]
+        )
+        is None
+    )
 
 
 @pytest.mark.asyncio

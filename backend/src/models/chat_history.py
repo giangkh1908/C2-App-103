@@ -30,8 +30,6 @@ class ChatMessage(BaseModel):
     )
     content: str = Field(..., description="Nội dung tin nhắn.")
     created_at: datetime | None = Field(default=None, description="Thời điểm tin nhắn được tạo.")
-
-
     detected_topic: Topic | None = Field(default=None)
     response_mode: ResponseMode | None = Field(default=None)
     follow_up_suggestions: list[str] = Field(default_factory=list)

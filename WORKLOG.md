@@ -240,7 +240,10 @@
 | 5 | Test conftest + fixtures | Bảo | ✅ | `backend/tests/conftest.py`, `tests/fixtures/` |
 | 6 | Frontend tests (vitest, 6 files) | Bảo | 🔶 | `frontend/src/__tests__/` — 6 files, coverage còn thấp |
 | 7 | Smoke test (tự động) | Giang | ⬜ | Chưa có |
-| 9 | Eval pipeline | Miền + Giang | ✅ | `backend/eval/scripts/run_eval.py`, `backend/eval/datasets/` |
+| 9 | Eval pipeline (4 datasets) | Miền + Giang | ✅ | `backend/eval/scripts/run_eval.py`, `backend/eval/datasets/multiplication.json`, `fraction_basic.json`, `division.json`, `perimeter_area.json` |
+| 10 | Eval baseline comparison | Giang | ✅ | `backend/eval/scripts/compare_baseline.py` — absolute accuracy threshold (default 90%), relative latency/TTFT check |
+| 11 | Eval CI/CD workflow | Giang | ✅ | `.github/workflows/eval.yml` — manual trigger, offline eval, upload artifacts, regression check |
+| 12 | Eval baselines (initial results) | Giang | ✅ | `backend/eval/baselines/*.json` — multiplication 100%, division 100%, fraction_basic 90%, perimeter_area 100% |
 
 ---
 
@@ -284,7 +287,7 @@
 | 6 | Error state audit — loading/error/retry | P2 | Miền | ⬜ | Kiểm tra trạng thái lỗi trên tất cả pages |
 | 7 | Mobile audit — responsive tablet/phone | P2 | Miền | ⬜ | Test responsive trên màn hình nhỏ |
 | 8 | Quota enforcement UX — hiển thị hết quota | P2 | Giang | ⬜ | Backend có 429, frontend cần UX thân thiện |
-| 9 | Eval CI/CD pipeline (Wave 3) — GitHub Actions eval + dataset mở rộng | P2 | Giang | ⬜ | Chờ roadmap |
+| 9 | Eval CI/CD pipeline (Wave 3) — GitHub Actions eval + dataset mở rộng | P2 | Giang | ✅ | `.github/workflows/eval.yml`, `backend/eval/scripts/compare_baseline.py`, `backend/eval/datasets/division.json`, `perimeter_area.json` |
 
 ---
 
@@ -292,10 +295,10 @@
 
 | Thành viên | Vai trò | Tổng features | ✅ Done | ⬜ Remaining | 🔶 Partial | Trọng tâm tiếp theo |
 |------------|---------|--------------|---------|-------------|------------|-------------------|
-| **Giang** | FE-BE + DevOps | ~100 | ~98 | 2 | 0 | Auth, Payment, Admin, Landing, Deploy, Pricing, LLMOps, Eval, Prompt versioning |
+| **Giang** | FE-BE + DevOps | ~104 | ~102 | 1 | 1 | Auth, Payment, Admin, Landing, Deploy, Pricing, LLMOps, Eval CI/CD |
 | **Bảo** | FE-BE | ~68 | ~66 | 1 | 1 | Learning Core, Practice (/learn), Visual/Sim, TTS/STT |
 | **Miền** | FE-BE | ~50 | ~42 | 6 | 2 | AgentLoop, Tool, Chat UI, Memory, Eval/Metrics, FE tests |
-| **Tổng cộng** | | ~218 | ~206 | 9 | 3 | |
+| **Tổng cộng** | | ~222 | ~210 | 8 | 3 | |
 
 ---
 

@@ -78,9 +78,19 @@ LEVEL_INSTRUCTIONS: dict[TutorLevel, str] = {
 }
 
 
-def build_tutor_system_prompt(level: TutorLevel = "L3") -> str:
-    level_instruction = LEVEL_INSTRUCTIONS.get(level, LEVEL_INSTRUCTIONS["L3"])
+def build_tutor_system_prompt(level: TutorLevel = "L3", prompt_version: str | None = None) -> str:
+    """Build the system prompt for the tutor agent.
 
+    If *prompt_version* is provided, delegates to PromptRegistry for
+    version-controlled prompt content.  Otherwise uses the hardcoded
+    constants below (backward-compatible default).
+    """
+    if prompt_version:
+        from src.llm.prompt_registry import get_prompt_registry
+
+        return get_prompt_registry().build_system_prompt("tutor_system", prompt_version, level)
+
+    level_instruction = LEVEL_INSTRUCTIONS.get(level, LEVEL_INSTRUCTIONS["L3"])
     return "\n\n".join(
         [
             BASE_TUTOR_SYSTEM_PROMPT,

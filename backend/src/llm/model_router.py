@@ -15,6 +15,7 @@ from typing import Any
 from src.core.config import settings
 from src.core.logging import get_logger
 from src.core.metrics import record_fallback
+from src.services.llm_audit import AuditHook
 
 from .base import BaseLLMClient, LLMMessage, LLMResponse, LLMStreamUsage, LLMToolCall
 from .openrouter_client import OpenRouterClient
@@ -39,7 +40,7 @@ class ModelRouter(BaseLLMClient):
     single-model client (no fallback).
     """
 
-    def __init__(self) -> None:
+    def __init__(self, audit_hook: AuditHook | None = None) -> None:
         self._client = OpenRouterClient(
             api_key=settings.openrouter_api_key,
             model=settings.openrouter_model,
@@ -48,6 +49,7 @@ class ModelRouter(BaseLLMClient):
             app_name=settings.openrouter_app_name,
             temperature=settings.openrouter_temperature,
             max_tokens=settings.openrouter_max_tokens,
+            audit_hook=audit_hook,
         )
 
     # ── BaseLLMClient interface ──────────────────────────────────────────

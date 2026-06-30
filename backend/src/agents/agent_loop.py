@@ -60,7 +60,10 @@ class AgentLoop:
                 history_messages.append(LLMMessage(role=msg["role"], content=msg["content"]))
 
         messages: list[LLMMessage] = [
-            LLMMessage(role="system", content=build_tutor_system_prompt(config.level)),
+            LLMMessage(
+                role="system",
+                content=build_tutor_system_prompt(config.level, config.prompt_version),
+            ),
             *history_messages,
             LLMMessage(role="user", content=user_message),
         ]
@@ -72,8 +75,7 @@ class AgentLoop:
         steps: list[AgentStep] = []
         last_observation: ToolObservation | None = None
         last_tool_name: str | None = None
-        total_prompt_tokens: int = 0
-        total_completion_tokens: int = 0
+        total_usage: dict[str, Any] = {}
 
         # Langfuse is optional: if unavailable, trace remains None and we
         # skip all observation calls.
@@ -98,9 +100,19 @@ class AgentLoop:
                 )
                 llm_response = await self.llm.generate(messages=messages, tools=tools)
                 if llm_response.raw:
-                    usage = llm_response.raw.get("usage") or {}
-                    total_prompt_tokens += int(usage.get("prompt_tokens", 0) or 0)
-                    total_completion_tokens += int(usage.get("completion_tokens", 0) or 0)
+                    usage_raw = llm_response.raw.get("usage") or {}
+                    total_usage["prompt_tokens"] = total_usage.get("prompt_tokens", 0) + int(
+                        usage_raw.get("prompt_tokens", 0) or 0
+                    )
+                    total_usage["completion_tokens"] = total_usage.get(
+                        "completion_tokens", 0
+                    ) + int(usage_raw.get("completion_tokens", 0) or 0)
+                    total_usage["total_tokens"] = total_usage.get("total_tokens", 0) + int(
+                        usage_raw.get("total_tokens", 0) or 0
+                    )
+                    total_usage["cost"] = total_usage.get("cost", 0.0) + float(
+                        usage_raw.get("cost", 0) or 0
+                    )
                 if gen is not None:
                     try:
                         model = llm_response.raw.get("model") if llm_response.raw else None
@@ -235,10 +247,7 @@ class AgentLoop:
                 steps=steps,
                 tool_used=last_tool_name,
                 visual_data=visual_data,
-                usage={
-                    "prompt_tokens": total_prompt_tokens,
-                    "completion_tokens": total_completion_tokens,
-                },
+                usage=dict(total_usage),
             )
 
         # --------------------------------------------------------------------
@@ -253,10 +262,7 @@ class AgentLoop:
         return AgentResponse(
             answer="Mình đã thử xử lý bài toán nhưng cần thêm thông tin để giải thích rõ hơn.",
             steps=steps,
-            usage={
-                "prompt_tokens": total_prompt_tokens,
-                "completion_tokens": total_completion_tokens,
-            },
+            usage=dict(total_usage),
         )
 
     async def run_stream(
@@ -280,7 +286,10 @@ class AgentLoop:
                 history_messages.append(LLMMessage(role=msg["role"], content=msg["content"]))
 
         messages: list[LLMMessage] = [
-            LLMMessage(role="system", content=build_tutor_system_prompt(config.level)),
+            LLMMessage(
+                role="system",
+                content=build_tutor_system_prompt(config.level, config.prompt_version),
+            ),
             *history_messages,
             LLMMessage(role="user", content=user_message),
         ]
@@ -292,8 +301,7 @@ class AgentLoop:
         steps: list[AgentStep] = []
         last_observation: ToolObservation | None = None
         last_tool_name: str | None = None
-        total_prompt_tokens: int = 0
-        total_completion_tokens: int = 0
+        total_usage: dict[str, Any] = {}
 
         for _ in range(config.max_steps):
             full_content = ""
@@ -304,8 +312,16 @@ class AgentLoop:
                     if isinstance(event, LLMToolCall):
                         pending_tool_call = event
                     elif isinstance(event, LLMStreamUsage):
-                        total_prompt_tokens += event.prompt_tokens
-                        total_completion_tokens += event.completion_tokens
+                        total_usage["prompt_tokens"] = (
+                            total_usage.get("prompt_tokens", 0) + event.prompt_tokens
+                        )
+                        total_usage["completion_tokens"] = (
+                            total_usage.get("completion_tokens", 0) + event.completion_tokens
+                        )
+                        total_usage["total_tokens"] = (
+                            total_usage.get("total_tokens", 0) + event.total_tokens
+                        )
+                        total_usage["cost"] = total_usage.get("cost", 0.0) + event.cost
                     else:
                         full_content += event
                         yield ("chunk", event)
@@ -382,10 +398,7 @@ class AgentLoop:
                     steps=steps,
                     tool_used=last_tool_name,
                     visual_data=visual_data,
-                    usage={
-                        "prompt_tokens": total_prompt_tokens,
-                        "completion_tokens": total_completion_tokens,
-                    },
+                    usage=dict(total_usage),
                 ),
             )
             return
@@ -395,9 +408,6 @@ class AgentLoop:
             AgentResponse(
                 answer="Mình đã thử xử lý bài toán nhưng cần thêm thông tin để giải thích rõ hơn.",
                 steps=steps,
-                usage={
-                    "prompt_tokens": total_prompt_tokens,
-                    "completion_tokens": total_completion_tokens,
-                },
+                usage=dict(total_usage),
             ),
         )

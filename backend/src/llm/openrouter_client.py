@@ -145,6 +145,7 @@ class OpenRouterClient(BaseLLMClient):
         completion_tokens: int = 0
         total_tokens: int = 0
         cost: float = 0.0
+        cost_from_api: bool = False
         is_tool_call: bool = False
         error: Exception | None = None
 
@@ -167,6 +168,7 @@ class OpenRouterClient(BaseLLMClient):
                             completion_tokens = chunk.completion_tokens
                             total_tokens = chunk.total_tokens
                             cost = chunk.cost
+                            cost_from_api = True
                         yield chunk
         except Exception as exc:
             error = exc
@@ -193,10 +195,9 @@ class OpenRouterClient(BaseLLMClient):
                     error=str(error),
                 )
             else:
-                # Use real cost from API when available, fall back to pricing calc
                 cost_usd = (
                     cost
-                    if cost > 0
+                    if cost_from_api
                     else (
                         prompt_tokens * settings.openrouter_prompt_cost_per_1m
                         + completion_tokens * settings.openrouter_completion_cost_per_1m

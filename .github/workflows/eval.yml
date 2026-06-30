@@ -158,7 +158,7 @@ jobs:
 
       # ── Promote current results to baseline ─────────────────────
       - name: Update baselines
-        if: success()
+        if: always()
         run: |
           for ds in multiplication fraction_basic division perimeter_area; do
             if [ -f eval/results_${ds}.json ]; then

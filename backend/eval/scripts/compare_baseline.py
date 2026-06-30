@@ -25,6 +25,10 @@ def _load_json(path: str) -> dict:
 
 def _pct_change(current: float, baseline: float) -> float:
     if baseline == 0:
+        if current > 0:
+            return float("inf")
+        if current < 0:
+            return -float("inf")
         return 0.0
     return (current - baseline) / baseline
 

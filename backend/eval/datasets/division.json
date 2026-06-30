@@ -1,0 +1,86 @@
+{
+  "topic": "division",
+  "description": "Grade 2 division problems for evaluating equal_division tool — bảng chia 2-5, số bị chia ≤ 50",
+  "problems": [
+    {
+      "id": "div_001",
+      "grade": 2,
+      "question": "Chia 12 cái kẹo cho 3 bạn, mỗi bạn được mấy cái kẹo?",
+      "expected_answer_keywords": ["4", "bốn"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_002",
+      "grade": 2,
+      "question": "Có 20 quả táo chia đều cho 5 bạn. Mỗi bạn được bao nhiêu quả táo?",
+      "expected_answer_keywords": ["4", "bốn"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_003",
+      "grade": 2,
+      "question": "Mẹ có 15 cái bánh, xếp đều vào 3 đĩa. Mỗi đĩa có bao nhiêu cái bánh?",
+      "expected_answer_keywords": ["5", "năm"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_004",
+      "grade": 2,
+      "question": "8 bông hoa cắm đều vào 2 lọ. Hỏi mỗi lọ có mấy bông hoa?",
+      "expected_answer_keywords": ["4", "bốn"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_005",
+      "grade": 2,
+      "question": "30 quyển vở chia đều cho 5 bạn. Mỗi bạn được mấy quyển vở?",
+      "expected_answer_keywords": ["6", "sáu"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_006",
+      "grade": 2,
+      "question": "Có 18 viên kẹo chia cho 3 bạn. Mỗi bạn nhận được bao nhiêu viên kẹo?",
+      "expected_answer_keywords": ["6", "sáu"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_007",
+      "grade": 2,
+      "question": "Chia đều 10 quả cam cho 5 bạn. Mỗi bạn được bao nhiêu quả?",
+      "expected_answer_keywords": ["2", "hai"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_008",
+      "grade": 2,
+      "question": "Cô giáo có 25 chiếc bút chì, chia đều cho 5 học sinh. Mỗi học sinh được mấy chiếc?",
+      "expected_answer_keywords": ["5", "năm"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_009",
+      "grade": 2,
+      "question": "14 cái bánh quy chia đều cho 2 bạn. Mỗi bạn được bao nhiêu cái bánh?",
+      "expected_answer_keywords": ["7", "bảy"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    },
+    {
+      "id": "div_010",
+      "grade": 2,
+      "question": "Chia 40 viên bi đều vào 5 hộp. Mỗi hộp có bao nhiêu viên bi?",
+      "expected_answer_keywords": ["8", "tám"],
+      "expected_tool": "equal_division",
+      "level": "L2"
+    }
+  ]
+}

@@ -89,8 +89,8 @@ def compare(current_path: str, baseline_path: str, min_accuracy: float = 0.90) -
     # ── Latency p50: relative increase ────────────────────────────
     def _get_nested(d: dict, *keys: str, default: float = 0.0) -> float:
         for k in keys:
-            d = d.get(k, {}) if isinstance(d, dict) else {}
-        return d if isinstance(d, (int, float)) else default
+            d = d.get(k) if isinstance(d, dict) else None
+        return float(d) if type(d) in (int, float) else default
 
     cur_lat = _get_nested(cur_metrics, "latency_ms", "p50")
     base_lat = _get_nested(base_metrics, "latency_ms", "p50")

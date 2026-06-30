@@ -146,6 +146,7 @@ class OpenRouterClient(BaseLLMClient):
         total_tokens: int = 0
         cost: float = 0.0
         cost_from_api: bool = False
+        usage_received: bool = False
         is_tool_call: bool = False
         error: Exception | None = None
 
@@ -169,7 +170,12 @@ class OpenRouterClient(BaseLLMClient):
                             total_tokens = chunk.total_tokens
                             cost = chunk.cost
                             cost_from_api = True
+                            usage_received = True
                         yield chunk
+        except GeneratorExit:
+            # Client disconnected — generator closed early before usage arrived
+            error = RuntimeError("stream_interrupted_client_disconnect")
+            raise
         except Exception as exc:
             error = exc
             logger.exception(
@@ -193,6 +199,24 @@ class OpenRouterClient(BaseLLMClient):
                     latency_ms=latency_ms,
                     status="failure",
                     error=str(error),
+                )
+            elif not usage_received:
+                # Stream ended without usage chunk — partial/interrupted
+                logger.warning(
+                    "openrouter_stream_incomplete",
+                    model=self.model,
+                    latency_ms=latency_ms,
+                )
+                await self.audit_hook(
+                    model=self.model,
+                    user_id=None,
+                    prompt_preview=prompt_preview,
+                    tokens_in=0,
+                    tokens_out=0,
+                    cost_usd=0.0,
+                    latency_ms=latency_ms,
+                    status="failure",
+                    error="stream ended without usage data",
                 )
             else:
                 cost_usd = (

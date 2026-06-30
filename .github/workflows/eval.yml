@@ -1,0 +1,195 @@
+name: Eval
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt_version:
+        description: "Prompt version to evaluate (default: from settings)"
+        required: false
+        type: string
+      model:
+        description: "Model name (default: from settings)"
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+
+defaults:
+  run:
+    shell: bash
+    working-directory: backend
+
+jobs:
+  evaluate:
+    name: "Eval all datasets"
+    runs-on: self-hosted
+    timeout-minutes: 30
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      LANGFUSE_ENABLED: "false"
+      APP_ENV: "development"
+      LOG_LEVEL: "ERROR"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev]"
+          pip cache purge
+
+      - name: Ensure baseline directory
+        run: mkdir -p eval/baselines
+
+      - name: Build eval args
+        id: args
+        run: |
+          ARGS="--verbose"
+          if [ -n "${{ inputs.prompt_version }}" ]; then
+            ARGS="$ARGS --prompt-version ${{ inputs.prompt_version }}"
+          fi
+          if [ -n "${{ inputs.model }}" ]; then
+            ARGS="$ARGS --model ${{ inputs.model }}"
+          fi
+          echo "eval_args=$ARGS" >> "$GITHUB_OUTPUT"
+
+      # ── Run eval on all 4 datasets ──────────────────────────────
+      - name: "Eval — multiplication"
+        run: |
+          python eval/scripts/run_eval.py \
+            --dataset eval/datasets/multiplication.json \
+            --output eval/results_multiplication.json \
+            ${{ steps.args.outputs.eval_args }}
+
+      - name: "Eval — fraction_basic"
+        run: |
+          python eval/scripts/run_eval.py \
+            --dataset eval/datasets/fraction_basic.json \
+            --output eval/results_fraction_basic.json \
+            ${{ steps.args.outputs.eval_args }}
+
+      - name: "Eval — division"
+        run: |
+          python eval/scripts/run_eval.py \
+            --dataset eval/datasets/division.json \
+            --output eval/results_division.json \
+            ${{ steps.args.outputs.eval_args }}
+
+      - name: "Eval — perimeter_area"
+        run: |
+          python eval/scripts/run_eval.py \
+            --dataset eval/datasets/perimeter_area.json \
+            --output eval/results_perimeter_area.json \
+            ${{ steps.args.outputs.eval_args }}
+
+      # ── Compare each dataset against its baseline ───────────────
+      - name: "Compare — multiplication"
+        id: cmp_mul
+        continue-on-error: true
+        run: |
+          if [ -f eval/baselines/multiplication.json ]; then
+            python eval/scripts/compare_baseline.py \
+              --current eval/results_multiplication.json \
+              --baseline eval/baselines/multiplication.json
+          else
+            echo "No baseline found — skipping comparison"
+          fi
+
+      - name: "Compare — fraction_basic"
+        id: cmp_frac
+        continue-on-error: true
+        run: |
+          if [ -f eval/baselines/fraction_basic.json ]; then
+            python eval/scripts/compare_baseline.py \
+              --current eval/results_fraction_basic.json \
+              --baseline eval/baselines/fraction_basic.json
+          else
+            echo "No baseline found — skipping comparison"
+          fi
+
+      - name: "Compare — division"
+        id: cmp_div
+        continue-on-error: true
+        run: |
+          if [ -f eval/baselines/division.json ]; then
+            python eval/scripts/compare_baseline.py \
+              --current eval/results_division.json \
+              --baseline eval/baselines/division.json
+          else
+            echo "No baseline found — skipping comparison"
+          fi
+
+      - name: "Compare — perimeter_area"
+        id: cmp_pa
+        continue-on-error: true
+        run: |
+          if [ -f eval/baselines/perimeter_area.json ]; then
+            python eval/scripts/compare_baseline.py \
+              --current eval/results_perimeter_area.json \
+              --baseline eval/baselines/perimeter_area.json
+          else
+            echo "No baseline found — skipping comparison"
+          fi
+
+      # ── Aggregate regression results ────────────────────────────
+      - name: Check regressions
+        id: regression_check
+        run: |
+          failed=0
+          if [ "${{ steps.cmp_mul.outcome }}" = "failure" ]; then echo "❌ Regression in multiplication"; failed=1; fi
+          if [ "${{ steps.cmp_frac.outcome }}" = "failure" ]; then echo "❌ Regression in fraction_basic"; failed=1; fi
+          if [ "${{ steps.cmp_div.outcome }}" = "failure" ]; then echo "❌ Regression in division"; failed=1; fi
+          if [ "${{ steps.cmp_pa.outcome }}" = "failure" ]; then echo "❌ Regression in perimeter_area"; failed=1; fi
+
+          if [ "$failed" = "1" ]; then
+            echo "regression_failed=true" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          echo "regression_failed=false" >> "$GITHUB_OUTPUT"
+          echo "✅ All regression checks passed (or no baselines to compare)"
+
+      # ── Upload artifacts ────────────────────────────────────────
+      - name: Upload eval results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ github.run_id }}
+          path: backend/eval/results_*.json
+          retention-days: 30
+
+      - name: Upload baselines
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-baselines-${{ github.run_id }}
+          path: backend/eval/baselines/*.json
+          retention-days: 90
+
+      # ── Print summary (always) ──────────────────────────────────
+      - name: Print summary
+        if: always()
+        run: |
+          echo "## Eval Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dataset | Accuracy | Tool Acc | Latency p50 | TTFT p50 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---------|----------|----------|-------------|----------|" >> "$GITHUB_STEP_SUMMARY"
+          for ds in multiplication fraction_basic division perimeter_area; do
+            file="eval/results_${ds}.json"
+            if [ -f "$file" ]; then
+              acc=$(python -c "import json; d=json.load(open('$file')); print(f\"{d['metrics']['accuracy']*100:.1f}%\")")
+              tool=$(python -c "import json; d=json.load(open('$file')); m=d['metrics']['tool_accuracy']; print(f'{m*100:.1f}%' if m is not None else 'N/A')")
+              lat=$(python -c "import json; d=json.load(open('$file')); print(d['metrics']['latency_ms']['p50'])")
+              ttft=$(python -c "import json; d=json.load(open('$file')); print(d['metrics']['ttft_ms']['p50'])")
+              echo "| $ds | $acc | $tool | $lat ms | $ttft ms |" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "| $ds | error | error | error | error |" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done

@@ -1,0 +1,86 @@
+{
+  "topic": "perimeter_area_basic",
+  "description": "Grade 2-3 perimeter and area problems for evaluating rectangle_measurement tool — kích thước ≤ 10",
+  "problems": [
+    {
+      "id": "pa_001",
+      "grade": 2,
+      "question": "Hình chữ nhật dài 5cm, rộng 3cm. Tính chu vi hình chữ nhật.",
+      "expected_answer_keywords": ["16", "16cm", "mười sáu"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L2"
+    },
+    {
+      "id": "pa_002",
+      "grade": 2,
+      "question": "Hình vuông cạnh 4cm. Tính chu vi hình vuông.",
+      "expected_answer_keywords": ["16", "16cm", "mười sáu"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L2"
+    },
+    {
+      "id": "pa_003",
+      "grade": 2,
+      "question": "Hình chữ nhật dài 6cm, rộng 2cm. Chu vi là bao nhiêu?",
+      "expected_answer_keywords": ["16", "16cm", "mười sáu"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L2"
+    },
+    {
+      "id": "pa_004",
+      "grade": 2,
+      "question": "Một hình vuông cạnh 3cm. Tính chu vi hình vuông đó.",
+      "expected_answer_keywords": ["12", "12cm", "mười hai"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L2"
+    },
+    {
+      "id": "pa_005",
+      "grade": 3,
+      "question": "Hình chữ nhật dài 8cm, rộng 5cm. Tính diện tích hình chữ nhật.",
+      "expected_answer_keywords": ["40", "40cm²", "bốn mươi", "cm vuông"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L3"
+    },
+    {
+      "id": "pa_006",
+      "grade": 3,
+      "question": "Hình vuông cạnh 6cm. Diện tích hình vuông là bao nhiêu?",
+      "expected_answer_keywords": ["36", "36cm²", "ba mươi sáu", "cm vuông"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L3"
+    },
+    {
+      "id": "pa_007",
+      "grade": 2,
+      "question": "Hình chữ nhật dài 7cm, rộng 4cm. Tính chu vi hình chữ nhật.",
+      "expected_answer_keywords": ["22", "22cm", "hai mươi hai"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L2"
+    },
+    {
+      "id": "pa_008",
+      "grade": 3,
+      "question": "Hình chữ nhật dài 9cm, rộng 3cm. Diện tích bằng bao nhiêu?",
+      "expected_answer_keywords": ["27", "27cm²", "hai mươi bảy", "cm vuông"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L3"
+    },
+    {
+      "id": "pa_009",
+      "grade": 2,
+      "question": "Hình vuông cạnh 5cm. Chu vi hình vuông bằng bao nhiêu?",
+      "expected_answer_keywords": ["20", "20cm", "hai mươi"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L2"
+    },
+    {
+      "id": "pa_010",
+      "grade": 3,
+      "question": "Một hình chữ nhật dài 10cm, rộng 4cm. Tính diện tích hình chữ nhật.",
+      "expected_answer_keywords": ["40", "40cm²", "bốn mươi", "cm vuông"],
+      "expected_tool": "rectangle_measurement",
+      "level": "L3"
+    }
+  ]
+}

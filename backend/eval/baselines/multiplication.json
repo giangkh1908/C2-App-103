@@ -1,0 +1,260 @@
+{
+  "model": "deepseek/deepseek-v4-flash",
+  "dataset": "multiplication",
+  "timestamp": "2026-06-30T10:15:01.023702+00:00",
+  "total": 10,
+  "metrics": {
+    "accuracy": 1.0,
+    "tool_accuracy": 1.0,
+    "ttft_ms": {
+      "avg": 5481.72,
+      "p50": 3824.71,
+      "p95": 6413.83
+    },
+    "latency_ms": {
+      "avg": 13342.35,
+      "p50": 12344.26,
+      "p95": 17629.36
+    },
+    "cost_usd": {
+      "total": 0.0032849,
+      "avg_per_request": 0.00032849
+    },
+    "total_tokens": 54553
+  },
+  "details": [
+    {
+      "problem_id": "mul_001",
+      "expected_keywords": [
+        "12",
+        "mười hai"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Chúng ta cùng xem nhé! 🍬\n\nChúng ta cùng xem nhé! 🎉\n\nCó **3 nhóm kẹo**, mỗi nhóm có **4 cái kẹo**.\n\n📌 **Nhóm 1:** 🍬🍬🍬🍬 (4 cái)\n📌 **Nhóm 2:** 🍬🍬🍬🍬 (4 cái)\n📌 **Nhóm 3:** 🍬🍬🍬🍬 (4 cái)\n\n👉 Có thể đếm từng nhóm: **4 + 4 + 4 = 12**\n\n👉 Hoặc dùng **phép nhân**: **3 × 4 = 12**\n\n**Đáp số:** Có tất cả **12 cái kẹo**! 🎊\n\nCon thấy chưa, phép nhân giúp mình tính nhanh hơn là cộng từng nhóm đấy! 😊",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 14578.34,
+      "ttft_ms": 5957.78,
+      "tokens_used": 5301,
+      "usage": {
+        "prompt_tokens": 4877,
+        "completion_tokens": 424,
+        "total_tokens": 5301,
+        "cost": 0.000391322
+      },
+      "cost_usd": 0.000391322,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_002",
+      "expected_keywords": [
+        "10",
+        "mười"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Chúng ta cùng xem nhé! 🍬# 🍬 5 × 2 = ?\n\n## Cô có một câu trả lời siêu dễ thương nè! 🎉\n\n**5 × 2 = 10**\n\nCô sẽ giải thích bằng kẹo nhé:\n\n🥇 **Đĩa 1:** 🍬🍬 (2 cái kẹo)  \n🥇 **Đĩa 2:** 🍬🍬 (2 cái kẹo)  \n🥇 **Đĩa 3:** 🍬🍬 (2 cái kẹo)  \n🥇 **Đĩa 4:** 🍬🍬 (2 cái kẹo)  \n🥇 **Đĩa 5:** 🍬🍬 (2 cái kẹo)\n\n### Có nghĩa là:\n> Có **5 đĩa**, mỗi đĩa có **2 cái kẹo**  \n> **Tổng cộng** = 2 + 2 + 2 + 2 + 2 = **10 cái kẹo** 🍬\n\nVậy **5 × 2 = 10** nhé! 🎉\n\nCon có muốn thử phép nhân nào khác không? 😊",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 10235.77,
+      "ttft_ms": 3254.47,
+      "tokens_used": 5363,
+      "usage": {
+        "prompt_tokens": 4862,
+        "completion_tokens": 501,
+        "total_tokens": 5363,
+        "cost": 0.00022523200000000001
+      },
+      "cost_usd": 0.00022523200000000001,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_003",
+      "expected_keywords": [
+        "18",
+        "mười tám"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Chúng ta cùng xem nhé! 🍎Tuyệt vời! 🎉 Đây là bài toán rất hay để học **phép nhân** đấy!\n\n## Giải bài toán từng bước nhé! 🍎\n\n**Bước 1:** Con có **6 chiếc đĩa** 🍽️🍽️🍽️🍽️🍽️🍽️\n\n**Bước 2:** Mỗi đĩa có **3 quả táo** 🍎🍎🍎\n\n**Bước 3:** Đếm số táo từng đĩa một:\n- Đĩa 1: 3 quả 🍎🍎🍎\n- Đĩa 2: 3 quả 🍎🍎🍎\n- Đĩa 3: 3 quả 🍎🍎🍎\n- Đĩa 4: 3 quả 🍎🍎🍎\n- Đĩa 5: 3 quả 🍎🍎🍎\n- Đĩa 6: 3 quả 🍎🍎🍎\n\n**Cách 1 – Cộng dồn:**\n> 3 + 3 + 3 + 3 + 3 + 3 = **18**\n\n**Cách 2 – Phép nhân (nhanh hơn!):**\n> **6 (số đĩa) × 3 (số táo mỗi đĩa) = 18 quả táo** ✅\n\n👉 **Đáp số: Có tất cả 18 quả táo!** 🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎\n\nCon thấy không, thay vì đếm từng quả một, phép nhân giúp chúng ta tính nhanh hơn rất nhiều! Giỏi quá! 🤩",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 17629.36,
+      "ttft_ms": 3824.71,
+      "tokens_used": 5593,
+      "usage": {
+        "prompt_tokens": 4936,
+        "completion_tokens": 657,
+        "total_tokens": 5593,
+        "cost": 0.0003629
+      },
+      "cost_usd": 0.0003629,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_004",
+      "expected_keywords": [
+        "14",
+        "mười bốn"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Con hỏi phép tính 2 × 7 đúng không? Để cô giúp con nhé! Con nhìn hình minh họa này 👇\n\n**2 × 7 = 14** 🎉\n\nCon nhìn nè — mình có **2 cái đĩa**, mỗi đĩa có **7 viên kẹo**:\n\n**Đĩa 1:** 🍬🍬🍬🍬🍬🍬🍬  \n**Đĩa 2:** 🍬🍬🍬🍬🍬🍬🍬\n\n➡️ Có tất cả bao nhiêu viên kẹo?\n\n👉 Con có thể đếm từng viên: **7 + 7 = 14**  \n👉 Hay dùng phép nhân: **2 × 7 = 14**\n\nGiải thích từng bước:\n1. **Phép nhân** là cách cộng nhanh các nhóm giống nhau.\n2. **2 × 7** có nghĩa là: **lấy 2 nhóm, mỗi nhóm có 7**.\n3. Gộp lại thành **14** tất cả.\n\nCon nhớ nhé: **2 × 7 = 14** nhé! 😊",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 12344.26,
+      "ttft_ms": 6186.46,
+      "tokens_used": 5330,
+      "usage": {
+        "prompt_tokens": 4835,
+        "completion_tokens": 495,
+        "total_tokens": 5330,
+        "cost": 0.00022141
+      },
+      "cost_usd": 0.00022141,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_005",
+      "expected_keywords": [
+        "20",
+        "hai mươi"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Con hãy tưởng tượng nhé! Chúng ta có **4 chiếc rổ**, mỗi rổ có **5 bông hoa**. Cô sẽ vẽ ra cho con xem nha!\n\nThế này nhé con! 😊\n\n📥 **Bài toán:**\nCó **4 rổ**, mỗi rổ có **5 bông hoa**. Hỏi có tất cả bao nhiêu bông hoa?\n\n---\n\n🎯 **Cách nghĩ:**\n\nChúng ta có thể đếm từng rổ một:\n\n- **Rổ 1** 🧺: 5 bông hoa 🌸🌸🌸🌸🌸\n- **Rổ 2** 🧺: 5 bông hoa 🌸🌸🌸🌸🌸\n- **Rổ 3** 🧺: 5 bông hoa 🌸🌸🌸🌸🌸\n- **Rổ 4** 🧺: 5 bông hoa 🌸🌸🌸🌸🌸\n\n👉 Nếu cộng dần: **5 + 5 + 5 + 5 = 20**\n\n---\n\n🧮 **Cách nhanh hơn - Phép nhân:**\n\nCó **4 rổ**, mỗi rổ **5 bông hoa**, tức là:\n\n> **4 × 5 = 20** 🎉\n\n---\n\n✅ **Đáp số: Có tất cả 20 bông hoa nhé!** 🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸\n\nCon có thấy dễ hiểu không? Nếu muốn học thêm phép nhân nào nữa, cứ hỏi cô nhé! 😊",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 12891.28,
+      "ttft_ms": 6413.83,
+      "tokens_used": 5564,
+      "usage": {
+        "prompt_tokens": 4896,
+        "completion_tokens": 668,
+        "total_tokens": 5564,
+        "cost": 0.000261296
+      },
+      "cost_usd": 0.000261296,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_006",
+      "expected_keywords": [
+        "16",
+        "mười sáu"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Chào con! Đây là phép nhân 8 × 2, có nghĩa là **8 đĩa kẹo, mỗi đĩa có 2 cái kẹo** đấy! Cô sẽ vẽ cho con xem nhé!\n\n**8 × 2 = 16** 🎉\n\nCô có 8 cái đĩa, mỗi đĩa có 2 viên kẹo. Hãy cùng đếm nhé!\n\n**Bước 1:** Nhìn vào từng đĩa:\n- Đĩa 1: 🍬🍬 (2 kẹo)\n- Đĩa 2: 🍬🍬 (2 kẹo)\n- Đĩa 3: 🍬🍬 (2 kẹo)\n- Đĩa 4: 🍬🍬 (2 kẹo)\n- Đĩa 5: 🍬🍬 (2 kẹo)\n- Đĩa 6: 🍬🍬 (2 kẹo)\n- Đĩa 7: 🍬🍬 (2 kẹo)\n- Đĩa 8: 🍬🍬 (2 kẹo)\n\n**Bước 2:** Phép nhân này cũng giống như cộng dồn:\n**2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 = 16**\n\n✅ Vậy **8 × 2 = 16** nhé! Con nhớ chưa nào? 😊",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 20820.82,
+      "ttft_ms": 14657.11,
+      "tokens_used": 5469,
+      "usage": {
+        "prompt_tokens": 4909,
+        "completion_tokens": 560,
+        "total_tokens": 5469,
+        "cost": 0.000504542
+      },
+      "cost_usd": 0.000504542,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_007",
+      "expected_keywords": [
+        "27",
+        "hai mươi bảy"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Con hãy nhìn hình minh họa dưới đây nhé! 🖍️## 🖍️ Bài toán: 3 nhóm bút\n\nChúng ta có:\n- **3 nhóm** bạn\n- Mỗi nhóm có **9 chiếc bút**\n\n### Cách giải từng bước:\n\n**Cách 1: Cộng dồn**\nNhóm 1: 🖍🖍🖍🖍🖍🖍🖍🖍🖍 (9 bút)\nNhóm 2: 🖍🖍🖍🖍🖍🖍🖍🖍🖍 (9 bút)\nNhóm 3: 🖍🖍🖍🖍🖍🖍🖍🖍🖍 (9 bút)\n\nCộng lại: **9 + 9 + 9 = 27**\n\n**Cách 2: Phép nhân**\nVì có 3 nhóm, mỗi nhóm 9 bút, ta viết thành:\n**3 × 9 = 27**\n\n---\n\n### ✅ Đáp số: **Tổng cộng 27 chiếc bút** 🎉\n\nLát nữa nếu con muốn học thêm bài toán nào khác, cứ hỏi cô nhé! 😊",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 10267.47,
+      "ttft_ms": 4569.11,
+      "tokens_used": 5386,
+      "usage": {
+        "prompt_tokens": 4867,
+        "completion_tokens": 519,
+        "total_tokens": 5386,
+        "cost": 0.00022925000000000002
+      },
+      "cost_usd": 0.00022925000000000002,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_008",
+      "expected_keywords": [
+        "21",
+        "hai mươi mốt"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Chúng ta cùng tính phép nhân 7 × 3 nhé! Cô sẽ dùng hình vẽ để con dễ hình dung nha! 🎉### 🍬 7 × 3 = 21 🍬\n\nCô xem nhé, mình sẽ tưởng tượng có **7 cái đĩa**, mỗi đĩa có **3 viên kẹo**:\n\n| Đĩa 1 | Đĩa 2 | Đĩa 3 | Đĩa 4 | Đĩa 5 | Đĩa 6 | Đĩa 7 |\n|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|\n| 🍬🍬🍬 | 🍬🍬🍬 | 🍬🍬🍬 | 🍬🍬🍬 | 🍬🍬🍬 | 🍬🍬🍬 | 🍬🍬🍬 |\n\n---\n\n**Cách hiểu thứ 1 – Phép nhân:**\n> 7 (đĩa) × 3 (kẹo mỗi đĩa) = **21 viên kẹo** 🎉\n\n**Cách hiểu thứ 2 – Cộng dồn (phép cộng lặp lại):**\n> 3 + 3 + 3 + 3 + 3 + 3 + 3 = **21**\n\n---\n\n**👉 Kết luận: 7 × 3 = 21** 🥳\n\nCó gì thắc mắc không con? Cô sẵn sàng giúp thêm nhé! ❤️",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 10902.09,
+      "ttft_ms": 3256.16,
+      "tokens_used": 5510,
+      "usage": {
+        "prompt_tokens": 4914,
+        "completion_tokens": 596,
+        "total_tokens": 5510,
+        "cost": 0.00023896399999999998
+      },
+      "cost_usd": 0.00023896399999999998,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_009",
+      "expected_keywords": [
+        "24",
+        "hai mươi tư"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Chúng ta cùng xem hình ảnh trực quan nhé!Chúng ta có **6 chiếc hộp**, mỗi hộp có **4 cái kẹo** 🍬\n\nHãy nhìn hình minh họa nhé! Mỗi hộp có 4 cái kẹo:\n\n**Hộp 1:** 🍬🍬🍬🍬  \n**Hộp 2:** 🍬🍬🍬🍬  \n**Hộp 3:** 🍬🍬🍬🍬  \n**Hộp 4:** 🍬🍬🍬🍬  \n**Hộp 5:** 🍬🍬🍬🍬  \n**Hộp 6:** 🍬🍬🍬🍬  \n\n---\n\n**Cách 1 – Cộng dồn:**  \n4 + 4 + 4 + 4 + 4 + 4 = **24** cái kẹo\n\n**Cách 2 – Phép nhân:**  \n6 (hộp) × 4 (kẹo mỗi hộp) = **24**\n\n---\n\nVậy có tất cả **24 cái kẹo** 🎉! \nCon có thấy phép nhân giúp mình tính nhanh hơn phép cộng nhiều số giống nhau không? 😊",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 10090.89,
+      "ttft_ms": 3646.55,
+      "tokens_used": 5513,
+      "usage": {
+        "prompt_tokens": 4947,
+        "completion_tokens": 566,
+        "total_tokens": 5513,
+        "cost": 0.000595742
+      },
+      "cost_usd": 0.000595742,
+      "keyword_match": true,
+      "tool_match": true
+    },
+    {
+      "problem_id": "mul_010",
+      "expected_keywords": [
+        "25",
+        "hai mươi lăm"
+      ],
+      "expected_tool": "candy_multiplication",
+      "answer_text": "Ồ, câu hỏi hay quá! Cô sẽ dùng hình ảnh trực quan để giúp con hiểu ngay nhé! 🍬\n\n## 🍬 5 × 5 = 25\n\nCô sẽ giải thích bằng ví dụ **nhóm đều** nhé!\n\n### Hãy tưởng tượng:\nChúng ta có **5 cái đĩa**, mỗi đĩa có **5 viên kẹo**.\n\n| Đĩa | Số kẹo |\n|:---:|:------:|\n| 🍬🍬🍬🍬🍬 | Đĩa 1: 5 viên |\n| 🍬🍬🍬🍬🍬 | Đĩa 2: 5 viên |\n| 🍬🍬🍬🍬🍬 | Đĩa 3: 5 viên |\n| 🍬🍬🍬🍬🍬 | Đĩa 4: 5 viên |\n| 🍬🍬🍬🍬🍬 | Đĩa 5: 5 viên |\n\n### Cách nghĩ:\n- **Phép cộng lặp lại**:  \n  \\(5 + 5 + 5 + 5 + 5 = 25\\)\n\n- **Phép nhân**:  \n  \\(5 \\times 5 = 25\\)  \n  *(Đọc là: \"5 nhóm, mỗi nhóm 5\" = tổng cộng 25)*\n\n### 💡 Mẹo nhỏ:\n> **5 × 5** giống như nói:  \n> \"Có 5 bạn, mỗi bạn được 5 viên kẹo\"  \n> → Tất cả có **25 viên kẹo** 🎉\n\nCon có nhớ không? **5 × 5 = 25** nhé! 🌟",
+      "detected_topic": null,
+      "tool_used": "candy_multiplication",
+      "latency_ms": 13663.25,
+      "ttft_ms": 3051.04,
+      "tokens_used": 5524,
+      "usage": {
+        "prompt_tokens": 4888,
+        "completion_tokens": 636,
+        "total_tokens": 5524,
+        "cost": 0.00025424
+      },
+      "cost_usd": 0.00025424,
+      "keyword_match": true,
+      "tool_match": true
+    }
+  ],
+  "prompt_id": "tutor_system",
+  "prompt_version": "v1",
+  "mode": "offline"
+}

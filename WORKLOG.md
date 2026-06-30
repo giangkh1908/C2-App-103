@@ -63,6 +63,7 @@
 | 18 | Validation service | Bảo | ✅ | `backend/src/services/validation.py` |
 | 19 | Visual builder (sinh dữ liệu visual) | Miền | ✅ | `backend/src/services/visual_builder.py` |
 | 20 | Practice builder (sinh câu hỏi) | Miền | ✅ | `backend/src/services/practice_builder.py` |
+| 21 | Prompt versioning | Bảo + Giang | ✅ | `backend/src/llm/prompt_registry.py`, `backend/prompts/tutor_system/v1.json` |
 
 ---
 
@@ -173,7 +174,7 @@
 | 10 | Payment management UI | Giang | ✅ | `frontend/src/app/[locale]/admin/payments/page.tsx` |
 | 11 | Payment detail page | Giang | ✅ | `frontend/src/app/[locale]/admin/payments/[id]/page.tsx` |
 | 12 | Admin plan listing | Giang | ✅ | `backend/src/api/admin.py:244` |
-| 13 | Admin role guard (frontend) | Giang | ✅ | `frontend/src/app/[locale]/admin/layout.tsx:14` |
+| 13 | Admin role guard (frontend) | Giang | ✅ | `frontend/src/app/[locale]/admin/layout.tsx` |
 | 14 | Admin layout + sidebar | Giang | ✅ | `frontend/src/app/[locale]/admin/layout.tsx` |
 | 15 | adminApi lib | Giang | ✅ | `frontend/src/lib/adminApi.ts` |
 | 16 | scripts/create_admin.py | Giang | ✅ | `scripts/create_admin.py` |
@@ -239,7 +240,7 @@
 | 5 | Test conftest + fixtures | Bảo | ✅ | `backend/tests/conftest.py`, `tests/fixtures/` |
 | 6 | Frontend tests (vitest, 6 files) | Bảo | 🔶 | `frontend/src/__tests__/` — 6 files, coverage còn thấp |
 | 7 | Smoke test (tự động) | Giang | ⬜ | Chưa có |
-| 9 | Eval pipeline (run_eval + datasets) | Miền | ✅ | `backend/eval/scripts/run_eval.py`, `backend/eval/datasets/` |
+| 9 | Eval pipeline | Miền + Giang | ✅ | `backend/eval/scripts/run_eval.py`, `backend/eval/datasets/` |
 
 ---
 
@@ -262,19 +263,12 @@
 
 | # | Tính năng | Owner | Status | Evidence |
 |-- |-----------|-------|--------|----------|
-| 1 | `llm_audit_logs` collection — persist model, tokens, cost, latency, status | Giang | ✅ | `backend/src/services/llm_audit.py` |
-| 2 | Wire audit log vào `openrouter_client.py` — ghi log sau mỗi request LLM | Giang | ✅ | `backend/src/llm/openrouter_client.py` |
-| 3 | `GET /admin/llm-logs` API — filter model/user/status/date + pagination | Giang | ✅ | `backend/src/api/admin.py` |
-| 4 | LLM Audit card ở admin dashboard — table + filter UI | Giang | ✅ | `frontend/src/app/[locale]/admin/page.tsx` |
-| 5 | `ModelRouter` — fallback model với exponential backoff | Giang | ✅ | `backend/src/llm/model_router.py` |
-| 6 | `LLM_FALLBACK_MODELS` env var — danh sách fallback models | Giang | ✅ | `backend/src/core/config.py` |
-| 7 | Log fallback event `model_fallback` + metric `llm_fallback_count` | Giang | ✅ | `model_router.py`, `core/metrics.py` |
-| 8 | `GET /admin/llm-stats` API — daily_costs, cost_by_model, overall stats | Giang | ✅ | `backend/src/api/admin.py` |
-| 9 | Dashboard charts (recharts): line chart cost, pie chart by model, bar chart by user | Giang | ✅ | `frontend/src/app/[locale]/admin/page.tsx` |
-| 10 | Auto-refresh dashboard mỗi 30s (polling) | Giang | ✅ | `frontend/src/app/[locale]/admin/page.tsx` |
-| 11 | `LLM_DAILY_BUDGET_USD` env var (mặc định $1.00) | Giang | ✅ | `backend/src/core/config.py` |
-| 12 | `check_llm_budget()` — APScheduler job mỗi 15 phút, vượt → gửi email admin | Giang | ✅ | `backend/src/services/budget_alert.py` |
-| 13 | Budget progress bar — `$X / $Y (Z%)` với 3 màu xanh/vàng/đỏ | Giang | ✅ | `frontend/src/app/[locale]/admin/page.tsx` |
+| 1 | Audit log | Giang | ✅ | `backend/src/services/llm_audit.py`, `backend/src/api/admin.py` |
+| 2 | Fallback model | Giang | ✅ | `backend/src/llm/model_router.py` |
+| 3 | Dashboard metric | Giang | ✅ | `frontend/src/app/[locale]/admin/page.tsx` |
+| 4 | Budget alert | Giang | ✅ | `backend/src/services/budget_alert.py` |
+| 5 | Audit hook | Giang | ✅ | `backend/src/llm/openrouter_client.py`, `backend/src/services/llm_audit.py` |
+| 6 | Token usage streaming | Giang | ✅ | `backend/src/llm/openrouter_client.py` |
 
 ---
 
@@ -298,10 +292,10 @@
 
 | Thành viên | Vai trò | Tổng features | ✅ Done | ⬜ Remaining | 🔶 Partial | Trọng tâm tiếp theo |
 |------------|---------|--------------|---------|-------------|------------|-------------------|
-| **Giang** | FE-BE + DevOps | ~96 | ~94 | 2 | 0 | Auth, Payment, Admin, Landing, Deploy, Pricing, LLMOps |
-| **Bảo** | FE-BE | ~67 | ~65 | 1 | 1 | Learning Core, Practice (/learn), Visual/Sim, TTS/STT |
+| **Giang** | FE-BE + DevOps | ~100 | ~98 | 2 | 0 | Auth, Payment, Admin, Landing, Deploy, Pricing, LLMOps, Eval, Prompt versioning |
+| **Bảo** | FE-BE | ~68 | ~66 | 1 | 1 | Learning Core, Practice (/learn), Visual/Sim, TTS/STT |
 | **Miền** | FE-BE | ~50 | ~42 | 6 | 2 | AgentLoop, Tool, Chat UI, Memory, Eval/Metrics, FE tests |
-| **Tổng cộng** | | ~213 | ~201 | 9 | 3 | |
+| **Tổng cộng** | | ~218 | ~206 | 9 | 3 | |
 
 ---
 

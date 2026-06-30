@@ -73,4 +73,76 @@ describe('chat routing helpers', () => {
     expect(request.curriculum_topic_id).toBeUndefined();
     expect(request.curriculum_visual_template).toBeUndefined();
   });
+  it('keeps the latest selected topic for short follow-up prompts', () => {
+    const request = buildStreamRequest({
+      sessionId: 'session-4',
+      grade: 3,
+      message: 'Cho them vi du',
+      selectedTopic: 'multiplication',
+      pendingSuggestion: null,
+    });
+
+    expect(request.selected_topic).toBe('multiplication');
+    expect(request.curriculum_topic_id).toBeUndefined();
+  });
+
+  it('keeps continuity for "Them vi du" phrasing too', () => {
+    const request = buildStreamRequest({
+      sessionId: 'session-4b',
+      grade: 3,
+      message: 'Them vi du',
+      selectedTopic: 'multiplication',
+      pendingSuggestion: null,
+    });
+
+    expect(request.selected_topic).toBe('multiplication');
+  });
+
+  it('keeps continuity for "Vi du nua" phrasing', () => {
+    const request = buildStreamRequest({
+      sessionId: 'session-4c',
+      grade: 3,
+      message: 'Vi du nua',
+      selectedTopic: 'multiplication',
+      pendingSuggestion: null,
+    });
+
+    expect(request.selected_topic).toBe('multiplication');
+  });
+
+  it('keeps continuity for "Cho vi du khac" phrasing', () => {
+    const request = buildStreamRequest({
+      sessionId: 'session-4d',
+      grade: 3,
+      message: 'Cho vi du khac',
+      selectedTopic: 'multiplication',
+      pendingSuggestion: null,
+    });
+
+    expect(request.selected_topic).toBe('multiplication');
+  });
+
+  it('keeps continuity for "So khac" phrasing', () => {
+    const request = buildStreamRequest({
+      sessionId: 'session-4e',
+      grade: 3,
+      message: 'So khac',
+      selectedTopic: 'multiplication',
+      pendingSuggestion: null,
+    });
+
+    expect(request.selected_topic).toBe('multiplication');
+  });
+
+  it('does not lock a new full question to the previous topic', () => {
+    const request = buildStreamRequest({
+      sessionId: 'session-5',
+      grade: 3,
+      message: 'Em muon hoc phep chia 12 cho 3',
+      selectedTopic: 'multiplication',
+      pendingSuggestion: null,
+    });
+
+    expect(request.selected_topic).toBeUndefined();
+  });
 });

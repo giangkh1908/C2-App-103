@@ -13,7 +13,7 @@ from src.core.database import get_db
 
 DEFAULT_HISTORY_LIMIT = 10
 MAX_MEMORY_MESSAGES = 20
-MAX_ASSISTANT_STORE_LEN = 200
+MAX_ASSISTANT_STORE_LEN = 320
 
 # ---------------------------------------------------------------------------
 # Data types

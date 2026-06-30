@@ -78,6 +78,11 @@ class ChatHistoryService:
                 role=msg["role"],
                 content=msg["content"],
                 created_at=msg.get("created_at"),
+                detected_topic=msg.get("detected_topic"),
+                response_mode=msg.get("response_mode"),
+                follow_up_suggestions=msg.get("follow_up_suggestions") or [],
+                visual_card=msg.get("visual_card"),
+                practice_question=msg.get("practice_question"),
             )
             for msg in document.get("messages", [])
         ]

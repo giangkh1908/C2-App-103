@@ -10,6 +10,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from src.core.config import settings
+from src.core.logging import get_logger
 from src.llm.base import BaseLLMClient
 from src.tools.registry import ToolRegistry
 
@@ -17,6 +18,7 @@ from .agent_loop import AgentLoop
 from .schemas import AgentResponse, AgentRunConfig
 
 _FALLBACK_LEVEL = "L3"
+logger = get_logger("toan_truc_quan.agents.tutor_agent")
 
 
 class TutorAgent:
@@ -65,6 +67,12 @@ class TutorAgent:
         try:
             return await self.agent_loop.run(user_message=message, config=config, history=history)
         except Exception:
+            logger.exception(
+                "tutor_agent_chat_failed",
+                level=level,
+                use_tools=use_tools,
+                history_count=len(history or []),
+            )
             return AgentResponse(
                 answer="Mình gặp lỗi khi xử lý câu hỏi. Bạn thử hỏi lại ngắn hơn nhé."
             )
@@ -102,6 +110,12 @@ class TutorAgent:
             ):
                 yield event
         except Exception:
+            logger.exception(
+                "tutor_agent_chat_stream_failed",
+                level=level,
+                use_tools=use_tools,
+                history_count=len(history or []),
+            )
             yield (
                 "done",
                 AgentResponse(

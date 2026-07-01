@@ -1613,7 +1613,13 @@ def is_clarification_response(answer: str) -> bool:
     if not stripped:
         return False
     lines = [line.strip() for line in stripped.splitlines() if line.strip()]
-    last_line = lines[-1] if lines else ""
+    # A real clarification turn is ONLY the one short question the prompt asks
+    # for ("hỏi lại ĐÚNG MỘT CÂU"). A full explanation that happens to end
+    # with a friendly follow-up question (common LLM tutoring style) must not
+    # be mistaken for a clarification request and thrown away.
+    if len(lines) != 1:
+        return False
+    last_line = lines[0]
     ends_with_question = last_line.endswith("?")
     is_short = len(stripped) < 250
     no_numbered_steps = not any(line[:2] in ("1.", "2.", "3.") for line in lines)

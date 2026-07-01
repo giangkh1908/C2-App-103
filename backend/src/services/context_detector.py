@@ -66,7 +66,10 @@ def normalize_text(text: str) -> str:
 
 def detect_context(message: str, selected_topic: Topic | None) -> LearningContext:
     normalized = normalize_text(message)
-    topic = selected_topic or infer_topic(normalized)
+    # An explicit topic keyword in the current message (e.g. "chia") must win
+    # over a topic carried over from a previous turn, otherwise the student
+    # can never switch topics mid-conversation.
+    topic = infer_topic(normalized) or selected_topic
     intent = infer_intent(normalized)
 
     if topic == "multiplication":
@@ -202,7 +205,12 @@ def infer_topic(normalized: str) -> Topic | None:
         return "division"
     if any(token in normalized for token in ["nhan", "x", "dia keo", "moi nhom"]):
         return "multiplication"
-    if any(token in normalized for token in ["cong", "tru", "+", "-", "them", "bot"]):
+    # NOTE: "them"/"bot" are deliberately excluded — they're common generic
+    # Vietnamese words ("more"/"less") that also show up in unrelated
+    # follow-up phrases like "cho con them vi du" (give me another example),
+    # which would otherwise be misdetected as an addition_subtraction topic
+    # switch. "cong"/"tru"/"+"/"-" are unambiguous enough on their own.
+    if any(token in normalized for token in ["cong", "tru", "+", "-"]):
         return "addition_subtraction"
     return None
 

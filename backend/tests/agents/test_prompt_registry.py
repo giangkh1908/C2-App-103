@@ -90,4 +90,3 @@ def test_list_prompts(reg: PromptRegistry) -> None:
     prompts = reg.list_prompts()
     assert len(prompts) >= 1
     assert {"prompt_id": "tutor_system", "version": "v1"} in prompts
-

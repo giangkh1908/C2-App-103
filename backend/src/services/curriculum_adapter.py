@@ -14,9 +14,9 @@ from src.services.visualization_validator import validate_visual_payload
 RUNTIME_TOPIC_BY_CURRICULUM_TOPIC = {
     # Grade 1
     "G1-NUM-01": "multiplication",
-    "G1-NUM-02": "multiplication",
-    "G1-OPS-01": "multiplication",
-    "G1-OPS-02": "multiplication",
+    "G1-NUM-02": "comparison_numbers",
+    "G1-OPS-01": "addition_subtraction",
+    "G1-OPS-02": "addition_subtraction",
     "G1-WORD-01": "multiplication",
     "G1-GEO-01": "perimeter_area_basic",
     "G1-GEO-02": "perimeter_area_basic",
@@ -25,11 +25,11 @@ RUNTIME_TOPIC_BY_CURRICULUM_TOPIC = {
     "G1-MEAS-02": "perimeter_area_basic",
     # Grade 2
     "G2-NUM-01": "multiplication",
-    "G2-NUM-02": "multiplication",
+    "G2-NUM-02": "comparison_numbers",
     "G2-NUM-03": "multiplication",
-    "G2-OPS-01": "multiplication",
+    "G2-OPS-01": "addition_subtraction",
     "G2-OPS-02": "multiplication",
-    "G2-OPS-03": "multiplication",
+    "G2-OPS-03": "addition_subtraction",
     "G2-WORD-01": "multiplication",
     "G2-GEO-01": "perimeter_area_basic",
     "G2-GEO-02": "perimeter_area_basic",

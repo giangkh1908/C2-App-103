@@ -33,6 +33,27 @@ DEFAULT_TOOL_ARGS: dict[Topic, dict[str, int | str]] = {
         "max_value": 9,
         "total_value": 22,
     },
+    "addition_subtraction": {
+        "operation": "+",
+        "operand_a": 5,
+        "operand_b": 3,
+        "item_name": "cam",
+    },
+    "comparison_numbers": {
+        "number_a": 37,
+        "number_b": 42,
+    },
+    "time_clock": {
+        "hour": 7,
+        "minute": 0,
+    },
+    "measurement_length": {
+        "length_a": 9,
+        "length_b": 6,
+        "unit": "cm",
+        "object_a": "but",
+        "object_b": "thuoc",
+    },
 }
 
 
@@ -45,7 +66,10 @@ def normalize_text(text: str) -> str:
 
 def detect_context(message: str, selected_topic: Topic | None) -> LearningContext:
     normalized = normalize_text(message)
-    topic = selected_topic or infer_topic(normalized)
+    # An explicit topic keyword in the current message (e.g. "chia") must win
+    # over a topic carried over from a previous turn, otherwise the student
+    # can never switch topics mid-conversation.
+    topic = infer_topic(normalized) or selected_topic
     intent = infer_intent(normalized)
 
     if topic == "multiplication":
@@ -98,6 +122,46 @@ def detect_context(message: str, selected_topic: Topic | None) -> LearningContex
             visual_type="bar_chart",
         )
 
+    if topic == "addition_subtraction":
+        tool_args = parse_addition_subtraction_operands(normalized) or DEFAULT_TOOL_ARGS[topic]
+        return LearningContext(
+            topic=topic,
+            intent=intent,
+            tool_name="addition_subtraction",
+            tool_args=tool_args,
+            visual_type="operation_story",
+        )
+
+    if topic == "comparison_numbers":
+        tool_args = parse_comparison_operands(normalized) or DEFAULT_TOOL_ARGS[topic]
+        return LearningContext(
+            topic=topic,
+            intent=intent,
+            tool_name="number_comparison",
+            tool_args=tool_args,
+            visual_type="comparison_visual",
+        )
+
+    if topic == "time_clock":
+        tool_args = parse_time_operands(normalized) or DEFAULT_TOOL_ARGS[topic]
+        return LearningContext(
+            topic=topic,
+            intent=intent,
+            tool_name="clock_reading",
+            tool_args=tool_args,
+            visual_type="clock_calendar",
+        )
+
+    if topic == "measurement_length":
+        tool_args = parse_measurement_operands(normalized) or DEFAULT_TOOL_ARGS[topic]
+        return LearningContext(
+            topic=topic,
+            intent=intent,
+            tool_name="length_comparison",
+            tool_args=tool_args,
+            visual_type="ruler_measurement",
+        )
+
     return LearningContext(topic=None, intent=intent)
 
 
@@ -109,21 +173,45 @@ def infer_topic(normalized: str) -> Topic | None:
             "bieu do cot",
             "bieu do tranh",
             "bieu do",
-            "so sanh",
+            "so sanh cot",
+            "so sanh so lieu",
+            "so sanh du lieu",
             "to 1",
             "to 2",
             "to 3",
         ]
     ):
         return "data_representation"
+    if any(
+        token in normalized
+        for token in ["so sanh", "lon hon", "be hon", "bang nhau", "so nao lon", "so nao be"]
+    ):
+        return "comparison_numbers"
     if any(token in normalized for token in ["phan so", "pizza", "/"]):
         return "fraction_basic"
     if any(token in normalized for token in ["chu vi", "dien tich", "hinh chu nhat", "o vuong"]):
         return "perimeter_area_basic"
+    if any(
+        token in normalized
+        for token in ["dong ho", "may gio", "kim ngan", "kim dai", "doc gio", "gio", "phut"]
+    ):
+        return "time_clock"
+    if any(
+        token in normalized
+        for token in ["do dai", "thuoc", "dai hon", "ngan hon", "chieu dai bang thuoc"]
+    ):
+        return "measurement_length"
     if any(token in normalized for token in ["chia", "chia deu", ":"]):
         return "division"
     if any(token in normalized for token in ["nhan", "x", "dia keo", "moi nhom"]):
         return "multiplication"
+    # NOTE: "them"/"bot" are deliberately excluded — they're common generic
+    # Vietnamese words ("more"/"less") that also show up in unrelated
+    # follow-up phrases like "cho con them vi du" (give me another example),
+    # which would otherwise be misdetected as an addition_subtraction topic
+    # switch. "cong"/"tru"/"+"/"-" are unambiguous enough on their own.
+    if any(token in normalized for token in ["cong", "tru", "+", "-"]):
+        return "addition_subtraction"
     return None
 
 
@@ -216,6 +304,73 @@ def parse_rectangle_operands(normalized: str) -> dict[str, int | str] | None:
             "width": numbers[1],
             "unit": "o",
             "mode": mode,
+        }
+    return None
+
+
+def parse_addition_subtraction_operands(normalized: str) -> dict[str, int | str] | None:
+    match = re.search(r"(\d+)\s*\+\s*(\d+)", normalized) or re.search(
+        r"(\d+)\s*cong\s*(\d+)", normalized
+    )
+    if match:
+        return {
+            "operation": "+",
+            "operand_a": int(match.group(1)),
+            "operand_b": int(match.group(2)),
+            "item_name": "cam",
+        }
+
+    match = re.search(r"(\d+)\s*-\s*(\d+)", normalized) or re.search(
+        r"(\d+)\s*tru\s*(\d+)", normalized
+    )
+    if match:
+        return {
+            "operation": "-",
+            "operand_a": int(match.group(1)),
+            "operand_b": int(match.group(2)),
+            "item_name": "cam",
+        }
+
+    numbers = [int(number) for number in re.findall(r"\d+", normalized)]
+    if len(numbers) >= 2:
+        operation = "-" if any(token in normalized for token in ["tru", "bot"]) else "+"
+        return {
+            "operation": operation,
+            "operand_a": numbers[0],
+            "operand_b": numbers[1],
+            "item_name": "cam",
+        }
+    return None
+
+
+def parse_comparison_operands(normalized: str) -> dict[str, int | str] | None:
+    numbers = [int(number) for number in re.findall(r"\d+", normalized)]
+    if len(numbers) >= 2:
+        return {"number_a": numbers[0], "number_b": numbers[1]}
+    return None
+
+
+def parse_time_operands(normalized: str) -> dict[str, int | str] | None:
+    hour_match = re.search(r"(\d+)\s*gio", normalized)
+    if not hour_match:
+        return None
+
+    minute_match = re.search(r"(\d+)\s*phut", normalized)
+    return {
+        "hour": int(hour_match.group(1)),
+        "minute": int(minute_match.group(1)) if minute_match else 0,
+    }
+
+
+def parse_measurement_operands(normalized: str) -> dict[str, int | str] | None:
+    numbers = [int(number) for number in re.findall(r"\d+", normalized)]
+    if len(numbers) >= 2:
+        return {
+            "length_a": numbers[0],
+            "length_b": numbers[1],
+            "unit": "cm",
+            "object_a": "but",
+            "object_b": "thuoc",
         }
     return None
 

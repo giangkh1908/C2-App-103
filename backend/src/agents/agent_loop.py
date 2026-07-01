@@ -34,6 +34,26 @@ class AgentLoop:
         self.llm = llm
         self.tool_registry = tool_registry
 
+    def _resolve_tool_schemas(self, config: AgentRunConfig) -> list[dict[str, Any]] | None:
+        """Pick which tool schemas to expose to the LLM for this run.
+
+        If ``config.allowed_tool_names`` is set, only those tools are exposed
+        (empty list → no tools at all, forcing a text-only answer). Otherwise
+        falls back to exposing every registered tool.
+        """
+        if not config.use_tools:
+            return None
+
+        if config.allowed_tool_names is not None:
+            schemas = [
+                tool.to_openai_tool_schema()
+                for name in config.allowed_tool_names
+                if (tool := self.tool_registry.get(name)) is not None
+            ]
+            return schemas or None
+
+        return self.tool_registry.list_tool_schemas()
+
     async def run(
         self,
         user_message: str,
@@ -68,9 +88,7 @@ class AgentLoop:
             LLMMessage(role="user", content=user_message),
         ]
 
-        tools: list[dict[str, Any]] | None = (
-            self.tool_registry.list_tool_schemas() if config.use_tools else None
-        )
+        tools: list[dict[str, Any]] | None = self._resolve_tool_schemas(config)
 
         steps: list[AgentStep] = []
         last_observation: ToolObservation | None = None
@@ -294,9 +312,7 @@ class AgentLoop:
             LLMMessage(role="user", content=user_message),
         ]
 
-        tools: list[dict[str, Any]] | None = (
-            self.tool_registry.list_tool_schemas() if config.use_tools else None
-        )
+        tools: list[dict[str, Any]] | None = self._resolve_tool_schemas(config)
 
         steps: list[AgentStep] = []
         last_observation: ToolObservation | None = None

@@ -76,7 +76,10 @@ def normalize(data: dict, tool: str) -> dict | None:
         "tool": tool,
         "event": event,
         "session_id": (
-            data.get("session_id") or data.get("conversation_id") or data.get("generation_id") or ""
+            data.get("session_id")
+            or data.get("conversation_id")
+            or data.get("generation_id")
+            or ""
         ),
         "model": data.get("model", ""),
         "repo": repo,
@@ -92,12 +95,18 @@ def normalize(data: dict, tool: str) -> dict | None:
             prompt = data.get("prompt", "")[:1000]
         # PostToolUse: extract from tool_input
         elif isinstance(data.get("tool_input"), dict):
-            prompt = data["tool_input"].get("prompt") or data["tool_input"].get("content") or ""
+            prompt = (
+                data["tool_input"].get("prompt")
+                or data["tool_input"].get("content")
+                or ""
+            )
         base.update(
             {
                 "prompt": prompt,
                 "tool_name": data.get("tool_name", ""),
-                "tool_input": data.get("tool_input") if event != "UserPromptSubmit" else None,
+                "tool_input": data.get("tool_input")
+                if event != "UserPromptSubmit"
+                else None,
                 "tool_response": str(data.get("tool_response", ""))[:500],
             }
         )
@@ -156,7 +165,9 @@ def normalize(data: dict, tool: str) -> dict | None:
             {
                 "prompt": data.get("prompt", "")[:1000],
                 "tool_name": data.get("tool_name", ""),
-                "tool_input": data.get("tool_input") if event != "UserPromptSubmit" else None,
+                "tool_input": data.get("tool_input")
+                if event != "UserPromptSubmit"
+                else None,
                 "tool_response": str(data.get("tool_response", ""))[:500],
             }
         )
@@ -166,7 +177,9 @@ def normalize(data: dict, tool: str) -> dict | None:
             {
                 "prompt": data.get("prompt", "")[:1000],
                 "tool_name": data.get("tool_name", ""),
-                "tool_input": data.get("tool_input") if event != "UserPromptSubmit" else None,
+                "tool_input": data.get("tool_input")
+                if event != "UserPromptSubmit"
+                else None,
                 "tool_response": str(data.get("tool_response", ""))[:500],
             }
         )

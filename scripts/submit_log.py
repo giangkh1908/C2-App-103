@@ -9,6 +9,7 @@ After a successful submit, the live log is rotated:
 
 If the POST fails, the pending file is restored so nothing is lost.
 """
+
 import json
 import os
 import shutil
@@ -21,6 +22,7 @@ from pathlib import Path
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
@@ -153,7 +155,10 @@ def main():
 
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            print(f"[ai-log] Submitted {len(entries)} entries → {resp.status}", file=sys.stderr)
+            print(
+                f"[ai-log] Submitted {len(entries)} entries → {resp.status}",
+                file=sys.stderr,
+            )
     except urllib.error.URLError as e:
         # Failure: restore the whole pending (including leftover) for next push.
         if not snapshot_mode:

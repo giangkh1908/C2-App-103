@@ -36,6 +36,7 @@ class TutorAgent:
         use_tools: bool = True,
         history: list[dict[str, str]] | None = None,
         prompt_version: str | None = None,
+        allowed_tool_names: list[str] | None = None,
     ) -> AgentResponse:
         """Xử lý một câu hỏi toán học của học sinh.
 
@@ -46,6 +47,8 @@ class TutorAgent:
             use_tools: Cho phép agent dùng tool trực quan hay không.
             history: Lịch sử cuộc trò chuyện truyền xuống AgentLoop.
             prompt_version: Phiên bản prompt. ``None`` để dùng setting mặc định.
+            allowed_tool_names: Nếu được đặt, chỉ các tool này được đưa cho LLM
+                (danh sách rỗng ép trả lời bằng text, không dùng tool).
 
         Returns:
             :class:`AgentResponse` chứa câu trả lời và các bước trung gian.
@@ -57,11 +60,19 @@ class TutorAgent:
         pid = settings.prompt_id
         try:
             config = AgentRunConfig(
-                level=level, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+                level=level,
+                use_tools=use_tools,
+                prompt_version=pv,
+                prompt_id=pid,
+                allowed_tool_names=allowed_tool_names,
             )
         except ValidationError:
             config = AgentRunConfig(
-                level=_FALLBACK_LEVEL, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+                level=_FALLBACK_LEVEL,
+                use_tools=use_tools,
+                prompt_version=pv,
+                prompt_id=pid,
+                allowed_tool_names=allowed_tool_names,
             )
 
         try:
@@ -84,6 +95,7 @@ class TutorAgent:
         use_tools: bool = True,
         history: list[dict[str, str]] | None = None,
         prompt_version: str | None = None,
+        allowed_tool_names: list[str] | None = None,
     ) -> AsyncGenerator[tuple[str, Any], None]:
         """Streaming variant of chat(). Yields ("chunk", str) then ("done", AgentResponse)."""
         if not message.strip():
@@ -97,11 +109,19 @@ class TutorAgent:
         pid = settings.prompt_id
         try:
             config = AgentRunConfig(
-                level=level, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+                level=level,
+                use_tools=use_tools,
+                prompt_version=pv,
+                prompt_id=pid,
+                allowed_tool_names=allowed_tool_names,
             )
         except ValidationError:
             config = AgentRunConfig(
-                level=_FALLBACK_LEVEL, use_tools=use_tools, prompt_version=pv, prompt_id=pid
+                level=_FALLBACK_LEVEL,
+                use_tools=use_tools,
+                prompt_version=pv,
+                prompt_id=pid,
+                allowed_tool_names=allowed_tool_names,
             )
 
         try:

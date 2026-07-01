@@ -50,7 +50,9 @@ except ImportError:
 def _require_ok(response: requests.Response, action: str) -> dict[str, Any]:
     """Return parsed JSON on 2xx, or raise with status+body."""
     if not response.ok:
-        raise RuntimeError(f"{action} failed: {response.status_code} {response.text[:500]}")
+        raise RuntimeError(
+            f"{action} failed: {response.status_code} {response.text[:500]}"
+        )
     return response.json()
 
 
@@ -60,7 +62,9 @@ def _current_month() -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Smoke test the admin cost report pipeline")
+    parser = argparse.ArgumentParser(
+        description="Smoke test the admin cost report pipeline"
+    )
     parser.add_argument(
         "--backend-url",
         default="http://localhost:8000",
@@ -144,7 +148,9 @@ def main() -> None:
         month = _current_month()
         prompt_tokens = 1000
         completion_tokens = 500
-        cost_usd = prompt_tokens * 0.09 / 1_000_000 + completion_tokens * 0.18 / 1_000_000
+        cost_usd = (
+            prompt_tokens * 0.09 / 1_000_000 + completion_tokens * 0.18 / 1_000_000
+        )
 
         cost_logs_coll.insert_one(
             {

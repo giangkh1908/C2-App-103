@@ -159,9 +159,7 @@ def build_practice_questions(
         question = "Đồng hồ đang chỉ mấy giờ?"
         options = [time_label, f"{hour % 12 + 1} giờ", f"{max(hour - 1, 1)} giờ", "12 giờ"]
         return (
-            LessonPracticeQuestion(
-                question=question, options=options, correct_answer=time_label
-            ),
+            LessonPracticeQuestion(question=question, options=options, correct_answer=time_label),
             PracticeQuestion(
                 id=f"practice_clock_{hour}_{tool_data.get('minute', 0)}",
                 question_text=question,
@@ -182,7 +180,9 @@ def build_practice_questions(
         longer_object = tool_data.get("longer_object") or (
             object_a if length_a >= length_b else object_b
         )
-        question = f"{object_a} dài {length_a}{unit}, {object_b} dài {length_b}{unit}. Vật nào dài hơn?"
+        question = (
+            f"{object_a} dài {length_a}{unit}, {object_b} dài {length_b}{unit}. Vật nào dài hơn?"
+        )
         options = [object_a, object_b, "Bằng nhau", "Không biết"]
         correct_answer = longer_object if length_a != length_b else "Bằng nhau"
         return (

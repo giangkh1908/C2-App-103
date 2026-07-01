@@ -364,7 +364,12 @@ def _build_addition_subtraction_bundle(
                 total_count=float(result),
                 groups_label="S\u1ed1 th\u1ee9 nh\u1ea5t",
                 items_label="S\u1ed1 th\u1ee9 hai",
-                config={"operation": operation, "before": operand_a, "change": operand_b, "result": result},
+                config={
+                    "operation": operation,
+                    "before": operand_a,
+                    "change": operand_b,
+                    "result": result,
+                },
             ),
             simulation_config=SimulationConfig(
                 type="operation_story",

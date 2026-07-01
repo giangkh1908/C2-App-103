@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from src.agents.schemas import AgentResponse
 from src.services.curriculum_adapter import (
     build_curriculum_scope_redirect_message,
     build_grade1_curriculum_result,
@@ -11,6 +12,7 @@ from src.services.curriculum_adapter import (
 )
 from src.services.learning_core import LearningCoreService
 from src.services.types import LearningCoreRequest
+from src.tools.registry import create_default_tool_registry
 
 
 def test_curriculum_scope_detector_rejects_other_grade1_topic() -> None:
@@ -126,3 +128,64 @@ async def test_learning_core_stream_uses_curriculum_path_for_grade1_comparison()
     assert result.visual_card.visual_data.type == "comparison_visual"
     assert result.visual_card.visual_data.primary_count == 37
     assert result.visual_card.visual_data.secondary_count == 42
+
+
+@pytest.mark.asyncio
+async def test_learning_core_keeps_addition_topic_after_mental_math_follow_up() -> None:
+    """Regression: "3 + 6 bằng mấy" is routed via G1-OPS-02 (tính nhẩm cộng trừ).
+
+    The persisted `topic` for that turn used to be the generic "multiplication"
+    bucket, so a follow-up "cho con ví dụ khác" inherited the wrong topic and
+    produced a multiplication example instead of another addition example.
+    """
+    with patch("src.services.learning_core.MemoryRepository") as memory_repository_cls:
+        memory_repository_cls.return_value.append_turn = AsyncMock()
+        service = LearningCoreService(
+            tutor_agent=SimpleNamespace(
+                chat=AsyncMock(
+                    return_value=AgentResponse(answer="Đây là một ví dụ cộng khác cho con.")
+                )
+            ),
+            tool_registry=create_default_tool_registry(),
+        )
+
+    service.memory_repository.append_turn = AsyncMock()
+    service.memory_repository.load_messages = AsyncMock(return_value=[])
+    service.session_repository.get_recent_turns = AsyncMock(return_value=[])
+    service.session_repository.get_latest_turn = AsyncMock(return_value=None)
+    service.session_repository.save = AsyncMock()
+
+    first_request = LearningCoreRequest(
+        user_id="user-1",
+        session_id="session-1",
+        grade=1,
+        message="3 + 6 bằng mấy",
+    )
+    first_result = await service.generate(first_request)
+
+    assert first_result.curriculum_topic_id == "G1-OPS-02"
+    assert first_result.topic == "addition_subtraction"
+
+    service.session_repository.get_recent_turns = AsyncMock(
+        return_value=[
+            {
+                "detected_topic": first_result.topic,
+                "selected_topic": None,
+                "visual_snapshot": {
+                    "visual_data": first_result.visual_card.visual_data.model_dump()
+                },
+            }
+        ]
+    )
+
+    follow_up_request = LearningCoreRequest(
+        user_id="user-1",
+        session_id="session-1",
+        grade=1,
+        message="cho con ví dụ khác",
+    )
+    follow_up_result = await service.generate(follow_up_request)
+
+    assert follow_up_result.topic == "addition_subtraction"
+    assert follow_up_result.visual_card is not None
+    assert follow_up_result.visual_card.visual_data.type == "operation_story"

@@ -331,6 +331,17 @@ def detect_curriculum_topic(message: str, grade: int) -> str | None:
 
 logger = get_logger("toan_truc_quan.learning_core")
 RECENT_SESSION_WINDOW = 5
+TOPIC_TOOL_DATA_TYPE: dict[Topic, str] = {
+    "multiplication": "candy_multiplication",
+    "division": "equal_division",
+    "fraction_basic": "fraction_pizza",
+    "perimeter_area_basic": "rectangle_measurement",
+    "data_representation": "bar_chart",
+    "addition_subtraction": "addition_subtraction",
+    "comparison_numbers": "number_comparison",
+    "time_clock": "clock_reading",
+    "measurement_length": "length_comparison",
+}
 FOLLOW_UP_EXAMPLE_LABELS: dict[Topic, dict[str, int | str]] = {
     "multiplication": {
         "item_name": "cái kẹo",
@@ -742,6 +753,7 @@ class LearningCoreService:
                 level=grade_to_level(request.grade),
                 use_tools=True,
                 history=history_payload,
+                allowed_tool_names=allowed_tool_names_for_context(context),
             )
             await self._record_llm_cost(request.user_id, agent_response)
             agent_metadata = {
@@ -771,7 +783,7 @@ class LearningCoreService:
             else:
                 default_topic = request.selected_topic or "multiplication"
                 context = build_default_context(default_topic)
-                if agent_response.visual_data:
+                if is_visual_data_for_topic(agent_response.visual_data, context.topic):
                     tool_data = agent_response.visual_data
                     agent_metadata["visual_source"] = "agent"
                 else:
@@ -821,6 +833,7 @@ class LearningCoreService:
             level=grade_to_level(request.grade),
             use_tools=True,
             history=history_payload,
+            allowed_tool_names=allowed_tool_names_for_context(context),
         )
         await self._record_llm_cost(request.user_id, agent_response)
         agent_metadata = {
@@ -854,11 +867,7 @@ class LearningCoreService:
             await self._persist(request, result)
             return result
 
-        if (
-            agent_response.visual_data
-            and isinstance(agent_response.visual_data, dict)
-            and len(agent_response.visual_data) > 0
-        ):
+        if is_visual_data_for_topic(agent_response.visual_data, context.topic):
             tool_data = agent_response.visual_data
             response_source = "agent"
             agent_metadata["visual_source"] = "agent"
@@ -1032,6 +1041,7 @@ class LearningCoreService:
             level=level,
             use_tools=True,
             history=history_payload,
+            allowed_tool_names=allowed_tool_names_for_context(context),
         ):
             if event_type == "chunk":
                 yield ("chunk", payload)
@@ -1073,7 +1083,7 @@ class LearningCoreService:
 
             default_topic = request.selected_topic or "multiplication"
             context = build_default_context(default_topic)
-            if agent_response.visual_data:
+            if is_visual_data_for_topic(agent_response.visual_data, context.topic):
                 tool_data = agent_response.visual_data
                 agent_metadata["visual_source"] = "agent"
             else:
@@ -1145,11 +1155,7 @@ class LearningCoreService:
             yield ("done", result)
             return
 
-        if (
-            agent_response.visual_data
-            and isinstance(agent_response.visual_data, dict)
-            and len(agent_response.visual_data) > 0
-        ):
+        if is_visual_data_for_topic(agent_response.visual_data, context.topic):
             tool_data = agent_response.visual_data
             response_source = "agent"
             agent_metadata["visual_source"] = "agent"
@@ -1341,6 +1347,37 @@ def build_random_tool_args(topic: Topic) -> dict[str, int | str]:
         width = random.randint(2, min(length, 6))
         mode = random.choice(["area_grid", "perimeter_path"])
         return {"length": length, "width": width, "unit": "cm", "mode": mode}
+    if topic == "addition_subtraction":
+        operation = random.choice(["+", "-"])
+        operand_a = random.randint(5, 50)
+        operand_b = random.randint(1, operand_a if operation == "-" else 50)
+        item = random.choice(["quả cam", "cái kẹo", "quyển vở", "bông hoa"])
+        return {
+            "operation": operation,
+            "operand_a": operand_a,
+            "operand_b": operand_b,
+            "item_name": item,
+        }
+    if topic == "comparison_numbers":
+        number_a = random.randint(1, 100)
+        number_b = random.randint(1, 100)
+        return {"number_a": number_a, "number_b": number_b}
+    if topic == "time_clock":
+        hour = random.randint(1, 12)
+        minute = random.choice([0, 15, 30, 45])
+        return {"hour": hour, "minute": minute}
+    if topic == "measurement_length":
+        length_a = random.randint(3, 20)
+        length_b = random.randint(3, 20)
+        object_a = random.choice(["cây bút", "sợi dây", "chiếc bàn"])
+        object_b = random.choice(["cây thước", "quyển sách", "cái ghế"])
+        return {
+            "length_a": length_a,
+            "length_b": length_b,
+            "unit": "cm",
+            "object_a": object_a,
+            "object_b": object_b,
+        }
     return {"groups": 3, "items_per_group": 4, "item_name": "vật", "group_name": "nhóm"}
 
 
@@ -1396,6 +1433,55 @@ def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> di
             "max_value": max(values),
             "total_value": sum(values),
         }
+    if topic == "addition_subtraction":
+        operation = str(tool_args.get("operation") or "+")
+        operand_a = int(tool_args.get("operand_a") or 5)
+        operand_b = int(tool_args.get("operand_b") or 3)
+        result = operand_a - operand_b if operation == "-" else operand_a + operand_b
+        return {
+            "type": "addition_subtraction",
+            "operation": operation,
+            "operand_a": operand_a,
+            "operand_b": operand_b,
+            "result": result,
+            "item_name": tool_args.get("item_name") or "quả cam",
+        }
+    if topic == "comparison_numbers":
+        number_a = int(tool_args.get("number_a") or 37)
+        number_b = int(tool_args.get("number_b") or 42)
+        symbol = ">" if number_a > number_b else "<" if number_a < number_b else "="
+        return {
+            "type": "number_comparison",
+            "number_a": number_a,
+            "number_b": number_b,
+            "comparison_symbol": symbol,
+            "larger": max(number_a, number_b),
+            "smaller": min(number_a, number_b),
+        }
+    if topic == "time_clock":
+        hour = int(tool_args.get("hour") or 7)
+        minute = int(tool_args.get("minute") or 0)
+        time_label = f"{hour} giờ" if minute == 0 else f"{hour} giờ {minute} phút"
+        return {
+            "type": "clock_reading",
+            "hour": hour,
+            "minute": minute,
+            "time_label": time_label,
+        }
+    if topic == "measurement_length":
+        length_a = int(tool_args.get("length_a") or 9)
+        length_b = int(tool_args.get("length_b") or 6)
+        object_a = tool_args.get("object_a") or "cây bút"
+        object_b = tool_args.get("object_b") or "cây thước"
+        return {
+            "type": "length_comparison",
+            "length_a": length_a,
+            "length_b": length_b,
+            "unit": tool_args.get("unit") or "cm",
+            "object_a": object_a,
+            "object_b": object_b,
+            "longer_object": object_a if length_a >= length_b else object_b,
+        }
     length = int(tool_args.get("length") or 5)
     width = int(tool_args.get("width") or 3)
     return {
@@ -1409,17 +1495,49 @@ def build_default_tool_data(topic: Topic, tool_args: dict[str, int | str]) -> di
     }
 
 
+def allowed_tool_names_for_context(context: LearningContext) -> list[str]:
+    """Compute which tool(s) the LLM is allowed to call for this context.
+
+    Returns a single-element list with ``context.tool_name`` when the topic
+    is known and has a matching tool; otherwise an empty list, which tells
+    ``AgentRunConfig``/``AgentLoop`` to pass no tools at all so the LLM must
+    answer with text or rely on already-available data instead of picking a
+    tool for a different topic.
+    """
+    if context.topic and context.tool_name:
+        return [context.tool_name]
+    return []
+
+
+def is_visual_data_for_topic(visual_data: dict | None, topic: Topic | None) -> bool:
+    """Check that agent-produced visual_data actually belongs to *topic*.
+
+    The agent is allowed at most one tool per call, but this is a defensive
+    check against stale/mismatched data (e.g. carried over from a follow-up
+    context) before it gets treated as trustworthy visual data.
+    """
+    if not visual_data or not isinstance(visual_data, dict) or topic is None:
+        return False
+    expected_type = TOPIC_TOOL_DATA_TYPE.get(topic)
+    return expected_type is not None and visual_data.get("type") == expected_type
+
+
 def build_tutor_message(message: str, topic: Topic | None, grade: int) -> str:
     topic_hint = f" chủ đề '{topic}'" if topic else ""
     if topic:
         vague_hint = "nếu câu hỏi không có số liệu cụ thể, hãy tự chọn số ngẫu nhiên phù hợp và giải thích ngay"
+        tool_scope_hint = (
+            f" CHỈ được dùng tool khớp đúng chủ đề '{topic}', "
+            "tuyệt đối không dùng tool thuộc chủ đề khác."
+        )
     else:
         vague_hint = "nếu câu hỏi còn mơ hồ về chủ đề, hãy hỏi lại một câu ngắn gọn"
+        tool_scope_hint = ""
     return (
         f"Học sinh lớp {grade} đang hỏi về{topic_hint}. "
         "Hãy đọc kỹ yêu cầu và trả lời đúng theo đó: "
         "nếu câu hỏi rõ, hãy giải thích ngắn gọn, thân thiện, dễ hiểu; "
-        f"{vague_hint}. "
+        f"{vague_hint}.{tool_scope_hint} "
         f"Câu hỏi: {message}"
     )
 

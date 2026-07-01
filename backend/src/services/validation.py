@@ -11,6 +11,10 @@ EXPECTED_VISUAL_TYPES: dict[Topic, set[str]] = {
     "fraction_basic": {"fraction_pizza"},
     "perimeter_area_basic": {"perimeter_path", "area_grid"},
     "data_representation": {"bar_chart"},
+    "addition_subtraction": {"operation_story"},
+    "comparison_numbers": {"comparison_visual"},
+    "time_clock": {"clock_calendar"},
+    "measurement_length": {"ruler_measurement"},
 }
 
 EXPECTED_CHAT_VISUAL_TYPES: dict[Topic, str] = {
@@ -19,6 +23,10 @@ EXPECTED_CHAT_VISUAL_TYPES: dict[Topic, str] = {
     "fraction_basic": "pizza",
     "perimeter_area_basic": "grid",
     "data_representation": "bar_chart",
+    "addition_subtraction": "operation_story",
+    "comparison_numbers": "comparison_visual",
+    "time_clock": "clock_calendar",
+    "measurement_length": "ruler_measurement",
 }
 
 EXPECTED_SIMULATION_TYPES: dict[str, str] = {
@@ -28,6 +36,10 @@ EXPECTED_SIMULATION_TYPES: dict[str, str] = {
     "perimeter_path": "perimeter_path_counter",
     "area_grid": "area_grid_counter",
     "bar_chart": "bar_chart_reader",
+    "operation_story": "operation_story_stepper",
+    "comparison_visual": "comparison_visual_scale",
+    "clock_calendar": "clock_calendar_reader",
+    "ruler_measurement": "ruler_measurement_counter",
 }
 
 

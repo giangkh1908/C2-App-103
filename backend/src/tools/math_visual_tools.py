@@ -278,10 +278,211 @@ class RectangleMeasurementTool(BaseTool):
         )
 
 
+class AdditionSubtractionInput(ToolInput):
+    operation: Literal["+", "-"] = Field(..., description="Phép tính: cộng hoặc trừ")
+    operand_a: int = Field(..., ge=0, le=1000, description="Số thứ nhất")
+    operand_b: int = Field(..., ge=0, le=1000, description="Số thứ hai")
+    item_name: str = Field(default="quả cam", description="Tên vật minh họa")
+
+
+class AdditionSubtractionTool(BaseTool):
+    name = "addition_subtraction"
+    description = "Tạo mô phỏng phép cộng hoặc phép trừ hai số có số liệu cụ thể."
+    input_schema = AdditionSubtractionInput
+
+    async def run(self, **kwargs: Any) -> ToolResult:
+        try:
+            validated_input = self.validate_input(kwargs)
+        except Exception as exc:
+            return ToolResult(
+                success=False,
+                error=str(exc),
+                message="Dữ liệu đầu vào chưa hợp lệ.",
+            )
+
+        operation = validated_input["operation"]
+        operand_a = validated_input["operand_a"]
+        operand_b = validated_input["operand_b"]
+        item_name = validated_input["item_name"]
+
+        if operation == "-" and operand_b > operand_a:
+            return ToolResult(
+                success=False,
+                error="UNSUPPORTED_NEGATIVE_RESULT",
+                message="Hiện tại học cụ này chỉ hỗ trợ phép trừ không bị âm.",
+            )
+
+        result = operand_a - operand_b if operation == "-" else operand_a + operand_b
+        expression = f"{operand_a} {operation} {operand_b} = {result}"
+
+        return ToolResult(
+            success=True,
+            data={
+                "type": "addition_subtraction",
+                "operation": operation,
+                "operand_a": operand_a,
+                "operand_b": operand_b,
+                "result": result,
+                "item_name": item_name,
+                "expression": expression,
+            },
+            message=(
+                f"{operand_a} {operation} {operand_b} bằng {result}. "
+                f"Con có {operand_a} {item_name}, "
+                f"{'bớt đi' if operation == '-' else 'thêm'} {operand_b} {item_name} "
+                f"thì được {result} {item_name}."
+            ),
+        )
+
+
+class NumberComparisonInput(ToolInput):
+    number_a: int = Field(..., ge=0, le=1000, description="Số thứ nhất")
+    number_b: int = Field(..., ge=0, le=1000, description="Số thứ hai")
+
+
+class NumberComparisonTool(BaseTool):
+    name = "number_comparison"
+    description = "So sánh hai số cụ thể để xem số nào lớn hơn, bé hơn hoặc bằng nhau."
+    input_schema = NumberComparisonInput
+
+    async def run(self, **kwargs: Any) -> ToolResult:
+        try:
+            validated_input = self.validate_input(kwargs)
+        except Exception as exc:
+            return ToolResult(
+                success=False,
+                error=str(exc),
+                message="Dữ liệu đầu vào chưa hợp lệ.",
+            )
+
+        number_a = validated_input["number_a"]
+        number_b = validated_input["number_b"]
+
+        symbol = ">" if number_a > number_b else "<" if number_a < number_b else "="
+        expression = f"{number_a} {symbol} {number_b}"
+
+        return ToolResult(
+            success=True,
+            data={
+                "type": "number_comparison",
+                "number_a": number_a,
+                "number_b": number_b,
+                "comparison_symbol": symbol,
+                "larger": max(number_a, number_b),
+                "smaller": min(number_a, number_b),
+                "expression": expression,
+            },
+            message=(
+                f"So sánh {number_a} và {number_b}: {expression}. "
+                + (
+                    "Hai số này bằng nhau."
+                    if symbol == "="
+                    else f"Số {max(number_a, number_b)} lớn hơn."
+                )
+            ),
+        )
+
+
+class ClockReadingInput(ToolInput):
+    hour: int = Field(..., ge=1, le=12, description="Giờ (1-12)")
+    minute: int = Field(default=0, ge=0, le=59, description="Phút (0-59)")
+
+
+class ClockReadingTool(BaseTool):
+    name = "clock_reading"
+    description = "Tạo mô phỏng đồng hồ để đọc giờ cụ thể."
+    input_schema = ClockReadingInput
+
+    async def run(self, **kwargs: Any) -> ToolResult:
+        try:
+            validated_input = self.validate_input(kwargs)
+        except Exception as exc:
+            return ToolResult(
+                success=False,
+                error=str(exc),
+                message="Dữ liệu đầu vào chưa hợp lệ.",
+            )
+
+        hour = validated_input["hour"]
+        minute = validated_input["minute"]
+        time_label = f"{hour} giờ" if minute == 0 else f"{hour} giờ {minute} phút"
+
+        return ToolResult(
+            success=True,
+            data={
+                "type": "clock_reading",
+                "hour": hour,
+                "minute": minute,
+                "time_label": time_label,
+                "expression": time_label,
+            },
+            message=f"Đồng hồ đang chỉ {time_label}.",
+        )
+
+
+class LengthComparisonInput(ToolInput):
+    length_a: int = Field(..., ge=1, le=200, description="Độ dài vật thứ nhất")
+    length_b: int = Field(..., ge=1, le=200, description="Độ dài vật thứ hai")
+    unit: str = Field(default="cm", description="Đơn vị đo")
+    object_a: str = Field(default="cây bút", description="Tên vật thứ nhất")
+    object_b: str = Field(default="cây thước", description="Tên vật thứ hai")
+
+
+class LengthComparisonTool(BaseTool):
+    name = "length_comparison"
+    description = "So sánh độ dài của hai vật có số đo cụ thể."
+    input_schema = LengthComparisonInput
+
+    async def run(self, **kwargs: Any) -> ToolResult:
+        try:
+            validated_input = self.validate_input(kwargs)
+        except Exception as exc:
+            return ToolResult(
+                success=False,
+                error=str(exc),
+                message="Dữ liệu đầu vào chưa hợp lệ.",
+            )
+
+        length_a = validated_input["length_a"]
+        length_b = validated_input["length_b"]
+        unit = validated_input["unit"]
+        object_a = validated_input["object_a"]
+        object_b = validated_input["object_b"]
+        longer_object = object_a if length_a >= length_b else object_b
+        symbol = ">" if length_a > length_b else "<" if length_a < length_b else "="
+        expression = f"{object_a} {length_a}{unit} {symbol} {object_b} {length_b}{unit}"
+
+        return ToolResult(
+            success=True,
+            data={
+                "type": "length_comparison",
+                "length_a": length_a,
+                "length_b": length_b,
+                "unit": unit,
+                "object_a": object_a,
+                "object_b": object_b,
+                "longer_object": longer_object,
+                "expression": expression,
+            },
+            message=(
+                f"{object_a} dài {length_a}{unit}, {object_b} dài {length_b}{unit}. "
+                + (
+                    f"{longer_object} dài hơn."
+                    if length_a != length_b
+                    else "Hai vật dài bằng nhau."
+                )
+            ),
+        )
+
+
 def get_math_visual_tools() -> list[BaseTool]:
     return [
         CandyMultiplicationTool(),
         EqualDivisionTool(),
         FractionPizzaTool(),
         RectangleMeasurementTool(),
+        AdditionSubtractionTool(),
+        NumberComparisonTool(),
+        ClockReadingTool(),
+        LengthComparisonTool(),
     ]

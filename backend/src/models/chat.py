@@ -8,6 +8,10 @@ Topic = Literal[
     "fraction_basic",
     "perimeter_area_basic",
     "data_representation",
+    "addition_subtraction",
+    "comparison_numbers",
+    "time_clock",
+    "measurement_length",
 ]
 Intent = Literal[
     "explain_concept",

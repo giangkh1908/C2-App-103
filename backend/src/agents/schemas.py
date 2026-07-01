@@ -41,3 +41,11 @@ class AgentRunConfig(BaseModel):
     use_tools: bool = True
     prompt_version: str = "v1"
     prompt_id: str = "tutor_system"
+    allowed_tool_names: list[str] | None = Field(
+        default=None,
+        description=(
+            "Nếu được đặt, chỉ các tool có tên trong danh sách này được đưa cho LLM. "
+            "Danh sách rỗng nghĩa là không tool nào được đưa (ép LLM trả lời bằng text). "
+            "None nghĩa là không lọc — đưa toàn bộ tool đã đăng ký (hành vi mặc định cũ)."
+        ),
+    )

@@ -106,6 +106,100 @@ def build_practice_questions(
             ),
         )
 
+    if topic == "addition_subtraction":
+        operation = tool_data["operation"]
+        operand_a = tool_data["operand_a"]
+        operand_b = tool_data["operand_b"]
+        result = tool_data["result"]
+        question = f"{operand_a} {operation} {operand_b} bằng bao nhiêu?"
+        options = [
+            str(result),
+            str(operand_a + operand_b + 1),
+            str(abs(operand_a - operand_b)),
+            str(operand_a),
+        ]
+        return (
+            LessonPracticeQuestion(question=question, options=options, correct_answer=str(result)),
+            PracticeQuestion(
+                id=f"practice_addsub_{operand_a}_{operation}_{operand_b}",
+                question_text=question,
+                options=options,
+                correct_answer_index=0,
+                success_message="Đúng rồi. Con đã tính đúng kết quả.",
+                fail_message="Con thử đếm lại từng bước trên hình nhé.",
+                hint="Nếu thêm vào thì cộng, nếu bớt đi thì trừ.",
+            ),
+        )
+
+    if topic == "comparison_numbers":
+        number_a = tool_data["number_a"]
+        number_b = tool_data["number_b"]
+        larger = tool_data.get("larger", max(number_a, number_b))
+        question = f"Số nào lớn hơn giữa {number_a} và {number_b}?"
+        options = [str(number_a), str(number_b), str(abs(number_a - number_b)), "Bằng nhau"]
+        correct_answer = str(larger) if number_a != number_b else "Bằng nhau"
+        return (
+            LessonPracticeQuestion(
+                question=question, options=options, correct_answer=correct_answer
+            ),
+            PracticeQuestion(
+                id=f"practice_compare_{number_a}_{number_b}",
+                question_text=question,
+                options=options,
+                correct_answer_index=options.index(correct_answer),
+                success_message="Đúng rồi. Con đã so sánh đúng hai số.",
+                fail_message="Con thử so sánh lại theo tia số nhé.",
+                hint="Số nào ở bên phải hơn trên tia số thì lớn hơn.",
+            ),
+        )
+
+    if topic == "time_clock":
+        hour = tool_data["hour"]
+        time_label = tool_data.get("time_label") or f"{hour} giờ"
+        question = "Đồng hồ đang chỉ mấy giờ?"
+        options = [time_label, f"{hour % 12 + 1} giờ", f"{max(hour - 1, 1)} giờ", "12 giờ"]
+        return (
+            LessonPracticeQuestion(
+                question=question, options=options, correct_answer=time_label
+            ),
+            PracticeQuestion(
+                id=f"practice_clock_{hour}_{tool_data.get('minute', 0)}",
+                question_text=question,
+                options=options,
+                correct_answer_index=0,
+                success_message="Đúng rồi. Con đọc giờ rất tốt.",
+                fail_message="Con xem lại kim ngắn và kim dài nhé.",
+                hint="Kim ngắn chỉ giờ, kim dài chỉ phút.",
+            ),
+        )
+
+    if topic == "measurement_length":
+        length_a = tool_data["length_a"]
+        length_b = tool_data["length_b"]
+        unit = tool_data.get("unit") or "cm"
+        object_a = tool_data.get("object_a") or "cây bút"
+        object_b = tool_data.get("object_b") or "cây thước"
+        longer_object = tool_data.get("longer_object") or (
+            object_a if length_a >= length_b else object_b
+        )
+        question = f"{object_a} dài {length_a}{unit}, {object_b} dài {length_b}{unit}. Vật nào dài hơn?"
+        options = [object_a, object_b, "Bằng nhau", "Không biết"]
+        correct_answer = longer_object if length_a != length_b else "Bằng nhau"
+        return (
+            LessonPracticeQuestion(
+                question=question, options=options, correct_answer=correct_answer
+            ),
+            PracticeQuestion(
+                id=f"practice_length_{length_a}_{length_b}",
+                question_text=question,
+                options=options,
+                correct_answer_index=options.index(correct_answer),
+                success_message="Đúng rồi. Con đã so sánh đúng độ dài.",
+                fail_message="Con nhìn lại vật nào dài hơn nhé.",
+                hint="Vật nào có số đo lớn hơn thì dài hơn.",
+            ),
+        )
+
     question = (
         f"Hình chữ nhật dài {tool_data['length']} ô, rộng {tool_data['width']} ô "
         "có diện tích bao nhiêu?"

@@ -64,9 +64,9 @@ async def test_agent_loop_final_answer_no_tool_call() -> None:
     # Không có tool call nào xảy ra
     assert response.steps == []
 
-    # LLM nhận đúng 4 tool schemas
+    # LLM nhận đúng toàn bộ tool schemas đã đăng ký (không lọc theo topic)
     assert fake_llm.last_tools is not None
-    assert len(fake_llm.last_tools) == 4
+    assert len(fake_llm.last_tools) == 8
 
     # Messages gồm ít nhất system + user
     assert len(fake_llm.last_messages) >= 2
@@ -257,3 +257,51 @@ async def test_agent_loop_llm_exception_returns_fallback() -> None:
 
     # Không có step nào vì LLM lỗi ngay lần đầu
     assert response.steps == []
+
+
+# ---------------------------------------------------------------------------
+# Test – allowed_tool_names lọc tool theo topic trước khi đưa cho LLM
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_agent_loop_filters_tools_to_allowed_tool_names() -> None:
+    fake_llm = FinalAnswerLLM()
+    registry = create_default_tool_registry()
+    loop = AgentLoop(llm=fake_llm, tool_registry=registry)
+
+    await loop.run(
+        "5 + 3 bằng mấy",
+        AgentRunConfig(level="L3", use_tools=True, allowed_tool_names=["addition_subtraction"]),
+    )
+
+    assert fake_llm.last_tools is not None
+    assert [tool["function"]["name"] for tool in fake_llm.last_tools] == ["addition_subtraction"]
+
+
+@pytest.mark.asyncio
+async def test_agent_loop_passes_no_tools_when_allowed_tool_names_empty() -> None:
+    fake_llm = FinalAnswerLLM()
+    registry = create_default_tool_registry()
+    loop = AgentLoop(llm=fake_llm, tool_registry=registry)
+
+    await loop.run(
+        "Dạy con toán",
+        AgentRunConfig(level="L3", use_tools=True, allowed_tool_names=[]),
+    )
+
+    assert fake_llm.last_tools is None
+
+
+@pytest.mark.asyncio
+async def test_agent_loop_ignores_unknown_allowed_tool_names() -> None:
+    fake_llm = FinalAnswerLLM()
+    registry = create_default_tool_registry()
+    loop = AgentLoop(llm=fake_llm, tool_registry=registry)
+
+    await loop.run(
+        "Câu hỏi bất kỳ",
+        AgentRunConfig(level="L3", use_tools=True, allowed_tool_names=["not_a_real_tool"]),
+    )
+
+    assert fake_llm.last_tools is None

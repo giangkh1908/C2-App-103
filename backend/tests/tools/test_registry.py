@@ -89,4 +89,4 @@ def test_create_default_tool_registry_registers_math_tools() -> None:
 
     tools = registry.list_tools()
 
-    assert len(tools) == 4
+    assert len(tools) == 8

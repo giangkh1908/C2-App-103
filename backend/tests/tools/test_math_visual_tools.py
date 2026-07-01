@@ -123,10 +123,14 @@ def test_get_math_visual_tools_returns_all_tools() -> None:
 
     tool_names = {tool.name for tool in tools}
 
-    assert len(tools) == 4
+    assert len(tools) == 8
     assert tool_names == {
         "candy_multiplication",
         "equal_division",
         "fraction_pizza",
         "rectangle_measurement",
+        "addition_subtraction",
+        "number_comparison",
+        "clock_reading",
+        "length_comparison",
     }

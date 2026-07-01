@@ -11,17 +11,10 @@ Tests cover:
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
 
-from src.agents.prompts import (
-    TOOL_USE_INSTRUCTION,
-)
-from src.agents.prompts import (
-    build_tutor_system_prompt as build_hardcoded,
-)
 from src.llm.prompt_registry import PromptNotFoundError, PromptRegistry
 
 # Root of the backend package

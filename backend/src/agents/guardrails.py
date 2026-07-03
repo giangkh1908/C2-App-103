@@ -183,9 +183,7 @@ def is_gibberish(text: str) -> bool:
 
 def is_prompt_injection(text: str) -> bool:
     normalized = normalize_text(text)
-    return bool(normalized) and any(
-        phrase in normalized for phrase in _PROMPT_INJECTION_PHRASES
-    )
+    return bool(normalized) and any(phrase in normalized for phrase in _PROMPT_INJECTION_PHRASES)
 
 
 def is_non_math_request(text: str) -> bool:

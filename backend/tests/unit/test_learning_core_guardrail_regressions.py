@@ -4,10 +4,6 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from src.agents.schemas import AgentResponse
-from src.services.curriculum_adapter import (
-    build_curriculum_out_of_scope_message,
-    get_prompt_examples_for_grade,
-)
 from src.services.learning_core import LearningCoreService
 from src.services.types import LearningCoreRequest
 
@@ -97,7 +93,9 @@ async def test_learning_core_stream_blocks_weather_requests_before_llm_call() ->
 
 
 @pytest.mark.asyncio
-async def test_learning_core_contextless_message_returns_clarification_without_math_fallback() -> None:
+async def test_learning_core_contextless_message_returns_clarification_without_math_fallback() -> (
+    None
+):
     with patch("src.services.learning_core.MemoryRepository") as memory_repository_cls:
         memory_repository_cls.return_value.append_turn = AsyncMock()
         service = _build_service(

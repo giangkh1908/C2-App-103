@@ -22,8 +22,8 @@ from src.services.curriculum_adapter import (
     build_curriculum_out_of_scope_message,
     build_curriculum_scope_redirect_message,
     build_grade1_curriculum_result,
-    get_prompt_examples_for_grade,
     get_prompt_examples_for_curriculum_topic,
+    get_prompt_examples_for_grade,
     get_runtime_topic_for_curriculum_topic,
     is_supported_curriculum_topic,
     resolve_curriculum_topic_scope,
@@ -784,13 +784,10 @@ class LearningCoreService:
         if request.grade in (1, 2):
             detected_curriculum_topic = detect_curriculum_topic(request.message, request.grade)
             if request.curriculum_topic_id is None:
-                if (
-                    detected_curriculum_topic is None
-                    and not (
-                        follow_up_intent is not None
-                        and prev_turn
-                        and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
-                    )
+                if detected_curriculum_topic is None and not (
+                    follow_up_intent is not None
+                    and prev_turn
+                    and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
                 ):
                     return await self._build_curriculum_out_of_scope_result(
                         request=request,
@@ -1108,13 +1105,10 @@ class LearningCoreService:
         if request.grade in (1, 2):
             detected_curriculum_topic = detect_curriculum_topic(request.message, request.grade)
             if request.curriculum_topic_id is None:
-                if (
-                    detected_curriculum_topic is None
-                    and not (
-                        follow_up_intent is not None
-                        and prev_turn
-                        and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
-                    )
+                if detected_curriculum_topic is None and not (
+                    follow_up_intent is not None
+                    and prev_turn
+                    and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
                 ):
                     out_of_scope_result = await self._build_curriculum_out_of_scope_result(
                         request=request,
@@ -1407,7 +1401,8 @@ class LearningCoreService:
             practice_question_chat=None,
             tts_text=assistant_message,
             response_mode="clarification_needed",
-            follow_up_suggestions=follow_up_suggestions or [
+            follow_up_suggestions=follow_up_suggestions
+            or [
                 "Con muốn học phép nhân.",
                 "Con muốn học phép chia.",
                 "Con muốn học phân số.",

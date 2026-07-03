@@ -8,8 +8,8 @@ from src.services.curriculum_adapter import (
     build_curriculum_out_of_scope_message,
     build_curriculum_scope_redirect_message,
     build_grade1_curriculum_result,
-    get_prompt_examples_for_grade,
     get_prompt_examples_for_curriculum_topic,
+    get_prompt_examples_for_grade,
     is_curriculum_topic_message_in_scope,
     resolve_curriculum_topic_scope,
 )

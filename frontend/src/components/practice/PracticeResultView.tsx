@@ -55,7 +55,6 @@ export default function PracticeResultView({ result, onBack }: PracticeResultVie
   const { isSupported, isSpeaking, speak, stop } = useTextToSpeech(
     DEFAULT_TTS_LOCALE,
     apiFetch,
-    { source: "practice_result" },
   );
 
   const handleSpeak = async (key: string, text: string, slow = false) => {

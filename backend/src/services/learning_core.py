@@ -19,12 +19,14 @@ from src.services.context_detector import detect_context
 from src.services.curriculum_adapter import (
     RUNTIME_TOPIC_BY_CURRICULUM_TOPIC,
     SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC,
+    build_curriculum_out_of_scope_message,
     build_curriculum_scope_redirect_message,
     build_grade1_curriculum_result,
+    get_prompt_examples_for_grade,
     get_prompt_examples_for_curriculum_topic,
     get_runtime_topic_for_curriculum_topic,
-    is_curriculum_topic_message_in_scope,
     is_supported_curriculum_topic,
+    resolve_curriculum_topic_scope,
 )
 from src.services.memory_repository import MemoryRepository
 from src.services.output_guard import validate_assistant_output
@@ -36,6 +38,7 @@ from src.services.types import (
     LearningCoreRequest,
     LearningCoreResult,
     LearningPersistencePayload,
+    ResponseSource,
     SessionMetadata,
 )
 from src.services.validation import (
@@ -469,7 +472,13 @@ class LearningCoreService:
             context=context,
             assistant_message=assistant_message,
             session_id=session_id,
-            agent_metadata={"guardrail": category, "guardrail_reason": log_reason},
+            response_source="fallback",
+            agent_metadata={
+                "guardrail": category,
+                "guardrail_reason": log_reason,
+                "guardrail_severity": severity,
+                "guardrail_stage": "input",
+            },
         )
         await self._persist_turn_if_needed(
             session_id=session_id,
@@ -499,9 +508,11 @@ class LearningCoreService:
             ),
             assistant_message=build_curriculum_scope_redirect_message(request.curriculum_topic_id),
             session_id=session_id,
+            response_source="fallback",
             agent_metadata={
                 "adapter": "grade1_curriculum_scope_guard",
                 "curriculum_topic_id": request.curriculum_topic_id,
+                "scope_status": "other_curriculum_topic",
             },
         )
         redirect_result.follow_up_suggestions = get_prompt_examples_for_curriculum_topic(
@@ -514,6 +525,70 @@ class LearningCoreService:
         )
         await self._persist(request, redirect_result)
         return redirect_result
+
+    async def _build_curriculum_out_of_scope_result(
+        self,
+        *,
+        request: LearningCoreRequest,
+        session_id: str,
+    ) -> LearningCoreResult:
+        logger.info(
+            "curriculum_out_of_scope_blocked",
+            curriculum_topic_id=request.curriculum_topic_id,
+            grade=request.grade,
+        )
+        result = self._build_clarification_result(
+            request=request,
+            context=LearningContext(
+                topic=(
+                    get_runtime_topic_for_curriculum_topic(request.curriculum_topic_id)
+                    if is_supported_curriculum_topic(request.curriculum_topic_id)
+                    else "addition_subtraction"
+                ),
+                intent="show_visual",
+            ),
+            assistant_message=build_curriculum_out_of_scope_message(request.grade),
+            session_id=session_id,
+            response_source="fallback",
+            agent_metadata={
+                "adapter": "grade1_curriculum_scope_guard",
+                "curriculum_topic_id": request.curriculum_topic_id,
+                "scope_status": "out_of_curriculum",
+            },
+            follow_up_suggestions=(
+                get_prompt_examples_for_curriculum_topic(request.curriculum_topic_id)
+                if is_supported_curriculum_topic(request.curriculum_topic_id)
+                else get_prompt_examples_for_grade(request.grade)
+            ),
+        )
+        await self._persist_turn_if_needed(
+            session_id=session_id,
+            user_message=request.message,
+            assistant_message=result.assistant_message,
+        )
+        await self._persist(request, result)
+        return result
+
+    def _build_missing_topic_result(
+        self,
+        *,
+        request: LearningCoreRequest,
+        context: LearningContext,
+        session_id: str,
+        agent_metadata: dict | None = None,
+    ) -> LearningCoreResult:
+        metadata = dict(agent_metadata or {})
+        metadata.setdefault("context_resolution", "missing_topic")
+        return self._build_clarification_result(
+            request=request,
+            context=context,
+            assistant_message=(
+                "Con hãy nói rõ hơn bài toán hoặc chủ đề toán học con muốn học nhé."
+            ),
+            session_id=session_id,
+            response_source="fallback",
+            agent_metadata=metadata,
+        )
 
     def _build_follow_up_tool_args(self, topic: Topic, old_data: dict) -> dict[str, int | str]:
         if topic == "multiplication":
@@ -646,6 +721,7 @@ class LearningCoreService:
         context: LearningContext,
         tool_data: dict,
         response_source: str,
+        agent_metadata: dict | None = None,
     ) -> tuple[str, str]:
         output_validation = validate_assistant_output(
             answer=answer,
@@ -662,6 +738,12 @@ class LearningCoreService:
             error_count=len(output_validation.errors),
             errors=output_validation.errors,
         )
+        if agent_metadata is not None:
+            agent_metadata["output_guard"] = {
+                "stage": "output",
+                "error_count": len(output_validation.errors),
+                "errors": output_validation.errors,
+            }
         return build_contextual_explanation(context.topic, tool_data), "fallback"
 
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
@@ -682,6 +764,7 @@ class LearningCoreService:
             )
 
         context = build_default_context(current_selected_topic or "multiplication")
+        follow_up_intent = classify_follow_up_intent(request.message)
 
         guard_result = guard_message(request.message)
         if guard_result is not None:
@@ -697,19 +780,45 @@ class LearningCoreService:
 
         # ── AUTO-DETECT G1 TOPIC ──────────────────────────────────
         # If frontend did not send curriculum_topic_id, detect from message
-        if not request.curriculum_topic_id and request.grade in (1, 2):
-            detected = detect_curriculum_topic(request.message, request.grade)
-            if detected:
-                request.curriculum_topic_id = detected
-                request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(detected)
+        detected_curriculum_topic: str | None = None
+        if request.grade in (1, 2):
+            detected_curriculum_topic = detect_curriculum_topic(request.message, request.grade)
+            if request.curriculum_topic_id is None:
+                if (
+                    detected_curriculum_topic is None
+                    and not (
+                        follow_up_intent is not None
+                        and prev_turn
+                        and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
+                    )
+                ):
+                    return await self._build_curriculum_out_of_scope_result(
+                        request=request,
+                        session_id=session_id,
+                    )
+                if detected_curriculum_topic is not None:
+                    request.curriculum_topic_id = detected_curriculum_topic
+                    request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(
+                        detected_curriculum_topic
+                    )
 
         if is_supported_curriculum_topic(request.curriculum_topic_id):
             assert request.curriculum_topic_id is not None
-            if not is_curriculum_topic_message_in_scope(
-                request.curriculum_topic_id,
-                request.message,
-            ):
+            if follow_up_intent is not None and detected_curriculum_topic is None:
+                scope_status = "in_scope"
+            else:
+                scope_status = resolve_curriculum_topic_scope(
+                    request.curriculum_topic_id,
+                    request.message,
+                    detected_curriculum_topic,
+                )
+            if scope_status == "other_curriculum_topic":
                 return await self._build_scope_redirect_result(
+                    request=request,
+                    session_id=session_id,
+                )
+            if scope_status == "out_of_curriculum":
+                return await self._build_curriculum_out_of_scope_result(
                     request=request,
                     session_id=session_id,
                 )
@@ -770,6 +879,7 @@ class LearningCoreService:
                     context=context,
                     assistant_message=answer,
                     session_id=session_id,
+                    response_source="llm",
                     agent_metadata=agent_metadata,
                 )
                 if session_id is not None:
@@ -781,7 +891,21 @@ class LearningCoreService:
                 await self._persist(request, clarification_result)
                 return clarification_result
             else:
-                default_topic = request.selected_topic or "multiplication"
+                default_topic = request.selected_topic or current_selected_topic
+                if default_topic is None:
+                    result = self._build_missing_topic_result(
+                        request=request,
+                        context=context,
+                        session_id=session_id,
+                        agent_metadata=agent_metadata,
+                    )
+                    await self._persist_turn_if_needed(
+                        session_id=session_id,
+                        user_message=request.message,
+                        assistant_message=result.assistant_message,
+                    )
+                    await self._persist(request, result)
+                    return result
                 context = build_default_context(default_topic)
                 if is_visual_data_for_topic(agent_response.visual_data, context.topic):
                     tool_data = agent_response.visual_data
@@ -803,6 +927,7 @@ class LearningCoreService:
                     context=context,
                     tool_data=tool_data,
                     response_source=response_source,
+                    agent_metadata=agent_metadata,
                 )
                 result = self._validate_or_fallback_result(
                     request=request,
@@ -893,6 +1018,7 @@ class LearningCoreService:
             context=context,
             tool_data=tool_data,
             response_source=response_source,
+            agent_metadata=agent_metadata,
         )
 
         result = self._validate_or_fallback_result(
@@ -960,6 +1086,7 @@ class LearningCoreService:
             )
 
         context = build_default_context(current_selected_topic or "multiplication")
+        follow_up_intent = classify_follow_up_intent(request.message)
 
         guard_result = guard_message(request.message)
         if guard_result is not None:
@@ -977,23 +1104,53 @@ class LearningCoreService:
             yield ("done", result)
             return
 
-        if not request.curriculum_topic_id and request.grade in (1, 2):
-            detected = detect_curriculum_topic(request.message, request.grade)
-            if detected:
-                request.curriculum_topic_id = detected
-                request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(detected)
+        detected_curriculum_topic: str | None = None
+        if request.grade in (1, 2):
+            detected_curriculum_topic = detect_curriculum_topic(request.message, request.grade)
+            if request.curriculum_topic_id is None:
+                if (
+                    detected_curriculum_topic is None
+                    and not (
+                        follow_up_intent is not None
+                        and prev_turn
+                        and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
+                    )
+                ):
+                    out_of_scope_result = await self._build_curriculum_out_of_scope_result(
+                        request=request,
+                        session_id=session_id,
+                    )
+                    yield ("done", out_of_scope_result)
+                    return
+                if detected_curriculum_topic is not None:
+                    request.curriculum_topic_id = detected_curriculum_topic
+                    request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(
+                        detected_curriculum_topic
+                    )
 
         if is_supported_curriculum_topic(request.curriculum_topic_id):
             assert request.curriculum_topic_id is not None
-            if not is_curriculum_topic_message_in_scope(
-                request.curriculum_topic_id,
-                request.message,
-            ):
+            if follow_up_intent is not None and detected_curriculum_topic is None:
+                scope_status = "in_scope"
+            else:
+                scope_status = resolve_curriculum_topic_scope(
+                    request.curriculum_topic_id,
+                    request.message,
+                    detected_curriculum_topic,
+                )
+            if scope_status == "other_curriculum_topic":
                 redirect_result = await self._build_scope_redirect_result(
                     request=request,
                     session_id=session_id,
                 )
                 yield ("done", redirect_result)
+                return
+            if scope_status == "out_of_curriculum":
+                out_of_scope_result = await self._build_curriculum_out_of_scope_result(
+                    request=request,
+                    session_id=session_id,
+                )
+                yield ("done", out_of_scope_result)
                 return
 
         curriculum_result = build_grade1_curriculum_result(request, session_id)
@@ -1081,7 +1238,23 @@ class LearningCoreService:
                 yield ("done", clarification_result)
                 return
 
-            default_topic = request.selected_topic or "multiplication"
+            default_topic = request.selected_topic or current_selected_topic
+            if default_topic is None:
+                result = self._build_missing_topic_result(
+                    request=request,
+                    context=context,
+                    session_id=session_id,
+                    agent_metadata=agent_metadata,
+                )
+                await self._persist_turn_if_needed(
+                    session_id=session_id,
+                    user_message=request.message,
+                    assistant_message=result.assistant_message,
+                )
+                await self._persist(request, result)
+                _record_stream_metrics(agent_metadata)
+                yield ("done", result)
+                return
             context = build_default_context(default_topic)
             if is_visual_data_for_topic(agent_response.visual_data, context.topic):
                 tool_data = agent_response.visual_data
@@ -1103,6 +1276,7 @@ class LearningCoreService:
                 context=context,
                 tool_data=tool_data,
                 response_source=response_source,
+                agent_metadata=agent_metadata,
             )
             result = self._validate_or_fallback_result(
                 request=request,
@@ -1181,6 +1355,7 @@ class LearningCoreService:
             context=context,
             tool_data=tool_data,
             response_source=response_source,
+            agent_metadata=agent_metadata,
         )
 
         result = self._validate_or_fallback_result(
@@ -1211,6 +1386,7 @@ class LearningCoreService:
         context: LearningContext,
         assistant_message: str,
         session_id: str,
+        response_source: ResponseSource = "llm",
         agent_metadata: dict | None = None,
         follow_up_suggestions: list[str] | None = None,
     ) -> LearningCoreResult:
@@ -1231,7 +1407,7 @@ class LearningCoreService:
             practice_question_chat=None,
             tts_text=assistant_message,
             response_mode="clarification_needed",
-            follow_up_suggestions=[
+            follow_up_suggestions=follow_up_suggestions or [
                 "Con muốn học phép nhân.",
                 "Con muốn học phép chia.",
                 "Con muốn học phân số.",
@@ -1240,7 +1416,7 @@ class LearningCoreService:
             session_metadata=SessionMetadata(
                 session_id=session_id or uuid4().hex,
                 provider=settings.llm_provider,
-                response_source="llm",
+                response_source=response_source,
             ),
             agent_metadata=agent_metadata,
         )

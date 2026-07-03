@@ -151,6 +151,12 @@ def test_detect_curriculum_topic_supports_grade1_free_text_regressions() -> None
     assert detect_curriculum_topic("Tính 8 + 5", 1) == "G1-OPS-02"
 
 
+def test_detect_curriculum_topic_returns_none_for_out_of_scope_messages() -> None:
+    assert detect_curriculum_topic("Thoi tiet Ha Noi hom nay", 1) is None
+    assert detect_curriculum_topic("Viet email xin nghi hoc", 1) is None
+    assert detect_curriculum_topic("Tin tuc bong da hom nay", 2) is None
+
+
 def test_grade1_ops_02_defaults_to_visual_for_plain_addition_prompt() -> None:
     result = build_grade1_curriculum_result(
         LearningCoreRequest(

@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from dataclasses import dataclass
+from typing import Literal
 
 from src.core.config import settings
 from src.models.chat import PracticeQuestion, SimulationConfig, VisualCard, VisualData
@@ -351,6 +352,12 @@ EXPECTED_CONFIG_KEYS_BY_VISUAL = {
     "polyline_length_visual": ("segments",),
 }
 
+CurriculumScopeStatus = Literal[
+    "in_scope",
+    "other_curriculum_topic",
+    "out_of_curriculum",
+]
+
 
 @dataclass(frozen=True)
 class CurriculumVisualPayload:
@@ -388,24 +395,60 @@ def build_curriculum_scope_redirect_message(curriculum_topic_id: str) -> str:
         f"Con đang chọn bài '{topic_label}'. Câu hỏi này có vẻ chưa đúng nội dung của bài đó. "
         "Con hãy hỏi lại đúng phần kiến thức của bài này nhé."
     )
+    topic_label = TOPIC_LABEL_BY_CURRICULUM_TOPIC.get(curriculum_topic_id, "bài đang chọn")
+    return (
+        f"Con đang chọn bài '{topic_label}'. Câu hỏi này có vẻ chưa đúng nội dung của bài đó. "
+        "Con hãy hỏi lại đúng phần kiến thức của bài này nhé."
+    )
 
 
-def is_curriculum_topic_message_in_scope(curriculum_topic_id: str, message: str) -> bool:
+def build_curriculum_out_of_scope_message(grade: int) -> str:
+    return (
+        f"Cô đang hỗ trợ kiến thức toán lớp {grade} thôi nhé. "
+        f"Con hãy hỏi lại một nội dung đúng trong chương trình toán lớp {grade}."
+    )
+
+
+def get_prompt_examples_for_grade(grade: int, limit: int = 4) -> list[str]:
+    topic_prefix = f"G{grade}-"
+    examples: list[str] = []
+    for curriculum_topic_id, prompts in PROMPT_EXAMPLES_BY_CURRICULUM_TOPIC.items():
+        if not curriculum_topic_id.startswith(topic_prefix):
+            continue
+        if prompts:
+            examples.append(prompts[0])
+        if len(examples) >= limit:
+            break
+    return examples
+
+
+def resolve_curriculum_topic_scope(
+    curriculum_topic_id: str,
+    message: str,
+    matched_topic_id: str | None = None,
+) -> CurriculumScopeStatus:
     normalized = _normalize(message)
     if not normalized.strip():
-        return True
+        return "in_scope"
+
+    if matched_topic_id is not None:
+        return "in_scope" if matched_topic_id == curriculum_topic_id else "other_curriculum_topic"
 
     current_keywords = SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC.get(curriculum_topic_id, ())
     if any(keyword in normalized for keyword in current_keywords):
-        return True
+        return "in_scope"
 
     for other_topic_id, keywords in SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC.items():
         if other_topic_id == curriculum_topic_id:
             continue
         if any(keyword in normalized for keyword in keywords):
-            return False
+            return "other_curriculum_topic"
 
-    return True
+    return "out_of_curriculum"
+
+
+def is_curriculum_topic_message_in_scope(curriculum_topic_id: str, message: str) -> bool:
+    return resolve_curriculum_topic_scope(curriculum_topic_id, message) == "in_scope"
 
 
 def get_expected_curriculum_visuals(curriculum_topic_id: str) -> set[str]:

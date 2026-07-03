@@ -499,7 +499,7 @@ export default function AIExplanationChat({ initialGrade = 1 }: AIExplanationCha
     speak,
     stop: stopSpeaking,
     clearError: clearTextToSpeechError,
-  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch, { source: 'learn_chat' });
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
 
   // Auto-scroll
   useEffect(() => {

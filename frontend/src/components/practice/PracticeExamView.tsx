@@ -122,7 +122,7 @@ export default function PracticeExamView({
     speak,
     stop: stopSpeaking,
     clearError: clearTextToSpeechError,
-  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch, { source: "practice_exam" });
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
 
   const speechNotice = useMemo(() => {
     if (manualSpeechNotice) {

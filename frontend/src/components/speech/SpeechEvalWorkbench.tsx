@@ -71,7 +71,7 @@ export default function SpeechEvalWorkbench() {
     isSpeaking,
     speak,
     error: textToSpeechError,
-  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch, { source: 'speech_eval' });
+  } = useTextToSpeech(DEFAULT_TTS_LOCALE, apiFetch);
 
   const sttSummary = useMemo(() => {
     const usableCount = snapshot.sttResults.filter((result) => result.usable).length;

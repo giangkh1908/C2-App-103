@@ -36,6 +36,9 @@
 | 14 | RequireAuth (guard component) | Giang | ✅ | `frontend/src/components/auth/RequireAuth.tsx:10` |
 | 15 | Auth layout (bố cục trang auth) | Giang | ✅ | `frontend/src/app/[locale]/(auth)/layout.tsx` |
 | 16 | Login/Register form components | Giang | ✅ | `frontend/src/components/auth/LoginForm.tsx`, `RegisterForm.tsx` |
+| 17 | AuthLayout component (visual wrapper) | Giang | ✅ | `frontend/src/components/auth/AuthLayout.tsx` |
+| 18 | ForgotPasswordForm component | Giang | ✅ | `frontend/src/components/auth/ForgotPasswordForm.tsx` |
+| 19 | ResetPasswordForm component | Giang | ✅ | `frontend/src/components/auth/ResetPasswordForm.tsx` |
 
 ---
 
@@ -134,6 +137,7 @@
 | 8 | Quota refund on AI failure | Giang | ✅ | `usage_service.py:140-158` |
 | 9 | Quota overview (admin + user) | Giang | ✅ | `usage_service.py:200-263` |
 | 10 | Plan API (admin listing) | Giang | ✅ | `backend/src/api/plans.py` |
+| 11 | Subscription API (`/subscription/upgrade`) | Giang | ✅ | `backend/src/api/subscription.py` |
 
 ---
 
@@ -155,6 +159,9 @@
 | 12 | UpgradeModal (nâng cấp gói) | Giang | ✅ | `frontend/src/components/UpgradeModal.tsx` |
 | 13 | UsageCounter (quota còn lại) | Giang | ✅ | `frontend/src/components/UsageCounter.tsx` |
 | 14 | planApi lib (gọi plans API) | Giang | ✅ | `frontend/src/lib/planApi.ts` |
+| 15 | Payment page (trang thanh toán chính) | Giang | ✅ | `frontend/src/app/[locale]/payment/page.tsx` |
+| 16 | PaymentSuccessClient component | Giang | ✅ | `frontend/src/app/[locale]/payment/success/PaymentSuccessClient.tsx` |
+| 17 | Payment type definitions | Giang | ✅ | `frontend/src/types/payment.ts` |
 
 ---
 
@@ -181,6 +188,7 @@
 | 17 | Admin cost API (`/admin/costs`) | Giang | ✅ | `backend/src/api/admin.py` |
 | 18 | Admin cost UI card ("Chi phí LLM") | Giang | ✅ | `frontend/src/app/[locale]/admin/page.tsx` |
 | 19 | Cost report smoke test | Giang | ✅ | `scripts/smoke_cost_report.py` |
+| 20 | User usage/profile API (`/user/usage`) | Giang | ✅ | `backend/src/api/user.py` |
 
 ---
 
@@ -195,7 +203,7 @@
 | 5 | Testimonials section (cảm nhận) | Giang | ✅ | `frontend/src/components/landing/Testimonials.tsx` |
 | 6 | Roadmap section (lộ trình) | Giang | ✅ | `frontend/src/components/landing/Roadmap.tsx` |
 | 7 | FAQ section (hỏi đáp) | Giang | ✅ | `frontend/src/components/landing/FAQ.tsx` |
-| 8 | FAQ page (trang riêng) | Giang | ✅ | `frontend/src/app/[locale]/faq/page.tsx`, `FaqContent.tsx` |
+| 8 | FAQ page (trang riêng) | Giang | ✅ | `frontend/src/app/[locale]/faq/page.tsx`, `frontend/src/components/faq/FaqContent.tsx` |
 | 9 | Pricing page (bảng giá) | Giang | ✅ | `frontend/src/app/[locale]/pricing/page.tsx`, `PricingClient.tsx` |
 | 10 | Navbar (thanh điều hướng) | Giang | ✅ | `frontend/src/components/landing/Navbar.tsx` |
 | 11 | Footer (chân trang) | Giang | ✅ | `frontend/src/components/landing/Footer.tsx` |
@@ -225,7 +233,9 @@
 | 13 | Railway deploy (FE + BE) | Giang | ✅ | Docker compose sẵn sàng deploy |
 | 14 | Email service (Resend) | Giang | ✅ | `backend/src/core/email.py` |
 | 15 | Scripts: submit_log, log_hook | Giang | ✅ | `scripts/submit_log.py`, `scripts/log_hook.py` |
-| 16 | Smoke test (Railway full flow) | Giang | ⬜ | Chưa có script smoke test |
+| 16 | Root layout + SEO metadata | Giang | ✅ | `frontend/src/app/layout.tsx` |
+| 17 | Locale layout (next-intl + providers) | Giang | ✅ | `frontend/src/app/[locale]/layout.tsx` |
+| 18 | HtmlLangSetter component | Giang | ✅ | `frontend/src/components/shared/HtmlLangSetter.tsx` |
 
 ---
 
@@ -239,8 +249,7 @@
 | 4 | Tool tests (3 files) | Miền | ✅ | `backend/tests/tools/` — 3 files |
 | 5 | Test conftest + fixtures | Bảo | ✅ | `backend/tests/conftest.py`, `tests/fixtures/` |
 | 6 | Frontend tests (vitest, 6 files) | Bảo | 🔶 | `frontend/src/__tests__/` — 6 files, coverage còn thấp |
-| 7 | Smoke test (tự động) | Giang | ⬜ | Chưa có |
-| 9 | Eval pipeline (4 datasets) | Miền + Giang | ✅ | `backend/eval/scripts/run_eval.py`, `backend/eval/datasets/multiplication.json`, `fraction_basic.json`, `division.json`, `perimeter_area.json` |
+| 8 | Eval pipeline (4 datasets) | Miền + Giang | ✅ | `backend/eval/scripts/run_eval.py`, `backend/eval/datasets/multiplication.json`, `fraction_basic.json`, `division.json`, `perimeter_area.json` |
 | 10 | Eval baseline comparison | Giang | ✅ | `backend/eval/scripts/compare_baseline.py` — absolute accuracy threshold (default 90%), relative latency/TTFT check |
 | 11 | Eval CI/CD workflow | Giang | ✅ | `.github/workflows/eval.yml` — manual trigger, offline eval, upload artifacts, regression check |
 | 12 | Eval baselines (initial results) | Giang | ✅ | `backend/eval/baselines/*.json` — multiplication 100%, division 100%, fraction_basic 90%, perimeter_area 100% |
@@ -279,14 +288,13 @@
 
 | # | Tính năng | Mức độ | Owner | Status | Ghi chú |
 |-- |-----------|--------|-------|--------|---------|
-| 1 | Smoke test full flow trên Railway | P0 | Giang | ⬜ | FE + BE đã deploy, cần script smoke test |
 | 2 | TTS trigger — text-to-speech từ `tts_text` | P1 | Bảo | ⬜ | Backend đã trả `tts_text`, frontend chưa có trigger |
 | 3 | UX Polish — tối ưu cho học sinh tiểu học | P1 | Miền | 🔶 | Đã responsive cơ bản, cần nút lớn, 1 task/màn |
 | 4 | Frontend tests — mở rộng coverage | P1 | Miền | 🔶 | 6 test file vitest, cần thêm cho components chính |
 | 5 | Demo script — account demo + fallback AI | P1 | Miền | ⬜ | Cần script demo tự động |
 | 6 | Error state audit — loading/error/retry | P2 | Miền | ⬜ | Kiểm tra trạng thái lỗi trên tất cả pages |
 | 7 | Mobile audit — responsive tablet/phone | P2 | Miền | ⬜ | Test responsive trên màn hình nhỏ |
-| 8 | Quota enforcement UX — hiển thị hết quota | P2 | Giang | ⬜ | Backend có 429, frontend cần UX thân thiện |
+| 8 | Quota enforcement UX — hiển thị hết quota | P2 | Giang | ✅ | `useChatStream.ts:114`, `AIExplanationChat.tsx:779-802` — 429 → friendly message + auto UpgradeModal |
 | 9 | Eval CI/CD pipeline (Wave 3) — GitHub Actions eval + dataset mở rộng | P2 | Giang | ✅ | `.github/workflows/eval.yml`, `backend/eval/scripts/compare_baseline.py`, `backend/eval/datasets/division.json`, `perimeter_area.json` |
 
 ---
@@ -295,10 +303,10 @@
 
 | Thành viên | Vai trò | Tổng features | ✅ Done | ⬜ Remaining | 🔶 Partial | Trọng tâm tiếp theo |
 |------------|---------|--------------|---------|-------------|------------|-------------------|
-| **Giang** | FE-BE + DevOps | ~104 | ~102 | 1 | 1 | Auth, Payment, Admin, Landing, Deploy, Pricing, LLMOps, Eval CI/CD |
+| **Giang** | FE-BE + DevOps | ~116 | ~116 | 0 | 0 | Auth, Payment, Admin, Landing, Deploy, Pricing, LLMOps, Eval CI/CD |
 | **Bảo** | FE-BE | ~68 | ~66 | 1 | 1 | Learning Core, Practice (/learn), Visual/Sim, TTS/STT |
 | **Miền** | FE-BE | ~50 | ~42 | 6 | 2 | AgentLoop, Tool, Chat UI, Memory, Eval/Metrics, FE tests |
-| **Tổng cộng** | | ~222 | ~210 | 8 | 3 | |
+| **Tổng cộng** | | ~234 | ~224 | 6 | 2 | |
 
 ---
 

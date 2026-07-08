@@ -23,5 +23,7 @@ coverage.xml
 .env.*
 !data/practice/
 !data/practice/*.json
+!prompts/
+!prompts/**/*.json
 Dockerfile
 docker-compose.yml

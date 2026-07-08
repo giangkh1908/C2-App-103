@@ -23,8 +23,7 @@ const PIE_COLORS = ["#4A6741", "#6B8F5E", "#8FAE7E", "#B0C9A0", "#C7D9B9"];
 
 function buildLlmStatsFromLogs(logs: AdminLlmLog[], days = 7): LlmStatsResponse {
   const now = new Date();
-  const since = new Date(now);
-  since.setDate(now.getDate() - days);
+  const since = new Date(now.getFullYear(), now.getMonth(), now.getDate() - days, 0, 0, 0, 0);
 
   const recentLogs = logs.filter((log) => {
     const createdAt = new Date(log.created_at);

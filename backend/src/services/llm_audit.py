@@ -1,4 +1,5 @@
 from collections.abc import Awaitable, Callable
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from typing import Any
 
@@ -6,6 +7,10 @@ from src.core.database import get_db
 from src.core.logging import get_logger
 
 logger = get_logger("toan_truc_quan.llm_audit")
+
+# Context variable to pass user_id from service layer down to audit hook.
+# Set by LearningCoreService before calling LLM, read by log_llm_call.
+current_user_id: ContextVar[str | None] = ContextVar("current_user_id", default=None)
 
 # Signature: (model, user_id, prompt_preview, tokens_in, tokens_out, cost_usd, latency_ms, status, error, prompt_id, prompt_version) -> None
 AuditHook = Callable[..., Awaitable[None]]
@@ -42,10 +47,13 @@ async def log_llm_call(
     try:
         db = get_db()
 
+        # Resolve user_id: explicit param > context var > "anonymous"
+        resolved_user_id = user_id or current_user_id.get() or "anonymous"
+
         await db.llm_audit_logs.insert_one(
             {
                 "model": model,
-                "user_id": user_id if user_id is not None else "anonymous",
+                "user_id": resolved_user_id,
                 "prompt_preview": prompt_preview,
                 "tokens_in": tokens_in,
                 "tokens_out": tokens_out,

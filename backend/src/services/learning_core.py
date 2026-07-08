@@ -8,6 +8,7 @@ from src.agents.guardrails import guard_message
 from src.agents.schemas import AgentResponse
 from src.agents.tutor_agent import TutorAgent
 from src.core.config import settings
+from src.services.llm_audit import current_user_id
 from src.core.logging import get_logger
 from src.core.metrics import (
     record_cost_per_request,
@@ -747,6 +748,7 @@ class LearningCoreService:
         return build_contextual_explanation(context.topic, tool_data), "fallback"
 
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
+        current_user_id.set(request.user_id)
         session_id = request.session_id or uuid4().hex
 
         # 1. Đọc lượt chat trước đó để thừa kế context (Topic, Bộ số cũ)
@@ -1045,6 +1047,7 @@ class LearningCoreService:
         Yields ("chunk", str) for each text token from the LLM, then
         ("done", LearningCoreResult) with the fully-assembled result.
         """
+        current_user_id.set(request.user_id)
         pipeline_start = perf_counter()
 
         from src.core.metrics import get_metrics

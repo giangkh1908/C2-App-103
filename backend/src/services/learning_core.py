@@ -8,7 +8,6 @@ from src.agents.guardrails import guard_message
 from src.agents.schemas import AgentResponse
 from src.agents.tutor_agent import TutorAgent
 from src.core.config import settings
-from src.services.llm_audit import current_user_id
 from src.core.logging import get_logger
 from src.core.metrics import (
     record_cost_per_request,
@@ -20,15 +19,9 @@ from src.services.context_detector import detect_context
 from src.services.curriculum_adapter import (
     RUNTIME_TOPIC_BY_CURRICULUM_TOPIC,
     SCOPE_KEYWORDS_BY_CURRICULUM_TOPIC,
-    build_curriculum_out_of_scope_message,
-    build_curriculum_scope_redirect_message,
     build_grade1_curriculum_result,
-    get_prompt_examples_for_curriculum_topic,
-    get_prompt_examples_for_grade,
-    get_runtime_topic_for_curriculum_topic,
-    is_supported_curriculum_topic,
-    resolve_curriculum_topic_scope,
 )
+from src.services.llm_audit import current_user_id
 from src.services.memory_repository import MemoryRepository
 from src.services.output_guard import validate_assistant_output
 from src.services.practice_builder import build_practice_questions
@@ -489,87 +482,6 @@ class LearningCoreService:
         await self._persist(request, result)
         return result
 
-    async def _build_scope_redirect_result(
-        self,
-        *,
-        request: LearningCoreRequest,
-        session_id: str,
-    ) -> LearningCoreResult:
-        assert request.curriculum_topic_id is not None
-        logger.info(
-            "scope_redirected",
-            curriculum_topic_id=request.curriculum_topic_id,
-            grade=request.grade,
-        )
-        redirect_result = self._build_clarification_result(
-            request=request,
-            context=LearningContext(
-                topic=get_runtime_topic_for_curriculum_topic(request.curriculum_topic_id),
-                intent="show_visual",
-            ),
-            assistant_message=build_curriculum_scope_redirect_message(request.curriculum_topic_id),
-            session_id=session_id,
-            response_source="fallback",
-            agent_metadata={
-                "adapter": "grade1_curriculum_scope_guard",
-                "curriculum_topic_id": request.curriculum_topic_id,
-                "scope_status": "other_curriculum_topic",
-            },
-        )
-        redirect_result.follow_up_suggestions = get_prompt_examples_for_curriculum_topic(
-            request.curriculum_topic_id
-        )
-        await self._persist_turn_if_needed(
-            session_id=session_id,
-            user_message=request.message,
-            assistant_message=redirect_result.assistant_message,
-        )
-        await self._persist(request, redirect_result)
-        return redirect_result
-
-    async def _build_curriculum_out_of_scope_result(
-        self,
-        *,
-        request: LearningCoreRequest,
-        session_id: str,
-    ) -> LearningCoreResult:
-        logger.info(
-            "curriculum_out_of_scope_blocked",
-            curriculum_topic_id=request.curriculum_topic_id,
-            grade=request.grade,
-        )
-        result = self._build_clarification_result(
-            request=request,
-            context=LearningContext(
-                topic=(
-                    get_runtime_topic_for_curriculum_topic(request.curriculum_topic_id)
-                    if is_supported_curriculum_topic(request.curriculum_topic_id)
-                    else "addition_subtraction"
-                ),
-                intent="show_visual",
-            ),
-            assistant_message=build_curriculum_out_of_scope_message(request.grade),
-            session_id=session_id,
-            response_source="fallback",
-            agent_metadata={
-                "adapter": "grade1_curriculum_scope_guard",
-                "curriculum_topic_id": request.curriculum_topic_id,
-                "scope_status": "out_of_curriculum",
-            },
-            follow_up_suggestions=(
-                get_prompt_examples_for_curriculum_topic(request.curriculum_topic_id)
-                if is_supported_curriculum_topic(request.curriculum_topic_id)
-                else get_prompt_examples_for_grade(request.grade)
-            ),
-        )
-        await self._persist_turn_if_needed(
-            session_id=session_id,
-            user_message=request.message,
-            assistant_message=result.assistant_message,
-        )
-        await self._persist(request, result)
-        return result
-
     def _build_missing_topic_result(
         self,
         *,
@@ -785,41 +697,10 @@ class LearningCoreService:
         detected_curriculum_topic: str | None = None
         if request.grade in (1, 2):
             detected_curriculum_topic = detect_curriculum_topic(request.message, request.grade)
-            if request.curriculum_topic_id is None:
-                if detected_curriculum_topic is None and not (
-                    follow_up_intent is not None
-                    and prev_turn
-                    and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
-                ):
-                    return await self._build_curriculum_out_of_scope_result(
-                        request=request,
-                        session_id=session_id,
-                    )
-                if detected_curriculum_topic is not None:
-                    request.curriculum_topic_id = detected_curriculum_topic
-                    request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(
-                        detected_curriculum_topic
-                    )
-
-        if is_supported_curriculum_topic(request.curriculum_topic_id):
-            assert request.curriculum_topic_id is not None
-            if follow_up_intent is not None and detected_curriculum_topic is None:
-                scope_status = "in_scope"
-            else:
-                scope_status = resolve_curriculum_topic_scope(
-                    request.curriculum_topic_id,
-                    request.message,
-                    detected_curriculum_topic,
-                )
-            if scope_status == "other_curriculum_topic":
-                return await self._build_scope_redirect_result(
-                    request=request,
-                    session_id=session_id,
-                )
-            if scope_status == "out_of_curriculum":
-                return await self._build_curriculum_out_of_scope_result(
-                    request=request,
-                    session_id=session_id,
+            if detected_curriculum_topic is not None and request.curriculum_topic_id is None:
+                request.curriculum_topic_id = detected_curriculum_topic
+                request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(
+                    detected_curriculum_topic
                 )
 
         curriculum_result = build_grade1_curriculum_result(request, session_id)
@@ -953,7 +834,7 @@ class LearningCoreService:
                 return result
 
         agent_response = await self.tutor_agent.chat(
-            message=build_tutor_message(request.message, context.topic, request.grade),
+            message=build_tutor_message(request.message, context.topic, request.grade, context.tool_args),
             level=grade_to_level(request.grade),
             use_tools=True,
             history=history_payload,
@@ -1107,48 +988,11 @@ class LearningCoreService:
         detected_curriculum_topic: str | None = None
         if request.grade in (1, 2):
             detected_curriculum_topic = detect_curriculum_topic(request.message, request.grade)
-            if request.curriculum_topic_id is None:
-                if detected_curriculum_topic is None and not (
-                    follow_up_intent is not None
-                    and prev_turn
-                    and is_supported_curriculum_topic(prev_turn.get("curriculum_topic_id"))
-                ):
-                    out_of_scope_result = await self._build_curriculum_out_of_scope_result(
-                        request=request,
-                        session_id=session_id,
-                    )
-                    yield ("done", out_of_scope_result)
-                    return
-                if detected_curriculum_topic is not None:
-                    request.curriculum_topic_id = detected_curriculum_topic
-                    request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(
-                        detected_curriculum_topic
-                    )
-
-        if is_supported_curriculum_topic(request.curriculum_topic_id):
-            assert request.curriculum_topic_id is not None
-            if follow_up_intent is not None and detected_curriculum_topic is None:
-                scope_status = "in_scope"
-            else:
-                scope_status = resolve_curriculum_topic_scope(
-                    request.curriculum_topic_id,
-                    request.message,
-                    detected_curriculum_topic,
+            if detected_curriculum_topic is not None and request.curriculum_topic_id is None:
+                request.curriculum_topic_id = detected_curriculum_topic
+                request.selected_topic = RUNTIME_TOPIC_BY_CURRICULUM_TOPIC.get(
+                    detected_curriculum_topic
                 )
-            if scope_status == "other_curriculum_topic":
-                redirect_result = await self._build_scope_redirect_result(
-                    request=request,
-                    session_id=session_id,
-                )
-                yield ("done", redirect_result)
-                return
-            if scope_status == "out_of_curriculum":
-                out_of_scope_result = await self._build_curriculum_out_of_scope_result(
-                    request=request,
-                    session_id=session_id,
-                )
-                yield ("done", out_of_scope_result)
-                return
 
         curriculum_result = build_grade1_curriculum_result(request, session_id)
         if curriculum_result is not None:
@@ -1186,6 +1030,7 @@ class LearningCoreService:
             request.message,
             None if context.topic is None else context.topic,
             request.grade,
+            context.tool_args,
         )
         level = grade_to_level(request.grade)
 
@@ -1696,7 +1541,7 @@ def is_visual_data_for_topic(visual_data: dict | None, topic: Topic | None) -> b
     return expected_type is not None and visual_data.get("type") == expected_type
 
 
-def build_tutor_message(message: str, topic: Topic | None, grade: int) -> str:
+def build_tutor_message(message: str, topic: Topic | None, grade: int, tool_args: dict | None = None) -> str:
     topic_hint = f" chủ đề '{topic}'" if topic else ""
     if topic:
         vague_hint = "nếu câu hỏi không có số liệu cụ thể, hãy tự chọn số ngẫu nhiên phù hợp và giải thích ngay"
@@ -1707,11 +1552,17 @@ def build_tutor_message(message: str, topic: Topic | None, grade: int) -> str:
     else:
         vague_hint = "nếu câu hỏi còn mơ hồ về chủ đề, hãy hỏi lại một câu ngắn gọn"
         tool_scope_hint = ""
+
+    tool_args_hint = ""
+    if tool_args:
+        import json
+        tool_args_hint = f" Tham số tool: {json.dumps(tool_args, ensure_ascii=False)}."
+
     return (
         f"Học sinh lớp {grade} đang hỏi về{topic_hint}. "
         "Hãy đọc kỹ yêu cầu và trả lời đúng theo đó: "
         "nếu câu hỏi rõ, hãy giải thích ngắn gọn, thân thiện, dễ hiểu; "
-        f"{vague_hint}.{tool_scope_hint} "
+        f"{vague_hint}.{tool_scope_hint}{tool_args_hint} "
         f"Câu hỏi: {message}"
     )
 

@@ -124,10 +124,12 @@ def detect_context(message: str, selected_topic: Topic | None) -> LearningContex
 
     if topic == "addition_subtraction":
         tool_args = parse_addition_subtraction_operands(normalized) or DEFAULT_TOOL_ARGS[topic]
+        operation = tool_args.get("operation", "+")
+        tool_name = "subtraction" if operation == "-" else "addition"
         return LearningContext(
             topic=topic,
             intent=intent,
-            tool_name="addition_subtraction",
+            tool_name=tool_name,
             tool_args=tool_args,
             visual_type="operation_story",
         )

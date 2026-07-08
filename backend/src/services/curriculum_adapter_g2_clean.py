@@ -224,7 +224,7 @@ def _build_ops_01(
 ) -> CurriculumVisualPayload:
     a = numbers[0] if len(numbers) > 0 else 245
     b = numbers[1] if len(numbers) > 1 else 132
-    subtraction = any(token in normalized for token in ("tru", "muon", "bot"))
+    subtraction = any(token in normalized for token in ("tru", "muon", "bot", "-"))
     operation = "-" if subtraction else "+"
     result = a - b if subtraction else a + b
     return _payload(
@@ -336,7 +336,7 @@ def _build_ops_03(
 ) -> CurriculumVisualPayload:
     a = numbers[0] if len(numbers) > 0 else 70
     b = numbers[1] if len(numbers) > 1 else 80
-    subtraction = any(token in normalized for token in ("tru", "bot"))
+    subtraction = any(token in normalized for token in ("tru", "bot", "-"))
     operation = "-" if subtraction else "+"
     result = a - b if subtraction else a + b
     return _payload(
@@ -368,7 +368,7 @@ def _build_word_01(
 ) -> CurriculumVisualPayload:
     start = numbers[0] if len(numbers) > 0 else 12
     change = numbers[1] if len(numbers) > 1 else 8
-    subtraction = any(token in normalized for token in ("con lai", "it hon", "tru", "bot"))
+    subtraction = any(token in normalized for token in ("con lai", "it hon", "tru", "bot", "-"))
     operation = "-" if subtraction else "+"
     result = start - change if subtraction else start + change
     return _payload(

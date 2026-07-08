@@ -717,7 +717,7 @@ def _build_ops_01_payload(
 ) -> CurriculumVisualPayload:
     a = numbers[0] if len(numbers) > 0 else 24
     b = numbers[1] if len(numbers) > 1 else 13
-    is_subtraction = any(token in normalized for token in ("bot", "tru", "lay di"))
+    is_subtraction = any(token in normalized for token in ("bot", "tru", "lay di", "-"))
     if is_subtraction and len(numbers) > 1 and " tu " in f" {normalized} ":
         a, b = numbers[1], numbers[0]
     operation = "-" if is_subtraction else "+"
@@ -776,7 +776,7 @@ def _build_ops_02_payload(
 ) -> CurriculumVisualPayload:
     a = numbers[0] if len(numbers) > 0 else 8
     b = numbers[1] if len(numbers) > 1 else 5
-    is_subtraction = any(token in normalized for token in ("bot", "tru", "lay di"))
+    is_subtraction = any(token in normalized for token in ("bot", "tru", "lay di", "-"))
     operation = "-" if is_subtraction else "+"
     result = a - b if is_subtraction else a + b
     explanation = f"Đây là cách tính nhẩm {a} {operation} {b} bằng visual ngắn gọn và dễ nhìn."
@@ -817,7 +817,7 @@ def _build_word_01_payload(
 ) -> CurriculumVisualPayload:
     start = numbers[0] if len(numbers) > 0 else 5
     change = numbers[1] if len(numbers) > 1 else 3
-    is_subtraction = any(token in normalized for token in ("bot", "con lai", "bay di", "tru"))
+    is_subtraction = any(token in normalized for token in ("bot", "con lai", "bay di", "tru", "-"))
     result = start - change if is_subtraction else start + change
     operation = "-" if is_subtraction else "+"
     object_name = "quả táo" if "tao" in normalized else "đồ vật"

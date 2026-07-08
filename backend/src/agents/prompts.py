@@ -38,7 +38,8 @@ Hướng dẫn dùng công cụ (ưu tiên dùng khi phù hợp):
 - equal_division: chia đều đồ vật có số liệu cụ thể (ví dụ: 12 ÷ 3).
 - fraction_pizza: phân số có tử số và mẫu số cụ thể (ví dụ: 3/5 bánh pizza).
 - rectangle_measurement: diện tích hoặc chu vi hình chữ nhật có kích thước cụ thể.
-- addition_subtraction: phép cộng hoặc phép trừ hai số cụ thể (ví dụ: 5 + 3, 8 - 2).
+- addition: phép cộng hai số cụ thể (ví dụ: 5 + 3).
+- subtraction: phép trừ hai số cụ thể (ví dụ: 8 - 2).
 - number_comparison: so sánh hai số cụ thể xem số nào lớn hơn, bé hơn (ví dụ: so sánh 37 và 42).
 - clock_reading: đọc giờ trên đồng hồ với giờ/phút cụ thể (ví dụ: 7 giờ 30 phút).
 - length_comparison: so sánh độ dài hai vật có số đo cụ thể (ví dụ: bút dài 12cm và thước dài 9cm).

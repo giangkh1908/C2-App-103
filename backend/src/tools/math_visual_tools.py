@@ -278,17 +278,16 @@ class RectangleMeasurementTool(BaseTool):
         )
 
 
-class AdditionSubtractionInput(ToolInput):
-    operation: Literal["+", "-"] = Field(..., description="Phép tính: cộng hoặc trừ")
+class AdditionInput(ToolInput):
     operand_a: int = Field(..., ge=0, le=1000, description="Số thứ nhất")
     operand_b: int = Field(..., ge=0, le=1000, description="Số thứ hai")
     item_name: str = Field(default="quả cam", description="Tên vật minh họa")
 
 
-class AdditionSubtractionTool(BaseTool):
-    name = "addition_subtraction"
-    description = "Tạo mô phỏng phép cộng hoặc phép trừ hai số có số liệu cụ thể."
-    input_schema = AdditionSubtractionInput
+class AdditionTool(BaseTool):
+    name = "addition"
+    description = "Tạo mô phỏng phép cộng hai số có số liệu cụ thể."
+    input_schema = AdditionInput
 
     async def run(self, **kwargs: Any) -> ToolResult:
         try:
@@ -300,26 +299,17 @@ class AdditionSubtractionTool(BaseTool):
                 message="Dữ liệu đầu vào chưa hợp lệ.",
             )
 
-        operation = validated_input["operation"]
         operand_a = validated_input["operand_a"]
         operand_b = validated_input["operand_b"]
         item_name = validated_input["item_name"]
-
-        if operation == "-" and operand_b > operand_a:
-            return ToolResult(
-                success=False,
-                error="UNSUPPORTED_NEGATIVE_RESULT",
-                message="Hiện tại học cụ này chỉ hỗ trợ phép trừ không bị âm.",
-            )
-
-        result = operand_a - operand_b if operation == "-" else operand_a + operand_b
-        expression = f"{operand_a} {operation} {operand_b} = {result}"
+        result = operand_a + operand_b
+        expression = f"{operand_a} + {operand_b} = {result}"
 
         return ToolResult(
             success=True,
             data={
                 "type": "addition_subtraction",
-                "operation": operation,
+                "operation": "+",
                 "operand_a": operand_a,
                 "operand_b": operand_b,
                 "result": result,
@@ -327,9 +317,64 @@ class AdditionSubtractionTool(BaseTool):
                 "expression": expression,
             },
             message=(
-                f"{operand_a} {operation} {operand_b} bằng {result}. "
+                f"{operand_a} + {operand_b} bằng {result}. "
                 f"Con có {operand_a} {item_name}, "
-                f"{'bớt đi' if operation == '-' else 'thêm'} {operand_b} {item_name} "
+                f"thêm {operand_b} {item_name} "
+                f"thì được {result} {item_name}."
+            ),
+        )
+
+
+class SubtractionInput(ToolInput):
+    operand_a: int = Field(..., ge=0, le=1000, description="Số thứ nhất (số bị trừ)")
+    operand_b: int = Field(..., ge=0, le=1000, description="Số thứ hai (số trừ)")
+    item_name: str = Field(default="quả cam", description="Tên vật minh họa")
+
+
+class SubtractionTool(BaseTool):
+    name = "subtraction"
+    description = "Tạo mô phỏng phép trừ hai số có số liệu cụ thể."
+    input_schema = SubtractionInput
+
+    async def run(self, **kwargs: Any) -> ToolResult:
+        try:
+            validated_input = self.validate_input(kwargs)
+        except Exception as exc:
+            return ToolResult(
+                success=False,
+                error=str(exc),
+                message="Dữ liệu đầu vào chưa hợp lệ.",
+            )
+
+        operand_a = validated_input["operand_a"]
+        operand_b = validated_input["operand_b"]
+        item_name = validated_input["item_name"]
+
+        if operand_b > operand_a:
+            return ToolResult(
+                success=False,
+                error="UNSUPPORTED_NEGATIVE_RESULT",
+                message="Hiện tại học cụ này chỉ hỗ trợ phép trừ không bị âm.",
+            )
+
+        result = operand_a - operand_b
+        expression = f"{operand_a} - {operand_b} = {result}"
+
+        return ToolResult(
+            success=True,
+            data={
+                "type": "addition_subtraction",
+                "operation": "-",
+                "operand_a": operand_a,
+                "operand_b": operand_b,
+                "result": result,
+                "item_name": item_name,
+                "expression": expression,
+            },
+            message=(
+                f"{operand_a} - {operand_b} bằng {result}. "
+                f"Con có {operand_a} {item_name}, "
+                f"bớt đi {operand_b} {item_name} "
                 f"thì được {result} {item_name}."
             ),
         )
@@ -481,7 +526,8 @@ def get_math_visual_tools() -> list[BaseTool]:
         EqualDivisionTool(),
         FractionPizzaTool(),
         RectangleMeasurementTool(),
-        AdditionSubtractionTool(),
+        AdditionTool(),
+        SubtractionTool(),
         NumberComparisonTool(),
         ClockReadingTool(),
         LengthComparisonTool(),

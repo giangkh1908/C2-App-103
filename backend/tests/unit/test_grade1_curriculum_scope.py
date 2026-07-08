@@ -6,7 +6,6 @@ import pytest
 from src.agents.schemas import AgentResponse
 from src.services.curriculum_adapter import (
     build_curriculum_out_of_scope_message,
-    build_curriculum_scope_redirect_message,
     build_grade1_curriculum_result,
     get_prompt_examples_for_curriculum_topic,
     get_prompt_examples_for_grade,
@@ -96,46 +95,25 @@ def test_build_grade1_curriculum_result_uses_stick_bundles_for_subtraction() -> 
 
 
 @pytest.mark.asyncio
-async def test_learning_core_redirects_when_question_out_of_selected_grade1_lesson() -> None:
-    with patch("src.services.learning_core.MemoryRepository") as memory_repository_cls:
-        memory_repository_cls.return_value.append_turn = AsyncMock()
-        service = LearningCoreService(
-            tutor_agent=SimpleNamespace(),
-            tool_registry=SimpleNamespace(),
-        )
-
-    service.memory_repository.append_turn = AsyncMock()
-    service.session_repository.get_recent_turns = AsyncMock(return_value=[])
-    service.session_repository.get_latest_turn = AsyncMock(return_value=None)
-    service.session_repository.save = AsyncMock()
-
-    request = LearningCoreRequest(
-        user_id="user-1",
-        session_id="session-1",
-        grade=1,
-        message="Giải thích 24 + 13 bằng que tính",
-        curriculum_topic_id="G1-GEO-02",
-    )
-
-    result = await service.generate(request)
-
-    assert result.response_mode == "clarification_needed"
-    assert result.visual_card is None
-    assert result.practice_question_chat is None
-    assert result.assistant_message == build_curriculum_scope_redirect_message("G1-GEO-02")
-    assert result.follow_up_suggestions == get_prompt_examples_for_curriculum_topic("G1-GEO-02")
-
-
-@pytest.mark.asyncio
 async def test_learning_core_stream_uses_curriculum_path_for_grade1_comparison() -> None:
+    async def _fake_stream(*args, **kwargs):
+        yield ("chunk", "Con có 37 quả táo, ")
+        yield ("chunk", "bạn có 42 quả táo, ")
+        yield ("chunk", "bạn nhiều hơn.")
+        yield (
+            "done",
+            AgentResponse(answer="Con có 37 quả táo, bạn có 42 quả táo, bạn nhiều hơn."),
+        )
+
     with patch("src.services.learning_core.MemoryRepository") as memory_repository_cls:
         memory_repository_cls.return_value.append_turn = AsyncMock()
         service = LearningCoreService(
-            tutor_agent=SimpleNamespace(chat_stream=AsyncMock()),
+            tutor_agent=SimpleNamespace(chat_stream=_fake_stream),
             tool_registry=SimpleNamespace(),
         )
 
     service.memory_repository.append_turn = AsyncMock()
+    service.memory_repository.load_messages = AsyncMock(return_value=[])
     service.session_repository.get_recent_turns = AsyncMock(return_value=[])
     service.session_repository.get_latest_turn = AsyncMock(return_value=None)
     service.session_repository.save = AsyncMock()
@@ -151,45 +129,18 @@ async def test_learning_core_stream_uses_curriculum_path_for_grade1_comparison()
     async for event in service.generate_stream(request):
         events.append(event)
 
-    assert len(events) == 1
-    event_type, result = events[0]
-    assert event_type == "done"
+    chunk_events = [e for e in events if e[0] == "chunk"]
+    done_events = [e for e in events if e[0] == "done"]
+    assert len(chunk_events) == 3
+    assert len(done_events) == 1
+    result = done_events[0][1]
     assert result.curriculum_topic_id == "G1-NUM-02"
     assert result.visual_card is not None
     assert result.visual_card.visual_data.type == "comparison_visual"
     assert result.visual_card.visual_data.primary_count == 37
     assert result.visual_card.visual_data.secondary_count == 42
-
-
-@pytest.mark.asyncio
-async def test_learning_core_blocks_out_of_curriculum_grade1_question_before_llm() -> None:
-    with patch("src.services.learning_core.MemoryRepository") as memory_repository_cls:
-        memory_repository_cls.return_value.append_turn = AsyncMock()
-        service = LearningCoreService(
-            tutor_agent=SimpleNamespace(chat=AsyncMock()),
-            tool_registry=SimpleNamespace(),
-        )
-
-    service.memory_repository.append_turn = AsyncMock()
-    service.session_repository.get_recent_turns = AsyncMock(return_value=[])
-    service.session_repository.get_latest_turn = AsyncMock(return_value=None)
-    service.session_repository.save = AsyncMock()
-
-    result = await service.generate(
-        LearningCoreRequest(
-            user_id="user-1",
-            session_id="session-1",
-            grade=1,
-            message="Thá»i tiáº¿t HÃ  Ná»™i hÃ´m nay",
-        )
-    )
-
-    assert result.response_mode == "clarification_needed"
-    assert result.assistant_message == build_curriculum_out_of_scope_message(1)
-    assert result.follow_up_suggestions == get_prompt_examples_for_grade(1)
-    assert result.agent_metadata is not None
-    assert result.agent_metadata["scope_status"] == "out_of_curriculum"
-    service.tutor_agent.chat.assert_not_awaited()
+    assert result.assistant_message == "Con có 37 quả táo, bạn có 42 quả táo, bạn nhiều hơn."
+    assert result.session_metadata.response_source == "llm"
 
 
 @pytest.mark.asyncio

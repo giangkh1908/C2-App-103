@@ -5056,3 +5056,780 @@ ory","timestamp":"2026-06-29T03:33:50.668951+00:00"}
 {"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-02T14:36:01.551465+00:00"}
 {"follow_up_intent":"new_example","topic":"addition_subtraction","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-02T14:36:01.561038+00:00"}
 {"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-02T14:36:01.562039+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.address`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.077092+00:00"}
+{"event":"Provider `faker.providers.address` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.082607+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.automotive`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.087624+00:00"}
+{"event":"Provider `faker.providers.automotive` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.094644+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.bank`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.112189+00:00"}
+{"event":"Specified locale `en_US` is not available for provider `faker.providers.bank`. Locale reset to `en_GB` for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.119204+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.barcode`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.122726+00:00"}
+{"event":"Provider `faker.providers.barcode` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.124738+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.color`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.132783+00:00"}
+{"event":"Provider `faker.providers.color` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.137303+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.company`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.141817+00:00"}
+{"event":"Provider `faker.providers.company` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.148357+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.credit_card`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.150356+00:00"}
+{"event":"Provider `faker.providers.credit_card` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.151864+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.currency`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.153722+00:00"}
+{"event":"Provider `faker.providers.currency` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.156232+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.date_time`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.158234+00:00"}
+{"event":"Provider `faker.providers.date_time` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.161741+00:00"}
+{"event":"Provider `faker.providers.doi` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.164756+00:00"}
+{"event":"Provider `faker.providers.emoji` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.164756+00:00"}
+{"event":"Provider `faker.providers.file` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.164756+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.geo`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.165755+00:00"}
+{"event":"Provider `faker.providers.geo` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.166757+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.internet`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.168753+00:00"}
+{"event":"Provider `faker.providers.internet` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.172256+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.isbn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.175272+00:00"}
+{"event":"Provider `faker.providers.isbn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.175272+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.job`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.177270+00:00"}
+{"event":"Provider `faker.providers.job` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.182790+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.lorem`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.184811+00:00"}
+{"event":"Provider `faker.providers.lorem` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.187791+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.misc`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.188792+00:00"}
+{"event":"Provider `faker.providers.misc` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.189791+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.passport`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.193207+00:00"}
+{"event":"Provider `faker.providers.passport` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.194207+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.person`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.196287+00:00"}
+{"event":"Provider `faker.providers.person` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.202796+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.phone_number`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.209805+00:00"}
+{"event":"Provider `faker.providers.phone_number` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.216898+00:00"}
+{"event":"Provider `faker.providers.profile` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.218894+00:00"}
+{"event":"Provider `faker.providers.python` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.218894+00:00"}
+{"event":"Provider `faker.providers.sbn` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.219894+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.ssn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.219894+00:00"}
+{"event":"Provider `faker.providers.ssn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.224409+00:00"}
+{"event":"Provider `faker.providers.user_agent` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:25:24.227412+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:25:24.239927+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:25:24.551980+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:25:24.595817+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:25:24.664912+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:25:24.672461+00:00"}
+{"follow_up_intent":"new_example","topic":"addition_subtraction","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:25:24.676461+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:25:24.676461+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.address`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.951426+00:00"}
+{"event":"Provider `faker.providers.address` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.957971+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.automotive`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.961983+00:00"}
+{"event":"Provider `faker.providers.automotive` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.965981+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.bank`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.967493+00:00"}
+{"event":"Specified locale `en_US` is not available for provider `faker.providers.bank`. Locale reset to `en_GB` for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.971503+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.barcode`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.973501+00:00"}
+{"event":"Provider `faker.providers.barcode` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.974508+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.color`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.977502+00:00"}
+{"event":"Provider `faker.providers.color` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.980135+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.company`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.981138+00:00"}
+{"event":"Provider `faker.providers.company` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.984704+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.credit_card`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.986226+00:00"}
+{"event":"Provider `faker.providers.credit_card` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.987836+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.currency`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.989848+00:00"}
+{"event":"Provider `faker.providers.currency` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.992847+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.date_time`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.994849+00:00"}
+{"event":"Provider `faker.providers.date_time` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:15.998370+00:00"}
+{"event":"Provider `faker.providers.doi` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.000368+00:00"}
+{"event":"Provider `faker.providers.emoji` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.001367+00:00"}
+{"event":"Provider `faker.providers.file` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.001367+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.geo`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.002369+00:00"}
+{"event":"Provider `faker.providers.geo` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.003388+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.internet`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.005367+00:00"}
+{"event":"Provider `faker.providers.internet` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.007985+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.isbn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.010512+00:00"}
+{"event":"Provider `faker.providers.isbn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.012510+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.job`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.014511+00:00"}
+{"event":"Provider `faker.providers.job` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.018019+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.lorem`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.020040+00:00"}
+{"event":"Provider `faker.providers.lorem` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.024041+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.misc`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.024041+00:00"}
+{"event":"Provider `faker.providers.misc` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.025548+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.passport`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.027558+00:00"}
+{"event":"Provider `faker.providers.passport` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.028072+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.person`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.030077+00:00"}
+{"event":"Provider `faker.providers.person` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.037580+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.phone_number`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.042590+00:00"}
+{"event":"Provider `faker.providers.phone_number` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.048096+00:00"}
+{"event":"Provider `faker.providers.profile` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.050107+00:00"}
+{"event":"Provider `faker.providers.python` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.051104+00:00"}
+{"event":"Provider `faker.providers.sbn` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.051104+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.ssn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.052105+00:00"}
+{"event":"Provider `faker.providers.ssn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.055953+00:00"}
+{"event":"Provider `faker.providers.user_agent` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:16.058489+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:16.290251+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:16.295167+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:16.300875+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:16.305870+00:00"}
+{"follow_up_intent":"new_example","topic":"addition_subtraction","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:16.310405+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:16.311420+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.address`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.943160+00:00"}
+{"event":"Provider `faker.providers.address` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.949204+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.automotive`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.953206+00:00"}
+{"event":"Provider `faker.providers.automotive` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.956205+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.bank`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.958718+00:00"}
+{"event":"Specified locale `en_US` is not available for provider `faker.providers.bank`. Locale reset to `en_GB` for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.962716+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.barcode`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.964716+00:00"}
+{"event":"Provider `faker.providers.barcode` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.965713+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.color`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.968222+00:00"}
+{"event":"Provider `faker.providers.color` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.971253+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.company`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.972233+00:00"}
+{"event":"Provider `faker.providers.company` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.976234+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.credit_card`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.977742+00:00"}
+{"event":"Provider `faker.providers.credit_card` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.978748+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.currency`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.979752+00:00"}
+{"event":"Provider `faker.providers.currency` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.982755+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.date_time`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.984753+00:00"}
+{"event":"Provider `faker.providers.date_time` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.988260+00:00"}
+{"event":"Provider `faker.providers.doi` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.990273+00:00"}
+{"event":"Provider `faker.providers.emoji` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.990273+00:00"}
+{"event":"Provider `faker.providers.file` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.991273+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.geo`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.991273+00:00"}
+{"event":"Provider `faker.providers.geo` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.992274+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.internet`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.994275+00:00"}
+{"event":"Provider `faker.providers.internet` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.997778+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.isbn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.998782+00:00"}
+{"event":"Provider `faker.providers.isbn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:34.999786+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.job`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.000793+00:00"}
+{"event":"Provider `faker.providers.job` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.005793+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.lorem`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.007322+00:00"}
+{"event":"Provider `faker.providers.lorem` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.010329+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.misc`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.010329+00:00"}
+{"event":"Provider `faker.providers.misc` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.011329+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.passport`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.013329+00:00"}
+{"event":"Provider `faker.providers.passport` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.013834+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.person`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.015489+00:00"}
+{"event":"Provider `faker.providers.person` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.021028+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.phone_number`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.026036+00:00"}
+{"event":"Provider `faker.providers.phone_number` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.031549+00:00"}
+{"event":"Provider `faker.providers.profile` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.032548+00:00"}
+{"event":"Provider `faker.providers.python` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.033549+00:00"}
+{"event":"Provider `faker.providers.sbn` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.033549+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.ssn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.033549+00:00"}
+{"event":"Provider `faker.providers.ssn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.038631+00:00"}
+{"event":"Provider `faker.providers.user_agent` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:35.039651+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:35.048359+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:35.056358+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:35.061888+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:35.069412+00:00"}
+{"follow_up_intent":"new_example","topic":"addition_subtraction","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:35.075409+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:35.075409+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.address`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.797404+00:00"}
+{"event":"Provider `faker.providers.address` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.805411+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.automotive`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.810820+00:00"}
+{"event":"Provider `faker.providers.automotive` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.815818+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.bank`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.819334+00:00"}
+{"event":"Specified locale `en_US` is not available for provider `faker.providers.bank`. Locale reset to `en_GB` for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.823332+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.barcode`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.824329+00:00"}
+{"event":"Provider `faker.providers.barcode` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.825332+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.color`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.828535+00:00"}
+{"event":"Provider `faker.providers.color` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.831536+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.company`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.833536+00:00"}
+{"event":"Provider `faker.providers.company` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.838575+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.credit_card`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.839577+00:00"}
+{"event":"Provider `faker.providers.credit_card` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.840572+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.currency`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.842573+00:00"}
+{"event":"Provider `faker.providers.currency` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.845576+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.date_time`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.847572+00:00"}
+{"event":"Provider `faker.providers.date_time` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.851909+00:00"}
+{"event":"Provider `faker.providers.doi` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.853920+00:00"}
+{"event":"Provider `faker.providers.emoji` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.853920+00:00"}
+{"event":"Provider `faker.providers.file` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.853920+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.geo`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.855430+00:00"}
+{"event":"Provider `faker.providers.geo` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.857440+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.internet`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.859601+00:00"}
+{"event":"Provider `faker.providers.internet` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.862600+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.isbn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.864602+00:00"}
+{"event":"Provider `faker.providers.isbn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.865195+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.job`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.867717+00:00"}
+{"event":"Provider `faker.providers.job` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.871733+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.lorem`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.873730+00:00"}
+{"event":"Provider `faker.providers.lorem` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.876733+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.misc`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.876733+00:00"}
+{"event":"Provider `faker.providers.misc` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.877731+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.passport`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.879827+00:00"}
+{"event":"Provider `faker.providers.passport` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.880827+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.person`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.882825+00:00"}
+{"event":"Provider `faker.providers.person` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.890351+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.phone_number`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.895352+00:00"}
+{"event":"Provider `faker.providers.phone_number` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.901865+00:00"}
+{"event":"Provider `faker.providers.profile` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.903865+00:00"}
+{"event":"Provider `faker.providers.python` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.903865+00:00"}
+{"event":"Provider `faker.providers.sbn` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.904866+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.ssn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.904866+00:00"}
+{"event":"Provider `faker.providers.ssn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.909500+00:00"}
+{"event":"Provider `faker.providers.user_agent` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:28:44.911044+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:44.913053+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:28:44.919570+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:44.924564+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:28:44.932094+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:44.938605+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.945819+00:00"}
+{"topic":"multiplication","error_count":1,"errors":["Multiplication statement is inconsistent."],"event":"output_validation_failed","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:28:44.945819+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:44.951842+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.959369+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.960391+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:44.965370+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.970832+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.971816+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:44.977347+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.984361+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.985363+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:44.990876+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.995881+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:44.995881+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:45.005395+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:28:45.011930+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:45.017434+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:45.415053+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:45.483424+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:45.526311+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:28:45.593456+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:28:45.598966+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.address`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.337336+00:00"}
+{"event":"Provider `faker.providers.address` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.342848+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.automotive`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.346850+00:00"}
+{"event":"Provider `faker.providers.automotive` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.350452+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.bank`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.352453+00:00"}
+{"event":"Specified locale `en_US` is not available for provider `faker.providers.bank`. Locale reset to `en_GB` for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.355957+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.barcode`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.356968+00:00"}
+{"event":"Provider `faker.providers.barcode` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.358473+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.color`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.360483+00:00"}
+{"event":"Provider `faker.providers.color` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.363501+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.company`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.365479+00:00"}
+{"event":"Provider `faker.providers.company` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.368479+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.credit_card`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.369923+00:00"}
+{"event":"Provider `faker.providers.credit_card` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.372158+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.currency`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.373209+00:00"}
+{"event":"Provider `faker.providers.currency` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.375877+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.date_time`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.378027+00:00"}
+{"event":"Provider `faker.providers.date_time` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.381233+00:00"}
+{"event":"Provider `faker.providers.doi` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.382863+00:00"}
+{"event":"Provider `faker.providers.emoji` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.383872+00:00"}
+{"event":"Provider `faker.providers.file` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.383872+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.geo`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.384869+00:00"}
+{"event":"Provider `faker.providers.geo` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.385894+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.internet`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.386875+00:00"}
+{"event":"Provider `faker.providers.internet` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.392394+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.isbn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.393391+00:00"}
+{"event":"Provider `faker.providers.isbn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.394393+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.job`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.395394+00:00"}
+{"event":"Provider `faker.providers.job` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.398389+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.lorem`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.401347+00:00"}
+{"event":"Provider `faker.providers.lorem` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.405350+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.misc`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.405350+00:00"}
+{"event":"Provider `faker.providers.misc` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.406352+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.passport`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.408853+00:00"}
+{"event":"Provider `faker.providers.passport` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.409858+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.person`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.412870+00:00"}
+{"event":"Provider `faker.providers.person` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.419386+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.phone_number`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.424905+00:00"}
+{"event":"Provider `faker.providers.phone_number` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.430431+00:00"}
+{"event":"Provider `faker.providers.profile` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.433427+00:00"}
+{"event":"Provider `faker.providers.python` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.433427+00:00"}
+{"event":"Provider `faker.providers.sbn` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.433427+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.ssn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.434426+00:00"}
+{"event":"Provider `faker.providers.ssn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.437423+00:00"}
+{"event":"Provider `faker.providers.user_agent` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:29:51.440558+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.442557+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:29:51.450653+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.455660+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:29:51.462745+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.468747+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.475768+00:00"}
+{"topic":"multiplication","error_count":1,"errors":["Multiplication statement is inconsistent."],"event":"output_validation_failed","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:29:51.475768+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.481428+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.488947+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.489955+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.496955+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.504016+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.504985+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.510509+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.518532+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.518532+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.524632+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.576072+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.577067+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.586180+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:29:51.591704+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.596705+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.605406+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:29:51.612930+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:29:51.620442+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.address`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.294232+00:00"}
+{"event":"Provider `faker.providers.address` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.298230+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.automotive`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.304066+00:00"}
+{"event":"Provider `faker.providers.automotive` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.309577+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.bank`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.312574+00:00"}
+{"event":"Specified locale `en_US` is not available for provider `faker.providers.bank`. Locale reset to `en_GB` for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.319081+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.barcode`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.322089+00:00"}
+{"event":"Provider `faker.providers.barcode` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.323090+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.color`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.326089+00:00"}
+{"event":"Provider `faker.providers.color` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.329606+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.company`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.330607+00:00"}
+{"event":"Provider `faker.providers.company` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.333672+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.credit_card`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.335657+00:00"}
+{"event":"Provider `faker.providers.credit_card` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.336657+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.currency`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.338657+00:00"}
+{"event":"Provider `faker.providers.currency` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.340976+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.date_time`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.342974+00:00"}
+{"event":"Provider `faker.providers.date_time` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.346972+00:00"}
+{"event":"Provider `faker.providers.doi` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.349489+00:00"}
+{"event":"Provider `faker.providers.emoji` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.349489+00:00"}
+{"event":"Provider `faker.providers.file` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.349489+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.geo`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.349489+00:00"}
+{"event":"Provider `faker.providers.geo` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.352008+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.internet`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.353008+00:00"}
+{"event":"Provider `faker.providers.internet` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.357056+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.isbn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.359578+00:00"}
+{"event":"Provider `faker.providers.isbn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.360164+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.job`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.361170+00:00"}
+{"event":"Provider `faker.providers.job` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.364175+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.lorem`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.366171+00:00"}
+{"event":"Provider `faker.providers.lorem` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.368676+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.misc`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.368676+00:00"}
+{"event":"Provider `faker.providers.misc` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.369685+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.passport`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.371685+00:00"}
+{"event":"Provider `faker.providers.passport` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.372684+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.person`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.373862+00:00"}
+{"event":"Provider `faker.providers.person` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.380376+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.phone_number`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.385376+00:00"}
+{"event":"Provider `faker.providers.phone_number` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.391443+00:00"}
+{"event":"Provider `faker.providers.profile` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.393952+00:00"}
+{"event":"Provider `faker.providers.python` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.393952+00:00"}
+{"event":"Provider `faker.providers.sbn` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.394960+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.ssn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.394960+00:00"}
+{"event":"Provider `faker.providers.ssn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.400475+00:00"}
+{"event":"Provider `faker.providers.user_agent` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:01.401982+00:00"}
+{"event":"detected 'bcrypt' backend, version '4.0.1'","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-07-08T16:30:01.408502+00:00"}
+{"event":"'bcrypt' backend lacks $2$ support, enabling workaround","level":"debug","logger":"passlib.handlers.bcrypt","timestamp":"2026-07-08T16:30:01.408502+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:01.690897+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":403,"duration_ms":60.85,"client_ip":"127.0.0.1","event":"request_completed","request_id":"fbb3d73c-8705-4097-a6b2-d8cee4dfe32c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:01.821451+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:01.843016+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:02.179282+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":403,"duration_ms":3.12,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e6bc9345-b843-4211-9d0a-d4ca72a13641","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:02.185876+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:02.186855+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:02.456804+00:00"}
+{"method":"GET","path":"/api/v1/admin/stats","status_code":403,"duration_ms":2.67,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0fb5af69-7c04-4e8a-af3b-cb019f1e0aa2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:02.461839+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/stats \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:02.463648+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:02.729101+00:00"}
+{"method":"GET","path":"/api/v1/admin/plans","status_code":403,"duration_ms":1.41,"client_ip":"127.0.0.1","event":"request_completed","request_id":"80a4beb7-3470-40ab-8a33-c0fec1f7d6a1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:02.733110+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/plans \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:02.734110+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:03.142774+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan","status_code":403,"duration_ms":21.93,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d41cbc08-60c1-4525-8c66-5651b27d0106","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:03.172464+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:03.180243+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:03.714789+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":200,"duration_ms":12.04,"client_ip":"127.0.0.1","event":"request_completed","request_id":"eb699d82-916b-4088-83cb-9130e748a1a7","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:03.743494+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:03.761837+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:04.195952+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":200,"duration_ms":1.84,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b32e81fc-321a-4398-8dc9-5c4fc123f2f8","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:04.204392+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments?status=paid \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:04.206392+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:04.484659+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments","status_code":200,"duration_ms":1.9,"client_ip":"127.0.0.1","event":"request_completed","request_id":"835c4ac2-b805-4bf8-8aa8-65bc2510e5f2","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:04.501698+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments?search=TEST \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:04.504696+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:04.839500+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments/6a4e7b0ce84f48b8f926f211","status_code":200,"duration_ms":1.67,"client_ip":"127.0.0.1","event":"request_completed","request_id":"14bd597d-5409-4c72-9681-b9515c327bdd","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:04.844502+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments/6a4e7b0ce84f48b8f926f211 \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:04.845528+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:05.100490+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments/0000000000000[PHONE_REDACTED]","status_code":404,"duration_ms":1.12,"client_ip":"127.0.0.1","event":"request_completed","request_id":"4614856f-696d-46c9-a228-c3c8f0ed6115","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:05.104497+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments/0000000000000[PHONE_REDACTED] \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:05.106497+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:05.352801+00:00"}
+{"method":"GET","path":"/api/v1/admin/payments/invalid-id","status_code":404,"duration_ms":0.8,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b2568b8f-830d-426c-bd0b-8e9fb31d966d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:05.356316+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/payments/invalid-id \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:05.357320+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:05.629666+00:00"}
+{"method":"POST","path":"/api/v1/admin/payments/6a4e7b0de84f48b8f926f217/activate","status_code":200,"duration_ms":6.2,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e7e5334f-3c1a-4712-be84-5fb478d60e1a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:05.641727+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/payments/6a4e7b0de84f48b8f926f217/activate \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:05.643722+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:05.911636+00:00"}
+{"method":"POST","path":"/api/v1/admin/payments/6a4e7b0de84f48b8f926f21c/activate","status_code":400,"duration_ms":0.98,"client_ip":"127.0.0.1","event":"request_completed","request_id":"734c9e49-e19e-49c5-96dc-a622a9285584","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:05.918640+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/payments/6a4e7b0de84f48b8f926f21c/activate \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:05.919870+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:06.184676+00:00"}
+{"method":"POST","path":"/api/v1/admin/payments/0000000000000[PHONE_REDACTED]/activate","status_code":404,"duration_ms":0.92,"client_ip":"127.0.0.1","event":"request_completed","request_id":"9783625d-2c43-4ac2-bf66-b8f62a5e56fd","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:06.188675+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/payments/0000000000000[PHONE_REDACTED]/activate \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:06.189778+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:06.439735+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":200,"duration_ms":1.22,"client_ip":"127.0.0.1","event":"request_completed","request_id":"89738a0f-dcc5-4f25-bfc1-0072241cfc77","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:06.681548+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:06.683512+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:06.937092+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":200,"duration_ms":0.96,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d3dfde25-b7de-4249-91e2-597c3364f0c0","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:07.192206+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:07.194206+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:07.452548+00:00"}
+{"method":"GET","path":"/api/v1/admin/users","status_code":200,"duration_ms":1.55,"client_ip":"127.0.0.1","event":"request_completed","request_id":"03383798-6ea1-4aa1-ba0a-3c4ca549fcff","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:07.718388+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/users \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:07.719622+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:07.975823+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a4e7b0fe84f48b8f926f228/extend","status_code":200,"duration_ms":2.92,"client_ip":"127.0.0.1","event":"request_completed","request_id":"dce8f6f4-7167-4791-b980-01e2816d66bb","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:08.232326+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a4e7b0fe84f48b8f926f228/extend \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:08.233336+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:08.544055+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a4e7b10e84f48b8f926f22a/extend","status_code":200,"duration_ms":3.17,"client_ip":"127.0.0.1","event":"request_completed","request_id":"08fe246a-796c-415f-b16f-c7ef271faf3b","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:08.843150+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a4e7b10e84f48b8f926f22a/extend \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:08.845152+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:09.166928+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/0000000000000[PHONE_REDACTED]/extend","status_code":404,"duration_ms":1.03,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b01e5946-d7f3-43b1-92d2-b51571fb44d6","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:09.171460+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/0000000000000[PHONE_REDACTED]/extend \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:09.174979+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:09.443598+00:00"}
+{"method":"GET","path":"/api/v1/admin/stats","status_code":200,"duration_ms":0.91,"client_ip":"127.0.0.1","event":"request_completed","request_id":"00583720-1bc5-499e-b472-bcc7058c0793","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:09.450061+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/stats \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:09.452062+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:09.723898+00:00"}
+{"method":"GET","path":"/api/v1/admin/plans","status_code":200,"duration_ms":2.75,"client_ip":"127.0.0.1","event":"request_completed","request_id":"08a114f7-1756-4d25-b89f-d55074724753","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:09.731409+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/plans \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:09.733416+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:10.028692+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a4e7b12e84f48b8f926f231/change-plan","status_code":200,"duration_ms":4.43,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a038c1a3-889b-4f2e-9734-22dd75b4c17b","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:10.318236+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a4e7b12e84f48b8f926f231/change-plan \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:10.319691+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:10.690165+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/6a4e7b12e84f48b8f926f235/change-plan","status_code":404,"duration_ms":3.21,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b8a2c19e-c9f4-42b9-9f64-7ffe45b9a40d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:11.008616+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/6a4e7b12e84f48b8f926f235/change-plan \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:11.011629+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:11.343870+00:00"}
+{"method":"POST","path":"/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan","status_code":404,"duration_ms":2.44,"client_ip":"127.0.0.1","event":"request_completed","request_id":"e4cdbe50-bba7-4195-b64c-b995e64b7a8c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:11.355392+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/admin/users/0000000000000[PHONE_REDACTED]/change-plan \"HTTP/1.1 404 Not Found\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:11.360424+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:11.658666+00:00"}
+{"method":"GET","path":"/api/v1/admin/llm-stats","status_code":200,"duration_ms":4.03,"client_ip":"127.0.0.1","event":"request_completed","request_id":"687902e5-ee7c-4d34-bc8c-3fe2ba366f40","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:11.667355+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/llm-stats \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:11.669876+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:11.940652+00:00"}
+{"method":"GET","path":"/api/v1/admin/llm-stats","status_code":200,"duration_ms":1.8,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f9da54bf-b9f7-48fa-8fdb-ef14cdf56f4e","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:11.949695+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/llm-stats \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:11.951694+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:12.211340+00:00"}
+{"method":"GET","path":"/api/v1/admin/llm-stats","status_code":403,"duration_ms":0.75,"client_ip":"127.0.0.1","event":"request_completed","request_id":"3fa30e0a-4f5d-4167-83a5-088fa29ba11f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:12.214858+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/admin/llm-stats \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:12.215859+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:12.220376+00:00"}
+{"method":"POST","path":"/api/v1/auth/register","status_code":201,"duration_ms":264.69,"client_ip":"127.0.0.1","event":"request_completed","request_id":"091427b1-b6d5-45a1-8198-12e1a454c826","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:12.490365+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/register \"HTTP/1.1 201 Created\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:12.491373+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:12.495371+00:00"}
+{"method":"POST","path":"/api/v1/auth/register","status_code":409,"duration_ms":2.3,"client_ip":"127.0.0.1","event":"request_completed","request_id":"425e74b5-d362-4fe2-878f-1ef4a9a2698d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:12.797017+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/register \"HTTP/1.1 409 Conflict\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:12.800528+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:12.804054+00:00"}
+{"method":"POST","path":"/api/v1/auth/register","status_code":422,"duration_ms":1.8,"client_ip":"127.0.0.1","event":"request_completed","request_id":"24dadcc3-f441-46ef-90aa-dcb0988db140","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:12.811563+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/register \"HTTP/1.1 422 Unprocessable Entity\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:12.813565+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:12.816564+00:00"}
+{"method":"POST","path":"/api/v1/auth/login","status_code":200,"duration_ms":251.22,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a4cb0801-851d-4705-9bcd-7c7ed92aa670","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:13.380224+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/login \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:13.381234+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:13.385265+00:00"}
+{"method":"POST","path":"/api/v1/auth/login","status_code":401,"duration_ms":375.55,"client_ip":"127.0.0.1","event":"request_completed","request_id":"58aea2ce-a4b8-49a0-b26b-c9b905d29522","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:14.020512+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/login \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:14.023520+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:14.038605+00:00"}
+{"method":"POST","path":"/api/v1/auth/login","status_code":401,"duration_ms":3.52,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d974751f-3b60-4fea-8578-778b9ab9c660","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:14.055193+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/login \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:14.058702+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:14.065720+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":200,"duration_ms":3.67,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d9b9b358-4770-4ff6-b319-292042525f5a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:14.384933+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:14.386934+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:14.431674+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":401,"duration_ms":1.56,"client_ip":"127.0.0.1","event":"request_completed","request_id":"eebc5cac-f285-45a9-becb-63f4cbfd9cc1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:14.540832+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:14.546477+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:14.550516+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":401,"duration_ms":0.86,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a61e60f2-103d-4f44-91bb-749f73ba99d1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:14.556515+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:14.558515+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:14.560932+00:00"}
+{"method":"POST","path":"/api/v1/auth/refresh","status_code":401,"duration_ms":1.49,"client_ip":"127.0.0.1","event":"request_completed","request_id":"957e9709-e35d-46a8-94c4-0235b509de41","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:15.201746+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/refresh \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:15.203746+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:15.214277+00:00"}
+{"method":"POST","path":"/api/v1/auth/logout","status_code":200,"duration_ms":1.83,"client_ip":"127.0.0.1","event":"request_completed","request_id":"c43a793b-7f04-4cd5-bc67-3d0856aec1a7","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:15.566440+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/logout \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:15.567439+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:15.569950+00:00"}
+{"method":"POST","path":"/api/v1/auth/logout","status_code":401,"duration_ms":0.55,"client_ip":"127.0.0.1","event":"request_completed","request_id":"c92b7292-ec06-4e62-b208-d06ae23a1b62","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:15.577030+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/logout \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:15.578537+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:15.581552+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":200,"duration_ms":1.02,"client_ip":"127.0.0.1","event":"request_completed","request_id":"885b23f8-0ed6-4116-a3c7-107a5d960c87","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:15.860263+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:15.862259+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:15.867213+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":401,"duration_ms":0.44,"client_ip":"127.0.0.1","event":"request_completed","request_id":"05649622-23c4-4731-98b5-d57be7952742","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:15.873733+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:15.874732+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:15.879248+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":401,"duration_ms":0.56,"client_ip":"127.0.0.1","event":"request_completed","request_id":"cae9591f-b241-4424-8e8f-301a59109715","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:15.886252+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:15.888249+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:15.892773+00:00"}
+{"event":"HTTP Request: POST https://api.resend.com/emails \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:17.030829+00:00"}
+{"email_to":"[EMAIL_REDACTED]","email_subject":"Đặt lại mật khẩu - Toán Trực Quan AI","status_code":403,"event":"email_send_failed","request_id":"935bb916-4ef2-44a5-a97b-1aab95e7e4c1","logger":"toan_truc_quan.email","level":"warning","timestamp":"2026-07-08T16:30:17.034171+00:00"}
+{"method":"POST","path":"/api/v1/auth/forgot-password","status_code":200,"duration_ms":868.74,"client_ip":"127.0.0.1","event":"request_completed","request_id":"935bb916-4ef2-44a5-a97b-1aab95e7e4c1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:17.036675+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/forgot-password \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:17.038682+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:17.044757+00:00"}
+{"method":"POST","path":"/api/v1/auth/forgot-password","status_code":200,"duration_ms":0.96,"client_ip":"127.0.0.1","event":"request_completed","request_id":"ca6e201b-a55c-4ee4-a7db-f4cc3e157c36","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:17.054276+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/forgot-password \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:17.058278+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:17.062614+00:00"}
+{"method":"POST","path":"/api/v1/auth/reset-password","status_code":200,"duration_ms":296.33,"client_ip":"127.0.0.1","event":"request_completed","request_id":"20f23749-55e1-42cd-9bf5-5a5f955572c0","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:17.620436+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/reset-password \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:17.621446+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:17.628445+00:00"}
+{"method":"POST","path":"/api/v1/auth/reset-password","status_code":400,"duration_ms":2.96,"client_ip":"127.0.0.1","event":"request_completed","request_id":"905216ae-493b-49bb-8369-0d5a4bb6f59c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:17.640534+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/reset-password \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:17.644055+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:17.650569+00:00"}
+{"method":"POST","path":"/api/v1/auth/reset-password","status_code":400,"duration_ms":2.74,"client_ip":"127.0.0.1","event":"request_completed","request_id":"126f965b-67a9-4a73-b1f9-9b85ec5b744e","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:17.980009+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/reset-password \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:17.985532+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:17.997303+00:00"}
+{"event":"HTTP Request: POST https://api.resend.com/emails \"HTTP/1.1 403 Forbidden\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.172959+00:00"}
+{"email_to":"[EMAIL_REDACTED]","email_subject":"Xác thực email - Toán Trực Quan AI","status_code":403,"event":"email_send_failed","request_id":"efd019e9-f25e-416c-8cb5-aeaedebea061","logger":"toan_truc_quan.email","level":"warning","timestamp":"2026-07-08T16:30:19.173960+00:00"}
+{"method":"POST","path":"/api/v1/auth/verify-email","status_code":200,"duration_ms":817.04,"client_ip":"127.0.0.1","event":"request_completed","request_id":"efd019e9-f25e-416c-8cb5-aeaedebea061","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.175962+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/verify-email \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.178471+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.183747+00:00"}
+{"method":"POST","path":"/api/v1/auth/verify-email","status_code":200,"duration_ms":0.97,"client_ip":"127.0.0.1","event":"request_completed","request_id":"02da1409-6490-4af7-b893-cf798f7d2f75","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.449007+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/verify-email \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.450010+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.454013+00:00"}
+{"method":"GET","path":"/api/v1/auth/verify-email/confirm","status_code":200,"duration_ms":1.36,"client_ip":"127.0.0.1","event":"request_completed","request_id":"63deaec5-33be-499e-941a-cb440e2f983d","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.712901+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/verify-email/confirm?token=Ex_Z7mFnTwiZjIsObrmvzmQdY8kJELvmMDR05z8L6eM \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.713902+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.717050+00:00"}
+{"method":"GET","path":"/api/v1/auth/verify-email/confirm","status_code":400,"duration_ms":0.97,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f587b4cd-a0c1-4cae-aefc-b5e0f01cb6a4","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.723187+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/verify-email/confirm?token=invalidtoken \"HTTP/1.1 400 Bad Request\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.725198+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.728706+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":503,"duration_ms":3.2,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b1dde412-1965-479f-a168-9eb0cb100bf7","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.738257+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 503 Service Unavailable\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.739777+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.742781+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":401,"duration_ms":1.74,"client_ip":"127.0.0.1","event":"request_completed","request_id":"b850df05-fef1-4bb2-ab68-0de035eaf47b","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.751816+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 401 Unauthorized\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.754826+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.758335+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":503,"duration_ms":1.2,"client_ip":"127.0.0.1","event":"request_completed","request_id":"45cacb2d-f6ee-41ca-a1c9-8706fa334830","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.766453+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 503 Service Unavailable\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.768462+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.772989+00:00"}
+{"method":"POST","path":"/api/v1/auth/google","status_code":200,"duration_ms":1.79,"client_ip":"127.0.0.1","event":"request_completed","request_id":"d032091e-4f22-4b16-92cd-cf07657e6f43","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:19.782515+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/auth/google \"HTTP/1.1 200 OK\"","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:19.783516+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:19.789542+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":1021.28,"client_ip":"127.0.0.1","event":"request_completed","request_id":"cc492864-e007-4d89-9fd0-4017ff8a8aca","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:20.816573+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:20.825084+00:00"}
+{"daily_cost":2.0,"budget":0.5,"event":"llm_budget_exceeded","logger":"toan_truc_quan.budget_alert","level":"warning","timestamp":"2026-07-08T16:30:20.832606+00:00"}
+{"admin_count":2,"total_admins":2,"event":"llm_budget_alert_dispatched","logger":"toan_truc_quan.budget_alert","level":"info","timestamp":"2026-07-08T16:30:20.836608+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:20.845142+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:20.860739+00:00"}
+{"daily_cost":2.0,"budget":0.5,"event":"llm_budget_exceeded","logger":"toan_truc_quan.budget_alert","level":"warning","timestamp":"2026-07-08T16:30:20.867383+00:00"}
+{"event":"llm_budget_no_admins_to_alert","logger":"toan_truc_quan.budget_alert","level":"info","timestamp":"2026-07-08T16:30:20.867383+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:20.964762+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:20.973307+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:20.981802+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:20.991826+00:00"}
+{"follow_up_intent":"new_example","topic":"addition_subtraction","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:20.999355+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.002357+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.010403+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.023451+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.046540+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.057060+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.079121+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:30:21.086141+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.093669+00:00"}
+{"category":"unsafe_personal_request","severity":"high","log_reason":"personal_data_request_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:30:21.102191+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.109710+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.118716+00:00"}
+{"topic":"multiplication","error_count":1,"errors":["Multiplication statement is inconsistent."],"event":"output_validation_failed","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:30:21.119725+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.131265+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.152365+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.153362+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.170419+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.186006+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.187011+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.207091+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.222156+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.223167+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.234200+00:00"}
+{"follow_up_intent":"new_example","topic":"multiplication","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.242741+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:21.244748+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.257278+00:00"}
+{"category":"prompt_injection","severity":"high","log_reason":"prompt_injection_phrase_detected","grade":3,"event":"guardrail_blocked","logger":"toan_truc_quan.learning_core","level":"warning","timestamp":"2026-07-08T16:30:21.262793+00:00"}
+{"foo":"bar","event":"hello_structlog","logger":"toan_truc_quan.test","level":"info","timestamp":"2026-07-08T16:30:21.293651+00:00"}
+{"event":"with_request_id","request_id":"req-test-123","logger":"toan_truc_quan.test","level":"info","timestamp":"2026-07-08T16:30:21.299156+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.306174+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":1.99,"client_ip":"127.0.0.1","event":"request_completed","request_id":"fa5943bc-1a98-422f-a617-3d4816a0222c","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:21.316218+00:00"}
+{"event":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","message":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:21,639","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:21.642745+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.648432+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":0.91,"client_ip":"127.0.0.1","event":"request_completed","request_id":"client-req-1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:21.656836+00:00"}
+{"event":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","message":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:21,664","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:21.667492+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.674516+00:00"}
+{"method":"GET","path":"/health","status_code":200,"duration_ms":0.63,"client_ip":"127.0.0.1","event":"request_completed","request_id":"safe-request-id","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:21.686826+00:00"}
+{"event":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","message":"HTTP Request: GET http://test/health \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:21,686","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:21.688333+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.692857+00:00"}
+{"method":"GET","path":"/api/v1/auth/me","status_code":401,"duration_ms":1.04,"client_ip":"127.0.0.1","event":"request_completed","request_id":"4c324847-99ac-48a1-8ac0-1828d4888e31","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:21.702373+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 401 Unauthorized\"","message":"HTTP Request: GET http://test/api/v1/auth/me \"HTTP/1.1 401 Unauthorized\"","asctime":"2026-07-08 23:30:21,706","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:21.710641+00:00"}
+{"event":"contact me at [EMAIL_REDACTED] or [PHONE_REDACTED]","logger":"toan_truc_quan.test","level":"info","timestamp":"2026-07-08T16:30:21.718683+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.807039+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.810560+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.816126+00:00"}
+{"payment_code":"TTQ507f1f1783528221d2958a","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.821648+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.829683+00:00"}
+{"payment_code":"TTQ507f1f1783528221b2bb0f","plan_name":"plus","billing":"yearly","amount_vnd":399000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.836201+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.843222+00:00"}
+{"payment_code":"TTQ507f1f1783528221bc3dfa","plan_name":"premium","billing":"monthly","amount_vnd":99000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.847307+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.855332+00:00"}
+{"payment_code":"TTQ507f1f1783528221f27a39","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.859857+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.867456+00:00"}
+{"payment_code":"TTQ507f1f17835282215325f2","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.873664+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.880748+00:00"}
+{"payment_code":"TTQ507f1f1700000000","plan_name":"plus","event":"payment_duplicate_skipped","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.885727+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.912848+00:00"}
+{"payment_code":"TTQ507f1f1783528221f26c37","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.919729+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.926771+00:00"}
+{"payment_code":"TTQ507f1f1783528221671961","plan_name":"plus","billing":"monthly","amount_vnd":49000,"event":"payment_created","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.932306+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.939395+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.947394+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.953920+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.963445+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","plan_id":"507f1f77bcf86cd799439012","gateway_txn_id":"TXN-123","activation_succeeded":true,"event":"payment_marked_paid","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.969514+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.977548+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","plan_id":"507f1f77bcf86cd799439012","gateway_txn_id":"TXN-X","activation_succeeded":true,"event":"payment_marked_paid","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.983067+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:21.994021+00:00"}
+{"payment_code":"TTQ507f1f1700000000","current_status":"paid","event":"payment_verify_already_settled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:21.997031+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.004559+00:00"}
+{"payment_code":"TTQ507f1f1700000000","expected":49000,"received":100,"event":"payment_verify_amount_mismatch","logger":"toan_truc_quan.payment_service","level":"warning","timestamp":"2026-07-08T16:30:22.008687+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.014541+00:00"}
+{"payment_code":"TTQ507f1f1700000000","current_status":"expired","event":"payment_verify_already_settled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:22.019586+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.025138+00:00"}
+{"payment_code":"TTQ_NOPE","event":"payment_verify_unknown_code","logger":"toan_truc_quan.payment_service","level":"warning","timestamp":"2026-07-08T16:30:22.029925+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.034920+00:00"}
+{"count":3,"cutoff":"2026-07-08T16:15:22.038446+00:00","event":"payments_expired_sweep","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:22.038446+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.043453+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.048472+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.053479+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.060990+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.069483+00:00"}
+{"payment_code":"TTQ507f1f1700000000","user_id":"507f1f77bcf86cd799439011","event":"payment_cancelled","logger":"toan_truc_quan.payment_service","level":"info","timestamp":"2026-07-08T16:30:22.072482+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.079518+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.085527+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.093055+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.138488+00:00"}
+{"plan_name":"free","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.142015+00:00"}
+{"plan_name":"plus","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.145011+00:00"}
+{"plan_name":"premium","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.147016+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.152537+00:00"}
+{"plan_name":"free","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.157554+00:00"}
+{"plan_name":"plus","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.160078+00:00"}
+{"plan_name":"premium","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.164079+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.169598+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.241880+00:00"}
+{"plan_name":"free","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.245407+00:00"}
+{"plan_name":"plus","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.247407+00:00"}
+{"plan_name":"premium","event":"plan_seed_upserted","logger":"toan_truc_quan.plan_service","level":"info","timestamp":"2026-07-08T16:30:22.248920+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.258432+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.264447+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.271484+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.277484+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.283008+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.289530+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.295537+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.304086+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:22.311617+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:25.102852+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:25.109383+00:00"}
+{"request_path":"/api/v1/speech/tts","provider":"edge_tts","voice":"vi-VN-HoaiMyNeural","media_type":"audio/mpeg","event":"tts_response_ready","request_id":"238c58bc-58c7-43a4-8d36-2efc120e50bd","logger":"toan_truc_quan.api.speech","level":"info","timestamp":"2026-07-08T16:30:25.368187+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":200,"duration_ms":9.44,"client_ip":"127.0.0.1","event":"request_completed","request_id":"238c58bc-58c7-43a4-8d36-2efc120e50bd","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:25.373710+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","message":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:25,376","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:25.380302+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:25.383960+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":422,"duration_ms":2.12,"client_ip":"127.0.0.1","event":"request_completed","request_id":"3d4fce42-31ce-47aa-9811-9cb654917a69","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:25.653426+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","message":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 422 Unprocessable Entity\"","asctime":"2026-07-08 23:30:25,657","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:25.660441+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:25.667201+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":400,"duration_ms":4.63,"client_ip":"127.0.0.1","event":"request_completed","request_id":"0f71d40f-9f30-48a8-ae66-59fabe3899a1","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:26.086579+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","message":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 400 Bad Request\"","asctime":"2026-07-08 23:30:26,091","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:26.095090+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:26.099604+00:00"}
+{"method":"POST","path":"/api/v1/speech/tts","status_code":502,"duration_ms":5.27,"client_ip":"127.0.0.1","event":"request_completed","request_id":"8d665fb6-7f45-4b83-a8e8-c695791f40cb","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:26.406748+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","message":"HTTP Request: POST http://test/api/v1/speech/tts \"HTTP/1.1 502 Bad Gateway\"","asctime":"2026-07-08 23:30:26,419","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:26.423299+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:26.433793+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:26.442354+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:26.451746+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":true,"rate":"-15%","media_type":"audio/mpeg","event":"tts_synthesized","logger":"toan_truc_quan.speech","level":"info","timestamp":"2026-07-08T16:30:26.465268+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:26.474534+00:00"}
+{"provider":"edge_tts","model":"edge-tts","voice":"vi-VN-HoaiMyNeural","slow":false,"rate":"0%","error_message":"boom","event":"tts_provider_failed","logger":"toan_truc_quan.speech","level":"warning","timestamp":"2026-07-08T16:30:26.476536+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:26.740868+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":2.72,"client_ip":"127.0.0.1","event":"request_completed","request_id":"f9e22f13-45d3-42af-87c3-1800407e306f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:26.748889+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","message":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","asctime":"2026-07-08 23:30:26,752","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:26.754414+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:27.048425+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":2.91,"client_ip":"127.0.0.1","event":"request_completed","request_id":"a46b6035-094d-4521-8ed0-e8953b010399","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:27.057479+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","message":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","asctime":"2026-07-08 23:30:27,060","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:27.062680+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:27.377204+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":200,"duration_ms":3.59,"client_ip":"127.0.0.1","event":"request_completed","request_id":"3f64ea84-ab7d-4259-8d26-fbd3bae8172a","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:27.385181+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 200 OK\"","message":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:27,387","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:27.391714+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:27.669498+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":400,"duration_ms":4.41,"client_ip":"127.0.0.1","event":"request_completed","request_id":"64122d9a-e021-4d69-a2e8-964f8cd2e252","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:27.680313+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","message":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 400 Bad Request\"","asctime":"2026-07-08 23:30:27,685","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:27.690869+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.085702+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":404,"duration_ms":2.82,"client_ip":"127.0.0.1","event":"request_completed","request_id":"9e293baa-86b8-4061-99e0-8fc4baf5e51f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:28.095738+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 404 Not Found\"","message":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 404 Not Found\"","asctime":"2026-07-08 23:30:28,103","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:28.108767+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.116783+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":401,"duration_ms":3.77,"client_ip":"127.0.0.1","event":"request_completed","request_id":"25b7a64f-7024-4598-8afd-62bb792c2429","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:28.128315+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 401 Unauthorized\"","message":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 401 Unauthorized\"","asctime":"2026-07-08 23:30:28,132","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:28.136103+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.441503+00:00"}
+{"method":"POST","path":"/api/v1/subscription/upgrade","status_code":200,"duration_ms":3.25,"client_ip":"127.0.0.1","event":"request_completed","request_id":"99251cfb-1aa4-41b6-bd88-edb72ba7694f","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:28.452017+00:00"}
+{"event":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 200 OK\"","message":"HTTP Request: POST http://test/api/v1/subscription/upgrade \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:28,457","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:28.461550+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.468549+00:00"}
+{"count":1,"event":"subscriptions_expired_sweep","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-07-08T16:30:28.476579+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.490616+00:00"}
+{"count":5,"event":"subscriptions_expired_sweep","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-07-08T16:30:28.497623+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.506813+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.529094+00:00"}
+{"email_to":"[EMAIL_REDACTED]","event":"subscription_reminder_sent","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-07-08T16:30:28.537629+00:00"}
+{"count":1,"event":"subscription_reminders_dispatched","logger":"toan_truc_quan.subscription_service","level":"info","timestamp":"2026-07-08T16:30:28.542157+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.551823+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.562859+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.572383+00:00"}
+{"email_to":"[EMAIL_REDACTED]","event":"subscription_reminder_send_exception","logger":"toan_truc_quan.subscription_service","level":"error","timestamp":"2026-07-08T16:30:28.575381+00:00","exception":"Traceback (most recent call last):\n  File \"d:\\Vin\\C2-App-103\\backend\\src\\services\\subscription_service.py\", line 152, in send_expiry_reminder_emails\n    await send_email(email, subject, html)\n  File \"C:\\Users\\KimHo\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\unittest\\mock.py\", line 2240, in _execute_mock_call\n    raise effect\nRuntimeError: resend 503"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.585802+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.593367+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.600769+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.615806+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.641971+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.750445+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.774649+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.784321+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.793459+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.801613+00:00"}
+{"user_id":"6a4e7b24e84f48b8f926f291","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-07-08T16:30:28.804613+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.816655+00:00"}
+{"user_id":"6a4e7b24e84f48b8f926f292","action":"chat_turns","new_count":6,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-07-08T16:30:28.820186+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.831425+00:00"}
+{"user_id":"6a4e7b24e84f48b8f926f293","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-07-08T16:30:28.834429+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.843949+00:00"}
+{"user_id":"6a4e7b24e84f48b8f926f294","action":"chat_turns","new_count":1,"plan_id":"plan_free_id","event":"usage_recording","logger":"toan_truc_quan.usage_service","level":"info","timestamp":"2026-07-08T16:30:28.852699+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.866066+00:00"}
+{"user_id":"6a4e7b24e84f48b8f926f295","event":"record_usage_user_not_found","logger":"toan_truc_quan.usage_service","level":"warning","timestamp":"2026-07-08T16:30:28.875605+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.890409+00:00"}
+{"user_id":"invalid_id","event":"record_usage_invalid_id","logger":"toan_truc_quan.usage_service","level":"warning","timestamp":"2026-07-08T16:30:28.892417+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.904931+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.914453+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:28.923524+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:29.184157+00:00"}
+{"method":"GET","path":"/api/v1/user/usage","status_code":200,"duration_ms":3.7,"client_ip":"127.0.0.1","event":"request_completed","request_id":"62d08134-98fd-4c78-bbfe-c275f460ade5","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:29.190674+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 200 OK\"","message":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:29,193","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:29.198282+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:29.450538+00:00"}
+{"method":"GET","path":"/api/v1/user/usage","status_code":200,"duration_ms":3.06,"client_ip":"127.0.0.1","event":"request_completed","request_id":"67a9a3fc-271f-422b-8ee5-1d824b9abb7e","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:29.719813+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 200 OK\"","message":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 200 OK\"","asctime":"2026-07-08 23:30:29,721","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:29.724822+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:29.733865+00:00"}
+{"method":"GET","path":"/api/v1/user/usage","status_code":401,"duration_ms":0.94,"client_ip":"127.0.0.1","event":"request_completed","request_id":"2ebd3322-f027-4285-bbdb-7823ba740b50","logger":"toan_truc_quan.request","level":"info","timestamp":"2026-07-08T16:30:29.736862+00:00"}
+{"event":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 401 Unauthorized\"","message":"HTTP Request: GET http://test/api/v1/user/usage \"HTTP/1.1 401 Unauthorized\"","asctime":"2026-07-08 23:30:29,740","level":"info","logger":"httpx","timestamp":"2026-07-08T16:30:29.743377+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.address`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.816417+00:00"}
+{"event":"Provider `faker.providers.address` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.821670+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.automotive`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.825737+00:00"}
+{"event":"Provider `faker.providers.automotive` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.831283+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.bank`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.832833+00:00"}
+{"event":"Specified locale `en_US` is not available for provider `faker.providers.bank`. Locale reset to `en_GB` for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.836794+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.barcode`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.839350+00:00"}
+{"event":"Provider `faker.providers.barcode` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.840349+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.color`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.843345+00:00"}
+{"event":"Provider `faker.providers.color` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.845343+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.company`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.847402+00:00"}
+{"event":"Provider `faker.providers.company` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.851764+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.credit_card`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.853720+00:00"}
+{"event":"Provider `faker.providers.credit_card` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.853720+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.currency`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.856762+00:00"}
+{"event":"Provider `faker.providers.currency` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.859281+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.date_time`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.861928+00:00"}
+{"event":"Provider `faker.providers.date_time` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.864935+00:00"}
+{"event":"Provider `faker.providers.doi` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.866937+00:00"}
+{"event":"Provider `faker.providers.emoji` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.866937+00:00"}
+{"event":"Provider `faker.providers.file` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.866937+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.geo`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.868508+00:00"}
+{"event":"Provider `faker.providers.geo` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.870212+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.internet`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.873212+00:00"}
+{"event":"Provider `faker.providers.internet` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.878721+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.isbn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.880737+00:00"}
+{"event":"Provider `faker.providers.isbn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.880737+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.job`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.882734+00:00"}
+{"event":"Provider `faker.providers.job` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.886734+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.lorem`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.887735+00:00"}
+{"event":"Provider `faker.providers.lorem` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.891348+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.misc`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.892351+00:00"}
+{"event":"Provider `faker.providers.misc` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.893348+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.passport`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.895348+00:00"}
+{"event":"Provider `faker.providers.passport` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.896346+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.person`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.898350+00:00"}
+{"event":"Provider `faker.providers.person` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.906386+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.phone_number`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.911909+00:00"}
+{"event":"Provider `faker.providers.phone_number` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.916497+00:00"}
+{"event":"Provider `faker.providers.profile` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.918991+00:00"}
+{"event":"Provider `faker.providers.python` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.919999+00:00"}
+{"event":"Provider `faker.providers.sbn` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.921069+00:00"}
+{"event":"Looking for locale `en_US` in provider `faker.providers.ssn`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.921740+00:00"}
+{"event":"Provider `faker.providers.ssn` has been localized to `en_US`.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.927372+00:00"}
+{"event":"Provider `faker.providers.user_agent` does not feature localization. Specified locale `en_US` is not used for this provider.","level":"debug","logger":"faker.factory","timestamp":"2026-07-08T16:30:43.929474+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:43.973460+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:43.982892+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:43.990411+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:44.004937+00:00"}
+{"follow_up_intent":"new_example","topic":"addition_subtraction","session_id":"session-1","event":"follow_up_context_applied","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:44.009976+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:44.010983+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:44.016492+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:44.025669+00:00"}
+{"event":"Using proactor: IocpProactor","level":"debug","logger":"asyncio","timestamp":"2026-07-08T16:30:44.032172+00:00"}
+{"user_id":"user-1","event":"llm_cost_skipped_zero_tokens","logger":"toan_truc_quan.learning_core","level":"info","timestamp":"2026-07-08T16:30:44.039686+00:00"}

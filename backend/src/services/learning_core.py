@@ -1,3 +1,4 @@
+import json
 import random
 import re
 import unicodedata
@@ -659,6 +660,96 @@ class LearningCoreService:
             }
         return build_contextual_explanation(context.topic, tool_data), "fallback"
 
+    async def _enrich_curriculum_result_with_llm(
+        self,
+        *,
+        request: LearningCoreRequest,
+        curriculum_result: LearningCoreResult,
+        session_id: str,
+        history_payload: list[dict[str, str]] | None,
+    ) -> LearningCoreResult:
+        agent_response = await self.tutor_agent.chat(
+            message=build_curriculum_tutor_message(request, curriculum_result),
+            level=grade_to_level(request.grade),
+            use_tools=False,
+            history=history_payload,
+        )
+        await self._record_llm_cost(request.user_id, agent_response)
+        llm_answer = (agent_response.answer or "").strip()
+        agent_metadata = {
+            "tool_used": agent_response.tool_used,
+            "step_count": len(agent_response.steps),
+            "visual_source": "curriculum_adapter",
+            "curriculum_topic_id": curriculum_result.curriculum_topic_id,
+        }
+        if llm_answer:
+            answer = normalize_answer(agent_response.answer)
+        else:
+            answer = curriculum_result.assistant_message
+            agent_metadata["llm_empty_fallback"] = True
+
+        return curriculum_result.model_copy(
+            update={
+                "assistant_message": answer,
+                "simple_explanation": answer,
+                "tts_text": f"{answer} {curriculum_result.real_life_example}".strip(),
+                "session_metadata": curriculum_result.session_metadata.model_copy(
+                    update={"response_source": "llm"},
+                ),
+                "agent_metadata": agent_metadata,
+            },
+        )
+
+    async def _enrich_curriculum_result_with_llm_stream(
+        self,
+        *,
+        request: LearningCoreRequest,
+        curriculum_result: LearningCoreResult,
+        session_id: str,
+        history_payload: list[dict[str, str]] | None,
+    ):
+        agent_response_holder: list = []
+        async for event_type, payload in self.tutor_agent.chat_stream(
+            message=build_curriculum_tutor_message(request, curriculum_result),
+            level=grade_to_level(request.grade),
+            use_tools=False,
+            history=history_payload,
+        ):
+            if event_type == "chunk":
+                yield ("chunk", payload)
+            elif event_type == "done":
+                agent_response_holder.append(payload)
+
+        agent_response = (
+            agent_response_holder[0] if agent_response_holder else AgentResponse(answer="")
+        )
+        await self._record_llm_cost(request.user_id, agent_response)
+        llm_answer = (agent_response.answer or "").strip()
+        agent_metadata = {
+            "tool_used": agent_response.tool_used,
+            "step_count": len(agent_response.steps),
+            "visual_source": "curriculum_adapter",
+            "curriculum_topic_id": curriculum_result.curriculum_topic_id,
+        }
+        if llm_answer:
+            answer = normalize_answer(agent_response.answer)
+        else:
+            answer = curriculum_result.assistant_message
+            agent_metadata["llm_empty_fallback"] = True
+
+        enriched_result = curriculum_result.model_copy(
+            update={
+                "assistant_message": answer,
+                "simple_explanation": answer,
+                "tts_text": f"{answer} {curriculum_result.real_life_example}".strip(),
+                "session_metadata": curriculum_result.session_metadata.model_copy(
+                    update={"response_source": "llm"},
+                ),
+                "agent_metadata": agent_metadata,
+            },
+        )
+        yield ("done", enriched_result)
+
     async def generate(self, request: LearningCoreRequest) -> LearningCoreResult:
         current_user_id.set(request.user_id)
         session_id = request.session_id or uuid4().hex
@@ -692,6 +783,13 @@ class LearningCoreService:
                 severity=guard_result.severity,
             )
 
+        history_payload = None
+        if session_id is not None:
+            history_messages = await self.memory_repository.load_messages(session_id)
+            history_payload = [
+                {"role": msg.role, "content": msg.content} for msg in history_messages
+            ]
+
         # ── AUTO-DETECT G1 TOPIC ──────────────────────────────────
         # If frontend did not send curriculum_topic_id, detect from message
         detected_curriculum_topic: str | None = None
@@ -710,13 +808,19 @@ class LearningCoreService:
             lesson_resp = to_lesson_response(curriculum_result)
             if lesson_resp is not None:
                 validate_lesson_response(lesson_resp, curriculum_result.curriculum_topic_id)
+            enriched_result = await self._enrich_curriculum_result_with_llm(
+                request=request,
+                curriculum_result=curriculum_result,
+                session_id=session_id,
+                history_payload=history_payload,
+            )
             await self._persist_turn_if_needed(
                 session_id=session_id,
                 user_message=request.message,
-                assistant_message=curriculum_result.assistant_message,
+                assistant_message=enriched_result.assistant_message,
             )
-            await self._persist(request, curriculum_result)
-            return curriculum_result
+            await self._persist(request, enriched_result)
+            return enriched_result
 
         context = detect_context(
             request.message,
@@ -728,13 +832,6 @@ class LearningCoreService:
             prev_turn=prev_turn,
             context=context,
         )
-
-        history_payload = None
-        if session_id is not None:
-            history_messages = await self.memory_repository.load_messages(session_id)
-            history_payload = [
-                {"role": msg.role, "content": msg.content} for msg in history_messages
-            ]
 
         if context.topic is None:
             agent_response = await self.tutor_agent.chat(
@@ -985,6 +1082,13 @@ class LearningCoreService:
             yield ("done", result)
             return
 
+        history_payload = None
+        if session_id is not None:
+            history_messages = await self.memory_repository.load_messages(session_id)
+            history_payload = [
+                {"role": msg.role, "content": msg.content} for msg in history_messages
+            ]
+
         detected_curriculum_topic: str | None = None
         if request.grade in (1, 2):
             detected_curriculum_topic = detect_curriculum_topic(request.message, request.grade)
@@ -1001,13 +1105,21 @@ class LearningCoreService:
             lesson_resp = to_lesson_response(curriculum_result)
             if lesson_resp is not None:
                 validate_lesson_response(lesson_resp, curriculum_result.curriculum_topic_id)
-            await self._persist_turn_if_needed(
+            async for event_type, payload in self._enrich_curriculum_result_with_llm_stream(
+                request=request,
+                curriculum_result=curriculum_result,
                 session_id=session_id,
-                user_message=request.message,
-                assistant_message=curriculum_result.assistant_message,
-            )
-            await self._persist(request, curriculum_result)
-            yield ("done", curriculum_result)
+                history_payload=history_payload,
+            ):
+                if event_type == "done":
+                    await self._persist_turn_if_needed(
+                        session_id=session_id,
+                        user_message=request.message,
+                        assistant_message=payload.assistant_message,
+                    )
+                    await self._persist(request, payload)
+                    _record_stream_metrics(payload.agent_metadata)
+                yield (event_type, payload)
             return
 
         context = detect_context(request.message, current_selected_topic)
@@ -1017,13 +1129,6 @@ class LearningCoreService:
             prev_turn=prev_turn,
             context=context,
         )
-
-        history_payload = None
-        if session_id is not None:
-            history_messages = await self.memory_repository.load_messages(session_id)
-            history_payload = [
-                {"role": msg.role, "content": msg.content} for msg in history_messages
-            ]
 
         # ── Stream agent response ──────────────────────────────────────────────
         tutor_message = build_tutor_message(
@@ -1564,6 +1669,35 @@ def build_tutor_message(message: str, topic: Topic | None, grade: int, tool_args
         "nếu câu hỏi rõ, hãy giải thích ngắn gọn, thân thiện, dễ hiểu; "
         f"{vague_hint}.{tool_scope_hint}{tool_args_hint} "
         f"Câu hỏi: {message}"
+    )
+
+
+def build_curriculum_tutor_message(
+    request: LearningCoreRequest,
+    curriculum_result: LearningCoreResult,
+) -> str:
+    visual_parts: list[str] = []
+    if curriculum_result.visual_card is not None:
+        vd = curriculum_result.visual_card.visual_data
+        visual_parts.append(f"loại visual '{vd.type}'")
+        if vd.primary_count is not None:
+            visual_parts.append(f"số chính {vd.primary_count}")
+        if vd.secondary_count is not None:
+            visual_parts.append(f"số phụ {vd.secondary_count}")
+        if vd.total_count is not None:
+            visual_parts.append(f"tổng {vd.total_count}")
+        if vd.config:
+            visual_parts.append(f"cấu hình {json.dumps(vd.config, ensure_ascii=False)}")
+    visual_desc = f"Visual sẽ hiển thị: {', '.join(visual_parts)}." if visual_parts else ""
+
+    return (
+        f"Học sinh lớp {request.grade} hỏi: '{request.message}'. "
+        f"Đây là nội dung chương trình toán lớp {request.grade} "
+        f"({curriculum_result.curriculum_topic_id}). "
+        f"{visual_desc} "
+        "Hãy đọc kỹ yêu cầu và trả lờ đúng theo đó: "
+        "giải thích ngắn gọn, thân thiện, dễ hiểu, phù hợp với hình minh họa. "
+        "Không cần tạo visual mới, chỉ cần giải thích bằng lời."
     )
 
 
